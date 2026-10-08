@@ -35,3 +35,8 @@ Compared to the downloaded public SDK, exactly three card modules change and
 one is added; all other bytes are preserved. All 71 packaged Python modules
 compile. Full receipts: `package-verification.json`, `release-payload-diff.json`,
 `verification.json` in the same private output directory.
+
+
+## Combined release status - 2026-10-08
+
+Published in normal stable MSBT v2.31.0 with Android 1.6.0 after Matt explicitly approved inclusion of the offline-checked Epic profile with its live test pending. This supersedes the local-only publication status above. All 11 public release assets were downloaded and hash-verified. Packaged smoke/restart checks and Android installed-APK verification passed. See docs/releases/VERIFICATION_v2.31.0.txt for hashes, CI, evidence limits and rollback. Historical test-candidate hashes above identify the earlier local package, not the combined release. Epic live rendering remains unverified; no new guest-save claim.

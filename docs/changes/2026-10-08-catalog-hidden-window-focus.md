@@ -27,3 +27,8 @@ The stray window remained after Alt+F4. Stopped only processes matching the exac
 ## Subsequent local installation
 
 The later [Android Windows workspace change](2026-10-08-android-windows-workspace.md) installed the current `main.js`, including this focus correction, into the local Windows archive. The installed shortcut now retains the correction. The Catalog focus regression passed again, and the source desktop was restarted normally without stopping Borderlands or AFK. No public release or version bump was performed. Installed archive/backup hashes and exact file comparison are recorded in the linked entry and `output/mobile-windows/install-receipt.json`. Live recurrence after this installation remains unproven; no live Catalog delivery was sent for verification.
+
+
+## Combined release status - 2026-10-08
+
+Published in normal stable MSBT v2.31.0 with Android 1.6.0 after Matt explicitly approved inclusion of the offline-checked Epic profile with its live test pending. This supersedes the local-only publication status above. All 11 public release assets were downloaded and hash-verified. Packaged smoke/restart checks and Android installed-APK verification passed. See docs/releases/VERIFICATION_v2.31.0.txt for hashes, CI, evidence limits and rollback. Historical test-candidate hashes above identify the earlier local package, not the combined release. Epic live rendering remains unverified; no new guest-save claim.

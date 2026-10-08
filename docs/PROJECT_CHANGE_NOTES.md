@@ -4,17 +4,17 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-08: Combined v2.31.0 release](../docs/releases/VERIFICATION_v2.31.0.txt) — Epic cards, full Android workspace, persistent phone data, AFK phone controls and Catalog focus; release verification in progress.
+- [2026-10-08: Combined v2.31.0 release](../docs/releases/VERIFICATION_v2.31.0.txt) — Epic cards, full Android workspace, persistent phone data, AFK phone controls and Catalog focus; published as stable; all 11 public downloads hash-verified, packaged restart checks passed, Android 1.6.0 installed and verified; Epic live confirmation pending.
 
 - [2026-10-08: Epic card implementation evidence](native-cards/EPIC_CARD_PROFILE.md) — exact executable mappings and offline tests; Matt explicitly authorized inclusion in the normal release with live confirmation pending.
 
-- [2026-10-08: Repeated phone status downloads](changes/2026-10-08-phone-status-data-cache.md) — unchanged large item lists cached persistently on Android; live status remains fresh. Current snapshot reduced from 1.98 MB to 18 KB after synchronization. Installed locally; no release.
+- [2026-10-08: Repeated phone status downloads](changes/2026-10-08-phone-status-data-cache.md) — unchanged large item lists cached persistently on Android; live status remains fresh. Current snapshot reduced from 1.98 MB to 18 KB after synchronization. Published in v2.31.0; see combined verification.
 
-- [2026-10-08: Full Windows workspace in Android](changes/2026-10-08-android-windows-workspace.md) — actual Windows workspace/editor bundled in Android; paired companion API, native files and remote transfer handling. Local builds installed; final native checks recorded in the entry. No release.
+- [2026-10-08: Full Windows workspace in Android](changes/2026-10-08-android-windows-workspace.md) — actual Windows workspace/editor bundled in Android; paired companion API, native files and remote transfer handling. Published in v2.31.0 / Android 1.6.0; final native checks recorded in the entry.
 
-- [2026-10-08: Phone commands during AFK](changes/2026-10-08-phone-commands-during-afk.md) — remote commands and player targeting enabled; native phone selection and UVH Status confirmed while AFK remained active. Desktop/Android installed locally; no release. Includes persistent host-test error handling and separate unresolved vault readback investigation.
+- [2026-10-08: Phone commands during AFK](changes/2026-10-08-phone-commands-during-afk.md) — remote commands and player targeting enabled; native phone selection and UVH Status confirmed while AFK remained active. Published in v2.31.0 / Android 1.6.0. Includes persistent host-test error handling and separate unresolved vault readback investigation.
 
-- [2026-10-08: Item Catalog hidden-window focus](changes/2026-10-08-catalog-hidden-window-focus.md) - reproduced Catalog focus IPC exposing a hidden frameless card renderer; fix selects the requesting panel, actual Send/Confirm/Cancel IPC regression passes. Installed locally with the Android Windows workspace change; no release.
+- [2026-10-08: Item Catalog hidden-window focus](changes/2026-10-08-catalog-hidden-window-focus.md) - reproduced Catalog focus IPC exposing a hidden frameless card renderer; fix selects the requesting panel, actual Send/Confirm/Cancel IPC regression passes. Published in v2.31.0 with the Android Windows workspace change.
 
 - [2026-10-08: Wolf surface from native triangles](changes/2026-10-08-wolf-native-triangles.md) — shipped triangle asset fitted to eight original animated ear faces using 32 native pieces; vanilla guest confirmed visible and moving. Host transforms, cleanup and respawn passed. Experiment closed at Matt's request; source wolf and triangles inactive after bounded runtime cleanup, evidence retained.
 

@@ -15,3 +15,19 @@ Local final validation: Windows installer/portable build passed, including packa
 Build repair: the initial version update read package metadata with the Windows default encoding and corrupted an em dash in productName. Product identity validation stopped packaging; metadata was restored from the baseline with explicit UTF-8, versions reapplied, both product-identity checks passed, and the complete final Windows build passed. The earlier Node-only UI invocation errors were corrected by running in Electron; parity, AFK UI and full workspace tests passed. No production secret is included in these receipts.
 
 Artifact manifest: work/release-2.31.0-assets.json and SHA256SUMS.txt record ten payloads. The standalone latest.json is byte-identical to the bundled manifest; its build source commit remains 0e3b03c rather than being restamped after packaging. Public asset and CI verification pending publication.
+
+Published 2026-10-08: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.31.0
+Tag commit: 3bcc1beeeb2b34f1a6ad7f1f3c1ecff78be5af2e. Confirmed latest stable, non-draft, non-prerelease. All 11 assets were independently downloaded from public URLs and match local length/SHA256 plus GitHub digests. Receipt: work/release-2.31.0-public-verification.json. Electron Release run 37749652582 succeeded (reviewed local artifacts; duplicate CI build intentionally skipped); Pages deployment 37749651299 succeeded.
+
+Public asset SHA256 receipt:
+9a4d29c76d1941f5e45f069e07c29968dc9141295e5100514b3041510776d487  MSBT-Installer-v2.31.0.exe  318739216 bytes
+294e5b07b723223d8ba9ad02fbf9d4c26a1eb14f13b649c27a9b5e9cf826fab1  MSBT-Setup.exe  71599901 bytes
+0c3f72c0391da081e64408b335761d9cd2471fe0f11b0fda80a03fc5eb913f21  MSBT-Installer-v2.31.0.exe.blockmap  319309 bytes
+f419a2d6992f04efc1afd25384b9b456966a4ec6f45dca6a456517aff49130e0  latest.yml  350 bytes
+3aeccf850c91bb0f2ac3bff647e6fe3161016d1ae41e7eed26310035a84ea3ba  latest.json  1543 bytes
+78416db7f45ea91f199b9095ae1d43e61165dc4587efa1fddbc627da99dfe106  MSBT-Portable-v2.31.0-win-x64.zip  378955155 bytes
+7d94da23ad527c63a94545019a3f63a526f420cfa3bf40623ba12c212c6a4661  MattsSDKBoostingTools.sdkmod  930996 bytes
+7cfafa5082d9da3c5a43639e8514351db489defbd42396c4f50429a1292202d3  mobile-version.json  494 bytes
+bc69565627b3b135ecc549f08250b4af1ae76831698f6a0a0712bb1977a42b07  MSBT-Mobile-Controller.apk  28079842 bytes
+bc69565627b3b135ecc549f08250b4af1ae76831698f6a0a0712bb1977a42b07  MSBT-Mobile-Controller-1.6.0.apk  28079842 bytes
+c4533349faa9f9d01cefa7a00a37483b2a9dea9bb04df37a455b4209467c216d  SHA256SUMS.txt  914 bytes
