@@ -85,3 +85,8 @@ repeat after changing level, and verify inventory is unchanged by previewing.
 Record exact serials, card screenshots and errors. Do not call live compatibility
 complete until this succeeds. Rollback restores the previous SDK archive with
 the game closed, followed by a restart. No public release has been made.
+
+
+## Combined release status - 2026-10-08
+
+Published in normal stable MSBT v2.31.0 with Android 1.6.0 after Matt explicitly approved inclusion of the offline-checked Epic profile with its live test pending. This supersedes the local-only publication status above. All 11 public release assets were downloaded and hash-verified. Packaged smoke/restart checks and Android installed-APK verification passed. See docs/releases/VERIFICATION_v2.31.0.txt for hashes, CI, evidence limits and rollback. Historical test-candidate hashes above identify the earlier local package, not the combined release. Epic live rendering remains unverified; no new guest-save claim.
