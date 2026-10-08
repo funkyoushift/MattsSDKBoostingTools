@@ -43,3 +43,31 @@ Ready to publish: integrated controls, source/package checks and Android emulato
 launch completed. Epic live execution and actual guest gameplay remain unverified,
 as disclosed before Matt's current explicit release authorization. Public asset
 hash/CI/deployment results will be recorded after publication.
+
+Published stable, non-draft v2.34.0 at tag commit
+7bd70b587b4fc250c69c9507fe362b76f64f155b. All 11 unauthenticated public downloads
+match local SHA256/length and GitHub digests. Public verification receipt:
+work/release-2.34.0-public-verification.json. GitHub latest and the public website
+latest.json both report 2.34.0. Release-policy run 37848108868 succeeded; duplicate
+build intentionally skipped. Pages run 37848107771 succeeded.
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.34.0
+
+Installed from the independently downloaded and verified public portable ZIP
+using the managed Engine.Apply/Register. Previous desktop backup was preserved
+as previous-before-v2.34.0-20261008; previous now contains desktop 2.33.0.
+Installed app.asar, SDK and manifest match staging; installed startup/updater smoke
+passed at 2.34.0. Desktop reopened: PID 68816, main window handle 137562790,
+title Borderlands 4 Modding Tools - Powered by Funk.
+
+Borderlands was confirmed closed, without stopping it. Normal installer game
+integration completed, updated SDK/ActorScriptDeployer and marked required mods
+enabled. Installed Steam game SDK hash matches the public release. Before-update
+SDK retained at work/MattsSDKBoostingTools-before-v2.34.0.sdkmod, SHA256
+56e5452014013ea40b99cc9ba871622a6d341d91374579815f42490f8fb08422.
+Separate MSBTFarmingLab folder and msbt_farming_lab_load.py were moved outside
+sdk_mods into work/installed-farming-lab-before-v2.34.0 after verifying absolute
+source/archive containment. No duplicate local add-on will be discovered next
+launch. Settings/history remain for rollback; no game restart was performed.
+Integrated next-launch gameplay, Epic live and actual guest gameplay remain
+unverified. Primary dirty checkout preserved; only local.properties is untracked
+in the release worktree and was not committed.
