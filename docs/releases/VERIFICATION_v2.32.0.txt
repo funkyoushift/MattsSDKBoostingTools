@@ -1,0 +1,25 @@
+MSBT 2.32.0 - 100% Drop Rate farming controls
+
+Authorization: Matt confirmed the live local farming trial works and requested
+"add it and release it" on October 8, 2026. User confirmation is gameplay evidence;
+exact host/guest counts, actual travel, production disable and guest saves remain
+unverified. Previous independent native On/Off/On bytes are recorded in the feature
+notes. The supplied trainer was never run and is not bundled.
+
+Baseline: isolated codex/guaranteed-drops-release at public v2.31.0 (3bcc1bee).
+Unrelated dirty source and unpublished phone-navigation changes excluded.
+Feature: Rarity Weights separate On/Off, host lobby scope, F7 assignable actions,
+never persisted, exact build/context guard, owned restore and immediate travel
+PRE cleanup independent of pawn gates. Steam 25372571 qualified; Epic refusal.
+Android unchanged 1.6.0/code33 with byte-identical carried-forward APKs.
+
+Focused source verification: core/native Windows scratch API, HTTP/F7/authority,
+real Electron buttons/status/drafts/refusal, travel cleanup and startup disable
+callback. Package and public receipts will be appended after checks finish.
+
+Known development corrections: initial transplant expected obsolete .md notices;
+current release packages .txt notices, which were updated instead. The baseline
+bridge get_status now accepts include_extended; test double was updated to accept
+keyword arguments. Initial version_info was already older than public version;
+all four helper version keys were explicitly aligned to 2.32.0 before packaging.
+No source/package failures were ignored.

@@ -295,6 +295,11 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
     assert started == ["start_auto_inventory_worker", "start_bridge", "start_quick_menu", "start_mobile_pairing"]
     assert len(registrations) == 1
     registration = registrations[0]
+    native = sys.modules[f"{package}.guaranteed_drops"]
+    calls = []
+    monkeypatch.setattr(native.override, "set_enabled", lambda value: calls.append(value) or {"ok": True})
+    registration["on_disable"]()
+    assert calls == [False]
     assert registration["keybinds"] == ["quick_menu_toggle", "quick_menu_unstuck_key", "mobile_pair_toggle",
                                          "OPEN_GOLDEN_CHEST_KEY", "CLOSE_GOLDEN_CHEST_KEY", "ICH_KEYBINDS", "TPC_KEYBINDS"]
     assert len(registration["commands"]) == 13

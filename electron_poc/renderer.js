@@ -2588,7 +2588,20 @@ function rarityWeightsToPercentPreset(weights) {
   return preset;
 }
 
+function syncDropRateStatus(data) {
+  const dropLine = document.getElementById("dropRateStatus");
+  const drop = data && data.drop_rate && typeof data.drop_rate.active === "boolean" ? data.drop_rate : null;
+  if (dropLine) {
+    const note = !drop ? "100% Drop Rate: unavailable in the connected SDK build." :
+      drop.conflict ? `100% Drop Rate: code conflict. ${drop.last_error || "Restoration requires attention."}` :
+      drop.last_error ? `100% Drop Rate: ${drop.last_error}` :
+      `100% Drop Rate: ${drop.active ? "ON" : "OFF"}`;
+    setLine(dropLine, note, drop && drop.active && !drop.conflict ? "ok" : "warning");
+  }
+}
+
 function syncBoostingRaritySlidersFromBridge(data, { force = false } = {}) {
+  syncDropRateStatus(data);
   const weights = data && data.rarity_weights && typeof data.rarity_weights === "object"
     ? data.rarity_weights
     : null;
@@ -2718,6 +2731,8 @@ async function loadSavedRarityPresetIntoControls() {
 }
 
 async function runRarityAction(action) {
+  const isDropRate = action === "drop_rate_on" || action === "drop_rate_off";
+  const statusLine = isDropRate ? document.getElementById("dropRateStatus") : els.rarityStatus;
   if (action === "rarity_reset") {
     setRarityPreset({});
   } else if (action === "rarity_only_legendary") {
@@ -2729,9 +2744,9 @@ async function runRarityAction(action) {
   }
 
   const payload = action === "rarity_apply" ? rarityPayload() : {};
-  setLine(els.rarityStatus, `Sending ${humanActionLabel(action)}...`, "warning");
+  setLine(statusLine, `Sending ${humanActionLabel(action)}...`, "warning");
   const result = await runAction(action, payload, els.boostOutput, 30000);
-  setLine(els.rarityStatus, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
+  setLine(statusLine, resultMessage(result), actionSucceeded(result) ? "ok" : "warning");
   // Pull canonical backend weights so Boosting matches F7 / persisted state.
   try {
     const statusResult = await window.msbt.bridgeRequest({ method: "GET", path: "/status", timeoutMs: 8000 });
@@ -2739,7 +2754,8 @@ async function runRarityAction(action) {
       ? statusResult.data
       : statusResult;
     if (data && data.ok !== false) {
-      syncBoostingRaritySlidersFromBridge(data, { force: true });
+      if (isDropRate) syncDropRateStatus(data);
+      else syncBoostingRaritySlidersFromBridge(data, { force: true });
     }
   } catch (_) { /* ignore refresh failures */ }
   return result;

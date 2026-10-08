@@ -36,7 +36,7 @@ def clear_travel_caches() -> None:
     """Release cached wrappers and pending actions from the previous world."""
     from . import backend_actions, golden_chest_keybinds, hoard_runner
     from . import instant_click_holds, movement_adjustments, no_fog_of_war
-    from . import third_person_camera
+    from . import third_person_camera, guaranteed_drops
     from . import serial_rewards, spawn_helpers, streamer_chaos
 
     _call("backend", backend_actions.clear_uobject_caches)
@@ -49,6 +49,22 @@ def clear_travel_caches() -> None:
     _call("instant holds", instant_click_holds.clear_travel_backups)
     _call("fog", no_fog_of_war.clear_travel_backups)
     _call("third person", third_person_camera.clear_travel_backups)
+    _call("100% drop rate", guaranteed_drops.clear_runtime_state)
+
+
+@hook(
+    "OakGame.OakPlayerController:ClientTravel", Type.PRE, immediately_enable=True,
+    hook_identifier="msbt_drop_rate_travel_oak_v1",
+)
+@hook(
+    "Engine.PlayerController:ClientTravel", Type.PRE, immediately_enable=True,
+    hook_identifier="msbt_drop_rate_travel_engine_v1",
+)
+def _restore_drop_rate_before_travel(*_args: Any, **_kwargs: Any) -> None:
+    # This only restores owned native bytes; it never touches tearing-down UObjects.
+    # Stay enabled independently of pawn readiness and the join-hook gate.
+    from .guaranteed_drops import clear_runtime_state
+    _call("100% drop rate", clear_runtime_state)
 
 
 def _world_package_name(*hook_args: Any, **hook_kwargs: Any) -> str:

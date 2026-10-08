@@ -82,3 +82,10 @@ Borderlands game data, artwork and SHiFT resources belong to Gearbox / 2K and
 other respective owners. They are not original MSBT code or relicensed as MIT.
 The AFK SHiFT package's source hash remains in its manifest. This project is
 unofficial and claims no endorsement by these owners or credited contributors.
+
+FLiNG trainer research lead
+The supplied Borderlands 4 v1.0-v1.9.1 Plus 45 Trainer was inspected to identify
+the 100% Drop Rate zero-roll behavior. Credit for this research lead belongs
+to FLiNG. MSBT independently implements a guarded four-byte replacement; no
+trainer runtime, UI, or injection script is bundled. Evidence and limitations:
+docs/changes/2026-10-08-trainer-drop-rate.md

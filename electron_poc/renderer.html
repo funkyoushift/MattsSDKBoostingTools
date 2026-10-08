@@ -655,6 +655,12 @@
             <input id="rarityRememberPreset" type="checkbox">
             Remember saved sliders on startup (does not apply)
           </label>
+          <p>100% Drop Rate forces eligible drop-chance rolls to pass. Item-pool choices and eligibility still apply. Solo or lobby host; affects the whole lobby. Turns off on travel and starts off each game session.</p>
+          <div class="button-row">
+            <button data-rarity-action="drop_rate_on">100% Drop Rate On</button>
+            <button data-rarity-action="drop_rate_off">100% Drop Rate Off</button>
+          </div>
+          <div id="dropRateStatus" class="status-line warning compact-note">100% Drop Rate: awaiting game status.</div>
           <div id="rarityStatus" class="status-line warning compact-note">Adjust weights, then Apply. Saved presets only change the visible sliders until you apply them.</div>
         </section>
       </div>
@@ -2724,6 +2730,7 @@
         <p><strong>juso and smugg</strong> created <strong>BLImGui</strong>, the framework used by the earlier in-game interface. Their work gave SDK modders a way to build graphical controls and is part of this project’s history. The current desktop app and native F7 Quick Menu do not require BLImGui, but moving to a new interface does not erase that contribution.</p>
         <p><strong>Explore their work:</strong> <a href="https://github.com/juso40/blimgui" data-credit-link>BLImGui source</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/mods/blimgui/" data-credit-link>Published BL4 listing and author credits</a></p>
         <h3>Research references and the wider modding community</h3>
+        <p><strong>FLiNG’s</strong> Borderlands 4 trainer supplied the research lead for the 100% Drop Rate zero-roll behavior. MSBT uses an independently written, guarded implementation. The trainer and its injection scripts are not bundled.</p>
         <p>Our research notes acknowledge <strong>Yeti’s</strong> Dump Ping, Falling Menus, and Grapple Anywhere, <strong>FreepDryer’s</strong> Trash Seller, and <strong>apple1417’s</strong> obj_dump as references studied during development. We thank these authors for publishing their work. This acknowledgment describes research references; it does not claim that their implementations are bundled in MSBT.</p>
         <p><strong>Explore their work:</strong> <a href="https://github.com/RedxYeti/yeti-bl4-sdk" data-credit-link>Yeti’s BL4 SDK mods</a> · <a href="https://github.com/FreepDryer/freepdryer-bl4-sdk-mods" data-credit-link>FreepDryer’s BL4 SDK mods</a> · <a href="https://github.com/apple1417/oak-sdk-mods" data-credit-link>apple1417’s SDK mods</a> · <a href="https://bl-sdk.github.io/oak2-mod-db/" data-credit-link>Browse the BL4 SDK Mod Database</a></p>
         <h3>Framework maintainers, testers, and community creators</h3>

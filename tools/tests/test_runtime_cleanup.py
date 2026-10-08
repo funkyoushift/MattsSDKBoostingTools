@@ -53,6 +53,7 @@ def test_clear_travel_caches_calls_known_cleaners():
     _mod("instant_click_holds", {"clear_travel_backups": lambda: called.append("holds")})
     _mod("no_fog_of_war", {"clear_travel_backups": lambda: called.append("fog")})
     _mod("third_person_camera", {"clear_travel_backups": lambda: called.append("tpc")})
+    _mod("guaranteed_drops", {"clear_runtime_state": lambda: called.append("drops")})
 
     sys.modules.pop("MattsSDKBoostingTools.runtime_cleanup", None)
     spec = importlib.util.spec_from_file_location(
@@ -76,4 +77,55 @@ def test_clear_travel_caches_calls_known_cleaners():
         "holds",
         "fog",
         "tpc",
+        "drops",
     ]
+
+
+def test_drop_rate_travel_hooks_restore_without_world_or_join_gate(monkeypatch):
+    _install_stubs()
+    package = types.ModuleType("_drop_cleanup_test")
+    package.__path__ = [str(PKG)]
+    monkeypatch.setitem(sys.modules, package.__name__, package)
+    registrations = []
+    def register(target, kind, **options):
+        def decorate(callback):
+            registrations.append((target, kind, options, callback))
+            return callback
+        return decorate
+    monkeypatch.setattr(sys.modules["mods_base"], "hook", register)
+    for name, attrs in {
+        "hook_gate": {"disable_join_hooks": lambda: None,
+                      "request_arm_when_pawn_ready": lambda *_: None,
+                      "try_arm_from_controller": lambda *_: None},
+        "travel_gate": {"mark_menu": lambda: None, "mark_travel": lambda: None},
+    }.items():
+        mod = types.ModuleType(package.__name__ + "." + name)
+        mod.__dict__.update(attrs)
+        monkeypatch.setitem(sys.modules, mod.__name__, mod)
+    spec = importlib.util.spec_from_file_location(package.__name__ + ".guaranteed_drops", PKG / "guaranteed_drops.py")
+    native = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, spec.name, native)
+    spec.loader.exec_module(native)
+    class Memory:
+        base = 0
+        def __init__(self): self.code = bytearray(native.CONTEXT)
+        def validate(self): pass
+        def read(self, address, size):
+            offset = address - native.CONTEXT_RVA
+            return bytes(self.code[offset:offset+size])
+        def write(self, address, value):
+            offset = address - native.CONTEXT_RVA
+            self.code[offset:offset+len(value)] = value
+    memory = Memory()
+    native.override = native.DropRateOverride(lambda: memory)
+    spec = importlib.util.spec_from_file_location(package.__name__ + ".runtime_cleanup", PKG / "runtime_cleanup.py")
+    cleanup = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cleanup)
+    handlers = [row for row in registrations if row[2]["hook_identifier"].startswith("msbt_drop_rate_travel_")]
+    assert {row[0] for row in handlers} == {"Engine.PlayerController:ClientTravel", "OakGame.OakPlayerController:ClientTravel"}
+    for _, kind, options, callback in handlers:
+        assert kind == "PRE" and options["immediately_enable"] is True
+        assert native.override.set_enabled(True)["ok"]
+        callback(None, None, None)
+        assert not native.override.status()["active"]
+        assert bytes(memory.code) == native.CONTEXT

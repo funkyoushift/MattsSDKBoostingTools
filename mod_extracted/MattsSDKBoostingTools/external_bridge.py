@@ -386,7 +386,9 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"rarity_apply","label":"Apply","accent":"purple"},
                 {"id":"rarity_reset","label":"Reset All","accent":"gold"},
                 {"id":"rarity_only_legendary","label":"Only Legendary","accent":"gold"},
-                {"id":"rarity_only_pearlescent","label":"Only Pearlescent","accent":"purple"}
+                {"id":"rarity_only_pearlescent","label":"Only Pearlescent","accent":"purple"},
+                {"id":"drop_rate_on","label":"100% Drop Rate On","accent":"gold"},
+                {"id":"drop_rate_off","label":"100% Drop Rate Off","accent":"purple"}
             ]},
             {"id":"cheats_debug","label":"CHEATS / DEBUG CAM","accent":"pink","actions":[
                 {"id":"devperk_0","label":"Give Experience","accent":"cyan"},
@@ -964,6 +966,11 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         )
     if action in ("movement_save_preset", "movement_load_saved"):
         return {"ok": False, "message": f"{action} is local UI preset storage and is not handled by the SDK bridge."}
+    if action in ("drop_rate_on", "drop_rate_off", "drop_rate_status"):
+        result = backend_actions.drop_rate_action(action)
+        # Actions run on the game tick; publish their state before waking HTTP.
+        _refresh_status_snapshot(force=True)
+        return result
     if action == "rarity_apply":
         return backend_actions.rarity_apply(payload)
     if action == "rarity_reset":
@@ -1103,6 +1110,7 @@ def _status() -> dict[str, Any]:
         "read_serials": backend_status.get("read_serials") or {},
         "rarity_weights": backend_status.get("rarity_weights") or {},
         "rarity_revision": int(backend_status.get("rarity_revision") or 0),
+        "drop_rate": backend_status.get("drop_rate") or {},
         "cxp": backend_status.get("cxp") or {},
         "instant_drops": backend_status.get("instant_drops") or {},
         "instant_holds": backend_status.get("instant_holds") or {},

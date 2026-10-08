@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-__version__: str = "2.31.0"
-__version_info__: tuple[int, int, int] = (2, 30, 1)
+__version__: str = "2.32.0"
+__version_info__: tuple[int, int, int] = (2, 32, 0)
 
 from mods_base import CoopSupport, Game, build_mod
 
@@ -13,6 +13,7 @@ from .third_person_camera import TPC_KEYBINDS
 from .player_economy import _cmd_givecurrency, _cmd_giveexperience
 from .serial_rewards import _cmd_give_serial
 from .runtime_cleanup import clear_travel_caches as _clear_travel_caches
+from .guaranteed_drops import clear_runtime_state as _clear_drop_rate
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
@@ -83,5 +84,6 @@ build_mod(
         *TPC_KEYBINDS,
     ],
     commands=_extra_commands,
+    on_disable=_clear_drop_rate,
 )
 
