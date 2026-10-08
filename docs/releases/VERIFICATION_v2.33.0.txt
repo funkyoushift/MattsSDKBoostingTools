@@ -18,3 +18,34 @@ bundles the same updated desktop workspace with the existing signing identity.
 
 Source, package, device and public verification results will be appended as
 completed. Physical Android device availability is checked independently.
+
+Source checks: 67 focused production tests passed (farming/native/HTTP/F7,
+startup/no-BLImGui, bridge snapshots, cleanup and fresh release import). SDK
+compileall passed. Windows builder's complete npm check passed, installer tests
+passed, 48 packaged dependencies / 3,248 exact asset comparisons passed, 3,261
+GZO images present, actual packaged startup/updater smoke passed. Packaged
+renderer search tested 14 routes and 13 queries in both layouts; farming and
+100% drop-rate button suites passed. Three separate packaged processes passed
+save/restore/unchecked settings restart checks. Nonfatal hidden-renderer GPU
+shutdown diagnostics did not fail checks.
+
+All 77 Python files in the SDK archive match source exactly; standalone SDK
+and latest.json match bundled copies. No local add-on, developer probe or
+trainer executable is in the SDK. Source build identity c739845 is retained
+in bundled manifests; it is not restamped after packaging. Eleven asset hashes
+recorded in SHA256SUMS.txt / work/release-2.33.0-assets.json.
+
+Android assembleRelease and lintRelease passed with existing Gradle deprecation
+notices. APK is version 1.6.1/code34, signed with the same certificate as 1.6.0;
+embedded renderer/workspace sources match Windows source. Installed and launched
+on an owned read-only emulator (emulator-5560), launch status ok and process
+observed. No physical phone was connected; physical 1.6.1 UI proof is not claimed.
+
+Discord announcement audited against the 17 non-draft public releases published
+within September 24-October 8 (v2.20.0 through v2.32.0), plus this release. Full
+text and six standard-size messages are tracked in DISCORD_ANNOUNCEMENT_2026-10-08.txt
+and DISCORD_MESSAGES_2026-10-08.txt. This prepares text; no Discord message is sent.
+
+Before publication: owner gameplay confirmation, implemented controls/search,
+source, package, Android build/signature and emulator launch checks complete.
+Public downloads/hashes and CI status will be verified after upload.

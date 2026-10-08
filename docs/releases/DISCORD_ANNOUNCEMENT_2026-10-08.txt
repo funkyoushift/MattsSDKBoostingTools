@@ -1,0 +1,125 @@
+🚨 MSBT v2.33.0 IS LIVE — TWO WEEKS OF HUGE UPGRADES! 🚨
+
+Farm harder. Spend less time in menus. Run your lobby from your phone. 🔥
+
+Borderlands 4 Modding Tools — Powered by Funk has had a massive run of updates over the last two weeks. If you haven’t updated recently, there is a LOT waiting for you. Here’s the full catch-up for September 24–October 8!
+
+🎯 FARMING JUST GOT A SERIOUS UPGRADE
+
+100% Drop Rate now has its own On/Off controls in Rarity Weights and can be pinned to the native F7 Quick Menu. Turn it on while playing solo or hosting a farming lobby to make eligible drop-chance rolls pass across the lobby.
+
+Rarity settings stay separate, so you can tune the rarities you want without losing your sliders when you toggle drop rate. Item-pool eligibility and exclusive choices still apply — this changes drop chances; it doesn’t promise every possible item from every kill.
+
+The new farming controls are now part of the regular SDK update. No separate test add-on or console command is required!
+
+🔫 SEVEN NEW WEAPON & AMMO CONTROLS
+
+• Infinite Ammo — keep your ammo supply available.
+• No Reload — keep the magazine lock on when you want uninterrupted firing.
+• Instant Reload — cut reload time dramatically.
+• No Recoil / Sway — steady your weapon.
+• Super Accuracy — reduce spread and accuracy penalties.
+• Rapid Fire — push supported weapon fire rates.
+• Critical Hit Boost — boost the critical-hit chance setting.
+
+These apply to your hosting character and owned weapons. Find them under Boosting → Combat → Weapons & Ammo. Special weapon mechanics can still behave differently, so give us the weapon name when reporting an issue!
+
+🛡️ GOD MODE, SKILLS, GRENADES & MOVEMENT
+
+• God Mode uses the character’s actual damage-permission flag.
+• Instant Skill Cooldown refills the primary skill resource and validated action-skill charge pools, including the additional path needed for the long-press tests.
+• Unlimited Skill Duration keeps the active duration resource refilled.
+• Instant Grenade Cooldown reduces the equipped grenade’s cooldown setting to 0.1 seconds for its next activation.
+• Unlimited Glide Duration removes glide power cost without changing your other movement costs.
+
+God Mode, skills and grenades are together in Party & Combat → Combat Tuning. Repair-kit cooldown was already available there and remains beside them in Combat / Resource Tuning. Glide is in Movement & World → Movement.
+
+🛒 VENDORS & LOOT ROLLS
+
+Vendor Refresh On Close is now under Boosting → Loot & Vendors → Chests & Vendors.
+
+Weighted Loot High Roll lives in Rarity as a separate experimental weighted-roll control. It is different from 100% Drop Rate and is not a guaranteed-legendary switch.
+
+All 14 farming controls start OFF. They turn OFF on travel, character/world changes or mod disable, and there is a shared Turn All Farming Controls Off option. Re-enable what you want after traveling to your farming spot. Completed refills and generated loot are not reversed by turning a control off.
+
+🔎 FIND THE FEATURE — SKIP THE MENU HUNT
+
+Search now finds individual controls instead of only tab and panel names. All 14 new farming features are searchable, even before game status loads.
+
+Try “godmode,” “inf ammo,” “skill cooldown,” “glide duration” or “repkit cooldown.” Click a result and the app opens the right section, expands collapsed controls and highlights what you asked for. It works in Workspace and Classic layouts!
+
+🤝 AFK LOBBIES: MORE CONTROL, LESS WAITING
+
+Ready guests can now receive AFK item deliveries concurrently, with independent pacing and per-guest progress. Guests don’t have to wait for the previous player’s entire delivery to finish.
+
+We tested overlapping deliveries of 500 items each with two live guests, who confirmed their counts and persistence. Manual item sends can also run independently of AFK delivery to different players, with conflicts to the same recipient protected.
+
+You can set character level, specialization level, cash, Eridium, vault-card keys and individual vault-card level targets using sliders or exact-number inputs. Higher existing levels are preserved, and your chosen amounts are saved.
+
+There are saved SHiFT-name exemptions for players who should receive boosts without being automatically kicked. Shared connections stay protected together. Password requirements, class filters and delivery safeguards remain in place.
+
+Phone commands and player selection work while AFK is running, and host-test failures are easier to see instead of getting buried by status updates.
+
+📱 THE WINDOWS WORKSPACE IS NOW ON ANDROID
+
+The phone app now includes All Windows tools: the shared workspace, Saved Items, Item Catalog, Community Folders and the bundled item/save editor, using your existing PC pairing.
+
+Unchanged large status lists stay cached between workspace sessions, reducing repeated transfers while players, AFK progress and command results remain current.
+
+Remote AFK restores its pairing, reconnects after interruptions and discovers fallback bridge ports automatically. Android retries status without blindly replaying uncertain commands. Full phone controls use the paired LAN connection; Remote AFK can work over cellular or another network. Your PC and game still need to be running.
+
+Closing the desktop app now fully exits it. Minimize it when you want remote access to keep running.
+
+Android 1.6.1 includes the latest farming-control organization and feature search!
+
+🎒 SAVE IMPORTS & GUEST ITEM DELIVERY
+
+Import backpack and equipped items from character .yaml or .sav files into a new or existing Saved Items folder. Preview the character, level and counts first, then choose whether to keep duplicates or skip codes already in the destination. Lost Loot is excluded, and the original save is read locally and left unchanged.
+
+Supported guests can send items to their own backpack while visiting another player’s lobby. Drop My Backpack works for your own character as host or guest, with better handling of valid item handles and clearer errors when there is nothing eligible to drop.
+
+The editor now refreshes the generated code on each send, so later sends don’t get stuck using the first item’s code.
+
+🌐 COMMUNITY FOLDERS GOT A LOT BETTER
+
+• Add approved Community Library folders directly to an AFK loot pool or guaranteed-item list.
+• Search by typing or Enter, with Previous/Next paging and up to 100 folders per page.
+• Keep your current results if a page request fails.
+• Read creator information and build notes in separate, clearer sections.
+• See uploaded item screenshots and matching GZO titles/images when the item code matches.
+• Retain screenshots, names and original labels when importing community items.
+
+Uploaded screenshots take priority. Changing a code stops an unrelated screenshot from being displayed. Existing AFK entries and duplicates are preserved when adding a folder; running sessions still protect their lists from edits.
+
+🃏 ITEM CARDS & THE EDITOR
+
+Item cards now appear across Saved Items, Community Folders, catalogs and Inventory, with expandable previews beside serial inputs and AFK lists.
+
+Matt Editor has a live preview beside the editor that refreshes after edits settle. You can pause updates, open a card, zoom it and scroll enlarged previews for heavily modded items. The app requests visible cards instead of generating every hidden inventory card, and caches finished cards for reuse.
+
+Uploaded screenshots and matching GZO images remain preferred. Supported game builds can use BL4’s own card builder when those are missing, including the added Epic build profile. Cached cards remain available offline; the community website also has stored cards and enlarged viewing controls.
+
+Other improvements include resolved card names while keeping original labels searchable, grenade artwork repairs and input-button markup handling. Cards show standalone item data, not equipped-loadout or comparison effects, and unusual modded layouts can still have limitations. New card generation requires a supported running game.
+
+🌍 LANGUAGES, POLISH & CREDIT WHERE IT’S DUE
+
+The interface supports English, Spanish, French, Brazilian Portuguese, German and Dutch, plus optional Australian slang with explicit language. Your language choice is saved. Player names, folder names, item codes and game logs stay untouched. This translates the app interface, not the native F7 menu.
+
+Community wording feedback is welcome — send the language, screen/button and suggested correction!
+
+We also improved delivery/password dialogs, smaller-window scrolling, tray and second-launch behavior, selected-game SDK checks, updater dependencies and packaged asset verification. Saved Items confirmations now stay inside the app, and Item Catalog confirmations no longer expose the hidden card-rendering window.
+
+A dedicated Credits tab brings contributor links and offline notices together. Mattmab remains the original creator, with acknowledgments for Squ1ggs, Azalea and Pyrex’s contributions and FLiNG’s trainer as a research lead. The retired BLImGui panel is gone; the native F7 Quick Menu and desktop bridge remain supported.
+
+⬇️ UPDATE & GET FARMING
+
+Windows / SDK: v2.33.0
+Android: v1.6.1
+
+Download: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.33.0
+
+Finish your current lobby and close Borderlands 4 before replacing the game files. Update the desktop and SDK together, install the new Android APK over your existing app, then launch the game normally. If you used the separate local Farming Lab, turn it OFF and disable/remove that test add-on before using the integrated controls.
+
+The native drop-rate/weighted-roll and skill-charge paths currently target qualified Steam build 25372571; other builds refuse unqualified activation. Epic item-card support is a separate feature.
+
+Thank you to everyone testing, reporting issues and sharing builds. Grab the update, find your farming setup and show us what drops! 🔥🎮
