@@ -1,12 +1,13 @@
 """Read-only enumeration of owned charge components; mutations use native SDK APIs.
 
-Qualified Steam 25372571 only. GbxSkill's component list is not reflected. Its
+Qualified Steam 25372571 and Epic 4845623. GbxSkill's component list is not reflected. Its
 entry/instance pointers are read through ReadProcessMemory, then the native
 charge getter and live ScriptStruct identity validate each SDK reference.
 """
 import struct
 import unrealsdk
 from .guaranteed_drops import NativeMemory
+from .farming_builds import BUILDS
 
 CHARGES_VTABLE=0xB6379C0
 CHARGES_GETTER=0x8BAE2AE
@@ -22,11 +23,12 @@ def references(pawn):
     global _memory
     if _memory is None:_memory=NativeMemory()
     m=_memory;m.validate()
+    profile=BUILDS[getattr(m,'build','steam-25372571')]['charges']
     q=lambda address:struct.unpack('<Q',m.read(address,8))[0]
-    if m.read(m.base+CHARGES_GETTER,len(GETTER_CONTEXT))!=GETTER_CONTEXT:
+    if m.read(m.base+profile['getter'],len(profile['getter_context']))!=profile['getter_context']:
         raise RuntimeError('Unqualified skill-charge getter')
     cls=unrealsdk.find_object('ScriptStruct','/Script/OakGame.GbxSkillComponent_Charges')
-    if q(m.base+CHARGES_STRUCT_GLOBAL)!=cls._get_address() or q(m.base+CHARGES_VTABLE+8)!=m.base+CHARGES_GETTER:
+    if q(m.base+profile['struct_global'])!=cls._get_address() or q(m.base+profile['vtable']+8)!=m.base+profile['getter']:
         raise RuntimeError('Skill-charge type identity changed')
     offsets={str(p.Name):int(p.Offset_Internal) for p in cls._properties()}
     attribute=unrealsdk.find_object('ScriptStruct','/Script/GbxCore.GbxAttributeInteger')
@@ -40,9 +42,9 @@ def references(pawn):
         if count>256 or capacity<count or capacity>4096:raise RuntimeError('Invalid owned skill component list')
         for index in range(count):
             entry=q(array+index*16)
-            if q(entry)!=m.base+ENTRY_VTABLE:continue
+            if q(entry)!=m.base+profile['entry_vtable']:continue
             component=q(entry+0x18)
-            if q(component)!=m.base+CHARGES_VTABLE:continue
+            if q(component)!=m.base+profile['vtable']:continue
             guid=struct.unpack('<4i',m.read(component+8,16))
             reference=unrealsdk.make_struct('GbxSkillComponentReference',Context=scripts[0],
                 ComponentID=unrealsdk.make_struct('Guid',**dict(zip(('A','B','C','D'),guid))))

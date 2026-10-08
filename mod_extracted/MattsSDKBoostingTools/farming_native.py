@@ -9,6 +9,7 @@ from ctypes import wintypes
 import struct
 from .farming_profiles import PROFILES
 from .guaranteed_drops import NativeMemory
+from .farming_builds import BUILDS
 REVISION=2
 
 class Region(ctypes.Structure):
@@ -64,7 +65,9 @@ class NativeHook:
     def enable(self,owner=0):
         try:
             if self.memory is None:self.memory=self.factory()
-            self.memory.validate();self.check_context()
+            self.memory.validate()
+            if self.name=='legendary_roll':self.profile=BUILDS[getattr(self.memory,'build','steam-25372571')]['legendary_roll']
+            self.check_context()
             if self.owned:return self.status()
             original=self.profile['original'];site=self.memory.base+self.profile['rva']
             if not self.allocation:

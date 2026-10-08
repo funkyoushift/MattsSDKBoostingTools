@@ -38,10 +38,10 @@ app.whenReady().then(async () => {
   })()`);
   const posts=result.requests.filter(r=>r.method==="POST");
   assert.deepStrictEqual(posts.map(r=>r.payload.action),["farming_lab","farming_lab","farming_lab"]);
-  assert.deepStrictEqual(posts.map(r=>r.payload.payload),[{op:"set",feature:"no_reload",enabled:true},{op:"set",feature:"no_reload",enabled:false},{op:"off"}]);
+  assert.deepStrictEqual(posts.map(r=>r.payload.payload),[{op:"set",feature:"no_reload",enabled:true,target_scope:"local"},{op:"set",feature:"no_reload",enabled:false,target_scope:"local"},{op:"off"}]);
   assert.match(result.texts[0],/game lock ON/);assert.match(result.texts[1],/game lock OFF/);
   assert(result.groupsCorrect);assert(result.rarityFeatures.every(feature=>feature==="legendary_roll"));
   assert(result.disabled);assert(!Object.hasOwn(result.settings,"farming_lab"));
-  console.log("PASS local controls: category placement, actual clicks, host scope, real-lock status, all-off, disconnected disabling and no persistence");
+  console.log("PASS local controls: category placement, actual clicks, default local scope, real-lock status, all-off, disconnected disabling and no persistence");
   win.destroy();app.exit(0);
 }).catch(error=>{console.error(error);app.exit(1);});

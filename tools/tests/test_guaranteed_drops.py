@@ -1,15 +1,37 @@
 """Exercise patch ownership, restoration, and fail-closed compatibility offline."""
 import importlib.util
+import sys
+import types
+import struct
 from pathlib import Path
 
 import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location(
-    "guaranteed_drops_test", ROOT / "mod_extracted/MattsSDKBoostingTools/guaranteed_drops.py"
-)
+package = types.ModuleType('guaranteed_drops_test');package.__path__=[str(ROOT/'mod_extracted/MattsSDKBoostingTools')]
+sys.modules['guaranteed_drops_test']=package
+SPEC = importlib.util.spec_from_file_location('guaranteed_drops_test.guaranteed_drops',ROOT/'mod_extracted/MattsSDKBoostingTools/guaranteed_drops.py')
 drops = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(drops)
+
+
+@pytest.mark.parametrize('name',['steam-25372571','epic-4845623'])
+def test_native_memory_selects_exact_build_header(name):
+    profile=drops.BUILDS[name];header=bytearray(0x1000)
+    header[:2]=b'MZ';struct.pack_into('<I',header,0x3c,0x80);header[0x80:0x84]=b'PE\0\0'
+    struct.pack_into('<H',header,0x84,0x8664);struct.pack_into('<I',header,0x88,profile['timestamp'])
+    struct.pack_into('<I',header,0xd0,profile['image_size'])
+    memory=drops.NativeMemory.__new__(drops.NativeMemory);memory.base=0x140000000;memory.read=lambda a,n:bytes(header)
+    memory.validate();assert memory.build==name
+    header[0x88]^=1
+    with pytest.raises(RuntimeError,match='qualified'):memory.validate()
+
+
+def test_epic_drop_rate_preserves_original_and_foreign_patch_guard():
+    memory=Memory();memory.build='epic-4845623'
+    override=drops.DropRateOverride(lambda:memory)
+    assert override.set_enabled(True)['active'] and override.profile is drops.BUILDS['epic-4845623']['drop']
+    assert override.set_enabled(False)['ok'] and bytes(memory.code)==drops.CONTEXT
 
 
 class Memory:

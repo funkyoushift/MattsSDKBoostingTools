@@ -1,21 +1,24 @@
-"""Experimental farming controls, scoped to the host and never persisted.
+"""Farming controls with independent party-player ownership; never persisted.
 
 All game interaction is called on the existing backend game-thread queue.
 """
 import math
 import time
+from contextlib import contextmanager
 import mods_base
 import unrealsdk
 from .farming_definitions import FEATURES
 from . import farming_skill_resources as skill_resources
-_enabled=set()
 _snapshots={}
-_errors={}
-_owner=None
 _last_tick=0.0
 _reads={}
 _last_vendor=0.0
 _vendor_paths=[]
+_sessions={}
+_editing_owner=None
+_world=None
+_changed=False
+GLOBAL_FEATURES=frozenset(('vendor_refresh','legendary_roll'))
 
 def local():
     pc=mods_base.get_pc();pawn=pc.Pawn if pc else None
@@ -35,24 +38,28 @@ def write_path(obj,path,value):
     setattr(obj,path[-1],value)
 
 def edit(feature,obj,path,value):
+    global _changed
     path=tuple(path.split('.'));key=(feature,obj._path_name(),obj._get_address(),path)
     current=read_path(obj,path)
     if type(current) not in (bool,int,float):raise TypeError('Expected a scalar reflected field')
     if isinstance(current,float) and not math.isfinite(current):raise ValueError('Non-finite game value')
     if key not in _snapshots:
-        _snapshots[key]={'class':obj.Class._path_name(),'original':current,'written':value}
-    write_path(obj,path,value)
+        _snapshots[key]={'class':obj.Class._path_name(),'original':current,'written':value,'owner':_editing_owner}
+    elif _snapshots[key].get('owner')!=_editing_owner:
+        raise RuntimeError('This field still belongs to another farming target; turn its control off first')
+    if current!=value:write_path(obj,path,value);_changed=True
     actual=read_path(obj,path)
     if isinstance(value,float):matches=math.isclose(actual,value,rel_tol=1e-6,abs_tol=1e-7)
     else:matches=actual==value
     if not matches:raise RuntimeError('Setting readback failed: '+'.'.join(path))
     _snapshots[key]['written']=actual
 
-def restore(feature):
+def restore(feature,owner=None):
     skipped=[];errors=[]
     for key,snapshot in list(_snapshots.items()):
         name,path,address,fields=key
         if name!=feature:continue
+        if owner is not None and snapshot.get('owner')!=owner:continue
         try:
             obj=unrealsdk.find_object(snapshot['class'],path)
             if obj is None or obj._get_address()!=address:
@@ -164,78 +171,157 @@ def apply(feature,pc,pawn):
         if not result['ok']:raise RuntimeError(result['error'])
         _reads[feature]=result
 
-def set_feature(feature,enabled):
-    global _owner
+@contextmanager
+def using(session):
+    global _reads,_editing_owner,_changed
+    previous=_reads,_editing_owner,_changed
+    _reads=session['reads'];_editing_owner=session['key'];_changed=False
+    try:yield
+    finally:
+        if _changed:notify_network(session)
+        _reads,_editing_owner,_changed=previous
+
+
+def notify_network(session):
+    actors=[session['pc'],session['pawn']]
+    try:actors.extend(weapons(session['pawn']))
+    except Exception:pass
+    for actor in actors:
+        try:
+            force=getattr(actor,'ForceNetUpdate',None)
+            if callable(force):force()
+        except Exception:pass  # Expired actors must not block restoration of the others.
+
+
+def world_identity():
+    pc,pawn=local();level=pawn.GetLevel()
+    return pc._get_address(),level._path_name(),level._get_address()
+
+
+def session_for(pc,pawn,label,index=None,global_scope=False):
+    key=identity(pc,pawn)+(global_scope,)
+    if key not in _sessions:
+        _sessions[key]=dict(key=key,pc=pc,pawn=pawn,label=label,index=index,global_scope=global_scope,
+                            enabled=set(),errors={},reads={})
+    session=_sessions[key];session.update(label=label,index=index)
+    return session
+
+
+def disable_feature(session,feature):
+    session['enabled'].discard(feature);session['reads'].pop(feature,None)
+    result=restore(feature,session['key'])
+    notify_network(session)
+    if feature=='legendary_roll':
+        from .farming_native import hook
+        native=hook(feature).disable()
+        result=dict(result,ok=result['ok'] and native['ok'],native=native)
+    session['errors'][feature]='' if result['ok'] else str(result)
+    return dict(result,feature=feature,enabled=False,target=session['label'])
+
+
+def set_feature(feature,enabled,pc=None,pawn=None,label='Local',index=None):
+    global _world
     if feature not in FEATURES or type(enabled) is not bool:raise ValueError('Unknown feature or invalid enabled value')
-    if not enabled:
-        _enabled.discard(feature)
-        _reads.pop(feature,None)
-        result=restore(feature)
-        if feature in ('glide_duration','legendary_roll'):
-            from .farming_native import hook
-            native_result=hook(feature).disable()
-            result=dict(result,ok=result['ok'] and native_result['ok'],native=native_result)
-        _errors[feature]='' if result['ok'] else str(result)
-        return dict(result,feature=feature,enabled=False)
+    if pc is None:pc,pawn=local()
+    if feature in GLOBAL_FEATURES:pc,pawn=local();label='Whole lobby';index=None
+    session=session_for(pc,pawn,label,index,feature in GLOBAL_FEATURES)
+    if not enabled:return disable_feature(session,feature)
     try:
-        pc,pawn=local();ident=identity(pc,pawn)
-        if _owner is not None and _owner!=ident:
-            result=off()
-            if not result['ok']:raise RuntimeError('Previous world restore is incomplete')
-        _owner=ident
-        apply(feature,pc,pawn);_enabled.add(feature);_errors[feature]=''
-        return {'ok':True,'feature':feature,'enabled':True,'readback':_reads.get(feature)}
+        world=world_identity()
+        if _world is not None and _world!=world:
+            if not off()['ok']:raise RuntimeError('Previous world restore is incomplete')
+            session=session_for(pc,pawn,label,index,feature in GLOBAL_FEATURES)
+        _world=world
+        with using(session):apply(feature,pc,pawn)
+        session['enabled'].add(feature);session['errors'][feature]=''
+        return dict(ok=True,feature=feature,enabled=True,target=label,readback=session['reads'].get(feature))
     except Exception as exc:
-        result=set_feature(feature,False);_errors[feature]=str(exc)
-        return {'ok':False,'feature':feature,'error':str(exc),'rollback':result}
+        rollback=disable_feature(session,feature);session['errors'][feature]=str(exc)
+        return dict(ok=False,feature=feature,target=label,error=str(exc),rollback=rollback)
+
 
 def status():
     features={}
     for name,(label,scope) in FEATURES.items():
-        row=dict(label=label,scope=scope,enabled=name in _enabled,error=_errors.get(name,''),
-                 owned_fields=sum(k[0]==name for k in _snapshots),readback=_reads.get(name))
+        targets=[]
+        for session in _sessions.values():
+            if (name in GLOBAL_FEATURES)!=session['global_scope']:continue
+            row=dict(key=str(session['key']),label=session['label'],index=session['index'],
+                     enabled=name in session['enabled'],error=session['errors'].get(name,''),
+                     owned_fields=sum(k[0]==name and s.get('owner')==session['key'] for k,s in _snapshots.items()),
+                     readback=session['reads'].get(name))
+            try:
+                if name in ('infinite_ammo','no_reload'):
+                    field='InfiniteAmmoLock' if name=='infinite_ammo' else 'InfiniteClipLock'
+                    row['actual_locked']=bool(getattr(session['pc'],field).bLocked)
+                elif name=='god_mode':row['actual_invulnerable']=not bool(session['pawn'].bCanBeDamaged)
+            except Exception:pass
+            targets.append(row)
+        row=dict(label=label,scope=scope,global_scope=name in GLOBAL_FEATURES,
+                 enabled=any(t['enabled'] for t in targets),targets=targets,
+                 error='; '.join(t['label']+': '+t['error'] for t in targets if t['error']),
+                 owned_fields=sum(t['owned_fields'] for t in targets))
         if name=='legendary_roll':
             from .farming_native import hook
             row['native']=hook(name).status()
-        elif name in ('infinite_ammo','no_reload'):
-            try:
-                field='InfiniteAmmoLock' if name=='infinite_ammo' else 'InfiniteClipLock'
-                row['actual_locked']=bool(getattr(mods_base.get_pc(),field).bLocked)
-            except Exception:row['actual_locked']=None
-        elif name=='god_mode':
-            try:row['actual_invulnerable']=not bool(mods_base.get_pc().Pawn.bCanBeDamaged)
-            except Exception:row['actual_invulnerable']=None
         features[name]=row
-    return {'features':features,'experimental_loot_roll':True,'starts_off':True,'travel_turns_off':True}
+    return dict(features=features,player_targeting=True,experimental_loot_roll=True,starts_off=True,travel_turns_off=True)
+
 
 def off():
-    results={name:set_feature(name,False) for name in FEATURES}
-    return {'ok':all(v['ok'] for v in results.values()),'message':'All farming controls requested OFF. Completed refills, shots and generated loot are not undone.','results':results}
+    global _world
+    results=[]
+    for session in list(_sessions.values()):
+        for feature in FEATURES:
+            if (feature in GLOBAL_FEATURES)==session['global_scope']:
+                results.append(disable_feature(session,feature))
+    for feature in FEATURES:results.append(restore(feature))
+    from .farming_native import hook
+    for feature in ('glide_duration','legendary_roll'):results.append(hook(feature).disable())
+    ok=all(r['ok'] for r in results)
+    if ok:_sessions.clear();_world=None
+    return dict(ok=ok,message='All farming controls requested OFF for every player. Completed refills and generated loot are not undone.',results=results)
+
 
 def tick():
     global _last_tick
-    if not _enabled:return
+    if not any(s['enabled'] for s in _sessions.values()):return
     now=time.monotonic()
     if now-_last_tick<.1:return
     _last_tick=now
     try:
-        pc,pawn=local()
-        if identity(pc,pawn)!=_owner:off();return
+        if world_identity()!=_world:off();return
     except Exception:off();return
-    for feature in tuple(_enabled):
-        try:apply(feature,pc,pawn)
-        except Exception as exc:
-            set_feature(feature,False);_errors[feature]=str(exc)
+    from . import farming_targets
+    for session in list(_sessions.values()):
+        try:valid=farming_targets.current(session['pc'],session['pawn'])
+        except Exception:valid=False
+        if not valid:
+            for feature in tuple(session['enabled']):disable_feature(session,feature)
+            if not any(s.get('owner')==session['key'] for s in _snapshots.values()):
+                _sessions.pop(session['key'],None)
+            continue
+        for feature in tuple(session['enabled']):
+            try:
+                with using(session):apply(feature,session['pc'],session['pawn'])
+            except Exception as exc:
+                disable_feature(session,feature);session['errors'][feature]=str(exc)
 
 
-def action(payload):
+def action(payload,targets=None):
     op=payload.get('op')
-    if op=='status':return {'ok':True,**status()}
+    if op=='status':return dict(ok=True,**status())
     if op=='off':return off()
     if op!='set':raise ValueError('Unknown farming control action')
-    result=set_feature(payload.get('feature'),payload.get('enabled'))
-    result['message']=(FEATURES[payload['feature']][0]+(' ON' if payload['enabled'] else ' OFF')) if result['ok'] else result.get('error',str(result))
-    return result
+    feature,enabled=payload.get('feature'),payload.get('enabled')
+    if feature not in FEATURES or type(enabled) is not bool:raise ValueError('Unknown feature or invalid enabled value')
+    if feature in GLOBAL_FEATURES or targets is None:results=[set_feature(feature,enabled)]
+    else:results=[set_feature(feature,enabled,t['pc'],t['pc'].Pawn,t['label'],t['index']) for t in targets]
+    ok=bool(results) and all(r['ok'] for r in results)
+    message=FEATURES[feature][0]+(' ON' if enabled else ' OFF')+' â€” '+', '.join(r.get('target','') for r in results)
+    if not ok:message+=': '+'; '.join(r.get('error',str(r)) for r in results if not r['ok'])
+    return dict(ok=ok,feature=feature,enabled=enabled if ok else None,message=message,results=results)
+
 
 def clear_runtime_state(*_args,**_kwargs):
     result=off()

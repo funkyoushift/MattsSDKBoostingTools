@@ -6654,7 +6654,17 @@ def get_rarity_weights() -> dict[str, float]:
 
 
 def farming_lab_action(payload: dict[str, Any]) -> dict[str, Any]:
-    return farming_controls.action(dict(payload or {}))
+    payload = dict(payload or {})
+    if payload.get('op') != 'set' or payload.get('feature') in farming_controls.GLOBAL_FEATURES:
+        return farming_controls.action(payload)
+    try:
+        from . import farming_targets
+        selected = (get_selected_player_index(), get_selected_player_name())
+        payload.setdefault('target_scope', 'selected' if selected[0] is not None or selected[1] else 'local')
+        targets = farming_targets.resolve(payload, selected)
+        return farming_controls.action(payload, targets)
+    except (ValueError, RuntimeError) as exc:
+        return {'ok': False, 'message': str(exc)}
 
 
 def farming_controls_tick() -> None:

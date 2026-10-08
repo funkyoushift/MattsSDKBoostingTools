@@ -52,7 +52,7 @@ def test_failed_readback_keeps_snapshot_for_restore(modules):
     assert e.restore('test')['ok'];assert obj.value==2.75
 
 def test_world_change_turns_features_off(modules):
-    e,_,_,_=modules;e._enabled.add('infinite_ammo');e._owner=('old',);e.local=lambda:(1,2);e.identity=lambda *_:('new',)
+    e,_,_,_=modules;e._sessions['test']={'enabled':{'infinite_ammo'}};e._world=('old',);e.world_identity=lambda:('new',)
     calls=[];e.off=lambda:calls.append('off')
     e.tick();assert calls==['off']
 
@@ -143,20 +143,21 @@ def test_weighted_roll_machine_code_predicate_and_relocated_division(modules,tot
     assert u.reg_read(UC_X86_REG_RAX)==expected;assert value==pytest.approx(expected/32767)
     assert u.reg_read(UC_X86_REG_RDI)==table;assert u.reg_read(UC_X86_REG_RSP)==0x200800
 
-@pytest.fixture
-def charge_fixture(modules):
+@pytest.fixture(params=['steam-25372571','epic-4845623'])
+def charge_fixture(modules,request):
     import struct
     e,_,_,sdk=modules;s=e.skill_resources
     storage={}
     def put(address,fmt,*values):
         storage.update({address+i:b for i,b in enumerate(struct.pack(fmt,*values))})
     base=0x140000000
-    memory=types.SimpleNamespace(base=base,validate=lambda:None,
+    profile=s.BUILDS[request.param]['charges']
+    memory=types.SimpleNamespace(base=base,build=request.param,validate=lambda:None,
         read=lambda a,n:bytes(storage[a+i] for i in range(n)))
     s._memory=memory
-    storage.update({base+s.CHARGES_GETTER+i:b for i,b in enumerate(s.GETTER_CONTEXT)})
-    put(base+s.CHARGES_STRUCT_GLOBAL,'<Q',0x5000)
-    put(base+s.CHARGES_VTABLE+8,'<Q',base+s.CHARGES_GETTER)
+    storage.update({base+profile['getter']+i:b for i,b in enumerate(profile['getter_context'])})
+    put(base+profile['struct_global'],'<Q',0x5000)
+    put(base+profile['vtable']+8,'<Q',base+profile['getter'])
     prop=lambda name,offset:types.SimpleNamespace(Name=name,Offset_Internal=offset)
     cls=types.SimpleNamespace(_get_address=lambda:0x5000,_properties=lambda:[prop('MaxCharges',224),prop('Charges',236)])
     attr=types.SimpleNamespace(_properties=lambda:[prop('Value',4),prop('BaseValue',8)])
@@ -168,8 +169,8 @@ def charge_fixture(modules):
     skill=types.SimpleNamespace(SkillOwner=pawn,SkillScripts=[script],Name='OwnedSkill',_get_address=lambda:0x6000,_path_name=lambda:'Pawn.OwnedSkill')
     pawn.OakSkillContainer=types.SimpleNamespace(skills=[skill])
     put(0x6028,'<QII',0x7000,1,1);put(0x7000,'<Q',0x8000)
-    put(0x8000,'<Q',base+s.ENTRY_VTABLE);put(0x8018,'<Q',0x9000)
-    put(0x9000,'<Q',base+s.CHARGES_VTABLE);put(0x9008,'<4i',-1467502208,1220013203,-1798327152,1004771384)
+    put(0x8000,'<Q',base+profile['entry_vtable']);put(0x8018,'<Q',0x9000)
+    put(0x9000,'<Q',base+profile['vtable']);put(0x9008,'<4i',-1467502208,1220013203,-1798327152,1004771384)
     put(0x9000+224,'<iii',4132,1,1);put(0x9000+236,'<i',1)
     return s,pawn,skill,put,lib,storage
 
@@ -192,15 +193,15 @@ def test_charge_reference_rejects_sdk_native_mismatch(charge_fixture):
     with pytest.raises(RuntimeError,match='readback'):list(s.references(pawn))
 
 def test_charge_reference_rejects_changed_getter(charge_fixture):
-    s,pawn,_,_,_,storage=charge_fixture;storage[0x140000000+s.CHARGES_GETTER]=0
+    s,pawn,_,_,_,storage=charge_fixture;profile=s.BUILDS[s._memory.build]['charges'];storage[0x140000000+profile['getter']]=0
     with pytest.raises(RuntimeError,match='Unqualified'):list(s.references(pawn))
 
 def test_glide_cleanup_does_not_hide_failed_scalar_restore(modules):
     e,n,_,_=modules
-    e.restore=lambda _:{'ok':False,'error':'scalar restore failed'}
+    e.restore=lambda *args:{'ok':False,'error':'scalar restore failed'}
     n.hook=lambda _:types.SimpleNamespace(disable=lambda:{'ok':True})
-    result=e.set_feature('glide_duration',False)
-    assert not result['ok'] and result['error']=='scalar restore failed'
+    result=e.off()
+    assert not result['ok'] and any(r.get('error')=='scalar restore failed' for r in result['results'])
 
 def test_action_rejects_invalid_activation_and_off_remains_available(modules):
     e,_,_,_=modules
@@ -223,7 +224,7 @@ def test_farming_http_dispatch_and_status_snapshot():
     assert calls==[payload]
     assert not bridge._get_status_snapshot()['farming_lab']['features']['god_mode']['enabled']
 
-def test_all_farming_quick_menu_actions_dispatch_without_guest_target(monkeypatch):
+def test_all_farming_quick_menu_actions_dispatch_through_shared_backend(monkeypatch):
     from tests.test_quick_menu_last_command import _load_backend_actions
     backend=_load_backend_actions();calls=[]
     monkeypatch.setattr(backend,'farming_lab_action',lambda p:calls.append(p) or {'ok':True})

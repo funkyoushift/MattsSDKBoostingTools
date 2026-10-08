@@ -9,6 +9,7 @@ from __future__ import annotations
 import ctypes
 import struct
 from ctypes import wintypes
+from .farming_builds import BUILDS
 
 PROFILE_TIMESTAMP = 1789399121
 PROFILE_IMAGE_SIZE = 834191360
@@ -65,8 +66,11 @@ class NativeMemory:
         machine = struct.unpack_from("<H", header, pe + 4)[0]
         stamp = struct.unpack_from("<I", header, pe + 8)[0]
         size = struct.unpack_from("<I", header, pe + 0x50)[0]
-        if (machine, stamp, size) != (0x8664, PROFILE_TIMESTAMP, PROFILE_IMAGE_SIZE):
-            raise RuntimeError("This game build has not been qualified for 100% Drop Rate.")
+        for name, profile in BUILDS.items():
+            if (machine, stamp, size) == (0x8664, profile['timestamp'], profile['image_size']):
+                self.build = name
+                return
+        raise RuntimeError("This game build has not been qualified for farming controls.")
 
     def write(self, address: int, data: bytes) -> None:
         old = wintypes.DWORD()
@@ -105,13 +109,14 @@ class DropRateOverride:
         self.memory = None
         self.owned = False
         self.last_error = ""
+        self.profile = BUILDS['steam-25372571']['drop']
 
     def status(self) -> dict:
         active = False
         conflict = False
         if self.owned and self.memory is not None:
             try:
-                current = self.memory.read(self.memory.base + CONTEXT_RVA + PATCH_OFFSET, len(ORIGINAL))
+                current = self.memory.read(self.memory.base + self.profile['rva'] + PATCH_OFFSET, len(ORIGINAL))
                 active = current == PATCHED
                 conflict = current != PATCHED
             except Exception as exc:
@@ -133,17 +138,18 @@ class DropRateOverride:
                 else:
                     memory = self.memory_factory()
                     memory.validate()
-                    if memory.read(memory.base + CONTEXT_RVA, len(CONTEXT)) != CONTEXT:
+                    self.profile = BUILDS[getattr(memory, 'build', 'steam-25372571')]['drop']
+                    if memory.read(memory.base + self.profile['rva'], len(self.profile['context'])) != self.profile['context']:
                         raise RuntimeError("Drop-rate code differs from the inspected build (possibly another trainer/mod).")
                     self.memory = memory
                     # Retain ownership even if a partial write/readback fails, for explicit recovery.
                     self.owned = True
                     acquired = True
-                    memory.write(memory.base + CONTEXT_RVA + PATCH_OFFSET, PATCHED)
+                    memory.write(memory.base + self.profile['rva'] + PATCH_OFFSET, PATCHED)
                     if not self.status()["active"]:
                         raise RuntimeError("Drop-rate patch readback failed.")
             elif self.owned:
-                address = self.memory.base + CONTEXT_RVA + PATCH_OFFSET
+                address = self.memory.base + self.profile['rva'] + PATCH_OFFSET
                 current = self.memory.read(address, len(PATCHED))
                 if current not in (PATCHED, ORIGINAL):
                     raise RuntimeError("Drop-rate site changed; original code was not restored over another patch.")

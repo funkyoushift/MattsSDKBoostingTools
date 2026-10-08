@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-08: Epic farming and player targeting](changes/2026-10-08-epic-player-farming.md) — qualified Epic native profiles; independent Local/Named/Other/All player controls; 80 focused tests, search/UI and all 14 local HTTP On/Off checks passed. Candidate running, all OFF; Epic live and actual guest gameplay unverified. No new release.
+
 - [2026-10-08: Farming/search release v2.33.0](releases/VERIFICATION_v2.33.0.txt) — Published stable; 14 integrated controls and individual search; all 11 public hashes/CI passed; desktop installed/reopened. Game SDK update waits for game close. Matt confirmed all gameplay tests passed.
 
 - [2026-10-08: Search individual controls](changes/2026-10-08-feature-search.md) — All 14 controls plus existing features are searchable in both layouts; packaged search navigation passed. Published in v2.33.0 / Android 1.6.1.

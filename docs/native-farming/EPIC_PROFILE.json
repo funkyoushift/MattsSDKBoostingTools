@@ -1,0 +1,189 @@
+{
+  "files": [
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+      "sha256": "9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0",
+      "timestamp": 1789399121,
+      "image_size": 834191360
+    },
+    {
+      "path": "C:\\Program Files\\Epic Games\\Venus\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+      "sha256": "764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719",
+      "timestamp": 1789399219,
+      "image_size": 781352960
+    }
+  ],
+  "live_epic": false,
+  "normalization": "Only relative branch and RIP displacements",
+  "unique_matches": [
+    {
+      "steam_rva": 3616201,
+      "size": 54,
+      "steam_sha256": "eeba5a51e4026e5b0e78b13c5b0e38346887d626017863fdaee00e859f2828b8",
+      "epic_rva": 3616201,
+      "epic_sha256": "eeba5a51e4026e5b0e78b13c5b0e38346887d626017863fdaee00e859f2828b8"
+    },
+    {
+      "steam_rva": 64654394,
+      "size": 64,
+      "steam_sha256": "5bdc2217acbed3878eb8e26dd058081e6377315e4970301a408fb8fca2d4a454",
+      "epic_rva": 64611026,
+      "epic_sha256": "43910eb17197dec7bb393d730502d77c74201328c86041413fb5b64c3b11c2fc"
+    },
+    {
+      "steam_rva": 18593310,
+      "size": 870,
+      "steam_sha256": "64801da3f4fd6d4935645c4a4a698c5b257eca4cf7c57c0d64c89c9718cffe21",
+      "epic_rva": 18584698,
+      "epic_sha256": "9d21e10b3fa980dc30f06b25b8c8ceb8566f3ca9ce7b105c861426bf5afe1c95"
+    },
+    {
+      "steam_rva": 74716160,
+      "size": 17,
+      "steam_sha256": "a87144b5a00573f8c221a5b4388fb534849ba888a6ef4dbd6d36b5956b700eb2",
+      "epic_rva": 74787696,
+      "epic_sha256": "a87144b5a00573f8c221a5b4388fb534849ba888a6ef4dbd6d36b5956b700eb2"
+    },
+    {
+      "steam_rva": 94726624,
+      "size": 266,
+      "steam_sha256": "a463f9835805ac89da83ee3f0e5d59f29fc894b9896daddba2fb6fead315eeaf",
+      "epic_rva": 94792420,
+      "epic_sha256": "1edbbf15d8b33dd8f27dfedbf5b885664e92be4709ceaf3c6d64eb606d2c0087"
+    }
+  ],
+  "vtables": [
+    {
+      "steam_rva": 188889872,
+      "epic_rva": 188808016,
+      "methods": [
+        {
+          "steam_rva": 25879194,
+          "epic_rva": 25837028,
+          "size": 66,
+          "epic_sha256": "43c92b41f651f90c95fe53afc33c9bbb96840d2574e81fe949215c5021f2e3a3"
+        },
+        {
+          "steam_rva": 144188718,
+          "epic_rva": 144214006,
+          "size": 3,
+          "epic_sha256": "251447ee91a9067dcd6ab96703133f617565974cd6c4819021760c4688c91abf"
+        },
+        {
+          "steam_rva": 144188722,
+          "epic_rva": 144214010,
+          "size": 81,
+          "epic_sha256": "b8b96ea9d41121934ca772ae82aca82049188e854b0090daf7e4d065a306ba5f"
+        },
+        {
+          "steam_rva": 144188804,
+          "epic_rva": 144214092,
+          "size": 5,
+          "epic_sha256": "cff2ef16c7ec552c1f7c9706cb926933e47de8667aaeb590d325e246c3669ef3"
+        },
+        {
+          "steam_rva": 144188810,
+          "epic_rva": 144214098,
+          "size": 89,
+          "epic_sha256": "c73e7f0afb7ac4ed3decd2c39e4e798d7f390bef54c2fb005ef73fd74e34f92c"
+        },
+        {
+          "steam_rva": 74716160,
+          "epic_rva": 74787696,
+          "size": 17,
+          "epic_sha256": "a87144b5a00573f8c221a5b4388fb534849ba888a6ef4dbd6d36b5956b700eb2"
+        },
+        {
+          "steam_rva": 65227468,
+          "epic_rva": 65184100,
+          "size": 24,
+          "epic_sha256": "c4a4b2053562526a0774ce7bd2b91a37b643ad54e4556738f6c73ede83d6d30e"
+        },
+        {
+          "steam_rva": 12998012,
+          "epic_rva": 13007802,
+          "size": 11,
+          "epic_sha256": "071b04c49e0440fe8e8ed5319fb230b515e1074bd758d9a0cff6879cfb612b63"
+        },
+        {
+          "steam_rva": 144188900,
+          "epic_rva": 144214188,
+          "size": 118,
+          "epic_sha256": "b375f69b7c1b33c86c59a5d80a17392026631d26d33e2514d23f8ab3aba56fc6"
+        },
+        {
+          "steam_rva": 144189018,
+          "epic_rva": 144214306,
+          "size": 118,
+          "epic_sha256": "3bcffce0fe5ab1192e4de53be338f67d4524ebbb1362146fb10796b5d5724d1b"
+        }
+      ]
+    },
+    {
+      "steam_rva": 191068608,
+      "epic_rva": 190986240,
+      "methods": [
+        {
+          "steam_rva": 146465416,
+          "epic_rva": 146485936,
+          "size": 38,
+          "epic_sha256": "d309ff7986c7ac0355a20229ee2cc5a4fe241ab4b8a3f53f9b0cea9a7b6191f3"
+        },
+        {
+          "steam_rva": 146465454,
+          "epic_rva": 146485974,
+          "size": 57,
+          "epic_sha256": "36ed836db8a5c0848130a7cda8f80761c38ce411e336a94f9b05d10ef7ac6dfc"
+        },
+        {
+          "steam_rva": 98556354,
+          "epic_rva": 98608036,
+          "size": 209,
+          "epic_sha256": "8297d40d6594ca6cffceb0fdcfbd9f22e23aeb91ba24576f100cade4ea65874d"
+        },
+        {
+          "steam_rva": 107133434,
+          "epic_rva": 107167406,
+          "size": 140,
+          "epic_sha256": "45f62009d44568072531b3ee04c031eeec6d7fabb3ee78a42f86de6343250e38"
+        },
+        {
+          "steam_rva": 148726034,
+          "epic_rva": 148746554,
+          "size": 143,
+          "epic_sha256": "0cfaec9bec71ccf344fc36cb7de2412a7a8566db0f21cf2a86acb26a4c4c3dde"
+        },
+        {
+          "steam_rva": 94726624,
+          "epic_rva": 94792420,
+          "size": 266,
+          "epic_sha256": "1edbbf15d8b33dd8f27dfedbf5b885664e92be4709ceaf3c6d64eb606d2c0087"
+        },
+        {
+          "steam_rva": 69317660,
+          "epic_rva": 69275124,
+          "size": 696,
+          "epic_sha256": "2921907d359c803e8a8dbd5e43fbe24daa35d720ceef1591ea597abd9f912b9b"
+        },
+        {
+          "steam_rva": 69318356,
+          "epic_rva": 69275820,
+          "size": 77,
+          "epic_sha256": "4e2f10133c8d098baf657bd2924b009408ed89ec8410720a6d636e6df7a09fe1"
+        },
+        {
+          "steam_rva": 148726178,
+          "epic_rva": 148746698,
+          "size": 229,
+          "epic_sha256": "516d6c60c6672a039f49256223e3472fefb71a9fbe2d65cece6b2a9e2e2e2c73"
+        },
+        {
+          "steam_rva": 18033032,
+          "epic_rva": 18023864,
+          "size": 224,
+          "epic_sha256": "98d504cddd8f885ea62fe77dd4b55df067a5db7440084af336710746a0db3d0b"
+        }
+      ]
+    }
+  ]
+}

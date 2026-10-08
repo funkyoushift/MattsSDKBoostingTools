@@ -2618,7 +2618,58 @@ const FARMING_LAB_FEATURES = {
   legendary_roll: {group:"",label:"Weighted Loot High Roll",aliases:["loot roll","legendary roll"]}
 };
 
+const FARMING_GLOBAL_FEATURES = new Set(["vendor_refresh", "legendary_roll"]);
+let latestFarmingStatus = null;
+
+function syncFarmingTargetPickers() {
+  document.querySelectorAll("[data-farming-target-picker]").forEach(root => {
+    if (!root.dataset.wired) {
+      const label = document.createElement("span"); label.textContent = "Apply to: "; root.appendChild(label);
+      const scope = document.createElement("select"); scope.dataset.farmingScope = "1";
+      [["local","Local"],["selected","Named Player"],["nonhost","Other Players"],["all","All Players"]].forEach(([value,text]) => {
+        const option = document.createElement("option"); option.value=value; option.textContent=text; scope.appendChild(option);
+      });
+      scope.addEventListener("change", () => { setPublicBoostScope(scope.value); syncFarmingLabStatus(latestFarmingStatus); });
+      root.appendChild(scope);
+      const player = document.createElement("select"); player.dataset.farmingPlayer = "1";
+      player.addEventListener("change", async () => {
+        const result = await setTarget(player.value, {keepBoostScope:true});
+        if (actionSucceeded(result)) setPublicBoostScope("selected");
+        syncFarmingLabStatus(latestFarmingStatus);
+      });
+      root.appendChild(player); root.dataset.wired="1";
+    }
+    const scope=root.querySelector("[data-farming-scope]"); scope.value=state.publicBoostScope || "local";
+    const player=root.querySelector("[data-farming-player]");
+    const options=(state.players || []).map(p=>[String(playerValue(p)),playerLabel(p)]);
+    if (JSON.stringify(options)!==player.dataset.options) {
+      player.replaceChildren();
+      const placeholder=document.createElement("option");placeholder.value="";placeholder.textContent="Choose player";player.appendChild(placeholder);
+      options.forEach(([value,text])=>{const option=document.createElement("option");option.value=value;option.textContent=text;player.appendChild(option);});
+      player.dataset.options=JSON.stringify(options);
+    }
+    if (player.value!==String(state.selectedTarget || "")) player.value=state.selectedTarget || "";
+    player.hidden=scope.value!=="selected";
+  });
+}
+
+function farmingTargetValue(feature,value,lab) {
+  if (!lab.player_targeting || FARMING_GLOBAL_FEATURES.has(feature)) return value;
+  const players=playersForBoostScope(state.publicBoostScope || "local");
+  const targets=players.map(player=>{
+    const label=String(player.name || "");
+    return (value.targets || []).findLast(target=>target.label===label && target.index===player.index) || {label,enabled:false,error:""};
+  });
+  const active=targets.filter(target=>target.enabled).length;
+  return {...value,...(targets.length===1?targets[0]:{}),label:value.label,
+    enabled:targets.length>0 && active===targets.length,
+    target_note:targets.length>1?`${active}/${targets.length} ON`:targets[0]?.label || "Choose a loaded target",
+    error:targets.filter(target=>target.error).map(target=>`${target.label}: ${target.error}`).join("; ")};
+}
+
 function syncFarmingLabStatus(data) {
+  latestFarmingStatus=data;
+  syncFarmingTargetPickers();
   const roots = document.querySelectorAll("[data-farming-controls]");
   const lab = data && data.farming_lab;
   if (!roots.length) return;
@@ -2634,7 +2685,8 @@ function syncFarmingLabStatus(data) {
     document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, "Local test connection is unavailable.", "warning"));
     return;
   }
-  Object.entries(lab.features).forEach(([feature, value]) => {
+  Object.entries(lab.features).forEach(([feature, rawValue]) => {
+    const value=farmingTargetValue(feature,rawValue,lab);
     if (!/^[a-z_]+$/.test(feature) || !Object.hasOwn(FARMING_LAB_FEATURES,feature)) return;
     const root = document.getElementById("farmingLab" + FARMING_LAB_FEATURES[feature].group + "Controls");
     if (!root) return;
@@ -2658,15 +2710,20 @@ function syncFarmingLabStatus(data) {
     const actual = typeof value.actual_locked === "boolean" ? ` · game lock ${value.actual_locked ? "ON" : "OFF"}` : "";
     const damage = typeof value.actual_invulnerable === "boolean" ? ` · damage ${value.actual_invulnerable ? "BLOCKED" : "ENABLED"}` : "";
     const native = value.native && value.native.owned && !value.native.active ? " · RESTORE NEEDS ATTENTION" : "";
-    row.querySelector("span").textContent = `${value.enabled ? "ON" : "OFF"}${actual}${damage}${native}${value.error ? " · " + value.error : ""}`;
+    const target=FARMING_GLOBAL_FEATURES.has(feature)?" · Whole lobby":value.target_note?` · ${value.target_note}`:"";
+    row.querySelector("span").textContent = `${value.enabled ? "ON" : "OFF"}${target}${actual}${damage}${native}${value.error ? " · " + value.error : ""}`;
     row.title = value.scope || "";
   });
   const active = Object.values(lab.features).filter(value => value.enabled).length;
   const errors = Object.values(lab.features).filter(value => value.error).length;
-  document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, `Farming controls connected · ${active} active test${active === 1 ? "" : "s"}${errors ? " · check reported errors" : ""}.`, errors ? "warning" : "ok"));
+  document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, `Farming controls connected · ${active} active control${active === 1 ? "" : "s"} across the lobby${errors ? " · check reported errors" : ""}.`, errors ? "warning" : "ok"));
 }
 
 async function runFarmingLabAction(payload) {
+  if (payload.op==="set" && !FARMING_GLOBAL_FEATURES.has(payload.feature)) {
+    payload={...payload,target_scope:state.publicBoostScope || "local"};
+    if (payload.target_scope==="selected") payload.target_player=state.selectedTarget || "";
+  }
   const lines = document.querySelectorAll("[data-farming-status]");
   lines.forEach(line => setLine(line, "Applying farming control…", "warning"));
   const result = await runAction("farming_lab", payload, els.boostOutput, 15000);
