@@ -23,3 +23,31 @@ bridge get_status now accepts include_extended; test double was updated to accep
 keyword arguments. Initial version_info was already older than public version;
 all four helper version keys were explicitly aligned to 2.32.0 before packaging.
 No source/package failures were ignored.
+
+Source checks passed: 50 Python tests (15 feature, 2 cleanup, 5 no-BLImGui,
+16 F7 registry/dispatch, 11 bridge snapshots/bounds, 1 clean release imports),
+full SDK compileall, and real Electron feature UI interactions.
+Published v2.31.0 follow-up verification commit c187a2d merged before packaging.
+
+Final packaging passed: installer and portable build; full npm check; persistent
+installer tests; packaged runtime dependency audit 48 packages; exact source/asset
+comparison 3248 files; 3261 catalog images; actual packaged startup/updater smoke.
+Packaged app.asar passed the real drop-rate UI interaction test, then three
+independent Electron processes (save/restore/unchecked) passed the settings restart
+check. All 72 Python files inside the SDK archive match source, and bundled SDK and
+latest.json are byte-identical to standalone payloads. All coordinated versions
+match 2.32.0; Android payloads retain the v2.31.0 hash. No trainer EXE or local test
+helper appears in the SDK. Eleven release asset hashes are recorded in
+work/release-2.32.0-assets.json and SHA256SUMS.txt (ten payloads plus sums file).
+
+Merge correction: preserving the public v2.31.0 verification follow-up produced
+an index-only merge conflict, resolved by retaining all published entries plus
+the new feature link. The build had already begun; no shipping source changed
+during that resolution. Final packaged source comparison and identity checks
+passed after resolution. Build source identity 769eaf1 remains unchanged in the
+bundled manifest; it is not restamped after packaging.
+
+Before publication: implemented feature, user-confirmed local farming trial,
+source checks, packaged UI/restarts and integrity all complete. Public upload,
+independent public download/hash checks and tag CI confirmation remain pending.
+Actual production travel/mod-disable and guest-save proof are not claimed.
