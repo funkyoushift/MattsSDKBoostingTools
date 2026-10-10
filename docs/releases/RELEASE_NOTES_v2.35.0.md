@@ -37,6 +37,8 @@ candidate's desktop button raised the host from 10 to 20 while active difficulty
 stayed at 10; Farming ON/status/OFF restored normal damage. Earlier guest feedback
 confirmed rank 20, saved progression and Mayhem/Hardcore launch in the guest's own
 lobby. These checks do not establish that every possible game crash is fixed.
+The updated AFK path passed a Mayhem-only host test, including rank access and
+prerequisite readback. Packaged Mayhem settings survived full app restarts.
 Android 1.6.2 is unchanged and carried forward from the published release.
 
 ## Install
