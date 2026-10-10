@@ -29,9 +29,17 @@ def runtime(monkeypatch):
     clock = types.SimpleNamespace(now=100.0, quiet=False)
     timer = types.SimpleNamespace(monotonic=lambda: clock.now)
     logs, added, removed = [], [], []
+    registered = set()
+    def add_hook(*args):
+        added.append(args)
+        registered.add(args[:3])
+        return False  # This SDK can return False despite successful registration.
+    def remove_hook(*args):
+        removed.append(args)
+        registered.discard(args[:3])
     hooks = module("unrealsdk.hooks", Type=types.SimpleNamespace(PRE=0, POST=1),
-                   add_hook=lambda *args: added.append(args),
-                   remove_hook=lambda *args: removed.append(args))
+                   add_hook=add_hook, remove_hook=remove_hook,
+                   has_hook=lambda *args: args[:3] in registered)
     module("unrealsdk", hooks=hooks,
            logging=types.SimpleNamespace(info=logs.append, warning=logs.append, error=logs.append))
     module("mods_base", ENGINE=None, get_pc=lambda: None, hook=decorator, command=decorator,
@@ -65,6 +73,43 @@ def runtime(monkeypatch):
 def pump(runtime, seconds=0.02):
     runtime.clock.now += seconds
     runtime.camera._pump(None, None, None, None)
+
+
+def test_camera_registration_uses_actual_hook_not_false_return(runtime):
+    runtime.camera.set_needed('cxp', True)
+    assert runtime.camera._installed
+    hooks = sys.modules['unrealsdk.hooks']
+    assert hooks.has_hook(runtime.camera.TICK_PATH, hooks.Type.POST, runtime.camera.HOOK_ID)
+
+
+def test_camera_registration_failure_does_not_claim_installed(runtime, monkeypatch):
+    monkeypatch.setattr(sys.modules['unrealsdk.hooks'], 'add_hook', lambda *args: False)
+    runtime.camera.set_needed('cxp', True)
+    assert not runtime.camera._installed
+    assert runtime.camera._fallback_hook is None
+
+
+def test_camera_fallback_is_enabled_verified_and_disabled(runtime, monkeypatch):
+    hooks = sys.modules['unrealsdk.hooks']
+    actual_add = hooks.add_hook
+    monkeypatch.setattr(hooks, 'add_hook', lambda *args: False)
+    calls = []
+    def fallback(path, kind, **kwargs):
+        def decorate(fn):
+            key = (path, kind, kwargs['hook_identifier'])
+            def enable():
+                calls.append('enable')
+                actual_add(*key, fn)
+            def disable():
+                calls.append('disable')
+                hooks.remove_hook(*key)
+            return types.SimpleNamespace(enable=enable, disable=disable)
+        return decorate
+    monkeypatch.setattr(sys.modules['mods_base'], 'hook', fallback)
+    runtime.camera.set_needed('cxp', True)
+    assert runtime.camera._installed and calls == ['enable']
+    runtime.camera.set_needed('cxp', False)
+    assert not runtime.camera._installed and calls == ['enable', 'disable']
 
 
 def test_native_slot_keys_rebind_and_obey_menu_travel_guards(runtime, monkeypatch):

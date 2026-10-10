@@ -271,8 +271,8 @@
       h = 3;
       minH = 2;
     } else if (id === "boost-uvh") {
-      h = 4;
-      minH = 3;
+      h = 6;
+      minH = 5;
     } else if (id === "boost-combat-xp") {
       h = 3;
       minH = 2;

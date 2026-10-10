@@ -13977,6 +13977,13 @@ function wireEvents() {
   if (spawnItempoolAllBtn) spawnItempoolAllBtn.addEventListener("click", () => void spawnAllFilteredItemPools());
   const spawnItempoolCancelBtn = document.getElementById("spawnItempoolCancelBtn");
   if (spawnItempoolCancelBtn) spawnItempoolCancelBtn.addEventListener("click", () => void cancelItemPoolBulk());
+  const mayhemBoostBtn = document.getElementById("mayhemBoostBtn");
+  if (mayhemBoostBtn) {
+    mayhemBoostBtn.addEventListener("click", () => {
+      const mayhem_rank = getInt("mayhemBoostRank", 1, 20, 20);
+      void runAction("mayhem_boost", { mayhem_rank, target_player: state.selectedTarget || undefined }, els.boostOutput, 30000);
+    });
+  }
   const uvhBoostUpToBtn = document.getElementById("uvhBoostUpToBtn");
   if (uvhBoostUpToBtn) {
     uvhBoostUpToBtn.addEventListener("click", () => {

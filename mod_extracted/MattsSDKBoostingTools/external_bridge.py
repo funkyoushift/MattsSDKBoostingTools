@@ -72,6 +72,9 @@ _http_lock = threading.Lock()
 _lock = threading.RLock()
 _queue: deque[dict[str, Any]] = deque()
 _results: OrderedDict[str, dict[str, Any]] = OrderedDict()
+# Independent of HTTP waiters: a timeout must not hide eventual completion.
+_action_receipts: OrderedDict[str, dict[str, Any]] = OrderedDict()
+MAX_RECEIPT_BYTES = 128 * 1024
 _waiters: dict[str, threading.Event] = {}
 # Request IDs whose HTTP waiters already timed out / disconnected.  Those actions
 # may still run if the game later ticks with an empty new-command stream, but a
@@ -139,6 +142,8 @@ def _prune_results_locked(now: float | None = None) -> int:
 
 def _store_result_locked(rid: str, result: dict[str, Any], now: float | None = None) -> bool:
     """Store a completed result unless its HTTP waiter has abandoned it."""
+    if rid:
+        _save_action_receipt_locked(rid, "completed", result, now)
     if not rid or rid in _abandoned_rids:
         return False
     _results[rid] = {
@@ -148,6 +153,45 @@ def _store_result_locked(rid: str, result: dict[str, Any], now: float | None = N
     _results.move_to_end(rid)
     _prune_results_locked(now)
     return True
+
+
+def _prune_action_receipts_locked(now: float | None = None) -> None:
+    current = _now() if now is None else float(now)
+    for rid, entry in list(_action_receipts.items()):
+        if current - entry["completed_at"] > RESULT_TTL_SECONDS:
+            _action_receipts.pop(rid, None)
+    while len(_action_receipts) > MAX_RESULTS:
+        _action_receipts.popitem(last=False)
+
+
+def _save_action_receipt_locked(rid: str, state: str, result: dict[str, Any],
+                                now: float | None = None) -> None:
+    # Serialize a snapshot, not references to mutable game/status containers.
+    entry = {"request_id": rid, "state": state,
+             "completed_at": _now() if now is None else float(now)}
+    try:
+        encoded = json.dumps(result).encode("utf-8")
+        if len(encoded) > MAX_RECEIPT_BYTES:
+            raise ValueError("Result exceeds receipt size limit")
+        entry["result"] = json.loads(encoded)
+    except Exception:
+        entry["result_omitted"] = True
+        entry["action_ok"] = result.get("ok")
+        entry["message"] = "Action finished; full result unavailable in the bounded receipt cache."
+    _action_receipts[rid] = entry
+    _action_receipts.move_to_end(rid)
+    _prune_action_receipts_locked(now)
+
+
+def _get_action_receipt_locked(rid: str) -> dict[str, Any] | None:
+    _prune_action_receipts_locked()
+    if rid in _action_receipts:
+        return dict(_action_receipts[rid])
+    if rid and _executing_rid == rid:
+        return {"request_id": rid, "state": "running"}
+    if rid and any(str(item.get("id") or "") == rid for item in _queue):
+        return {"request_id": rid, "state": "queued"}
+    return None
 
 
 def _pop_result_locked(rid: str, now: float | None = None) -> dict[str, Any] | None:
@@ -227,8 +271,9 @@ _SERIAL_DELIVERY_ACTIONS = frozenset({
     "give_serial_nonhost",
 })
 
-# Flag-only / menu-safe live mods: run on the HTTP thread so title-menu toggles
-# work before GbxUIUMGTickWidget is ticking in-world.
+# These controls can touch Unreal objects even while arming/disarming. Accept
+# them from menus, but execute only on the game tick. Preserve their FIFO intent
+# across unrelated requests, including OFF requests waiting behind ON requests.
 _IMMEDIATE_LIVE_MOD_ACTIONS = frozenset({
     "cxp_on",
     "cxp_off",
@@ -267,6 +312,10 @@ def _clear_pending_matching_locked(should_drop: Callable[[dict[str, Any]], bool]
         if should_drop(item):
             rid = str(item.get("id") or "")
             if rid:
+                _save_action_receipt_locked(rid, "cancelled", {
+                    "ok": False, "cancelled": True,
+                    "message": "A newer bridge command replaced this pending action.",
+                })
                 _abandoned_rids.add(rid)
                 _signal_waiter_locked(rid)
             dropped += 1
@@ -298,15 +347,17 @@ def _prepare_queue_for_enqueue_locked(action: str) -> int:
       cancelled. Chunk sequences already running are outside this queue and are
       never cleared here.
     """
-    if action in _QUEUE_PRESERVING_ACTIONS:
+    if action in _QUEUE_PRESERVING_ACTIONS or action in _IMMEDIATE_LIVE_MOD_ACTIONS:
         return 0
     if action in _SERIAL_DELIVERY_ACTIONS:
         return _clear_pending_matching_locked(
-            lambda item: str(item.get("action") or "") not in _QUICK_MENU_LAYOUT_MUTATIONS
+            lambda item: str(item.get("action") or "") not in (
+                _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS
+            )
         )
     return _clear_pending_matching_locked(
         lambda item: str(item.get("action") or "") not in (
-            _SERIAL_DELIVERY_ACTIONS | _QUICK_MENU_LAYOUT_MUTATIONS
+            _SERIAL_DELIVERY_ACTIONS | _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS
         )
     )
 
@@ -366,6 +417,10 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_player_level","label":"Max Player Level","accent":"cyan"},
                 {"id":"max_spec_level","label":"Set Spec 701","accent":"purple"}
             ]},
+            {"id":"mayhem","label":"MAYHEM","accent":"gold",
+             "text":"Selected player's saved rank; enables Takedown access in the lobby. Active difficulty stays unchanged. Hardcore requires rank 5.",
+             "fields":[{"id":"mayhem_rank","label":"Mayhem rank (1–20)","type":"int","default":20}],
+             "actions":[{"id":"mayhem_boost","label":"Unlock Mayhem","accent":"gold","uses_fields":["mayhem_rank"]}]},
             {"id":"currency","label":"CURRENCY","accent":"green","fields":[
                 {"id":"currency_kind","label":"Currency Kind","type":"choice","choices":list(CURRENCY_KINDS),"default":"cash"},
                 {"id":"amount","label":"Currency Amount","type":"int","default":1000000}
@@ -1472,6 +1527,17 @@ class _Handler(BaseHTTPRequestHandler):
                     "message": "Phone not paired. Open in-game Phone Pairing and scan the QR.",
                 })
             return
+        if path.split("?", 1)[0] == "/action_result":
+            from urllib.parse import parse_qs, urlsplit
+            rid = parse_qs(urlsplit(self.path).query).get("id", [""])[0]
+            with _lock:
+                receipt = _get_action_receipt_locked(rid)
+            if receipt is None:
+                self._send(404, {"ok": False, "request_id": rid,
+                    "message": "Receipt unknown or expired; this does not prove cancellation. Do not resend automatically."})
+            else:
+                self._send(200, {"ok": True, **receipt})
+            return
         if path.split("?", 1)[0] == "/afk_shift":
             if not _is_loopback_ip(_request_ip(self)):
                 self._send(404, {"ok": False})
@@ -1579,15 +1645,6 @@ class _Handler(BaseHTTPRequestHandler):
             if not action:
                 self._send(400, {"ok": False, "message": "Missing action"})
                 return
-            # Title/main menu often has no UMG bridge tick — arm live mods immediately.
-            if action in _IMMEDIATE_LIVE_MOD_ACTIONS:
-                try:
-                    result = _handle_action(action, payload)
-                except Exception as exc:
-                    message = _format_action_exception(exc)
-                    result = {"ok": False, "message": message}
-                self._send(200, result)
-                return
             rid = uuid.uuid4().hex
             wait_timeout = max(
                 MIN_CLIENT_TIMEOUT_SECONDS,
@@ -1621,6 +1678,7 @@ class _Handler(BaseHTTPRequestHandler):
                     if _request_was_superseded_locked(rid):
                         _abandoned_rids.discard(rid)
                         self._send(409, {
+                            "request_id": rid,
                             "ok": False,
                             "cancelled": True,
                             "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
@@ -1630,20 +1688,21 @@ class _Handler(BaseHTTPRequestHandler):
                 if result is not None:
                     # Handled action failures are still useful JSON responses for
                     # the external app. Reserve HTTP 500 for bridge/server errors.
-                    self._send(200, result)
+                    self._send(200, {**result, "request_id": rid})
                     return
                 # Waiter gave up. Keep the item queued for an idle in-game tick,
-                # but discard any eventual result because no client can consume it.
+                # and retain eventual completion in the separate receipt cache.
                 with _lock:
                     still_queued = any(str(item.get("id") or "") == rid for item in _queue)
                     result = _pop_result_locked(rid)
                     in_flight = _executing_rid == rid
                     if result is not None:
-                        self._send(200, result)
+                        self._send(200, {**result, "request_id": rid})
                         return
                     if not still_queued and not in_flight:
                         _abandoned_rids.discard(rid)
                         self._send(409, {
+                            "request_id": rid,
                             "ok": False,
                             "cancelled": True,
                             "message": "Action was cancelled because a newer bridge command replaced the pending queue.",
@@ -1651,11 +1710,14 @@ class _Handler(BaseHTTPRequestHandler):
                         return
                     _abandoned_rids.add(rid)
                 self._send(202, {
+                    "request_id": rid,
+                    "result_url": f"/action_result?id={rid}",
                     "ok": True,
                     "queued": True,
                     "message": (
                         "Action is queued or still running in-game. Keep the game unpaused; "
-                        "it will apply when the SDK tick finishes."
+                        "it will apply when the SDK tick finishes unless superseded. "
+                        "Check result_url for completion; do not resend automatically."
                     ),
                 })
             finally:
@@ -1813,6 +1875,7 @@ def stop_bridge() -> None:
             waiter.set()
         _queue.clear()
         _results.clear()
+        _action_receipts.clear()
         _abandoned_rids.clear()
         _waiters.clear()
         _executing_rid = None

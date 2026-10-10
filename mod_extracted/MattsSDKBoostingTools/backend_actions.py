@@ -1803,6 +1803,9 @@ def run_quick_menu_action(
     elif key == "give_currency":
         result = give_currency(payload.get("currency_kind", "cash"), payload.get("amount", 0))
         needs_player = True
+    elif key == "mayhem_boost":
+        result = mayhem_boost(payload)
+        needs_player = True
     elif key == "set_level":
         result = give_experience(payload.get("xp_track", "player"), payload.get("level", MAX_PLAYER_LEVEL))
         needs_player = True
@@ -3323,6 +3326,21 @@ def _selected_economy_target() -> tuple[Any | None, Any | None, str, dict[str, A
         }
     ps = getattr(pc, "PlayerState", None)
     return pc, ps, label, None
+
+
+def mayhem_boost(payload: dict[str, Any] | None = None) -> dict[str, Any]:
+    from . import farming_targets, mayhem_progression
+    payload = dict(payload or {})
+    try:
+        if payload.get('target_scope', 'selected') not in ('selected', 'local'):
+            raise ValueError('Choose one named player or Local for Mayhem boosting')
+        rows = farming_targets.resolve(payload, (get_selected_player_index(), get_selected_player_name()))
+        if len(rows) != 1:
+            raise ValueError('Mayhem boosting requires exactly one current player')
+        row = rows[0]
+        return mayhem_progression.boost(row['pc'], payload.get('mayhem_rank', 20), row['label'])
+    except Exception as exc:
+        return {'ok': False, 'message': str(exc)}
 
 
 def _give_currency_to_pc(pc: Any, kind: str, amount_i: int) -> bool:

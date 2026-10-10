@@ -401,8 +401,15 @@
       </div>
 
       <div class="grid two">
-        <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="UVH 1–7">
-          <h2>UVH 1–7</h2>
+        <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="Mayhem &amp; UVH">
+          <h2>Mayhem &amp; UVH</h2>
+          <h3>Mayhem 1–20</h3>
+          <p class="muted-line">Boosts Local / Named player's saved Mayhem rank and enables Takedown access in the current lobby. Does not change active difficulty or lower existing unlocks. Hardcore requires rank 5 or higher.</p>
+          <div class="inline-fields">
+            <label>Mayhem rank <input id="mayhemBoostRank" type="number" min="1" max="20" value="20"></label>
+            <button id="mayhemBoostBtn" type="button" data-host-only="1">Unlock Mayhem</button>
+          </div>
+          <h3>UVH 1–7</h3>
           <p class="muted-line">UVH N runs tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume continues them.</p>
           <div class="button-grid compact-buttons">
             <button data-action="uvh_boost_tier_1">UVH 1</button>
@@ -3026,6 +3033,7 @@ unofficial and claims no endorsement by these owners or credited contributors.
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
+  <script src="mayhem_target.js"></script>
   <script src="afk_config_upload.js"></script>
   <script src="afk_config_store.js"></script>
   <script src="afk_lobby.js"></script>

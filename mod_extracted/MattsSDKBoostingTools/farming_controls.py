@@ -241,6 +241,20 @@ def set_feature(feature,enabled,pc=None,pawn=None,label='Local',index=None):
 
 
 def status():
+    # Cached wrappers can outlive travel/disconnect. Build readback targets from
+    # the current roster, comparing stored scalar identities without touching
+    # the old session pc/pawn. A Python try/except cannot catch a native AV.
+    live = {}
+    if _sessions:
+        try:
+            from . import farming_targets
+            for target in farming_targets.party():
+                pc = target['pc']
+                pawn = pc.Pawn if pc is not None else None
+                if pawn is not None:
+                    live[identity(pc, pawn)] = (pc, pawn)
+        except Exception:
+            live = {}
     features={}
     for name,(label,scope) in FEATURES.items():
         targets=[]
@@ -251,10 +265,16 @@ def status():
                      owned_fields=sum(k[0]==name and s.get('owner')==session['key'] for k,s in _snapshots.items()),
                      readback=session['reads'].get(name))
             try:
+                current = live.get(session['key'][:-1])
+                row['live'] = current is not None
+                if current is None:
+                    targets.append(row)
+                    continue
+                pc, pawn = current
                 if name in ('infinite_ammo','no_reload'):
                     field='InfiniteAmmoLock' if name=='infinite_ammo' else 'InfiniteClipLock'
-                    row['actual_locked']=bool(getattr(session['pc'],field).bLocked)
-                elif name=='god_mode':row['actual_invulnerable']=not bool(session['pawn'].bCanBeDamaged)
+                    row['actual_locked']=bool(getattr(pc,field).bLocked)
+                elif name=='god_mode':row['actual_invulnerable']=not bool(pawn.bCanBeDamaged)
             except Exception:pass
             targets.append(row)
         row=dict(label=label,scope=scope,global_scope=name in GLOBAL_FEATURES,

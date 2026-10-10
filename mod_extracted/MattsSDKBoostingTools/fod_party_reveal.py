@@ -284,7 +284,7 @@ def abort(*, pull: bool = True) -> dict[str, Any]:
             pass
     _log("aborted")
     status = last_status()
-    return {"ok": True, "message": "Party Reveal aborted. Guests pulled to host.", **status}
+    return {**status, "ok": True, "message": "Party Reveal aborted. Guests pulled to host."}
 
 
 def _finish() -> None:
@@ -393,7 +393,7 @@ def _ensure_registered() -> None:
 def start() -> dict[str, Any]:
     pts = _load_pts()
     if not pts:
-        return {"ok": False, "message": "Party Reveal hops file is missing.", **last_status()}
+        return {**last_status(), "ok": False, "message": "Party Reveal hops file is missing."}
     _state["done"] = True
     _set_needed(False)
     _ensure_registered()
@@ -426,9 +426,9 @@ def start() -> dict[str, Any]:
         _log(f"sweep target {_ps_name(ps)!r} at=({ax:.0f},{ay:.0f},{az:.0f})")
     if not pawns:
         return {
+            **last_status(),
             "ok": False,
             "message": "Party Reveal needs a live guest in this session.",
-            **last_status(),
         }
     _state.update(
         {
@@ -463,10 +463,10 @@ def start() -> dict[str, Any]:
     _log(f"armed hops={len(pts)} guests={len(pawns)} dwell={_DWELL_S}s")
     status = last_status()
     return {
+        **status,
         "ok": True,
         "message": (
             f"Party Reveal started for {len(pawns)} guest(s), {len(pts)} hops. "
             "Abort pulls them back to you."
         ),
-        **status,
     }

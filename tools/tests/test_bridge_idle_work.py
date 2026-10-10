@@ -1,5 +1,6 @@
 """Periodic bridge status must not do unused world scans or retry every frame."""
 from __future__ import annotations
+import sys
 
 from test_bridge_perf_bounds import _load_bridge
 from test_quick_menu_last_command import _load_backend_actions
@@ -44,6 +45,10 @@ def test_bridge_requests_only_status_fields_it_publishes():
 
 def test_lean_backend_status_skips_camera_scans_and_bookmark_io(monkeypatch):
     backend = _load_backend_actions()
+    # This fixture deliberately stubs party_helpers. Supply the display helper
+    # used by the normal readback import, even when no live controller resolves.
+    monkeypatch.setattr(sys.modules["MattsSDKBoostingTools.party_helpers"], "_gbc_resolve_player_display_name",
+                        lambda ps: "Host", raising=False)
     monkeypatch.setattr(backend._cxp, "get_status_dict", lambda: {}, raising=False)
     monkeypatch.setattr(backend._ich, "get_status_dict", lambda: {}, raising=False)
     monkeypatch.setattr(backend._ich, "get_holds_status_dict", lambda: {}, raising=False)

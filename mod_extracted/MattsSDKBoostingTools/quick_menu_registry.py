@@ -199,6 +199,7 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "max_player_level": {"basic": "Max Level", "aliases": ["Lvl70", "Level"]},
     "max_spec_level": {"basic": "Max Spec", "aliases": ["Spec"]},
     "give_currency": {"basic": "Give Currency", "aliases": ["Currency"]},
+    "mayhem_boost": {"basic": "Unlock Mayhem 20", "aliases": ["Mayhem", "Takedown unlock"]},
     "set_level": {"basic": "Set Level", "aliases": ["Level"]},
     "open_golden_chest": {"basic": "Open Chest", "aliases": ["OpenGC", "Chest"]},
     "close_golden_chest": {"basic": "Close Chest", "aliases": ["CloseGC"]},
@@ -462,6 +463,7 @@ NATIVE_PICKER_ACTIONS: tuple[str, ...] = (
 )
 
 NEEDS_PLAYER_ACTIONS = frozenset({
+    "mayhem_boost",
     "max_all",
     "max_currency",
     "max_eridium",
@@ -573,6 +575,7 @@ _DEV_SPAWNER_TEMPLATE_KEYS = frozenset({
 
 # Parameterized pins use one action id + payload (not hundreds of baked slot ids).
 ALLOWED_PAYLOAD_KEYS: dict[str, frozenset[str]] = {
+    "mayhem_boost": frozenset({"mayhem_rank"}),
     "give_currency": frozenset({"currency_kind", "amount"}),
     "set_level": frozenset({"xp_track", "level"}),
     "set_backpack_bank_selected": frozenset({"backpack_size", "bank_size"}),
@@ -706,6 +709,8 @@ def sanitize_payload(action: str, raw: object) -> dict[str, Any]:
         elif key == "currency_kind":
             value = str(source[key] or "cash").strip().lower()
             result[key] = value if value in CURRENCY_KINDS else "cash"
+        elif key == "mayhem_rank":
+            result[key] = max(1, min(20, _safe_int(source[key], 20)))
         elif key == "amount":
             result[key] = max(0, min(2147483647, _safe_int(source[key], 0)))
         elif key == "xp_track":
@@ -1024,6 +1029,8 @@ def slot_label(slot: dict[str, Any] | None) -> str:
     action = str(slot.get("action") or "")
     catalog = ACTION_CATALOG.get(action, {})
     basic = str(catalog.get("basic") or action)
+    if action == "mayhem_boost":
+        basic = f"Unlock Mayhem {sanitize_payload(action, slot.get('payload')).get('mayhem_rank', 20)}"
     custom = str(slot.get("custom_label") or "").strip()
     mode = str(slot.get("label_mode") or "basic")
     if mode == "custom" and custom:

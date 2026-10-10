@@ -33,6 +33,7 @@ _LEGACY_HOOK_IDS = (
 _last_at = 0.0
 _in_flight = False
 _installed = False
+_fallback_hook: Any = None
 _callbacks: list[tuple[int, str, TickFn]] = []
 _needed: set[str] = set()
 # These lifetimes share the Quick Menu callback, not the phone-pairing callback.
@@ -85,9 +86,15 @@ def enable_shared_hook() -> None:
 
 
 def disable_shared_hook() -> None:
-    global _installed
-    if not _installed:
+    global _installed, _fallback_hook
+    if not _installed and _fallback_hook is None:
         return
+    if _fallback_hook is not None:
+        try:
+            _fallback_hook.disable()
+        except Exception:
+            pass
+        _fallback_hook = None
     try:
         import unrealsdk
         from unrealsdk.hooks import Type
@@ -141,13 +148,14 @@ def _pump(_obj: Any, _args: Any, _ret: Any, _func: Any) -> None:
 
 
 def _ensure_hook() -> None:
-    global _installed
-    if _installed:
-        return
+    global _installed, _fallback_hook
     try:
         import unrealsdk
         from unrealsdk.hooks import Type
 
+        if _installed and unrealsdk.hooks.has_hook(TICK_PATH, Type.POST, HOOK_ID):
+            return
+        _installed = False
         for legacy_id in _LEGACY_HOOK_IDS:
             try:
                 unrealsdk.hooks.remove_hook(TICK_PATH, Type.PRE, legacy_id)
@@ -162,6 +170,8 @@ def _ensure_hook() -> None:
         except Exception:
             pass
         unrealsdk.hooks.add_hook(TICK_PATH, Type.POST, HOOK_ID, _pump)
+        if not unrealsdk.hooks.has_hook(TICK_PATH, Type.POST, HOOK_ID):
+            raise RuntimeError("Shared camera hook registration was not confirmed")
         _installed = True
         try:
             from unrealsdk import logging
@@ -179,7 +189,20 @@ def _ensure_hook() -> None:
     try:
         from mods_base import hook
 
-        hook(TICK_PATH, immediately_enable=False, hook_identifier=HOOK_ID)(_pump)
+        from unrealsdk.hooks import Type
+        import unrealsdk
+
+        _fallback_hook = hook(TICK_PATH, Type.POST, immediately_enable=False,
+                              hook_identifier=HOOK_ID)(_pump)
+        _fallback_hook.enable()
+        if not unrealsdk.hooks.has_hook(TICK_PATH, Type.POST, HOOK_ID):
+            raise RuntimeError("Fallback camera hook registration was not confirmed")
         _installed = True
     except Exception:
         _installed = False
+        if _fallback_hook is not None:
+            try:
+                _fallback_hook.disable()
+            except Exception:
+                pass
+            _fallback_hook = None

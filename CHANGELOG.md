@@ -1,3 +1,7 @@
+# v2.35.0
+
+Mayhem 1-20 selected-player unlock controls and tested bridge, camera, Party Reveal, and Farming status repairs. See docs/releases/RELEASE_NOTES_v2.35.0.md.
+
 # Changelog
 
 ## 2.31.0 - 2026-10-08

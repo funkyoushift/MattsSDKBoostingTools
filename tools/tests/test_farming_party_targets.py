@@ -54,6 +54,22 @@ def test_targeting_does_not_fall_back_to_reused_index_or_change_host(players):
     assert host.bCanBeDamaged
 
 
+def test_status_never_dereferences_departed_session_wrappers(players):
+    e, _, _, _, guest, _, states = players
+    e.session_for(guest, guest, 'Guest A', 1)
+    session = next(iter(e._sessions.values()))
+    class Expired:
+        def __getattribute__(self, name):
+            raise AssertionError('Stale wrapper accessed: ' + name)
+    session['pc'] = session['pawn'] = Expired()
+    states.remove(guest)
+    result = e.status()
+    for feature in ('god_mode', 'infinite_ammo', 'no_reload'):
+        row = result['features'][feature]['targets'][0]
+        assert row['live'] is False
+        assert 'actual_invulnerable' not in row and 'actual_locked' not in row
+
+
 @pytest.mark.parametrize('scope,names',[('local',['Host']),('all',['Host','Guest A','Guest B']),('nonhost',['Guest A','Guest B']),('selected',['Guest B'])])
 def test_scopes_resolve_current_party(players,scope,names):
     _,_,t,_,_,_,_=players
