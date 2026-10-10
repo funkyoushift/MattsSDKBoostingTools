@@ -129,3 +129,12 @@ install/launch passed. No physical phone, Epic live or actual guest gameplay pro
 is claimed. Release/public/deployment details are tracked in
 ../releases/VERIFICATION_v2.34.0.txt. Borderlands was observed closed during release
 packaging, permitting normal SDK deployment after public verification.
+
+Publication/deployment complete: v2.34.0 stable, 11 public asset hashes verified,
+release-policy/Pages checks passed. Verified public portable installed through
+managed installer; desktop reopened and installed identities/startup passed.
+Game was closed; normal Steam SDK integration completed and its hash matches the
+public SDK. Separate local lab and loader archived outside sdk_mods under
+work/installed-farming-lab-before-v2.34.0, preserving rollback. Previous desktop
+and game SDK also retained. Launch Borderlands normally for integrated controls;
+no console bootstrap is needed. No game restart/live guest/Epic claim is made.
