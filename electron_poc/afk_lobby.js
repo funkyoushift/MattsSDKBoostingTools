@@ -7,8 +7,8 @@
   guestProgress.id = 'afkGuestProgress';
   byId('afkQueue').insertAdjacentElement('beforebegin', guestProgress);
   const options = [...panel.querySelectorAll("[data-afk-boost]")];
-  const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647, vault_levels: 9999};
-  const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join', vault_levels: 'Target vault card level (cards 1–5)'};
+  const amountLimits = {level: 70, spec: 701, cash: 2147483647, eridium: 2147483647, keys: 2147483647, vault_levels: 9999, mayhem: 20};
+  const amountLabels = {level: 'Target character level', spec: 'Target specialization level', cash: 'Cash added per join', eridium: 'Eridium added per join', keys: 'Keys added per card (1–5) per join', vault_levels: 'Target vault card level (cards 1–5)', mayhem: 'Target Mayhem rank'};
   const amountInputs = {};
   for (const [key, maximum] of Object.entries(amountLimits)) {
     const checkbox = options.find(node => node.dataset.afkBoost === key);
@@ -192,6 +192,9 @@
       if(action === "afk_lobby_start" && payload.loot && payload.loot_mode === "random70"
           && payload.random_count !== 70 && !lastStatus?.random_count_supported) {
         throw new Error("Install the updated SDK mod before changing random delivery size.");
+      }
+      if (action === 'afk_lobby_start' && payload.mayhem && !lastStatus?.mayhem_supported) {
+        throw Error('Mayhem requires an updated SDK mod. AFK has not started.');
       }
       if (action === 'afk_lobby_start' && payload.vault_levels && !lastStatus?.vault_card_levels_supported) {
         throw Error('Vault card levels require an updated SDK mod. AFK has not started.');

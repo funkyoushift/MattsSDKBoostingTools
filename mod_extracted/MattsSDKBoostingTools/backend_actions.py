@@ -3328,6 +3328,17 @@ def _selected_economy_target() -> tuple[Any | None, Any | None, str, dict[str, A
     return pc, ps, label, None
 
 
+def mayhem_boost_target(pc, expected_state, rank=20, label='Player'):
+    """Apply to the pinned AFK/manual character, never the panel selection."""
+    from . import mayhem_progression
+    try:
+        if expected_state is None or getattr(pc, 'PlayerState', None) != expected_state:
+            raise ValueError('Mayhem target character changed or left; no unlock applied')
+        return mayhem_progression.boost(pc, rank, label)
+    except Exception as exc:
+        return {'ok': False, 'message': str(exc)}
+
+
 def mayhem_boost(payload: dict[str, Any] | None = None) -> dict[str, Any]:
     from . import farming_targets, mayhem_progression
     payload = dict(payload or {})
@@ -3338,7 +3349,7 @@ def mayhem_boost(payload: dict[str, Any] | None = None) -> dict[str, Any]:
         if len(rows) != 1:
             raise ValueError('Mayhem boosting requires exactly one current player')
         row = rows[0]
-        return mayhem_progression.boost(row['pc'], payload.get('mayhem_rank', 20), row['label'])
+        return mayhem_boost_target(row['pc'], row['state'], payload.get('mayhem_rank', 20), row['label'])
     except Exception as exc:
         return {'ok': False, 'message': str(exc)}
 

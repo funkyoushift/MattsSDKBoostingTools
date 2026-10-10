@@ -42,9 +42,10 @@ app.whenReady().then(async () => {
     const catalogCodes = document.getElementById('afkCodes').value;
     const savedCodes = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1')).codes;
     const kickDefaultOff = !document.getElementById('afkAutoKick').checked;
-    const newOptions = ['uvhm', 'cosmetics'].map(key => document.querySelector('[data-afk-boost="'+key+'"]'));
+    const newOptions = ['uvhm', 'cosmetics', 'mayhem'].map(key => document.querySelector('[data-afk-boost="'+key+'"]'));
     const newDefaultsOff = newOptions.every(node => node && !node.checked);
     newOptions.forEach(node => { node.checked = true; });
+    document.querySelector('[data-afk-boost="mayhem"]').closest('.afk-amount').querySelector('input[type=number]').value = '17';
     document.getElementById('afkAutoKick').checked = true;
     document.getElementById('afkKickExemptNames').value = 'FriendOne\\nFriendTwo';
     document.querySelector('[data-afk-boost="vault_levels"]').checked = true;
@@ -62,7 +63,7 @@ app.whenReady().then(async () => {
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const oldSdkBlocked = calls.length === 0 && document.getElementById('afkStatus').textContent.includes('updated SDK');
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const locked = document.getElementById('afkCodes').disabled && lootMode.disabled && document.getElementById('afkGuaranteedCodes').disabled;
@@ -97,7 +98,7 @@ app.whenReady().then(async () => {
     await window.msbtAfkConfigStore.save(savedAmounts);
     const durableAmounts = await window.msbtAfkConfigStore.load();
     for (const [key, value] of Object.entries(amounts)) if(durableAmounts[key+'_amount'] !== value) throw Error('Amount lost in durable store: '+key);
-    window.msbtAfkRender({afk_lobby:{enabled:false,boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkTestHost').click();
     await new Promise(resolve => setTimeout(resolve, 30));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
@@ -122,7 +123,8 @@ app.whenReady().then(async () => {
   assert.equal(results.guaranteedCodes, '@UCatalogAlpha\n@UCatalogBeta');
   assert.equal(results.calls[0].payload.guaranteed_codes, results.guaranteedCodes);
   assert.equal(results.calls[0].payload.challenges, false);
-  for (const key of ['uvhm', 'cosmetics']) assert.equal(results.calls[0].payload[key], true);
+  for (const key of ['uvhm', 'cosmetics', 'mayhem']) assert.equal(results.calls[0].payload[key], true);
+  assert.equal(results.calls[0].payload.mayhem_amount, 17);
   assert.equal(results.calls[0].payload.auto_kick, true);
   assert.equal(results.calls[0].payload.kick_exempt_names, 'FriendOne\nFriendTwo');
   assert.equal(results.calls[0].payload.vault_levels, true);

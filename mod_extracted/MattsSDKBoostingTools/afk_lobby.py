@@ -9,14 +9,14 @@ import json
 from collections import deque
 
 
-BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "vault_levels", "challenges", "uvhm", "cosmetics", "loot")
+BOOSTS = ("level", "spec", "sdu", "cash", "eridium", "keys", "vault_levels", "challenges", "uvhm", "mayhem", "cosmetics", "loot")
 AMOUNT_LIMITS = {"level": 70, "spec": 701, "cash": 2147483647,
-                 "eridium": 2147483647, "keys": 2147483647, "vault_levels": 9999}
+                 "eridium": 2147483647, "keys": 2147483647, "vault_levels": 9999, "mayhem": 20}
 JOIN_SETTLE_SECONDS = 20.0
 STEP_LABELS = {'inventory_capture':'Saving original backpack', 'level':'Setting level',
                'spec':'Setting specialization rank', 'sdu':'Setting SDUs to 3225',
                'cash':'Setting cash', 'eridium':'Setting Eridium', 'keys':'Setting keys',
-               'challenges':'Completing challenges', 'uvhm':'Unlocking UVHM 1-7',
+               'challenges':'Completing challenges', 'uvhm':'Unlocking UVHM 1-7', 'mayhem':'Unlocking Mayhem',
                'vault_levels':'Setting vault card levels', 'cosmetics':'Unlocking cosmetics and vehicles', 'loot':'Delivering selected loot'}
 RECOVERY_LABELS = {'prepared':'Preparing reward cleanup', 'clear_pending':'Clearing reward clutter',
                    'deliver_pending':'Delivering selected loot', 'restore_pending':'Returning original backpack',
@@ -163,7 +163,7 @@ class Lobby:
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
                 'cleanup_rewards_supported':True, 'host_test_supported':True,
                 'config_upload_supported': True, 'item_level_override_supported': True,
-                'boost_amounts_supported': True, 'kick_exempt_names_supported': True, 'vault_card_levels_supported': True}
+                'boost_amounts_supported': True, 'kick_exempt_names_supported': True, 'vault_card_levels_supported': True, 'mayhem_supported': True}
 
     def tick(self):
         now = time.monotonic()
@@ -756,6 +756,8 @@ class Game:
         elif step == "cosmetics":
             pc.ServerActivateDevPerk(4)
             return {"ok": True, "message": "All Customs + Hovers requested; guest save not confirmed."}
+        elif step == "mayhem":
+            return a.mayhem_boost_target(pc, ps, config.get("mayhem_amount", 20), job["name"])
         elif step == "uvhm":
             # Use the existing tier plan and pacing, but keep this guest's work
             # private: the manual queue can add targets or be replaced/resumed.

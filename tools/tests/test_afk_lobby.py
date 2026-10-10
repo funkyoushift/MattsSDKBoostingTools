@@ -972,3 +972,28 @@ def test_experience_readback_resolves_reordered_card_identity():
     assert calls == ['VaultCard01', 'VaultCard05']
     assert game.experience_level(ps, 'vaultcard_xp_2') is None
     assert calls == ['VaultCard01', 'VaultCard05']
+
+
+def test_mayhem_optional_rank_validation_and_per_guest_queue():
+    game = FakeGame()
+    lobby = module.Lobby(game)
+    assert lobby.start({'level': True})['ok']
+    assert not lobby.config['mayhem']
+    lobby.stop()
+    for rank in (0, 21, True, 1.5, 'bad'):
+        assert not lobby.start({'mayhem': True, 'mayhem_amount': rank})['ok']
+    assert lobby.start({'mayhem': True, 'mayhem_amount': 17})['ok']
+    assert lobby.status()['mayhem_supported']
+    game.rows = [row('first'), row('second', 2)]
+    ticks(lobby, 30)
+    assert game.calls == [('mayhem', 'first', 1), ('mayhem', 'second', 2)]
+    assert not game.kicked
+
+
+def test_mayhem_step_uses_pinned_character_and_propagates_failure():
+    game = module.Game()
+    calls = []
+    result = {'ok': False, 'message': 'Target changed'}
+    game.backend = lambda: SimpleNamespace(mayhem_boost_target=lambda *args: calls.append(args) or result)
+    assert game.step('mayhem', {'pc': 'pc', 'token': 'ps', 'name': 'Guest'}, {'mayhem_amount': 12}) is result
+    assert calls == [('pc', 'ps', 12, 'Guest')]

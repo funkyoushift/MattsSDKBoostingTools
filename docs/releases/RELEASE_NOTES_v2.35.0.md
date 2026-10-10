@@ -13,6 +13,13 @@ The shared action is available through the desktop, native Quick Menu catalog,
 and mobile action schema. Mayhem is separate from UVH 1-7. This does not complete
 all story/side missions or award every mission reward.
 
+## AFK Mayhem
+
+Enable the optional Mayhem checkbox and choose a target rank from 1 to 20.
+AFK applies the unlock separately to each guest it processes, keeps higher
+unlocks, and leaves active difficulty unchanged. Existing AFK setups keep this
+option off until enabled. An older SDK cannot silently skip the new option.
+
 ## Runtime repairs
 
 - Live bridge actions execute on the game thread. Timed-out requests retain a

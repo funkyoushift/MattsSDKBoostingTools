@@ -87,3 +87,19 @@ def test_backend_rejects_missing_named_target_and_multiple_scope(monkeypatch):
     monkeypatch.setitem(sys.modules, progression.__name__, progression)
     assert not backend.mayhem_boost({'target_player': '1|Papa', 'mayhem_rank': 20})['ok']
     assert not backend.mayhem_boost({'target_scope': 'all', 'mayhem_rank': 20})['ok']
+
+
+def test_pinned_target_rejects_character_replacement(monkeypatch):
+    from test_quick_menu_last_command import _load_backend_actions
+    backend = _load_backend_actions()
+    progression = types.ModuleType('MattsSDKBoostingTools.mayhem_progression')
+    calls = []
+    progression.boost = lambda *args: calls.append(args) or {'ok': True}
+    monkeypatch.setitem(sys.modules, progression.__name__, progression)
+    original, replacement = object(), object()
+    pc = types.SimpleNamespace(PlayerState=replacement)
+    assert not backend.mayhem_boost_target(pc, original, 20, 'Guest')['ok']
+    assert not calls
+    pc.PlayerState = original
+    assert backend.mayhem_boost_target(pc, original, 17, 'Guest')['ok']
+    assert calls == [(pc, 17, 'Guest')]
