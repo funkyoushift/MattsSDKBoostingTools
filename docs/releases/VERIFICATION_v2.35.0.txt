@@ -14,3 +14,8 @@ Standalone SDK Python contents match current release source.
 Public assets/checksums and CI verification pending publication.
 Local receipts: C:/src/MSBT-Workspace/local/mayhem-2026-10-10.
 Whole-game mission completion excluded; remains research-only.
+
+Published stable v2.35.0 at tag b91bb44ebe8e310ad75269f38b79d2b4a23a3eba.
+All 11 public assets downloaded and matched local SHA256/size; latest points to
+v2.35.0. Electron Release and Pages CI succeeded. Release URL:
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.35.0

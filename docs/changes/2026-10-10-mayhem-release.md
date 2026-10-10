@@ -44,3 +44,8 @@ under an Electron harness passed save/restore/unchecked across three independent
 processes, including AFK Mayhem checkbox/rank. This is packaged-code persistence,
 not a claim that the harness itself was the distributed executable.
 Installer/portable generation completed; remote publication verification pending.
+
+Published stable v2.35.0 at tag b91bb44ebe8e310ad75269f38b79d2b4a23a3eba.
+All 11 public assets downloaded and matched local SHA256/size; latest points to
+v2.35.0. Electron Release and Pages CI succeeded. Release URL:
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.35.0
