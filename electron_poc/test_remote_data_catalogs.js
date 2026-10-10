@@ -307,8 +307,9 @@ async function testTutorialCopyAsset() {
 
   const copy = JSON.parse(await fsp.readFile(copyPath, "utf8"));
   assert.strictEqual(copy.kind, "json_copy");
-  const patches = (copy.tours && copy.tours.main) || [];
-  const expectedIndexes = [0, 2, 3, 8, 10];
+  assert.equal(copy.layout,'workspace');assert.equal(copy.layout_revision,2);
+  const patches = (copy.tours && copy.tours['workspace-main']) || [];
+  const expectedIndexes = Array.from({length:12},(_,i)=>i);
   for (const idx of expectedIndexes) {
     assert.ok(
       patches.some((row) => Number(row.index) === idx),
@@ -326,24 +327,25 @@ async function testTutorialCopyAsset() {
     assert.ok(typeof patch.body === "string" && patch.body.trim(), "body required");
   }
   const welcome = patches.find((row) => Number(row.index) === 0);
-  assert.ok(/sdk_mods|MattsSDKBoostingTools\.sdkmod/i.test(welcome.body), "Welcome should keep SDK install path accurate");
-  assert.ok(/Refresh Catalogs/i.test(welcome.body), "Welcome should mention the current data refresh label");
-  const updates = patches.find((row) => Number(row.index) === 8);
-  assert.ok(/Refresh Catalogs/i.test(updates.body), "Updates should mention the current data refresh label");
-  assert.ok(/data channel|SemVer/i.test(updates.body), "Updates should clarify data vs app SemVer");
+  assert.ok(/SDK connected/i.test(welcome.body), "Welcome should distinguish live and offline tools");
+  const updates = patches.find((row) => Number(row.index) === 9);
+  assert.ok(/Updates & Backups/i.test(updates.body), "Updates should point to its task-page home");
+  assert.ok(/restart the game/i.test(updates.body), "SDK updates still require a game restart");
   const allCopy = patches.map((row) => `${row.title}\n${row.body}`).join("\n");
   assert.ok(!/Quick Max|Debug Panel|Refresh Status in (?:the )?header/i.test(allCopy), "overlay contains stale UI copy");
 
   const tours = {
-    main: Array.from({ length: 11 }, (_, i) => ({ title: `Bundled ${i}`, body: `Bundled body ${i}` }))
+    'workspace-main': Array.from({ length: 12 }, (_, i) => ({ title: `Bundled ${i}`, body: `Bundled body ${i}` }))
   };
   const result = applyTutorialCopyOverlay(tours, copy);
   assert.ok(result.applied >= expectedIndexes.length * 2, `expected title+body for ${expectedIndexes.length} steps`);
   for (const idx of expectedIndexes) {
-    assert.notStrictEqual(tours.main[idx].title, `Bundled ${idx}`);
-    assert.notStrictEqual(tours.main[idx].body, `Bundled body ${idx}`);
+    assert.notStrictEqual(tours['workspace-main'][idx].title, `Bundled ${idx}`);
+    assert.notStrictEqual(tours['workspace-main'][idx].body, `Bundled body ${idx}`);
   }
-  assert.strictEqual(tours.main[1].title, "Bundled 1", "unpatched steps must stay bundled");
+  const legacy={main:[{title:'Legacy',body:'Legacy body'}]};
+  assert.equal(applyTutorialCopyOverlay(legacy,copy).applied,0,'Old apps must ignore task-layout overlays');
+  assert.equal(legacy.main[0].title,'Legacy');
 
   // Reject executable kinds at normalize time.
   const bad = normalizeManifest({
@@ -390,6 +392,8 @@ async function testTutorialCopyRefreshIntoCache() {
     assert.ok(loaded.ok, loaded.message);
     assert.strictEqual(loaded.source, "cache");
     assert.strictEqual(loaded.data.kind, "json_copy");
+    assert.strictEqual(loaded.data.layout,'workspace');
+    assert.strictEqual(loaded.data.layout_revision,2);
     record("tutorial_copy refreshes into msbt_data cache", true, loaded.data.min_app_version || "no-min");
   });
 }

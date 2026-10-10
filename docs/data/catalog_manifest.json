@@ -88,7 +88,7 @@
       "schema_version": 1,
       "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/gzo_parts_map.json",
       "kind": "catalog_json",
-      "notes": "GZO part id \u2192 label map"
+      "notes": "GZO part id → label map"
     },
     {
       "id": "shiny_serials",
@@ -132,13 +132,13 @@
       "id": "tutorial_copy",
       "path": "tutorial_copy.json",
       "kind": "json_copy",
-      "sha256": "2352aef14b76fef549a7ac5d5b4a39bb58206093218c16f98d5fe9063f1eae59",
-      "bytes": 3363,
+      "sha256": "86dd9a3be892ee1ace917b779d98b956ad7c0f348c4ae66cc4a5e9cfc0ead7b2",
+      "bytes": 6278,
       "schema_version": 1,
-      "min_app_version": "2.3.0",
+      "min_app_version": "2.35.2",
       "url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/data-v1.1.1/tutorial_copy.json",
       "raw_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/data/tutorial_copy.json",
-      "notes": "Tutorial title/body overlays for Electron walkthroughs (no remote code)"
+      "notes": "Task-layout revision 2 namespaced title/body overlays; old apps ignore unknown tour IDs."
     }
   ]
 }

@@ -8,8 +8,10 @@
   const dataSelect=/^(targetSelect|boostSpawnAnchor|boostSerialTargetSelect|bookmarkTargetSelect|invTargetSelect|invGiveTargetSelect|afkBookmarkFolder|afkBookmarks|bookmarkFolderPath|bookmarkGroupFilter|bookmarkGroup|communitySubmitFolder|saveItemsExisting|bl4CreatorFilter|locationBookmarkList|travelMapList|travelStationList|itempoolList|hoardActorList|challengeListSelect)$/;
   function excluded(el){
     if(!el||el.closest(skip))return true;
+    if(document.documentElement.dataset.msbtLanguageSurface==='editor'&&el.closest('select option:not([data-i18n-ui]),.part-name,.item-name,.part-code,.serial-code,#mi_fileList,#fileList,#mi_itemPartsBreakdownAdvanced,#itemPartsBreakdownAdvanced'))return true;
     const select=el.closest('select');
-    return !!select&&dataSelect.test(select.id);
+    const option=el.closest('option');
+    return !!select&&dataSelect.test(select.id)&&!!option&&option.value!==''&&!option.hasAttribute('data-i18n-ui');
   }
   function language(){return window.msbtI18n?.language||'en';}
   const countFormats=[
@@ -28,6 +30,8 @@
     return {key,indices,pattern:new RegExp('^'+pattern+'$')};
   });
   function translated(source){
+    // Encoded examples and identifiers are data even when used as placeholders.
+    if(/@U[A-Za-z0-9$!%&/)]{6,}/.test(source))return source;
     if(Object.hasOwn(catalog,source))return lookup(source);
     for(const [pattern,values]of countFormats){const match=source.match(pattern);if(match)return (values[window.msbtI18n.locales.indexOf(language())]||values[0]).replace(/\{(\d+)\}/g,(_,i)=>lookup(match[Number(i)]));}
     for(const template of templates){const match=source.match(template.pattern);if(match){const values={};template.indices.forEach((id,i)=>{values[id]=match[i+1];});return lookup(template.key).replace(/\{(\d+)\}/g,(_,id)=>values[id]);}}
@@ -38,6 +42,29 @@
     return [...node.childNodes].map(originalText).join('');
   }
   function lookup(source){return language()==='en'?source:(catalog[source]?.[language()]||source);}
+  // Read-only maintenance inventory uses the same data exclusions as rendering.
+  function audit(root=document.body){
+    const found=new Map();
+    function add(value){
+      const source=normalize(value);
+      if(!/[A-Za-z]{2}/.test(source)||/^\d+[\d/.,: ]+(AM|PM)$/.test(source)||/@U[A-Za-z0-9$!%&/)]{6,}/.test(source))return;
+      const key=Object.hasOwn(catalog,source)?source:templates.find(t=>t.pattern.test(source))?.key;
+      found.set(source,{source,key:key||null});
+    }
+    function scan(node){
+      if(node.nodeType===Node.TEXT_NODE){
+        if(!excluded(node.parentElement)&&!node.parentElement.closest('[data-i18n]'))add(originalText(node));
+        return;
+      }
+      if(node.nodeType!==Node.ELEMENT_NODE||excluded(node))return;
+      for(const attr of ['title','placeholder','aria-label'])if(node.hasAttribute(attr)){
+        const saved=attributeState.get(node)?.[attr];
+        add(saved&&node.getAttribute(attr)===saved.output?saved.source:node.getAttribute(attr));
+      }
+      if(!node.matches('input,textarea'))node.childNodes.forEach(scan);
+    }
+    scan(root);return [...found.values()];
+  }
   function renderText(node){
     const el=node.parentElement;if(excluded(el)||el.closest('[data-i18n]'))return;
     const now=node.nodeValue;
@@ -46,7 +73,8 @@
     if(!record||now!==record.output){record={source:now,output:now};textState.set(node,record);}
     const key=normalize(record.source);
     const leading=record.source.match(/^\s*/)[0],trailing=record.source.match(/\s*$/)[0];
-    const result=leading+translated(key)+trailing;
+    const output=translated(key);
+    const result=output===key?record.source:leading+output+trailing;
     record.output=result;if(now!==result)node.nodeValue=result;
   }
   function renderAttributes(el){
@@ -56,8 +84,9 @@
       if(!el.hasAttribute(attr))continue;
       const now=el.getAttribute(attr);let record=states[attr];
       if(!record||now!==record.output)record=states[attr]={source:now,output:now};
-      const key=normalize(record.source);if(!Object.hasOwn(catalog,key))continue;
-      record.output=lookup(key);if(now!==record.output)el.setAttribute(attr,record.output);
+      const key=normalize(record.source);
+      const output=translated(key);record.output=output===key?record.source:output;
+      if(now!==record.output)el.setAttribute(attr,record.output);
     }
   }
   function visit(root){
@@ -65,16 +94,9 @@
     if(root.nodeType!==Node.ELEMENT_NODE||excluded(root))return;
     // Input values are protected; placeholder/accessible labels are interface text.
     renderAttributes(root);
+    if(root.matches('input,textarea'))return;
     for(const child of root.childNodes){
-      if(child.nodeType===Node.ELEMENT_NODE&&child.matches('input,textarea')){
-        for(const attr of ['placeholder','aria-label','title']){
-          if(!child.hasAttribute(attr))continue;
-          let states=attributeState.get(child);if(!states){states={};attributeState.set(child,states);}
-          const now=child.getAttribute(attr);let record=states[attr];
-          if(!record||now!==record.output)record=states[attr]={source:now,output:now};
-          const key=normalize(record.source);if(Object.hasOwn(catalog,key)){record.output=lookup(key);if(now!==record.output)child.setAttribute(attr,record.output);}
-        }
-      }else visit(child);
+      visit(child);
     }
   }
   const observer=new MutationObserver(records=>{
@@ -84,7 +106,7 @@
   });
   function observe(){observer.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['title','placeholder','aria-label']});}
   function apply(){observer.disconnect();try{visit(document.body);}finally{observe();}}
-  window.MsbtTranslateUi={apply,text:source=>translated(normalize(source)),originalText,catalog};
+  window.MsbtTranslateUi={apply,text:source=>translated(normalize(source)),originalText,catalog,audit};
   window.addEventListener('msbt-language-change',apply);
   apply();
 })();

@@ -70,16 +70,16 @@
     <!-- Theme Selector -->
     <div class="theme-selector">
         <select id="themeSelector" onchange="changeTheme(this.value)">
-            <option value="theme-default" selected>⚙️ Basic Default</option>
-            <option value="theme-plain">📄 Plain (No Animations)</option>
-            <option value="theme-frozen">🧊 Arctic Blast</option>
-            <option value="theme-hellforge">🔥 Inferno Flame</option>
-            <option value="theme-shadowforge">⚡ Void Shadow</option>
-            <option value="theme-blastforge">💣 Explosive Burst</option>
-            <option value="theme-medforge">🏥 Healing Spring</option>
-            <option value="theme-barrforge">🛡️ Fortress Shield</option>
-            <option value="theme-master">⚡ Legendary Gold</option>
-            <option value="theme-save">💾 Mystic Vault</option>
+            <option data-i18n-ui value="theme-default" selected>⚙️ Basic Default</option>
+            <option data-i18n-ui value="theme-plain">📄 Plain (No Animations)</option>
+            <option data-i18n-ui value="theme-frozen">🧊 Arctic Blast</option>
+            <option data-i18n-ui value="theme-hellforge">🔥 Inferno Flame</option>
+            <option data-i18n-ui value="theme-shadowforge">⚡ Void Shadow</option>
+            <option data-i18n-ui value="theme-blastforge">💣 Explosive Burst</option>
+            <option data-i18n-ui value="theme-medforge">🏥 Healing Spring</option>
+            <option data-i18n-ui value="theme-barrforge">🛡️ Fortress Shield</option>
+            <option data-i18n-ui value="theme-master">⚡ Legendary Gold</option>
+            <option data-i18n-ui value="theme-save">💾 Mystic Vault</option>
         </select>
     </div>
 
@@ -4119,7 +4119,7 @@
             <div class="control-group">
                 <label>Filter by Type</label>
                 <select id="mi_typeFilter">
-                    <option value="">All Types</option>
+                    <option data-i18n-ui value="">All Types</option>
                 </select>
             </div>
             <button onclick="legitBuilderSetCtx(1); searchRoot()">🔍 Search</button>
@@ -4194,25 +4194,25 @@
                     <div class="mi-prop-field mi-prop-field--type">
                         <label class="mi-field-label" for="mi_simpleTypeSelect">Item Type</label>
                         <select id="mi_simpleTypeSelect" class="mi-prop-input">
-                            <option value="">— Type —</option>
-                            <option value="classmod">Class mod</option>
-                            <option value="shield">Shield</option>
-                            <option value="grenades">Grenades</option>
-                            <option value="heavy_weapon">Heavy weapon</option>
-                            <option value="repkit">Repkit</option>
-                            <option value="enhancement">Enhancement</option>
-                            <option value="smg">SMG</option>
-                            <option value="assault_rifle">Assault rifle</option>
-                            <option value="pistol">Pistol</option>
-                            <option value="sniper_rifle">Sniper rifle</option>
-                            <option value="shotgun">Shotgun</option>
+                            <option data-i18n-ui value="">— Type —</option>
+                            <option data-i18n-ui value="classmod">Class mod</option>
+                            <option data-i18n-ui value="shield">Shield</option>
+                            <option data-i18n-ui value="grenades">Grenades</option>
+                            <option data-i18n-ui value="heavy_weapon">Heavy weapon</option>
+                            <option data-i18n-ui value="repkit">Repkit</option>
+                            <option data-i18n-ui value="enhancement">Enhancement</option>
+                            <option data-i18n-ui value="smg">SMG</option>
+                            <option data-i18n-ui value="assault_rifle">Assault rifle</option>
+                            <option data-i18n-ui value="pistol">Pistol</option>
+                            <option data-i18n-ui value="sniper_rifle">Sniper rifle</option>
+                            <option data-i18n-ui value="shotgun">Shotgun</option>
                         </select>
                         <span class="mi-card-hint">The item type determines which parts are available</span>
                     </div>
                     <div class="mi-prop-field mi-prop-field--manufacturer">
                         <label class="mi-field-label" for="mi_simpleManufacturerSelect" id="mi_simpleSecondaryLabel">Manufacturer</label>
                         <select id="mi_simpleManufacturerSelect" disabled class="mi-prop-input">
-                            <option value="">— Manufacturer —</option>
+                            <option data-i18n-ui value="">— Manufacturer —</option>
                         </select>
                         <span class="mi-card-hint">Select a manufacturer to filter item types</span>
                     </div>
@@ -4244,7 +4244,7 @@
                             <div class="mi-prop-field">
                                 <label class="mi-field-label" for="mi_skinCustomizationDropdown">Skin customization (<code>c</code>)</label>
                                 <select id="mi_skinCustomizationDropdown" class="mi-prop-input">
-                                    <option value="">— None —</option>
+                                    <option data-i18n-ui value="">— None —</option>
                                 </select>
                             </div>
                             <div class="mi-prop-field">
@@ -7876,7 +7876,7 @@
             <div class="control-group">
                 <label>Filter by Type</label>
                 <select id="typeFilter">
-                    <option value="">All Types</option>
+                    <option data-i18n-ui value="">All Types</option>
                 </select>
             </div>
             <button onclick="searchRoot()">🔍 Search</button>
@@ -8026,7 +8026,7 @@
                         <div style="margin-bottom: 8px;">
                             <label style="display: block; color: var(--text-secondary); font-size: 11px; margin-bottom: 4px; font-weight: 500;">Skin customization (<code style="font-size: 10px;">c</code>):</label>
                             <select id="skinCustomizationDropdown" style="width: 100%; padding: 6px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 12px; box-sizing: border-box;">
-                                <option value="">— None —</option>
+                                <option data-i18n-ui value="">— None —</option>
                             </select>
                         </div>
                         <div style="margin-bottom: 8px;">
@@ -8340,15 +8340,15 @@
                                 <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px;">
                                     <label for="profile-mass-state-flag-select" style="min-width: 150px; color: #81d4fa; font-weight: 500;">Mass state flags:</label>
                                     <select id="profile-mass-state-flag-select" style="flex: 1; min-width: 200px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #fff; font-size: 0.9em;">
-                                        <option value="">⚫ Unseen</option>
-                                        <option value="1">👁️ Seen</option>
-                                        <option value="3">⭐ Marked for Favorite</option>
-                                        <option value="5">🗑️ Marked for Trash</option>
-                                        <option value="9">🐷 Bank</option>
-                                        <option value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
-                                        <option value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
-                                        <option value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
-                                        <option value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
+                                        <option data-i18n-ui value="">⚫ Unseen</option>
+                                        <option data-i18n-ui value="1">👁️ Seen</option>
+                                        <option data-i18n-ui value="3">⭐ Marked for Favorite</option>
+                                        <option data-i18n-ui value="5">🗑️ Marked for Trash</option>
+                                        <option data-i18n-ui value="9">🐷 Bank</option>
+                                        <option data-i18n-ui value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
+                                        <option data-i18n-ui value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
+                                        <option data-i18n-ui value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
+                                        <option data-i18n-ui value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
                                     </select>
                                     <button type="button" class="btn btn-secondary" onclick="profileMassChangeStateFlags()" style="padding: 8px 16px; background: rgba(156, 39, 176, 0.3); border-color: rgba(156, 39, 176, 0.5); color: #ce93d8;">🏷️ Change all bank flags</button>
                                 </div>
@@ -8380,16 +8380,16 @@
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                                     <label for="challenge-unlock-family-filter" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa; width: 100%;">Catalog filter:</label>
                                     <select id="challenge-unlock-family-filter" onchange="onChallengeUnlockFilterChanged()" style="flex: 1; min-width: 160px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #81d4fa; font-size: 0.9em;">
-                                        <option value="all">All families</option>
-                                        <option value="sharedprogress">SharedProgress (sharedprogress_*)</option>
-                                        <option value="echo">Echo (*echo_*)</option>
-                                        <option value="vault">Vault (*vault_*)</option>
+                                        <option data-i18n-ui value="all">All families</option>
+                                        <option data-i18n-ui value="sharedprogress">SharedProgress (sharedprogress_*)</option>
+                                        <option data-i18n-ui value="echo">Echo (*echo_*)</option>
+                                        <option data-i18n-ui value="vault">Vault (*vault_*)</option>
                                     </select>
                                 </div>
                                 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                                     <label for="shared-progress-select" style="display: block; margin-bottom: 8px; font-weight: 500; color: #81d4fa; width: 100%;">Select entry to add:</label>
                                     <select id="shared-progress-select" style="flex: 1; min-width: 200px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #81d4fa; font-family: monospace; font-size: 0.9em;">
-                                        <option value="">Select an entry...</option>
+                                        <option data-i18n-ui value="">Select an entry...</option>
                                     </select>
                                     <button type="button" class="btn btn-primary" onclick="addSelectedSharedProgress()" style="padding: 8px 16px; background: rgba(76, 175, 80, 0.3); border-color: rgba(76, 175, 80, 0.5); color: #81c784;">➕ Add selected</button>
                                 </div>
@@ -8564,7 +8564,7 @@
                                             font-size: 0.9em;
                                         "
                                     >
-                                        <option value="">Select a cosmetic...</option>
+                                        <option data-i18n-ui value="">Select a cosmetic...</option>
                                     </select>
                                     <button
                                         class="btn btn-primary"
@@ -9728,15 +9728,15 @@
                                 name="mass-state-flag-select"
                                 style="flex: 1; min-width: 200px; padding: 8px; background: rgba(0,0,0,0.5); border: 1px solid rgba(79, 195, 247, 0.3); border-radius: 4px; color: #fff; font-size: 0.9em;"
                             >
-                                <option value="">⚫ Unseen</option>
-                                <option value="1">👁️ Seen</option>
-                                <option value="3">⭐ Marked for Favorite</option>
-                                <option value="5">🗑️ Marked for Trash</option>
-                                <option value="9">🐷 Bank</option>
-                                <option value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
-                                <option value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
-                                <option value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
-                                <option value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
+                                <option data-i18n-ui value="">⚫ Unseen</option>
+                                <option data-i18n-ui value="1">👁️ Seen</option>
+                                <option data-i18n-ui value="3">⭐ Marked for Favorite</option>
+                                <option data-i18n-ui value="5">🗑️ Marked for Trash</option>
+                                <option data-i18n-ui value="9">🐷 Bank</option>
+                                <option data-i18n-ui value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
+                                <option data-i18n-ui value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
+                                <option data-i18n-ui value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
+                                <option data-i18n-ui value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
                             </select>
                             <button
                                 class="btn btn-secondary"
@@ -10100,15 +10100,15 @@
                                         font-size: 1em;
                                     "
                                 >
-                                    <option value="">⚫ Unseen</option>
-                                    <option value="1">👁️ Seen</option>
-                                    <option value="3">⭐ Marked for Favorite</option>
-                                    <option value="5">🗑️ Marked for Trash</option>
-                                    <option value="9">🐷 Bank</option>
-                                    <option value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
-                                    <option value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
-                                    <option value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
-                                    <option value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
+                                    <option data-i18n-ui value="">⚫ Unseen</option>
+                                    <option data-i18n-ui value="1">👁️ Seen</option>
+                                    <option data-i18n-ui value="3">⭐ Marked for Favorite</option>
+                                    <option data-i18n-ui value="5">🗑️ Marked for Trash</option>
+                                    <option data-i18n-ui value="9">🐷 Bank</option>
+                                    <option data-i18n-ui value="17" style="color: #ff9800;">🟠🏷️ Tag Group 1</option>
+                                    <option data-i18n-ui value="33" style="color: #2196f3;">🔵🏷️ Tag Group 2</option>
+                                    <option data-i18n-ui value="65" style="color: #9c27b0;">🟣🏷️ Tag Group 3</option>
+                                    <option data-i18n-ui value="129" style="color: #4caf50;">🟢🏷️ Tag Group 4</option>
                                 </select>
                             </div>
                         </div>
@@ -10317,7 +10317,7 @@
                 <div class="form-group">
                     <label for="randomItemTypeSelect" style="color: #fff; margin-bottom: 10px; display: block;">Select Item Type:</label>
                     <select id="randomItemTypeSelect" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid rgba(79, 195, 247, 0.5); font-size: 16px;">
-                        <option value="">Loading item types...</option>
+                        <option data-i18n-ui value="">Loading item types...</option>
                     </select>
                 </div>
                 <div class="form-group" style="margin-top: 15px;">
@@ -10327,16 +10327,16 @@
                 <div class="form-group" style="margin-top: 15px;">
                     <label for="randomItemModLevel" style="color: #fff; margin-bottom: 10px; display: block;">Modification Level:</label>
                     <select id="randomItemModLevel" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid rgba(79, 195, 247, 0.5); font-size: 16px;">
-                        <option value="0">Base (Required parts only)</option>
-                        <option value="1">Light (+1-2 extra parts)</option>
-                        <option value="2">Moderate (+3-5 extra parts)</option>
-                        <option value="3">Heavy (+6-10 extra parts)</option>
-                        <option value="4">Extreme (+11-15 extra parts + arrays)</option>
-                        <option value="5">Maximum (+20+ extra parts + multiple arrays)</option>
-                        <option value="6">Ultra (+30-40 extra parts + 6-8 arrays)</option>
-                        <option value="7">Insane (+50-60 extra parts + 10-12 arrays)</option>
-                        <option value="8">Chaotic (+75-100 extra parts + 15-20 arrays)</option>
-                        <option value="9">Absolute (+100-150 extra parts + 25-35 arrays)</option>
+                        <option data-i18n-ui value="0">Base (Required parts only)</option>
+                        <option data-i18n-ui value="1">Light (+1-2 extra parts)</option>
+                        <option data-i18n-ui value="2">Moderate (+3-5 extra parts)</option>
+                        <option data-i18n-ui value="3">Heavy (+6-10 extra parts)</option>
+                        <option data-i18n-ui value="4">Extreme (+11-15 extra parts + arrays)</option>
+                        <option data-i18n-ui value="5">Maximum (+20+ extra parts + multiple arrays)</option>
+                        <option data-i18n-ui value="6">Ultra (+30-40 extra parts + 6-8 arrays)</option>
+                        <option data-i18n-ui value="7">Insane (+50-60 extra parts + 10-12 arrays)</option>
+                        <option data-i18n-ui value="8">Chaotic (+75-100 extra parts + 15-20 arrays)</option>
+                        <option data-i18n-ui value="9">Absolute (+100-150 extra parts + 25-35 arrays)</option>
                     </select>
                     <div style="color: #b0d4e6; font-size: 12px; margin-top: 5px;">Higher levels add more random parts from other typeIds and array-based parts</div>
                 </div>
@@ -10629,5 +10629,9 @@
             alert('Validation Help is unavailable right now. Please reload the page.');
         }
     </script>
+    <script>document.documentElement.dataset.msbtLanguageSurface='editor';</script>
+    <script src="js/ui_language_catalog.js"></script>
+    <script src="js/ui_i18n.js"></script>
+    <script src="js/ui_localization.js"></script>
 </body>
 </html>

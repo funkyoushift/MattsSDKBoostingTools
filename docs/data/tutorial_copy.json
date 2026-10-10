@@ -1,34 +1,108 @@
 {
   "schema_version": 1,
   "kind": "json_copy",
-  "min_app_version": "2.3.0",
-  "notes": "Allowlisted tutorial title/body overlays only. Unknown tours/keys are ignored. No scripts, no remote code. Bundled links/actions/selectors stay local.",
+  "min_app_version": "2.35.1",
+  "layout": "workspace",
+  "layout_revision": 2,
+  "notes": "Task-layout revision 2 title/body only. Namespaced tour IDs make older apps ignore these steps; selectors and actions remain bundled.",
   "tours": {
-    "main": [
+    "workspace-main": [
       {
         "index": 0,
-        "title": "Welcome to MSBT",
-        "body": "You need Borderlands 4 + the MSBT SDK mod (.sdkmod in the game’s sdk_mods folder) + this Electron app. Live actions also need a connected bridge — use Status in the header or Refresh Status in Boosting → Target Player.\n\nOffline: serial convert/validate. Live (game + mod + bridge): boosting, spawns, travel, delivery.\n\nPut MattsSDKBoostingTools.sdkmod next to ActorScriptDeployer under Borderlands 4/sdk_mods/. Or use Updates → Install / Update SDK Mod.\n\nTip: Updates → Refresh Catalogs pulls the latest serial/travel/pool JSON without a full app reinstall. Use the release download button below for the app + .sdkmod package."
+        "title": "Welcome to Borderlands 4 Modding Tools",
+        "body": "This guide explains the layout without applying boosts. Live actions need the game and MSBT SDK connected. Conversion and validation work offline. Home is the starting point for the task pages."
+      },
+      {
+        "index": 1,
+        "title": "Find your next task",
+        "body": "Home groups the tools by task. Open a category in the sidebar, or use Ctrl+K to find a specific control. Opening a page never runs a game action."
       },
       {
         "index": 2,
-        "title": "Boosting",
-        "body": "This is the main live lobby tab. Pick a target player, All Players, or Other Players, then use Essentials, Combat & Cheats, rarity weights, backpack/bank size, and serial rewards.\n\nShinies Deliver follows the Boost target scope. Shinies Drop remains a ground drop. Drop All Backpack is always host-only. Most buttons need the bridge — use Status in the header or Refresh Status in Target Player first. Serial Rewards use their own Selected / All Players / Other Players delivery buttons.\n\nTip: after a catalog refresh, BL4 Codes / travel / pools stay current without reinstalling the Electron app."
+        "title": "Connection and players",
+        "body": "Use Status in the header or Refresh Status on Players & Targets. Confirm the current roster before choosing a recipient. Disabled controls explain when the game connection is required."
       },
       {
         "index": 3,
-        "title": "Serial Tools",
-        "body": "Paste a @U or decoded serial → Convert to decode parts and rebuild @U (works offline). Validate serials, save keepers as Bookmarks (named groups), then Deliver Selected / All / Non-Host when the bridge is connected.\n\nTip: BL4 Codes → Load Catalog / Refresh Catalogs pulls the same remote serial seeds used by desktop cache — handy when a code was truncated or newly published."
+        "title": "Choose the recipient beside the action",
+        "body": "Use the player selector beside the controls you are about to apply. Some tools affect your character or the whole session instead; read the scope note. A named player, All Players and Other Players are different targets."
+      },
+      {
+        "index": 4,
+        "title": "Mayhem unlocks and UVH",
+        "body": "Choose a player and a Mayhem rank from 1–20, then Unlock Mayhem when you intend to apply it. This unlocks the saved rank and prepares Takedown access; it keeps higher unlocks and does not change active difficulty. Hardcore needs rank 5. UVH and challenge completion affect live lobby players separately."
+      },
+      {
+        "index": 5,
+        "title": "Prepare items before starting AFK",
+        "body": "Select items in the Catalog, Inventory or Saved Items and add them to the random or guaranteed AFK list. Serial Converter and Give Items also have shortcuts. Review AFK list opens the setup without starting the lobby. Mayhem is an optional per-guest boost; set the rank before Start."
+      },
+      {
+        "index": 6,
+        "title": "Items, saved gear and serials",
+        "body": "Saved Items & Community holds your saved gear. Use Select Multiple to select several rows; selected rows turn red. Hover cards leave clicks available to the list; pinned cards can be inspected. Converter, validation, inventory and catalog each have their own page."
+      },
+      {
+        "index": 7,
+        "title": "Weapons and survival have separate controls",
+        "body": "Infinite Reserve Ammo keeps reserve ammo. No Reload keeps the magazine from emptying. Turn No Reload off to compare reload speed. God Mode and action-skill controls have their own page and player selector."
       },
       {
         "index": 8,
-        "title": "Updates",
-        "body": "Header Updates opens this tab (hidden from the main bar by default — Find or View → Main tabs also reach it) and checks for a new desktop build. Check Desktop App, Game SDK Stack, and Catalog Data here. Download desktop updates, or Install / Update SDK Mod into your Borderlands 4 sdk_mods folder. Fully restart the game after any SDK change.\n\nRefresh Catalogs updates high-churn JSON (codes, travel, pools, Dev Spawner, tutorial tips) from the MSBT data channel — separate from app SemVer. It soft-fails offline and keeps your last-good cache."
+        "title": "Movement, travel and in-game shortcuts",
+        "body": "Movement & Flight, Player Teleport, Map Travel and Saved Locations are separate pages. Movement form changes need Apply. Use gold + QM pins for in-game F7 shortcuts; Instant Drops / Instant Holds also support user-set direct oak2 hotkeys."
+      },
+      {
+        "index": 9,
+        "title": "Updates, backups and help",
+        "body": "App & Tools contains Updates & Backups, Activity & Connection, Mobile Pairing and Help. Keep a backup before replacing SDK files; restart the game after an SDK update. The install QR gets the phone app; the pairing QR connects it to this PC."
       },
       {
         "index": 10,
-        "title": "Arrange your layout",
-        "body": "The layout toolbar is off by default. This tour turns it on so you can see it — later use View → Layout toolbar. Drag panels by the title bar, stack by dropping center-on-center, Compact to tidy, Reset for defaults, Arrange → Locked to freeze the layout.\n\nTips: stack Target with Essentials on Boosting; use Compact when panels overlap; Reset if a tab feels lost. Full editor tour is on the next screen — or View → Layout walkthrough anytime."
+        "title": "Text size, language and appearance",
+        "body": "Open App → View for text size and spacing. Choose a language in App; Australian slang is the explicit humorous option. The task layout keeps controls on their own pages. Classic retains the optional movable-panel layout."
+      },
+      {
+        "index": 11,
+        "title": "Choose another guide",
+        "body": "Choose a detailed guide below. Back revisits the previous step; Skip closes a guide. Replay from App → Walkthroughs. These guides navigate and explain controls; they do not start game actions."
+      }
+    ],
+    "workspace-layout": [
+      {
+        "index": 0,
+        "title": "Find your next task",
+        "body": "Home groups the tools by task. Open a category in the sidebar, or use Ctrl+K to find a specific control. Opening a page never runs a game action."
+      },
+      {
+        "index": 1,
+        "title": "Use the task sidebar",
+        "body": "Expand a category and choose a page. The selected page stays highlighted. On a narrow window use the navigation button to open the sidebar."
+      },
+      {
+        "index": 2,
+        "title": "Search for a control",
+        "body": "Press Ctrl+K or use this search field. A result opens the page containing that control. Searching and opening a result do not apply the control."
+      },
+      {
+        "index": 3,
+        "title": "Home and Back",
+        "body": "Home returns to the task directory. Back returns to the previous page you visited, without undoing game actions."
+      },
+      {
+        "index": 4,
+        "title": "Choose the recipient beside the action",
+        "body": "Use the player selector beside the controls you are about to apply. Some tools affect your character or the whole session instead; read the scope note. A named player, All Players and Other Players are different targets."
+      },
+      {
+        "index": 5,
+        "title": "Text size, language and appearance",
+        "body": "Open App → View for text size and spacing. Choose a language in App; Australian slang is the explicit humorous option. The task layout keeps controls on their own pages. Classic retains the optional movable-panel layout."
+      },
+      {
+        "index": 6,
+        "title": "Replay a walkthrough",
+        "body": "App → Walkthroughs reopens the guide chooser. Classic has its own panel-arrangement guide; the task layout uses pages instead of dragging panels."
       }
     ]
   }

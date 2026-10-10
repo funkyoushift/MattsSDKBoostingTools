@@ -14669,10 +14669,12 @@ async function applyRemoteTutorialCopy() {
     if (!window.msbt || typeof window.msbt.getTutorialCopy !== "function") return;
     const result = await window.msbt.getTutorialCopy();
     if (!result || !result.ok || !result.data) return;
+    // Old cached copy describes hidden tabs and movable panels in the task layout.
+    if(result.data.layout_revision!==2||result.data.layout!==(window.MsbtWorkspace?.enabled?'workspace':'classic'))return;
     const tours = result.data.tours || {};
     let applied = 0;
     for (const [tourId, patches] of Object.entries(tours)) {
-      const steps = TUTORIAL_TOURS[tourId];
+      const steps = TUTORIAL_TOURS[tourId.replace(/^workspace-/, '')];
       if (!Array.isArray(steps) || !Array.isArray(patches)) continue;
       for (const patch of patches) {
         if (!patch || typeof patch !== "object") continue;
@@ -15167,6 +15169,8 @@ const TAB_TUTORIALS = {
     }
   ]
 };
+
+window.MsbtWorkspaceWalkthroughs?.configure(TUTORIAL_TOURS,TAB_TUTORIALS);
 
 const walkthroughState = {
   active: false,
@@ -15676,6 +15680,8 @@ function walkthroughNeedsLayoutToolbar(step) {
 
 function prepareWalkthroughTarget(step) {
   if (!step) return;
+  if(window.MsbtWorkspace?.enabled&&step.section)window.MsbtWorkspace.open(step.tab,step.section);
+  if(step.revealNavigation)document.body.classList.add('workspace-menu-open');
   if (step.revealDetails) {
     const details = document.querySelector(step.revealDetails);
     if (details) details.open = true;
@@ -15704,7 +15710,7 @@ function prepareWalkthroughTarget(step) {
     // Leave detail open if the user already had items; only hide when we opened a blank preview.
     const meta = document.getElementById("invDetailMeta");
     const serial = document.getElementById("invDetailSerial");
-    const isPreview = meta && /Tour preview/i.test(String(meta.textContent || ""));
+    const isPreview = meta && /Tour preview/i.test(window.MsbtTranslateUi?.originalText(meta)||String(meta.textContent || ""));
     const emptySerial = !serial || !String(serial.value || "").trim();
     if (isPreview && emptySerial) {
       const detail = document.getElementById("invDetail");
@@ -15721,6 +15727,10 @@ function prepareWalkthroughTarget(step) {
       if (ensureWalkthroughPanelVisible(tabEl, panelId)) revealed = true;
     });
     walkthroughState._didRevealPanels = revealed;
+  }
+  // Dialog/menu targets may be nested in more than one collapsed disclosure.
+  for(let node=resolveWalkthroughTarget(step)?.parentElement;node;node=node.parentElement){
+    if(node.tagName==='DETAILS')node.open=true;
   }
 }
 
@@ -16106,7 +16116,7 @@ async function startMainTutorial({ force = false } = {}) {
 
 function startLayoutTutorial({ force = true, fromChooser = false } = {}) {
   if (!fromChooser) walkthroughState.chooserSession = false;
-  if (window.MsbtPanelLayout && typeof window.MsbtPanelLayout.applyLayoutToolbarVisible === "function") {
+  if (!window.MsbtWorkspace?.enabled && window.MsbtPanelLayout && typeof window.MsbtPanelLayout.applyLayoutToolbarVisible === "function") {
     window.MsbtPanelLayout.applyLayoutToolbarVisible(true);
   }
   beginNamedTour("layout", TUTORIAL_TOURS.layout, {

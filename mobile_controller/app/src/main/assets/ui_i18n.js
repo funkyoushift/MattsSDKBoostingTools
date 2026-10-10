@@ -1,6 +1,13 @@
 /* Shared desktop/mobile UI translations. Game messages and item data remain verbatim. */
 (() => {
   const rows = {
+    mayhem: ['Mayhem 1–20','Mayhem 1–20','Mayhem 1–20','Mayhem 1–20','Mayhem 1–20','Mayhem 1–20'],
+    mayhem_amount: ['Target Mayhem rank','Rango de Mayhem deseado','Rang de Mayhem souhaité','Rank de Mayhem desejado','Gewünschter Mayhem-Rang','Gewenste Mayhem-rang'],
+    level_amount: ['Target character level','Nivel de personaje deseado','Niveau de personnage souhaité','Nível de personagem desejado','Gewünschtes Charakterlevel','Gewenst personageniveau'],
+    spec_amount: ['Target specialization level','Nivel de especialización deseado','Niveau de spécialisation souhaité','Nível de especialização desejado','Gewünschtes Spezialisierungslevel','Gewenst specialisatieniveau'],
+    cash_amount: ['Cash added per join','Dinero añadido por entrada','Argent ajouté à chaque arrivée','Dinheiro adicionado a cada entrada','Geld pro Beitritt hinzufügen','Geld toevoegen per deelname'],
+    eridium_amount: ['Eridium added per join','Eridio añadido por entrada','Éridium ajouté à chaque arrivée','Erídio adicionado a cada entrada','Eridium pro Beitritt hinzufügen','Eridium toevoegen per deelname'],
+    keys_amount: ['Keys added per card (1–5) per join','Llaves añadidas por tarjeta (1–5) y entrada','Clés ajoutées par carte (1–5) à chaque arrivée','Chaves adicionadas por cartão (1–5) a cada entrada','Schlüssel pro Karte (1–5) und Beitritt hinzufügen','Sleutels toevoegen per kaart (1–5) per deelname'],
     start: ['Start AFK Lobby','Iniciar sala AFK','Démarrer le salon AFK','Iniciar sala AFK',"AFK-Lobby starten","AFK-lobby starten"],
     stop: ['Stop AFK Lobby','Detener sala AFK','Arrêter le salon AFK','Parar sala AFK',"AFK-Lobby stoppen","AFK-lobby stoppen"],
     openShift: ['Open SHiFT','Abrir SHiFT','Ouvrir SHiFT','Abrir SHiFT',"SHiFT öffnen","SHiFT openen"],
@@ -60,6 +67,8 @@
     if(!locales.includes(value))return;
     language=value;try{localStorage.setItem(storageKey,value);}catch{}
     apply();window.dispatchEvent(new Event('msbt-language-change'));
+    const frame=document.getElementById('editorFrame');
+    frame?.contentWindow?.postMessage({type:'msbt-ui-language',language},'*');
   }
   function labelText(label,key) {
     if(!label)return;
@@ -68,14 +77,23 @@
   }
   const ids={afkStart:'start',afkMobileStart:'start',afkStop:'stop',afkMobileStop:'stop',afkShiftOpen:'openShift',afkShiftClose:'closeShift',afkCloseShift:'restore',walkthroughHeaderBtn:'walkthroughs',afkWalkthroughBtn:'afkWalkthrough',afkPull:'pull',afkLoadBookmarks:'refresh',afkAddBookmarks:'addPool',afkAddGuaranteedBookmarks:'addFixed',bookmarkCreateFolderBtn:'createFolder',bookmarkMoveFolderBtn:'moveFolder'};
   Object.entries(ids).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.dataset.i18n=key;});
-  document.querySelectorAll('[data-afk-boost],[data-afk]').forEach(el=>labelText(el.closest('label'),el.dataset.afkBoost||el.dataset.afk));
+  document.querySelectorAll('[data-afk-boost],[data-afk]').forEach(el=>labelText(el.closest('label'),(el.dataset.afkBoost||el.dataset.afk)+(el.closest('.afk-amount')?'_amount':'')));
   [['afkAutoAccept','auto_accept'],['afkAutoKick','auto_kick'],['afkCleanupRewards','cleanup_rewards'],['afkCount','count'],['afkRandomCount','count']].forEach(([id,key])=>labelText(document.getElementById(id)?.closest('label'),key));
   ['bookmarkGroup','bookmarkFolderPath'].forEach(id=>{const el=document.querySelector('label[for="'+id+'"]');if(el)el.dataset.i18n='folder';});
   document.querySelectorAll('#afkMode option,#afkLootMode option').forEach(el=>{el.dataset.i18n=el.value==='all'?'all':'random';});
   document.querySelectorAll('[data-language-selector]').forEach(el=>{el.addEventListener('change',()=>setLanguage(el.value));});
   window.msbtI18n={t,setLanguage,apply,locales,rows,get language(){return language}};
+  window.addEventListener('message',event=>{
+    const frame=document.getElementById('editorFrame');
+    if(event.data?.type==='msbt-ui-language-ready'&&frame&&event.source===frame.contentWindow)
+      event.source.postMessage({type:'msbt-ui-language',language},'*');
+    if(document.documentElement.dataset.msbtLanguageSurface==='editor'&&window.parent!==window&&event.source===window.parent&&event.data?.type==='msbt-ui-language'&&locales.includes(event.data.language))
+      setLanguage(event.data.language);
+  });
+  if(document.documentElement.dataset.msbtLanguageSurface==='editor'&&window.parent!==window)
+    window.parent.postMessage({type:'msbt-ui-language-ready'},'*');
   window.addEventListener('storage', event => {
-    if(event.key===storageKey){language=locales.includes(event.newValue)?event.newValue:'en';apply();window.dispatchEvent(new Event('msbt-language-change'));}
+    if(event.key===storageKey)setLanguage(locales.includes(event.newValue)?event.newValue:'en');
   });
   apply();
 })();

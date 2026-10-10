@@ -88,6 +88,7 @@
   }
   nav.append(routeButton("boosting", "Home", "overview"));
   const back = document.createElement("button");
+  back.id = "workspaceBackBtn";
   back.type = "button"; back.textContent = "Back"; back.disabled = true;
   back.setAttribute("aria-label", "Back to previous page");
   back.addEventListener("click", () => {
@@ -376,7 +377,7 @@
     }
     const group = groups.find(([, routes]) => routes.some(([t, , s]) => t === tab && (s || defaultSection(t)) === section));
     if (key !== nav.dataset.currentRoute) {
-      nav.querySelectorAll(":scope > details").forEach(el => { el.open = el.querySelector("summary").textContent === group?.[0]; });
+      nav.querySelectorAll(":scope > details").forEach(el => { const summary=el.querySelector("summary"); el.open = (window.MsbtTranslateUi?.originalText(summary)||summary.textContent) === group?.[0]; });
       nav.dataset.currentRoute = key;
     }
     const route = group?.[1].find(([t, , s]) => t === tab && (s || defaultSection(t)) === section);

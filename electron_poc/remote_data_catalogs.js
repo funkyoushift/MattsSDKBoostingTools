@@ -802,6 +802,8 @@ async function loadTutorialCopy(userDataPath, options = {}) {
         schema_version: Number(data.schema_version) || 1,
         kind,
         min_app_version: text(data.min_app_version),
+        layout: ['workspace','classic'].includes(data.layout) ? data.layout : '',
+        layout_revision: Number(data.layout_revision) || 0,
         notes: text(data.notes),
         tours: data.tours && typeof data.tours === "object" ? data.tours : {}
       }

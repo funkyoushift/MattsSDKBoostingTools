@@ -127,7 +127,7 @@ async function auditWalkthroughs() {
   const overlay = JSON.parse(
     fs.readFileSync(path.join(__dirname, "..", "docs", "data", "tutorial_copy.json"), "utf8")
   );
-  for (const patch of overlay.tours.main || []) {
+  for (const patch of (overlay.layout==='classic'?overlay.tours.main:[]) || []) {
     assert.ok(result.mainTitles[patch.index], `tutorial overlay index ${patch.index} is out of range`);
     assert.strictEqual(
       result.mainTitles[patch.index],

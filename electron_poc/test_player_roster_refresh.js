@@ -11,12 +11,18 @@ app.whenReady().then(async()=>{
       const check=(ok,message)=>{if(!ok)throw new Error(message);};
       const selects=[els.targetSelect,els.boostSerialTargetSelect,els.devTargetSelect,els.bookmarkTargetSelect,els.bl4TargetSelect,els.movementTargetSelect,els.invTargetSelect,els.invGiveTargetSelect].filter(Boolean);
       document.querySelectorAll('dialog[open]').forEach(dialog=>dialog.close());
-      document.body.replaceChildren(els.bl4SearchInput,els.bl4RarityFilter,...selects);
+      // Keep app-owned controls present: status reconciliation also updates the
+      // new task-page selectors. Put just the focus-test fields on top.
+      document.querySelectorAll('.modal-shell,.msbt-boot-splash').forEach(n=>n.style.display='none');
+      const fixture=document.createElement('section');fixture.style.cssText='position:fixed;inset:0;z-index:99999;background:#222;overflow:auto';
+      fixture.append(els.bl4SearchInput,els.bl4RarityFilter,...selects);document.body.append(fixture);
       state.bridgeFingerprints={};state.pendingTargetValue='';state.scopedRunActive=false;state.movementAutoApplyOnStart=false;
       const host={index:0,name:'Host'},guest={index:1,name:'Guest'},joiner={index:2,name:'Joined'};
       const status=(players,selected=host)=>({ok:true,data:{ok:true,snapshot_ready:true,players,host_player_index:0,selected_player:selected?.name || '',selected_player_index:selected?.index ?? null}});
       const apply=s=>applyBridgeStatusResult(s,{quiet:true});
       const roster=select=>[...select.options].map(o=>o.value);
+      apply(status([{index:0,name:'Save'}]));
+      for(const locale of ['fr','en-AU','en']){msbtI18n.setLanguage(locale);MsbtTranslateUi.apply();check(selects.every(s=>s.options[1].textContent.includes('Save')),'player name was translated');}
       apply(status([host]));
       const hostOptions=selects.map(select=>select.options[1]);
       els.bl4SearchInput.value='Search stays here';els.bl4SearchInput.focus();els.bl4SearchInput.setSelectionRange(3,8);

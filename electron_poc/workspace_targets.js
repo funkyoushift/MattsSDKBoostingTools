@@ -47,10 +47,15 @@
         ...(mode === "public" ? [["scope:local", "My Character"]] : []),
         ["scope:all", "All Players"], ["scope:nonhost", "Other Players"],
         ...state.players.map(p => ["player:" + playerValue(p), playerLabel(p)])
-      ] : Array.from(source?.options || [], o => [o.value, o.textContent]);
+      ] : Array.from(source?.options || [], o => [o.value, window.MsbtTranslateUi?.originalText(o)||o.textContent]);
       const signature = JSON.stringify(rows);
       if (select.dataset.options !== signature) {
-        select.replaceChildren(...rows.map(([value, text]) => new Option(text, value)));
+        select.replaceChildren(...rows.map(([value, text]) => {
+          const option=new Option(text,value);
+          // A player named "Save" is still a player, never interface text.
+          if(value.startsWith("player:")||(!scoped&&value))option.dataset.i18nSkip="";
+          return option;
+        }));
         select.dataset.options = signature;
       }
       const value = scoped ? currentScope === "selected" ? (state.selectedTarget ? "player:" + state.selectedTarget : "") : "scope:" + currentScope

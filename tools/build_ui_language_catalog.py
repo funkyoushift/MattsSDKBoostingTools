@@ -14,6 +14,11 @@ else:
  # Review edits can be compiled offline in a clean checkout, without translation caches.
  bundled=Path('electron_poc/ui_language_catalog.js').read_text(encoding='utf-8')
  rows=json.JSONDecoder().raw_decode(bundled.split('window.MsbtLanguageCatalog = ',1)[1])[0]
+additions=Path('electron_poc/ui_language_additions.json')
+if additions.exists():
+ for key,values in json.loads(additions.read_text(encoding='utf-8')).items():
+  assert set(values)==set(langs),(key,'Missing language')
+  rows[key]=dict(values)
 for vals in json.loads(Path('electron_poc/ui_language_overrides.json').read_text(encoding='utf-8')):rows[vals[0]]=dict(zip(langs,vals[1:]))
 reviewed=set()
 for entry in json.loads(Path('electron_poc/ui_language_context.json').read_text(encoding='utf-8')):
@@ -24,7 +29,7 @@ for entry in json.loads(Path('electron_poc/ui_language_context.json').read_text(
   rows[key]=dict(entry['translations'])
 australian=json.loads(Path('electron_poc/ui_language_australian.json').read_text(encoding='utf-8'))
 for key in australian:
- rows.setdefault(key,{l:key for l in langs})
+ assert key in rows,('Australian copy needs translations for the other languages',key)
 for key,values in rows.items():
  values['en-AU']=australian.get(key,key)
 for k in ['Borderlands 4 Modding Tools','Powered by Funk','SHiFT','AFK','UVHM','UVHM 1–7','MSBT','Steam','Epic Games']:
@@ -39,4 +44,5 @@ text+='window.MsbtReviewedLanguageKeys = '+json.dumps(sorted(reviewed),ensure_as
 Path('electron_poc/ui_language_catalog.js').write_text(text,encoding='utf-8')
 for name in ['ui_language_catalog.js','ui_localization.js','ui_i18n.js']:
  Path('mobile_controller/app/src/main/assets',name).write_bytes(Path('electron_poc',name).read_bytes())
+ Path('external_app/v22_parts_codes_fixed/matt_editor/js',name).write_bytes(Path('electron_poc',name).read_bytes())
 print('Bundled strings:',len(rows),'templates:',sum(bool(re.search(r'\{\d+\}',k)) for k in rows))

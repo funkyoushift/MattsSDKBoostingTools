@@ -1,6 +1,6 @@
 {
   "name": "matts-sdk-boosting-tools",
-  "version": "2.35.1",
+  "version": "2.35.2",
   "private": true,
   "description": "Borderlands 4 Modding Tools — Powered by Funk.",
   "author": "FunkYouSHiFT",
@@ -9,7 +9,7 @@
   "scripts": {
     "test:card-layout": "node --test test_native_preview_client.js test_catalog_card_images.js && electron test_native_card_expanded.js && electron test_item_card_preview.js && electron test_item_card_views.js",
     "test:concurrent-delivery": "node test_poll_coordinator.js && electron test_concurrent_delivery_progress.js && electron test_afk_guest_progress.js",
-    "test:languages": "node --check ui_localization.js && node --check ui_language_catalog.js && electron test_ui_i18n.js && electron test_ui_languages_full.js",
+    "test:languages": "node --check ui_localization.js && node --check ui_language_catalog.js && electron test_ui_i18n.js && electron test_ui_languages_full.js && electron test_ui_language_coverage.js && electron test_editor_language_sync.js",
     "test:save-import": "node test_save_items_import.js && electron test_save_items_import_ui.js",
     "test:community": "electron test_community_folders_ui.js && electron test_developer_portal.js",
     "test:persistent-updater": "node test_persistent_updater.js",
@@ -36,7 +36,8 @@
     "test:responsive": "node --check workspace.js && electron test_responsive_workspace.js",
     "test:mobile-remote": "node --check remote_afk.js && node --check remote_crypto.js && electron test_mobile_afk.js",
     "test:afk-followups": "electron test_bookmark_folders.js && electron test_ui_i18n.js && electron test_afk_lobby.js && electron test_mobile_afk.js",
-    "test:remote-resilience": "node test_remote_persistence.js && node test_bridge_discovery.js && node test_remote_background.js && node test_remote_close_electron.js && node test_phone_reconnect.js && node ../tools/afk_lobby/test_shift_link.js"
+    "test:remote-resilience": "node test_remote_persistence.js && node test_bridge_discovery.js && node test_remote_background.js && node test_remote_close_electron.js && node test_phone_reconnect.js && node ../tools/afk_lobby/test_shift_link.js",
+    "test:walkthroughs": "electron test_walkthrough_targets.js && electron test_workspace_walkthroughs.js"
   },
   "build": {
     "appId": "com.funkyoushift.msbt",

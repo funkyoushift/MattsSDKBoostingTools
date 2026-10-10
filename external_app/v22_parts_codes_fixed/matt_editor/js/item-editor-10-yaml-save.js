@@ -10705,7 +10705,7 @@
                         if (typeIdOption) {
                             foundManufacturer = isClassMod ? 'Class Mods' : manufacturerOption.value;
                             // Remove "Class Mod" suffix from type name to avoid duplication
-                            foundType = (typeIdOption.textContent || '').replace(/\s*Class Mod\s*$/i, '').trim();
+                            foundType = (window.MsbtTranslateUi?.originalText(typeIdOption)||typeIdOption.textContent||'').replace(/\s*Class Mod\s*$/i, '').trim();
                             
                     // Restore selections
                     manufacturerSelect.value = currentManufacturer;
@@ -15050,7 +15050,7 @@
             if (!backpackSection) return;
             
             const header = backpackSection.querySelector('h5');
-            if (!header || !header.textContent.includes('📍 backpack')) return;
+            if (!header || !(window.MsbtTranslateUi?.originalText(header)||header.textContent).includes('📍 backpack')) return;
 
             // Count all items in backpack (numbered slots + "No Slot" items)
             const allSlotElements = container.querySelectorAll(".backpack-slot-item");
@@ -15448,7 +15448,8 @@
             
             const headers = decodedItemsDisplay.querySelectorAll('h5');
             for (const header of headers) {
-                if (header.textContent.toLowerCase().includes('lost loot') || header.textContent.toLowerCase().includes('lost_loot')) {
+                const originalHeader=(window.MsbtTranslateUi?.originalText(header)||header.textContent).toLowerCase();
+                if (originalHeader.includes('lost loot') || originalHeader.includes('lost_loot')) {
                     header.textContent = `📍 lost loot (${itemCount} items)`;
                     break;
                 }
