@@ -4,7 +4,7 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
-- [2026-10-10: Desktop layout release](changes/2026-10-10-layout-release.md) — Navigation, targeting, AFK shortcuts and hover fixes; 2.35.1 build verification in progress.
+- [2026-10-10: Desktop layout release](changes/2026-10-10-layout-release.md) — Navigation, targeting, AFK shortcuts and hover fixes; 2.35.1 published stable; source/package checks, all 11 public hashes and release-policy CI passed.
 
 - [Mayhem v2.35.0 release](changes/2026-10-10-mayhem-release.md) - published stable; selected-player and AFK Mayhem, targeted runtime repairs, live AFK and packaged restart checks passed; all 11 public hashes and CI verified.
 

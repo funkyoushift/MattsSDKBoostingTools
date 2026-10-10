@@ -8,4 +8,8 @@ Final app.asar navigation, AFK handoff and Mayhem tests passed in isolated fixtu
 31 persistent installer checks passed; packaged runtime, 3251 asset checks, executable smoke and updater checks passed.
 The first build was rejected because metadata changed mid-build; the complete final rebuild passed.
 Android 1.6.2 carried forward unchanged; no new Android or game testing claimed.
-Public download hashes and CI pending publication.
+Published stable/latest v2.35.1; all 11 public downloads match local SHA-256 hashes.
+Tag: e80e680627b03d36d05a9a877998620571a5b7c2.
+CI run 38029815906 release-policy passed; redundant hosted build intentionally skipped.
+Public verification receipt: C:/src/MSBT-Workspace/local/layout-release-2026-10-10/public-verification.json.
+No local installed-app update performed.
