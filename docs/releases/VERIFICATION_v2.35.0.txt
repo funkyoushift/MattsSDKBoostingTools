@@ -1,0 +1,16 @@
+MSBT v2.35.0 candidate verification — 2026-10-10
+Isolated baseline: v2.34.0, preserving remote publication notes.
+New capabilities: selected-player and optional AFK Mayhem ranks 1–20.
+Source identity embedded in latest.json: f3ae604 (full SHA in manifest).
+Later commits contain documentation and test assertions only.
+141 focused Python tests passed; compileall passed; full npm check passed.
+31 installer checks passed; packaged dependencies and updater checks passed.
+Installed release SDK SHA256 b9c329988e4086403f8ae82a3cb774fcafb8544454ed7a3ec9709764adece16b.
+Live AFK host test passed: rank20, lobby rank20, prerequisite Completed.
+Manual host 10->20 and earlier guest own-lobby save/launch confirmation recorded separately.
+Packaged executable smoke passed; packaged-code settings save/restore/unchecked passed.
+Android 1.6.2 carried forward byte-identically; no new physical-phone test claimed.
+Standalone SDK Python contents match current release source.
+Public assets/checksums and CI verification pending publication.
+Local receipts: C:/src/MSBT-Workspace/local/mayhem-2026-10-10.
+Whole-game mission completion excluded; remains research-only.
