@@ -1,6 +1,6 @@
 # v2.35.0
 
-Mayhem 1-20 selected-player unlock controls and tested bridge, camera, Party Reveal, and Farming status repairs. See docs/releases/RELEASE_NOTES_v2.35.0.md.
+Mayhem 1-20 selected-player and optional AFK guest unlock controls and tested bridge, camera, Party Reveal, and Farming status repairs. See docs/releases/RELEASE_NOTES_v2.35.0.md.
 
 # Changelog
 

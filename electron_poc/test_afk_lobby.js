@@ -94,6 +94,7 @@ app.whenReady().then(async () => {
     await new Promise(resolve => setTimeout(resolve, 30));
     if (calls.length !== 3 || !document.getElementById('afkStatus').textContent.includes('custom AFK boost amounts')) throw Error('Old SDK accepted custom amounts');
     const savedAmounts = JSON.parse(localStorage.getItem('msbt.afk-lobby.v1'));
+    if (!savedAmounts.mayhem || savedAmounts.mayhem_amount !== 17) throw Error('Mayhem settings were not preserved');
     for (const [key, value] of Object.entries(amounts)) if(savedAmounts[key+'_amount'] !== value) throw Error('Amount was not saved: '+key);
     await window.msbtAfkConfigStore.save(savedAmounts);
     const durableAmounts = await window.msbtAfkConfigStore.load();

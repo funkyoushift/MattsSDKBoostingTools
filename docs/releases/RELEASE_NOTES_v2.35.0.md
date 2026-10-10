@@ -31,7 +31,7 @@ option off until enabled. An older SDK cannot silently skip the new option.
 
 ## Verification
 
-107 focused SDK tests passed, including no-BLImGui startup/bridge checks.
+141 focused SDK and AFK tests passed, including no-BLImGui startup/bridge checks.
 Desktop Mayhem controls passed in workspace and classic layouts. The installed
 candidate's desktop button raised the host from 10 to 20 while active difficulty
 stayed at 10; Farming ON/status/OFF restored normal damage. Earlier guest feedback
