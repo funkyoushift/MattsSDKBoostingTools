@@ -1,0 +1,11 @@
+MSBT v2.35.1 layout release verification - 2026-10-10
+Baseline: published v2.35.0; source identity a1cf711 (full SHA in latest.json).
+Windows UI only; SDK runtime code unchanged apart from matching version metadata.
+Python compileall and six startup/import tests passed.
+Full npm check passed, including 588 responsive measurements, AFK, walkthrough and offline install checks.
+Focused navigation (40 routes), five AFK handoff routes, inline targeting, control clarity, hover cards, Mayhem and feature search passed.
+Final app.asar navigation, AFK handoff and Mayhem tests passed in isolated fixtures.
+31 persistent installer checks passed; packaged runtime, 3251 asset checks, executable smoke and updater checks passed.
+The first build was rejected because metadata changed mid-build; the complete final rebuild passed.
+Android 1.6.2 carried forward unchanged; no new Android or game testing claimed.
+Public download hashes and CI pending publication.
