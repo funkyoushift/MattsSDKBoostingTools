@@ -75,7 +75,7 @@ app.whenReady().then(async () => {
     const unlocked = !document.getElementById('afkCodes').disabled && !lootMode.disabled;
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready for testing â€” select boosts, then Start AFK Lobby.',history:[],shift_connected:true,shift_running:false}});
     const panel = document.getElementById('afkLobbyPanel');
-    document.querySelector('[data-workspace-local-section="afk"]').click();
+    document.querySelector('.workspace-sidebar [data-workspace-section="afk"]').click();
     document.getElementById('msbtBootSplash').style.display = 'none';
     if (getComputedStyle(panel).display === 'none') throw new Error('AFK navigation did not reveal panel');
     panel.scrollIntoView();

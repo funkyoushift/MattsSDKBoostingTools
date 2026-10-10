@@ -20,36 +20,43 @@
 
   document.body.classList.add("msbt-workspace");
   const groups = [
-    ["Character & Boosting", [["boosting", "Boosting"], ["boosting", "AFK Lobby", "afk"], ["boosting", "Levels & XP", "levels"], ["boosting", "Currency", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Mayhem, UVH & Challenges", "challenges"]]],
-    ["Items & Inventory", [["inventory", "Inventory"], ["bl4-codes", "Item Catalog"], ["serial-tools", "Saved Items", "saved"], ["boosting", "Give Items", "rewards"], ["boosting", "Ground Loot & Vendors", "loot"], ["boosting", "Rarity Weights", "rarity"], ["item-pool", "Random Loot Pools"]]],
-    ["Spawning & Waves", [["dev-spawner", "Spawn Enemies & Objects"], ["hoard-builder", "Hoard Builder"], ["combat-vehicle", "Vehicles", "vehicles"]]],
-    ["Movement & World", [["player-movement", "Movement"], ["player-movement", "Teleport & World", "world"], ["map-travel", "Map Travel"], ["boosting", "Camera", "camera"]]],
-    ["Party & Combat", [["combat-vehicle", "Party & Chaos", "chaos"], ["combat-vehicle", "Combat Tuning", "combat"], ["boosting", "Combat Cheats", "combat"]]],
-    ["Editors & Advanced", [["matt-editor", "Matt Editor"], ["serial-tools", "Serial Converter", "convert"], ["serial-tools", "Item Validation", "validate"], ["boosting", "Experimental Character Tools", "experimental"]]],
-    ["Shortcuts & Settings", [["quick-menu", "In-game F7 Menu"], ["mobile-gateway", "Mobile Pairing"], ["updates", "Updates"], ["activity", "Activity & Connection"], ["report", "Help & Report an Issue"], ["credits", "Credits"]]]
+    ["Party & AFK", [["boosting", "Players & Targets", "players"], ["boosting", "AFK Lobby", "afk"], ["combat-vehicle", "Party & Chaos", "chaos"]]],
+    ["Character & Progression", [["boosting", "Levels, XP & Skills", "levels"], ["boosting", "Currency & Vault Keys", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Mayhem, UVH & Challenges", "challenges"], ["boosting", "Experimental Character Tools", "experimental"]]],
+    ["Items & Loot", [["inventory", "Inventory & Bank"], ["bl4-codes", "Item Catalog"], ["serial-tools", "Saved Items & Community", "saved"], ["boosting", "Give Items by Serial", "rewards"], ["matt-editor", "Matt Editor"], ["serial-tools", "Serial Converter", "convert"], ["serial-tools", "Item Validation", "validate"], ["boosting", "Ground Loot & Backpack Drops", "loot"], ["boosting", "Chests & Vendors", "vendors"], ["boosting", "Drop Rates & Rarity", "rarity"], ["item-pool", "Random Loot Pools"]]],
+    ["Combat & Survival", [["boosting", "Weapons & Ammo", "combat"], ["combat-vehicle", "God Mode & Action Skills", "combat"], ["combat-vehicle", "Damage & Repair Kits", "tuning"]]],
+    ["Movement & World", [["player-movement", "Movement & Flight", "movement"], ["player-movement", "Player Teleport", "teleport"], ["map-travel", "Map Travel & Favorites", "travel"], ["map-travel", "Saved Locations", "locations"], ["map-travel", "Map Reveal & Fog", "reveal"], ["boosting", "Camera & Third Person", "camera"], ["player-movement", "World & Interaction", "world"]]],
+    ["Spawning & Encounters", [["dev-spawner", "Spawn Enemies & Objects"], ["hoard-builder", "Hoard Builder"], ["combat-vehicle", "Vehicles", "vehicles"], ["boosting", "Enemy Actions", "enemies"]]],
+    ["App & Tools", [["quick-menu", "In-game F7 Menu"], ["mobile-gateway", "Mobile Pairing"], ["updates", "Updates & Backups"], ["activity", "Activity & Connection"], ["report", "Help & Report an Issue"], ["credits", "Credits"]]]
   ];
   const sections = {
     boosting: [
-      ["overview", "Quick Actions", ["boost-essentials"]],
+      ["overview", "Home", ["boost-essentials"]],
+      ["players", "Players & Targets", ["boost-target"]],
       ["afk", "AFK Lobby", ["afk-lobby"]],
-      ["levels", "Levels & XP", ["boost-levels", "boost-combat-xp"]],
+      ["levels", "Levels, XP & Skills", ["boost-levels", "boost-combat-xp", "boost-max-all"]],
       ["currency", "Currency", ["boost-currency"]],
       ["capacity", "Unlocks & Capacity", ["boost-unlocks", "boost-inventory"]],
       ["challenges", "Mayhem, UVH & Challenges", ["boost-uvh", "boost-challenges"]],
       ["rewards", "Give Items", ["boost-serial"]],
-      ["loot", "Loot & Vendors", ["boost-ground-loot", "boost-farm"]],
+      ["loot", "Ground Loot & Backpack Drops", ["boost-drops", "boost-ground-loot"]],
+      ["vendors", "Chests & Vendors", ["boost-farm"]],
       ["rarity", "Rarity", ["boost-rarity"]],
       ["camera", "Camera", ["boost-debug"]],
-      ["combat", "Combat", ["boost-weapon-tests", "boost-cheats"]],
+      ["combat", "Weapons & Ammo", ["boost-weapon-tests"]],
+      ["enemies", "Enemy Actions", ["boost-cheats"]],
       ["experimental", "Experimental", ["boost-late-join"]],
       ["all", "All Controls", null]
     ],
     "serial-tools": [["saved", "Saved Items", ["serial-bookmarks"]], ["convert", "Serial Converter", ["serial-tools-main"]], ["validate", "Validate Items", ["serial-validator"]], ["all", "All Controls", null]],
-    "player-movement": [["movement", "Movement", ["move-presets", "move-speed", "move-jump", "move-infjump", "move-wall", "move-glide"]], ["world", "World & Teleport", ["move-world", "move-teleport"]], ["all", "All Controls", null]],
-    "combat-vehicle": [["chaos", "Party & Chaos", ["streamer-chaos"]], ["combat", "Combat Tuning", ["combat-skill-tests", "combat-tuning"]], ["vehicles", "Vehicles", ["vehicle-tuning"]], ["all", "All Controls", null]]
+    "player-movement": [["movement", "Movement & Flight", ["move-presets", "move-speed", "move-jump", "move-infjump", "move-wall", "move-glide", "move-flight"]], ["world", "World & Interaction", ["move-world", "move-interaction"]], ["teleport", "Player Teleport", ["move-teleport"]], ["all", "All Controls", null]],
+    "map-travel": [["travel", "Map Travel & Favorites", ["travel-main", "travel-favorites"]], ["locations", "Saved Locations", ["travel-xyz"]], ["reveal", "Map Reveal & Fog", ["travel-reveal"]], ["all", "All Controls", null]],
+    "combat-vehicle": [["chaos", "Party & Chaos", ["dev-target", "streamer-chaos"]], ["combat", "God Mode & Action Skills", ["combat-skill-tests"]], ["tuning", "Damage & Repair Kits", ["combat-tuning"]], ["vehicles", "Vehicles", ["vehicle-tuning"]], ["all", "All Controls", null]]
   };
   const selected = {};
-  const shared = new Set(["boost-target", "boost-result", "move-result", "dev-target"]);
+  const history = [];
+  let currentRoute = "";
+  let goingBack = false;
+  const shared = new Set(["boost-target", "boost-result", "move-result"]);
   const roots = new Map();
   const titles = { boosting: "Boosting", "dev-spawner": "Spawn enemies & objects", "serial-tools": "Items & serials", "player-movement": "Movement & world", "combat-vehicle": "Party & gameplay", "quick-menu": "In-game F7 menu", "map-travel": "Map travel" };
   const descriptions = { boosting: "Choose who receives the action, then choose a task.", "serial-tools": "Find saved items, convert serials, and validate gear.", "player-movement": "Adjust movement or travel between players.", "combat-vehicle": "Player targeting stays with the actions that use it.", "quick-menu": "Organize your in-game shortcuts.", "map-travel": "Maps, travel stations, and saved locations." };
@@ -71,26 +78,42 @@
   side.append(close);
   const nav = document.createElement("nav");
   nav.setAttribute("aria-label", "Main workspaces");
+  function routeButton(tab, label, section) {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = label;
+    b.dataset.workspaceTab = tab;
+    b.dataset.workspaceSection = section || "";
+    b.addEventListener("click", () => open(tab, section || defaultSection(tab)));
+    return b;
+  }
+  nav.append(routeButton("boosting", "Home", "overview"));
+  const back = document.createElement("button");
+  back.type = "button"; back.textContent = "Back"; back.disabled = true;
+  back.setAttribute("aria-label", "Back to previous page");
+  back.addEventListener("click", () => {
+    const previous = history.pop();
+    if (!previous) return;
+    goingBack = true;
+    const [tab, section] = previous.split(":");
+    open(tab, section); goingBack = false;
+    back.disabled = history.length === 0;
+  });
+  nav.append(back);
   groups.forEach(([name, routes]) => {
     const group = document.createElement("details");
+    group.open = false;
     const heading = document.createElement("summary");
     heading.textContent = name;
     group.append(heading);
     routes.forEach(([tab, label, section]) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = label;
-      b.dataset.workspaceTab = tab;
-      b.dataset.workspaceSection = section || "";
-      b.addEventListener("click", () => open(tab, section || defaultSection(tab)));
-      group.append(b);
+      group.append(routeButton(tab, label, section));
     });
     nav.append(group);
   });
   side.append(nav);
   const hint = document.createElement("p");
   hint.className = "workspace-sidebar-hint";
-  hint.textContent = "Text size and spacing are in View. Search all tools with Ctrl+K.";
+  hint.textContent = "Search all tools with Ctrl+K. App → View has text size and spacing.";
   side.append(hint);
   const main = document.querySelector(".tab-shell");
   main.before(shell);
@@ -118,13 +141,13 @@
   });
 
   // Split the large mixed cheat panel without replacing any controls or handlers.
-  function newPanel(id, title) {
+  function newPanel(id, title, tab = "boosting") {
     const p = document.createElement("section");
     p.className = "panel";
     p.dataset.msbtPanel = id;
     p.dataset.msbtTitle = title;
     const h = document.createElement("h2"); h.textContent = title; p.append(h);
-    document.getElementById("tab-boosting").append(p);
+    document.getElementById("tab-" + tab).append(p);
     return p;
   }
   const levels = newPanel("boost-levels", "Levels & XP");
@@ -144,6 +167,115 @@
   const cosmetic = document.querySelector('[data-action="devperk_4"]');
   if (cosmetic) unlocks.append(cosmetic);
 
+  const panel = id => document.querySelector(`[data-msbt-panel="${id}"]`);
+  function note(parent, text) {
+    const p = document.createElement("p"); p.className = "muted-line"; p.textContent = text; parent.append(p);
+  }
+  function move(selector, parent) {
+    const node = document.querySelector(selector);
+    if (node) parent.append(node);
+  }
+  function renamePanel(id, title) {
+    panel(id).dataset.msbtTitle = title;
+    panel(id).querySelector("h2").textContent = title;
+  }
+  renamePanel("boost-result", "Last Action Result");
+  const appMenu = document.createElement("details"); appMenu.className = "workspace-app-menu";
+  const appMenuTitle = document.createElement("summary"); appMenuTitle.textContent = "App";
+  const appMenuBody = document.createElement("div"); appMenuBody.className = "workspace-app-menu-body";
+  appMenu.append(appMenuTitle, appMenuBody);
+  ['[data-language-selector]', '#walkthroughHeaderBtn', '#developerPortalHeaderBtn', '#updateBtn'].forEach(s => move(s, appMenuBody));
+  appMenuBody.append(modeButton); document.querySelector('.header-main-actions').append(appMenu);
+  function positionAppMenu() {
+    if (!appMenu.open) return;
+    const r = appMenu.getBoundingClientRect();
+    const width = Math.min(260, innerWidth - 32);
+    const top = Math.max(16, Math.min(r.bottom + 8, innerHeight - 160));
+    appMenuBody.style.left = Math.max(16, Math.min(r.right - width, innerWidth - width - 16)) + 'px';
+    appMenuBody.style.top = top + 'px';
+    appMenuBody.style.maxHeight = (innerHeight - top - 16) + 'px';
+  }
+  appMenu.addEventListener('toggle', positionAppMenu);
+  window.addEventListener('resize', positionAppMenu);
+  move('#developmentSupportBtn', document.querySelector('.support-links'));
+  move('#boostMobileNotice', document.getElementById('tab-mobile-gateway'));
+  document.querySelector('#boostMobileNotice p').textContent = "Install the phone app with Install QR, then use the pairing controls on this page to connect it.";
+  move('#boostUpdateNotice', document.querySelector('.updates-page'));
+  document.addEventListener('click', e => { if (!appMenu.contains(e.target)) appMenu.open = false; });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') appMenu.open = false; });
+  // Move the original nodes before renderer.js binds handlers. No action is copied or run.
+  const skillReset = document.createElement("details");
+  const skillSummary = document.createElement("summary"); skillSummary.textContent = "Reset skill tree (host only)";
+  skillReset.append(skillSummary); levels.append(skillReset);
+  move('[data-action="reset_skills"]', skillReset);
+  renamePanel("boost-cheats", "Enemy Actions");
+  note(panel("boost-cheats"), "Kill All Enemies is separate from cleaning up spawned actors. For spawn cleanup or wave controls, open the tools below.");
+  panel("boost-cheats").append(routeButton("dev-spawner", "Spawn & clean up actors"), routeButton("hoard-builder", "Plan & run waves"));
+  const drops = newPanel("boost-drops", "Backpack & Shiny Drops");
+  note(drops, "Drop My Backpack affects your own character. Shinies: Deliver uses Players & Targets above; Shinies: Drop creates ground loot.");
+  ['[data-action="chaos_drop_backpack"]', '[data-action="drop_all_shinies"]', '#shinyDeliverBtn', '[data-action="devperk_7"]'].forEach(s => move(s, drops));
+  const maxAll = newPanel("boost-max-all", "Combined Character Boost");
+  note(maxAll, "Use individual level, currency and unlock controls for smaller changes. Max All uses the selected boost scope.");
+  move('[data-action="max_all"]', maxAll);
+  move('#thirdPersonToggleBtn', panel("boost-debug"));
+  note(panel("boost-debug"), "Third Person is client-local. Disable the standalone Third Person zip while using this toggle. Its hotkey is set in oak2’s Mods keybind UI.");
+  const interaction = newPanel("move-interaction", "Instant Interactions", "player-movement");
+  move('#instantDropsToggleBtn', interaction); move('#instantHoldsToggleBtn', interaction);
+  note(interaction, "Set Instant Drops and Instant Holds hotkeys in oak2’s Mods keybind UI. Use + QM to pin them to F7.");
+  move('#liveModsStatus', interaction);
+  const movementTarget = newPanel("move-target", "Movement Target", "player-movement");
+  move('label[for="movementScope"]', movementTarget); move('#movementScope', movementTarget);
+  shared.add("move-target");
+  move('#movementStatus', panel("move-result"));
+  const flight = newPanel("move-flight", "Flight & Noclip", "player-movement");
+  ['[data-movement-action="movement_toggle_noclip"]', '[data-movement-action="movement_toggle_force_fly"]', 'label[for="movementFlySpeed"]', '#movementFlySpeed', '[data-movement-action="movement_apply_fly_speed"]'].forEach(s => move(s, flight));
+  move('[data-msbt-panel="move-world"] > p.muted-line', flight);
+  panel("move-world").querySelectorAll('[data-movement-action^="movement_super_dash"]').forEach(n => panel("move-glide").append(n));
+  renamePanel("move-world", "World Time & Targeting");
+  // Home is a directory of tasks, never a collection of unrelated live actions.
+  const home = panel("boost-essentials");
+  home.replaceChildren(); home.dataset.msbtTitle = "Home";
+  const homeTitle = document.createElement("h2"); homeTitle.textContent = "What would you like to do?"; home.append(homeTitle);
+  note(home, "Choose a task below, or search for any control with Ctrl+K. Each tool keeps its own targeting and results beside its controls.");
+  const cards = document.createElement("div"); cards.className = "workspace-home-grid";
+  groups.forEach(([name, routes]) => {
+    const card = document.createElement("section"); const h = document.createElement("h3"); h.textContent = name; card.append(h);
+    routes.slice(0, 3).forEach(([tab, label, section]) => card.append(routeButton(tab, label, section)));
+    const more = document.createElement("details"); const summary = document.createElement("summary");
+    summary.textContent = `More tools (${routes.length - 3})`; more.append(summary);
+    routes.slice(3).forEach(([tab, label, section]) => more.append(routeButton(tab, label, section)));
+    if (routes.length > 3) card.append(more);
+    cards.append(card);
+  });
+  home.append(cards);
+  // Map editing is separate from choosing a destination.
+  const reveal = newPanel("travel-reveal", "Map Reveal & Fog", "map-travel");
+  note(reveal, "Party Reveal uncovers guest maps. Host Clear Fog fills this machine’s tiles. Hide Fog changes only this client’s overlay.");
+  panel("travel-main").querySelectorAll('[data-action^="party_reveal"], [data-action^="fog_of_war"]').forEach(n => reveal.append(n));
+  const probe = document.createElement("details"); const probeTitle = document.createElement("summary");
+  probeTitle.textContent = "Advanced guest-grid diagnostics"; probe.append(probeTitle); reveal.append(probe);
+  move('[data-msbt-panel="travel-main"] > p.muted-line', probe);
+  panel("travel-main").querySelectorAll('[data-action^="guest_grid"]').forEach(n => probe.append(n));
+  panel("travel-main").querySelector("p").textContent = "Choose a map, then a station on that map. Travel favorites stay below; saved in-map positions and map reveal have their own pages.";
+  // Keep the slot being edited ahead of optional F7 modules and command history.
+  const qm = document.getElementById("tab-quick-menu");
+  ["qm-slots", "qm-slot-editor", "qm-pin", "qm-modules"].forEach(id => qm.append(panel(id)));
+  qm.querySelector(".section-heading p").textContent = "Choose one of five pages, select a slot, then edit its command. Each page has 21 slots.";
+  // Target controls remain canonical; contextual navigation and Back avoid duplicate state.
+  ["move-teleport", "travel-reveal", "boost-debug"].forEach(id => {
+    const link = routeButton("boosting", "Choose named player / target", "players");
+    panel(id).querySelector("h2").after(link);
+  });
+  [".item-pool-page", ".dev-spawner-controls"].forEach(selector => {
+    document.querySelector(selector).prepend(routeButton("boosting", "Choose players & spawn location", "players"));
+  });
+  // Keep alternate workflows out of Inventory's refresh/copy toolbar.
+  const inventoryTools = document.createElement("details");
+  const inventoryToolsTitle = document.createElement("summary"); inventoryToolsTitle.textContent = "Related character tools";
+  inventoryTools.append(inventoryToolsTitle); document.querySelector(".inv-scroll").append(inventoryTools);
+  move('#invCharacterToolsBtn', inventoryTools);
+  inventoryTools.append(routeButton("boosting", "Backpack & bank capacity", "capacity"), routeButton("boosting", "Drop my backpack / shinies", "loot"));
+
   document.querySelectorAll(".tab-panel[data-msbt-layout-tab]").forEach(tab => {
     const id = tab.dataset.msbtLayoutTab;
     tab.dataset.workspaceLayoutTab = id;
@@ -153,25 +285,24 @@
     const h = document.createElement("h2"); h.textContent = titles[id] || id;
     const p = document.createElement("p"); p.textContent = descriptions[id] || "";
     header.append(h, p); tab.prepend(header);
-    if (sections[id]) {
-      const bar = document.createElement("nav"); bar.className = "workspace-sections"; bar.setAttribute("aria-label", h.textContent + " sections");
-      sections[id].forEach(([key, label]) => {
-        const button = document.createElement("button"); button.textContent = label; button.type = "button";
-        button.dataset.workspaceLocalSection = key;
-        button.addEventListener("click", () => open(id, key)); bar.append(button);
-      });
-      header.after(bar);
-    }
     const root = document.createElement("div"); root.className = "workspace-panels";
     root.setAttribute("data-msbt-layout-root", "");
     panels.forEach(panel => { root.append(panel); if (shared.has(panel.dataset.msbtPanel)) panel.classList.add("workspace-shared"); });
     tab.append(root); roots.set(id, root);
     tab.querySelectorAll(":scope > .grid, :scope > .quick-menu-editor-shell").forEach(n => { if (!n.textContent.trim() && !n.querySelector("input,button,select")) n.remove(); });
   });
+  document.querySelectorAll(".tab-panel").forEach(tab => {
+    if (tab.querySelector(".workspace-heading")) return;
+    const header = document.createElement("header"); header.className = "workspace-heading";
+    header.append(document.createElement("h2"), document.createElement("p")); tab.prepend(header);
+  });
+  // Long editors and lists need the page width, not arbitrary equal-size tiles.
+  ["boost-essentials", "afk-lobby", "boost-weapon-tests", "combat-skill-tests", "combat-tuning", "serial-bookmarks", "serial-tools-main", "serial-validator", "boost-serial", "boost-challenges", "boost-uvh", "travel-main", "travel-favorites", "travel-xyz", "move-presets"].forEach(id => panel(id).classList.add("workspace-wide"));
   // Labels can change independently of action ids.
   document.querySelectorAll('[data-action="max_spec_level"]').forEach(b => b.textContent = "Max Specialization Level");
   document.querySelectorAll('[data-action="max_player_level"]').forEach(b => b.textContent = "Max Character Level");
-  document.querySelector('[data-msbt-panel="boost-target"] h2').textContent = "Players & action scope";
+  document.querySelector('[data-msbt-panel="boost-target"] h2').textContent = "Players & Targets";
+  document.querySelector('[data-msbt-panel="boost-target"]').dataset.msbtTitle = "Players & Targets";
   document.querySelector('[data-msbt-panel="serial-bookmarks"] h2').textContent = "Saved Items";
   document.querySelector('#tab-dev-spawner .dev-spawner-title-row h2').textContent = titles["dev-spawner"];
   document.querySelector('.tab-bar [data-tab="bl4-codes"]').textContent = "Item Catalog";
@@ -198,19 +329,37 @@
     const heading = panel.querySelector("h2");
     const fold = document.createElement("details"); fold.className = "workspace-scope";
     const summary = document.createElement("summary"); summary.textContent = id === "boost-target" ? "Choose players & spawn location" : "Choose party target";
+    fold.open = false;
     fold.append(summary);
     Array.from(panel.children).forEach(n => { if (n !== heading && !["targetSummary", "devTargetSummary"].includes(n.id)) fold.append(n); });
     panel.append(fold);
+    if (id === "boost-target") {
+      summary.textContent = "Player details, spawn location & kick";
+      [fold.querySelector('[aria-label="Boost scope"]'), fold.querySelector('label[for="targetSelect"]'), fold.querySelector('.target-row')].forEach(node => panel.insertBefore(node, fold));
+    } else {
+      fold.open = true;
+    }
   });
   function defaultSection(tab) { return sections[tab] ? sections[tab][0][0] : ""; }
   function applySection(tab, value) {
     if (!sections[tab]) return;
     const definition = sections[tab].find(s => s[0] === value) || sections[tab][0];
+    if (tab === "boosting" && roots.get(tab).dataset.section !== definition[0]) {
+      panel("boost-target").querySelector(".workspace-scope").open = definition[0] === "players";
+    }
     selected[tab] = definition[0];
+    roots.get(tab).dataset.section = definition[0];
     roots.get(tab).querySelectorAll("[data-msbt-panel]").forEach(p => {
-      p.classList.toggle("workspace-section-hidden", Boolean(definition[2]) && !shared.has(p.dataset.msbtPanel) && !definition[2].includes(p.dataset.msbtPanel));
+      const id = p.dataset.msbtPanel;
+      let isShared = shared.has(id);
+      if (id === "boost-target") isShared = ["players", "all"].includes(definition[0]);
+      if (id === "move-target") isShared = definition[0] === "all";
+      if (id === "boost-result") isShared = !["overview", "afk"].includes(definition[0]);
+      p.classList.toggle("workspace-section-hidden", Boolean(definition[2]) && !isShared && !definition[2].includes(id));
       if (!shared.has(p.dataset.msbtPanel)) p.style.order = definition[2] ? String(Math.max(0, definition[2].indexOf(p.dataset.msbtPanel))) : "";
     });
+    const toolPanels = [...roots.get(tab).children].filter(p => p.matches('[data-msbt-panel]') && !p.classList.contains('workspace-section-hidden') && !shared.has(p.dataset.msbtPanel));
+    roots.get(tab).classList.toggle('workspace-single-tool', toolPanels.length === 1);
     document.querySelectorAll(`#tab-${tab} [data-workspace-local-section]`).forEach(b => {
       const active = b.dataset.workspaceLocalSection === selected[tab];
       b.classList.toggle("active", active); b.setAttribute("aria-pressed", String(active));
@@ -218,11 +367,30 @@
   }
   function sync(tab) {
     applySection(tab, selected[tab] || defaultSection(tab));
+    const section = selected[tab] || defaultSection(tab);
+    const key = tab + ":" + section;
+    if (key !== currentRoute) {
+      if (currentRoute && !goingBack) history.push(currentRoute);
+      if (history.length > 60) history.shift();
+      currentRoute = key; back.disabled = history.length === 0;
+    }
+    const group = groups.find(([, routes]) => routes.some(([t, , s]) => t === tab && (s || defaultSection(t)) === section));
+    if (key !== nav.dataset.currentRoute) {
+      nav.querySelectorAll(":scope > details").forEach(el => { el.open = el.querySelector("summary").textContent === group?.[0]; });
+      nav.dataset.currentRoute = key;
+    }
+    const route = group?.[1].find(([t, , s]) => t === tab && (s || defaultSection(t)) === section);
+    const header = document.querySelector(`#tab-${tab} > .workspace-heading`);
+    if (header) {
+      header.querySelector("h2").textContent = route?.[1] || sections[tab]?.find(s => s[0] === section)?.[1] || titles[tab] || tab;
+      header.querySelector("h2").tabIndex = -1;
+      header.querySelector("p").textContent = group?.[0] || "Your tools, organized by task";
+    }
     let found = false;
     nav.querySelectorAll("button").forEach(b => {
       const active = b.dataset.workspaceTab === tab && (b.dataset.workspaceSection || defaultSection(tab)) === (selected[tab] || defaultSection(tab));
       b.classList.toggle("active", active);
-      if (active) { b.setAttribute("aria-current", "page"); b.parentElement.open = true; found = true; } else b.removeAttribute("aria-current");
+      if (active) { b.setAttribute("aria-current", "page"); if (b.parentElement.tagName === "DETAILS") b.parentElement.open = true; found = true; } else b.removeAttribute("aria-current");
     });
     if (!found) { const fallback = nav.querySelector(`[data-workspace-tab="${tab}"]`); if (fallback) fallback.parentElement.open = true; }
   }
@@ -231,6 +399,7 @@
     if (typeof window.switchTab === "function") window.switchTab(tab);
     sync(tab); main.scrollTop = 0;
     if (document.body.classList.contains("workspace-menu-open")) toggleMenu(false);
+    document.querySelector(`#tab-${tab} > .workspace-heading h2`)?.focus({preventScroll:true});
   }
   function revealPanel(panel) {
     if (!panel) return false;
@@ -244,7 +413,7 @@
     for (let n = panel.parentElement; n && n !== tab; n = n.parentElement) if (n.tagName === "DETAILS") n.open = true;
     return true;
   }
-  window.MsbtWorkspace = { enabled, onTabShown: sync, open, revealPanel, sections };
+  window.MsbtWorkspace = { enabled, onTabShown: sync, open, revealPanel, sections, groups };
   Object.keys(sections).forEach(id => applySection(id, defaultSection(id)));
   sync("boosting");
 })();

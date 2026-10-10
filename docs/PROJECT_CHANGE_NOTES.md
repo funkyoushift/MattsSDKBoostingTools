@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-10: Desktop layout release](changes/2026-10-10-layout-release.md) — Navigation, targeting, AFK shortcuts and hover fixes; 2.35.1 build verification in progress.
+
 - [Mayhem v2.35.0 release](changes/2026-10-10-mayhem-release.md) - published stable; selected-player and AFK Mayhem, targeted runtime repairs, live AFK and packaged restart checks passed; all 11 public hashes and CI verified.
 
 - [2026-10-08: Epic farming and player targeting](changes/2026-10-08-epic-player-farming.md) — published stable v2.34.0 / Android 1.6.2; all 11 public hashes and CI passed. Independent player controls, Epic native profiles, search and package/emulator checks passed; desktop reopened, normal Steam SDK installed, local lab archived. Epic live and actual guest gameplay unverified. See [release verification](releases/VERIFICATION_v2.34.0.txt).

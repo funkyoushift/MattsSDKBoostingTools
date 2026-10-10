@@ -2717,7 +2717,7 @@
       '<div class="msbt-view-menu-body" data-msbt-view-menu-body></div>'
     ].join("");
     const updateBtn = headerActions.querySelector("#updateBtn");
-    if (updateBtn) headerActions.insertBefore(menu, updateBtn.nextSibling);
+    if (updateBtn) updateBtn.parentElement.insertBefore(menu, updateBtn.nextSibling);
     else headerActions.appendChild(menu);
     const summary = menu.querySelector("summary");
     if (summary && !summary.dataset.msbtWipWired) {

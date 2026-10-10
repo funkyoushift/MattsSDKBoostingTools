@@ -247,8 +247,8 @@
             <button id="afkLoadBookmarks" type="button">Refresh bookmarks</button>
             <button id="afkAddBookmarks" type="button">Add selected to loot</button>
             <button id="afkAddGuaranteedBookmarks" type="button">Add selected to guaranteed items</button>
-            <button id="afkAddFolder" type="button">Add folder to loot pool</button>
-            <button id="afkAddGuaranteedFolder" type="button">Add folder to guaranteed items</button>
+            <button id="afkAddFolder" type="button">Add Local Folder to Loot Pool</button>
+            <button id="afkAddGuaranteedFolder" type="button">Add Local Folder to Guaranteed Items</button>
           </div>
           <p id="afkBookmarkNote" class="muted-line"></p>
           <label for="afkGuaranteedCodes">Guaranteed items · included in every delivery</label>
@@ -299,15 +299,20 @@
       <div class="grid two">
         <section class="panel gold boost-essentials-panel" data-msbt-panel="boost-essentials" data-msbt-span="8" data-msbt-title="Essentials">
           <h2>Essentials</h2>
-          <p class="muted-line">Daily lobby verbs. Shinies Deliver follows Connection &amp; Scope; Drop stays a ground drop. Drop All Backpack affects your own character, including supported guest sessions.</p>
+          <p class="muted-line">Daily lobby verbs. Shinies Deliver follows Players &amp; Targets; Drop stays a ground drop. Drop All Backpack affects your own character, including supported guest sessions.</p>
+          <div class="button-row wrap" aria-label="Gameplay control shortcuts">
+            <button type="button" data-open-panel="boost-weapon-tests">Weapons &amp; Ammo</button>
+            <button type="button" data-open-panel="combat-skill-tests">God Mode &amp; Skills</button>
+            <button type="button" data-open-panel="combat-tuning">Damage &amp; Repair Kits</button>
+          </div>
           <div class="button-grid">
             <button data-action="max_all">Max All</button>
             <button data-action="chaos_drop_backpack" title="Drops your own backpack, regardless of Connection & Scope.">Drop My Backpack</button>
             <button data-action="drop_all_shinies">Shinies: Drop</button>
             <button id="shinyDeliverBtn" type="button">Shinies: Deliver</button>
             <button data-action="devperk_4">All Customs + Hovers</button>
-            <button data-movement-action="movement_super_dash">Super Dash</button>
-            <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
+            <button data-movement-action="movement_super_dash" data-search-aliases="Super Dash">Dash Now</button>
+            <button data-movement-action="movement_super_dash_toggle" data-search-aliases="Super Dash Toggle" title="Enables or disables the V-key dash handler.">Toggle Dash Hotkey (V)</button>
           </div>
           <div class="button-row wrap boost-essentials-instant">
             <button id="instantDropsToggleBtn" type="button">Instant Drops: Off</button>
@@ -318,8 +323,8 @@
           <div id="liveModsStatus" class="status-line compact-note">Combat XP / Instant Drops / Instant Holds / Third Person idle.</div>
         </section>
 
-        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Connection & Scope">
-          <h2>Connection &amp; Scope</h2>
+        <section class="panel cyan" data-msbt-panel="boost-target" data-msbt-span="4" data-msbt-title="Players & Targets">
+          <h2>Players &amp; Targets</h2>
           <p>Public Boosting cheats use Local, All, Other players, or a named party member. Kick uses the named roster. Drop All Backpack affects your own character. Reset Skill Tree and chest/black-market spawns are host-only.</p>
           <div id="bridgeSummary" class="status-line warning">Checking game connection...</div>
           <section id="playerReadback" class="player-readback" aria-label="Live selected player stats">
@@ -520,31 +525,31 @@
       </section>
 
       <div class="grid">
-        <section class="panel pink" data-msbt-panel="boost-weapon-tests" data-msbt-span="6" data-msbt-title="Weapons & Ammo — Farming Controls">
-          <h2>Weapons &amp; Ammo — Farming Controls</h2>
-          <p>Applies to the chosen player's equipped weapons. Turn ammo and no-reload controls off before comparing reload speeds.</p>
+        <section class="panel pink" data-msbt-panel="boost-weapon-tests" data-msbt-span="6" data-msbt-title="Weapons & Ammo">
+          <h2>Weapons &amp; Ammo</h2>
+          <p>Choose a player below. Infinite Ammo preserves reserve ammo; No Reload preserves the magazine. Turn No Reload off to use or compare reload speeds.</p>
           <div class="button-row wrap" data-farming-target-picker></div>
           <div id="farmingLabWeaponsControls" data-farming-controls></div>
           <div class="button-row wrap">
-            <button data-farming-all-off>Turn All Farming Controls Off</button>
+            <button data-farming-all-off title="Stops weapon, survival, skill, glide, vendor-refresh and weighted-roll controls for every player. Game-provided toggles, 100% Drop Rate and numeric tuning are separate.">Turn Off All Gameplay Toggles</button>
           </div>
           <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
+          <details class="gameplay-advanced">
+            <summary>Game-provided ammo toggle (advanced)</summary>
+            <p class="muted-line">Separate from Infinite Reserve Ammo above. This sends the game's toggle command; its actual state cannot be read reliably. Hosts use the current named player; joined clients apply it to themselves. The Apply to selector and Turn Off All Gameplay Toggles do not change this command.</p>
+            <button type="button" data-open-panel="boost-target">Choose Named Player for Game Toggle</button>
+            <button data-action="devperk_5" data-devperk-toggle="5" data-devperk-name="Toggle Game Ammo" data-devperk-unverified="1">Toggle Game Ammo (state unverified)</button>
+          </details>
         </section>
-        <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="12" data-msbt-title="Combat & Cheats">
-          <h2>Combat & Cheats</h2>
+        <section class="panel pink" data-msbt-panel="boost-cheats" data-msbt-span="12" data-msbt-title="Combat & Character Actions">
+          <h2>Combat &amp; Character Actions</h2>
           <div class="button-grid">
             <button data-action="reset_skills" data-host-only="1" class="danger" title="Host / listen only. Refunds regular skill-tree points for the local host pawn. Does not reset Specializations or apply to a party target.">Reset Skill Tree (Host)</button>
             <button data-action="devperk_3">Kill All Enemies</button>
             <button data-action="devperk_0">Give Experience</button>
             <button data-action="devperk_1">Give 1 Million Cash</button>
             <button data-action="devperk_2">Give 100k Eridium</button>
-            <button data-action="devperk_5" data-devperk-toggle="5" data-devperk-name="Infinite Ammo">Infinite Ammo: Off</button>
-            <button data-action="devperk_6" data-devperk-toggle="6" data-devperk-name="Demigod">Demigod: Off</button>
             <button data-action="devperk_7">Spawn Legendary/Epic Loot</button>
-            <button data-action="max_currency">Max Cash</button>
-            <button data-action="max_eridium">Max Eridium</button>
-            <button data-action="max_player_level">Max Player 70</button>
-            <button data-action="max_spec_level">Max Spec 701</button>
             <button data-action="max_sdu">Max SDU</button>
           </div>
           <div class="boost-cheat-knobs">
@@ -570,8 +575,8 @@
               </div>
               <div class="button-row wrap">
                 <button id="setLevelBtn" title="Uses XP Track + Target Level for the boost-scope player.">Set Level</button>
-                <button data-action="max_player_level" title="Sets character/player level to the current cap for the boost-scope player.">Max Player Level</button>
-                <button data-action="max_spec_level" title="Always sets Specialization to 701. Ignores the XP Track dropdown.">Set Spec 701</button>
+                <button data-action="max_player_level" title="Sets character/player level to the current cap for the selected Boosting players.">Max Character Level</button>
+                <button data-action="max_spec_level" title="Sets Specialization to its cap (701), independently of XP Track.">Max Specialization Level</button>
               </div>
             </section>
             <section class="boost-knob-group">
@@ -604,8 +609,8 @@
         </section>
       </div>
 
-      <section class="panel cyan" data-msbt-panel="boost-late-join" data-msbt-span="12" data-msbt-title="Late Join Character">
-        <h2>Late Join Character</h2>
+      <section class="panel cyan" data-msbt-panel="boost-late-join" data-msbt-span="12" data-msbt-title="Experimental Character Tools">
+        <h2>Experimental Character Tools</h2>
         <p><strong>Experimental.</strong> Opens Gearbox’s late-join picker <strong>on your screen</strong> via the 990 pause path (no pak). Pause may flash, then the picker. Pick a vault hunter on this machine. Player-2 character swap / Azalea-style persist is <strong>not confirmed</strong> in this build. Swap can set gravity to 0 — Reset Gravity after.</p>
         <div class="button-row wrap">
           <button data-action="load_character_late_join">Load Character (late join)</button>
@@ -686,7 +691,7 @@
             <summary><strong>Loot Rolls — Experimental</strong></summary>
             <p>This weighted loot experiment affects the hosting process and is not a guarantee of legendary items. Travel turns experimental controls off.</p>
             <div id="farmingLabControls" data-farming-controls></div>
-            <div class="button-row"><button id="farmingLabAllOff" data-farming-all-off>Turn All Farming Controls Off</button></div>
+            <div class="button-row"><button id="farmingLabAllOff" data-farming-all-off title="Stops weapon, survival, skill, glide, vendor-refresh and weighted-roll controls for every player. Game-provided toggles, 100% Drop Rate and numeric tuning are separate.">Turn Off All Gameplay Toggles</button></div>
             <div id="farmingLabStatus" data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
           </details>
           <div id="rarityStatus" class="status-line warning compact-note">Adjust weights, then Apply. Saved presets only change the visible sliders until you apply them.</div>
@@ -694,8 +699,8 @@
       </div>
 
       <div class="grid two">
-        <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Serial Rewards">
-          <h2>Serial Rewards</h2>
+        <section class="panel purple" data-msbt-panel="boost-serial" data-msbt-span="6" data-msbt-title="Give Items by Serial">
+          <h2>Give Items by Serial</h2>
           <p class="muted-line">Item codes now deliver directly to backpacks without reward packages. All selected players progress together, with pauses based on code size. Keep guests connected until delivery finishes settling. Progress shows items submitted; it does not verify their saves.</p>
           <p>Paste one or more @U or deserialized serials, then choose who receives them. The game must be connected for delivery.</p>
           <label for="boostSerialText">Serial Input</label>
@@ -736,8 +741,8 @@
       </div>
 
       <div class="grid two">
-        <section class="panel cyan" data-msbt-panel="boost-inventory" data-msbt-span="4" data-msbt-title="Backpack / Bank Size">
-          <h2>Backpack / Bank Size</h2>
+        <section class="panel cyan" data-msbt-panel="boost-inventory" data-msbt-span="4" data-msbt-title="Backpack & Bank Capacity">
+          <h2>Backpack &amp; Bank Capacity</h2>
           <label for="backpackSize">Backpack Size</label>
           <input id="backpackSize" type="number" min="1" value="999">
           <label for="bankSize">Bank Size</label>
@@ -747,7 +752,7 @@
             Automatic Backpack and Bank Size for Party
           </label>
           <div class="button-row wrap">
-            <button id="setInventorySelectedBtn">Set for Scope</button>
+            <button id="setInventorySelectedBtn">Set Capacity for Chosen Players</button>
             <button id="setInventoryAllBtn">Apply to All Party</button>
           </div>
           <div id="inventoryStatus" class="status-line warning">Manual apply only. Enable auto to keep applying sizes while players load in.</div>
@@ -1086,7 +1091,7 @@
               View equipped and backpack items for any party player. Item cards use offline mined
               name/stats/perks when available (same fields as Serial Card Resolve).
               Select an item to copy it, open it in another tool, or give copies to a different player.
-              Send to Game can keep the item's level or override it (same rewrite as Serial Rewards).
+              Send to Game can keep the item's level or override it (same rewrite as Give Items by Serial).
             </p>
           </div>
           <div class="button-row wrap">
@@ -1094,12 +1099,8 @@
             <button type="button" data-msbt-bridge-refresh class="secondary">Refresh Status</button>
             <button id="invCopyAllBtn" class="secondary">Copy Visible Serials</button>
             <button data-action="open_bank">Open Bank Anywhere</button>
-            <button data-action="load_character_late_join">Load Character (late join)</button>
-            <button data-action="select_character_late_join">Create Level 1 Character</button>
-            <button data-action="open_firmware_transfer">Firmware Transfer</button>
-            <button data-action="reset_gravity_default">Reset Gravity 1.0</button>
+            <button id="invCharacterToolsBtn" type="button" data-open-panel="boost-late-join">Open Experimental Character Tools</button>
           </div>
-            <p class="muted-line">Late-join picker opens on YOUR screen (990 pause path). Pick YOUR VH. Win: the named guest’s character changes, then their save on leave. Swap sets gravity to 0.</p>
         </div>
         <div class="inv-player-row">
           <label for="invTargetSelect">Party player</label>
@@ -1221,7 +1222,7 @@
           </div>
           <div class="button-row wrap">
             <button id="invCopySerialBtn">Copy Serial</button>
-            <button id="invSendRewardsBtn">Send to Serial Rewards</button>
+            <button id="invSendRewardsBtn">Open in Give Items by Serial</button>
             <button id="invOpenToolsBtn">Open in Serial Tools</button>
             <button id="invOpenEditorBtn">Open Matt Editor</button>
           </div>
@@ -1235,7 +1236,7 @@
           <div class="section-heading">
             <div>
               <p class="page-eyebrow">Works offline after first load</p>
-              <h2>Browse BL4 Codes</h2>
+              <h2>Browse Item Catalog</h2>
               <p>Search Lootlemon, GZO, and custom codes. Catalog browsing is the main workspace; delivery stays within reach.</p>
             </div>
             <div class="button-row wrap">
@@ -1497,7 +1498,7 @@
     <section id="tab-item-pool" class="tab-panel fixed-page-tab">
       <section class="fixed-workspace item-pool-page">
         <h2>Item Pool Spawning</h2>
-        <p>Filter item pools, select one or more rows, then spawn near the current Spawn Near target (Boosting Connection &amp; Scope).</p>
+        <p>Filter item pools, select one or more rows, then spawn near the current Spawn Near target (Boosting Players &amp; Targets).</p>
         <div class="grid three compact">
           <label>
             Search Item Pools
@@ -2255,7 +2256,7 @@
           <button data-movement-action="movement_preset_wallwalk">Wall Walk</button>
           <button data-movement-action="movement_preset_fastglide">Fast Glide</button>
         </div>
-        <label for="movementScope">Apply Scope</label>
+        <label for="movementScope">Apply Movement to</label>
         <select id="movementScope">
           <option value="local">Local only</option>
           <option value="all" selected>All players</option>
@@ -2383,8 +2384,8 @@
           </div>
           <p class="muted-line">BL4 ignores MaxFlySpeed. Apply Fly Speed uses the same walk/accel fields as Apply Movement, so flying actually gets faster. Landing restores your previous walk speed. Works while already flying (Borderlands 4 Modding Tools or Bonk noclip).</p>
           <div class="button-grid">
-            <button data-movement-action="movement_super_dash">Super Dash</button>
-            <button data-movement-action="movement_super_dash_toggle">Super Dash Toggle</button>
+            <button data-movement-action="movement_super_dash" data-search-aliases="Super Dash">Dash Now</button>
+            <button data-movement-action="movement_super_dash_toggle" data-search-aliases="Super Dash Toggle" title="Enables or disables the V-key dash handler.">Toggle Dash Hotkey (V)</button>
           </div>
         </section>
       </div>
@@ -2414,7 +2415,7 @@
     <section id="tab-combat-vehicle" class="tab-panel" data-msbt-layout-tab="combat-vehicle">
       <section class="panel cyan" data-msbt-panel="dev-target" data-msbt-span="6" data-msbt-title="Target Player" data-msbt-resize="1">
         <h2>Target Player</h2>
-        <p>Party target for Streamer Chaos and related actions. Named roster and Kick also live on Boosting → Connection &amp; Scope. Use <strong>Refresh Status</strong> to reload the player list. Host-only for remote players in co-op.</p>
+        <p>This target applies to Party &amp; Chaos actions. Survival toggles, numeric damage settings and vehicle presets have their own player selectors. Use <strong>Refresh Status</strong> to reload the player list. Remote party actions require host authority.</p>
         <div id="devBridgeSummary" class="status-line warning">Checking game connection...</div>
           <label for="devTargetSelect">Named player</label>
         <div class="target-row">
@@ -2454,32 +2455,38 @@
         <div class="status-line compact-note">Standalone StreamerChaos SDK mod also provides NumPad hotkeys for the local player (rebind in oak2).</div>
       </section>
 
-      <section class="panel pink" data-msbt-panel="combat-skill-tests" data-msbt-span="6" data-msbt-title="Survival & Skills — Farming Controls">
-        <h2>Survival &amp; Skills — Farming Controls</h2>
-        <p>Applies to the chosen character. God Mode prevents normal damage. Repair-kit cooldown settings are in Combat / Resource Tuning.</p>
+      <section class="panel pink" data-msbt-panel="combat-skill-tests" data-msbt-span="6" data-msbt-title="Survival & Action Skills">
+        <h2>Survival &amp; Action Skills</h2>
+        <p>Choose a character below. God Mode blocks normal damage. Repair-kit charges and cooldown are in Damage, Ammo &amp; Repair Kits.</p>
         <div class="button-row wrap" data-farming-target-picker></div>
         <div id="farmingLabPlayerControls" data-farming-controls></div>
-        <div class="button-row"><button data-farming-all-off>Turn All Farming Controls Off</button></div>
+        <div class="button-row"><button data-farming-all-off title="Stops weapon, survival, skill, glide, vendor-refresh and weighted-roll controls for every player. Game-provided toggles, 100% Drop Rate and numeric tuning are separate.">Turn Off All Gameplay Toggles</button></div>
         <div data-farming-status class="status-line warning compact-note">Waiting for the game connection.</div>
+        <details class="gameplay-advanced">
+          <summary>Game-provided survival toggle (advanced)</summary>
+          <p class="muted-line">Demigod sends the game's separate command; God Mode above writes the character's damage flag. Demigod's actual state cannot be read reliably. Hosts use the current named player; joined clients apply it to themselves. The Apply to selector and Turn Off All Gameplay Toggles do not change this command.</p>
+          <button type="button" data-open-panel="boost-target">Choose Named Player for Game Toggle</button>
+          <button data-action="devperk_6" data-devperk-toggle="6" data-devperk-name="Toggle Game Demigod" data-devperk-unverified="1">Toggle Game Demigod (state unverified)</button>
+        </details>
       </section>
-      <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Combat / Resource Tuning" data-msbt-resize="1">
-        <h2>Combat / Resource Tuning</h2>
-        <p>Adjust damage, ammo, and repair kits. Continuous reapply is off by default; use Reapply After Travel if values reset.</p>
+      <section class="panel purple" data-msbt-panel="combat-tuning" data-msbt-span="6" data-msbt-title="Damage, Ammo & Repair Kits" data-msbt-resize="1">
+        <h2>Damage, Ammo &amp; Repair Kits</h2>
+        <p>These numeric settings use their own player selection below. Apply Settings writes the current values once. Ammo regeneration restores ammo over time; it is separate from Infinite Ammo. Reapply Last Settings restores the last applied values to your character if travel resets them.</p>
         <div class="grid three compact">
           <label>
-            Damage Dealt Mult
+            Damage Dealt Multiplier
             <input id="combatDamageDealt" type="number" min="0.1" max="1000000" step="0.05" value="1">
           </label>
           <label>
-            Damage Taken Mult
+            Damage Taken Multiplier
             <input id="combatDamageTaken" type="number" min="0" max="1000000" step="0.05" value="1">
           </label>
           <label>
-            Ammo Regen Rate
+            Ammo Regeneration Rate
             <input id="combatAmmoRegen" type="number" min="0" max="1000" step="0.5" value="0">
           </label>
           <label>
-            Repair Kit Max Charges
+            Maximum Repair Kit Charges
             <input id="combatRepairMax" type="number" min="0" max="99" step="1" value="3">
           </label>
           <label>
@@ -2487,22 +2494,19 @@
             <input id="combatRepairCooldown" type="number" min="0" max="600" step="0.1" value="20">
           </label>
           <label>
-            Scope
+            Apply Settings to
             <select id="combatScope">
-              <option value="local" selected>Local</option>
-              <option value="all">All</option>
-              <option value="others">Others</option>
+              <option value="local" selected>My Character</option>
+              <option value="all">All Players</option>
+              <option value="others">Other Players</option>
             </select>
           </label>
         </div>
-        <label class="checkbox-row">
-          <input id="combatSticky" type="checkbox">
-          Keep reapplying these values
-        </label>
+        <input id="combatSticky" type="checkbox" hidden disabled>
         <div class="button-row wrap">
-          <button id="combatApplyBtn" type="button">Apply Once</button>
-          <button id="combatReapplyBtn" type="button">Reapply After Travel</button>
-          <button id="combatResetBtn" type="button">Reset Defaults</button>
+          <button id="combatApplyBtn" type="button">Apply Settings</button>
+          <button id="combatReapplyBtn" type="button" title="Reapplies the last saved numeric values to your character only. It does not run automatically after travel.">Reapply Last Settings (Me)</button>
+          <button id="combatResetBtn" type="button" title="Writes the preset defaults to the players selected here; does not restore custom values from before tuning.">Apply Default Settings</button>
         </div>
         <div id="combatStatus" class="status-line">Combat tuning idle.</div>
         <pre id="combatOutput">No combat tuning action yet.</pre>
@@ -2524,11 +2528,11 @@
             </select>
           </label>
           <label>
-            Scope
+            Apply Vehicle Preset to
             <select id="vehicleScope">
-              <option value="local" selected>Local</option>
-              <option value="all">All</option>
-              <option value="others">Others</option>
+              <option value="local" selected>My Character</option>
+              <option value="all">All Players</option>
+              <option value="others">Other Players</option>
             </select>
           </label>
         </div>
@@ -3034,7 +3038,7 @@ unofficial and claims no endorsement by these owners or credited contributors.
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="renderer.js"></script>
-  <script src="mayhem_target.js"></script>
+  <script src="workspace_targets.js"></script>
   <script src="afk_config_upload.js"></script>
   <script src="afk_config_store.js"></script>
   <script src="afk_lobby.js"></script>
@@ -3046,6 +3050,7 @@ unofficial and claims no endorsement by these owners or credited contributors.
 <script src="serial_card_views.js"></script>
 <script src="editor_live_card.js"></script>
 <script src="save_items_import_ui.js"></script>
+<script src="afk_item_handoff.js"></script>
 <script src="ui_localization.js"></script>
 </body>
 </html>

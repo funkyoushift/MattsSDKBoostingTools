@@ -283,7 +283,7 @@
     target.value = [target.value.trim(), ...codes].filter(Boolean).join("\n");
     panel.querySelector('[data-afk-boost="loot"]').checked = true;
     save();
-    return { ok: true, message: `Added ${codes.length} item code(s) to AFK ${guaranteed ? "guaranteed items" : "loot pool"}. Review them in Boosting → AFK Lobby.` };
+    return { ok: true, message: `Added ${codes.length} item code(s) to AFK ${guaranteed ? "guaranteed items" : "loot pool"}. Review them in Party & AFK → AFK Lobby before starting.` };
   }
   window.msbtAfkAppendLoot = appendLoot;
   function addCatalogLoot(entries, guaranteed = false) {

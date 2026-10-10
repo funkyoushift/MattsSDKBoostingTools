@@ -898,6 +898,20 @@ function bridgeAction(action, payload = {}, timeoutMs = 15000) {
   });
 }
 
+function normalizeQuickMenuLabels(snapshot) {
+  if (!snapshot?.catalog) return snapshot;
+  const catalog=Object.fromEntries(Object.entries(snapshot.catalog).map(([action,metadata]) => {
+    let basic=metadata.basic;
+    if(action==="devperk_5")basic="Game Ammo Toggle (state unverified)";
+    if(action==="devperk_6")basic="Game Demigod Toggle (state unverified)";
+    if(action==="farming_all_off")basic="Turn Off All Gameplay Toggles";
+    const match=/^farming_(.+)_(on|off)$/.exec(action);
+    if(match&&FARMING_LAB_FEATURES[match[1]])basic=`${FARMING_LAB_FEATURES[match[1]].label} ${match[2]==="on"?"On":"Off"}`;
+    return [action,{...metadata,basic}];
+  }));
+  return {...snapshot,catalog};
+}
+
 function humanActionLabel(action) {
   const key = String(action || "").trim();
   const catalog = state.quickMenuSnapshot && state.quickMenuSnapshot.catalog;
@@ -1162,7 +1176,7 @@ async function loadQuickMenuLayout({ quiet = false, preserveSelection = quiet } 
   const prevPage = state.quickMenuPage;
   const prevSlot = state.quickMenuSelectedSlot;
 
-  state.quickMenuSnapshot = data;
+  state.quickMenuSnapshot = normalizeQuickMenuLabels(data);
   const { maxPages, slotsPerPage } = quickMenuLimits();
 
   if (preserveSelection) {
@@ -2028,6 +2042,11 @@ function updateDevperkToggleButtons() {
     const key = String(button.dataset.devperkToggle || "");
     const label = button.dataset.devperkName || button.textContent.replace(/\s+\[(?:ON|OFF)\]$/i, "");
     const isOn = Boolean(state.devperkToggles[key]);
+    if (button.dataset.devperkUnverified) {
+      button.textContent = `${label} (state unverified)`;
+      button.classList.remove("is-on");
+      return;
+    }
     button.textContent = `${label}: ${isOn ? "On" : "Off"}`;
     button.classList.toggle("is-on", isOn);
   });
@@ -2602,17 +2621,17 @@ function syncDropRateStatus(data) {
 }
 
 const FARMING_LAB_FEATURES = {
-  infinite_ammo: {group:"Weapons",label:"Infinite Ammo",aliases:["inf ammo","unlimited ammo"]},
-  no_reload: {group:"Weapons",label:"No Reload",aliases:["infinite clip","unlimited magazine"]},
-  instant_reload: {group:"Weapons",label:"Instant Reload"},
+  infinite_ammo: {group:"Weapons",label:"Infinite Reserve Ammo",hint:"Preserves reserve ammo; the magazine can still empty.",aliases:["infinite ammo","inf ammo","unlimited ammo"]},
+  no_reload: {group:"Weapons",label:"No Reload",hint:"Keeps the magazine from emptying. Turn off to test reloads.",aliases:["infinite clip","unlimited magazine"]},
+  instant_reload: {group:"Weapons",label:"Fast Reload",hint:"Sets supported equipped-weapon reload times to 0.05 seconds.",aliases:["instant reload"]},
   no_recoil: {group:"Weapons",label:"No Recoil / Sway"},
   super_accuracy: {group:"Weapons",label:"Super Accuracy"},
   rapid_fire: {group:"Weapons",label:"Rapid Fire",aliases:["fire rate"]},
   critical_hits: {group:"Weapons",label:"Critical Hit Boost",aliases:["crit boost"]},
-  god_mode: {group:"Player",label:"God Mode",aliases:["invincible","invulnerability"]},
-  skill_cooldown: {group:"Player",label:"Instant Skill Cooldown",aliases:["action skill cooldown","long press skill","skill cool down"]},
-  skill_duration: {group:"Player",label:"Unlimited Skill Duration",aliases:["action skill duration"]},
-  grenade_cooldown: {group:"Player",label:"Instant Grenade Cooldown",aliases:["grenade cool down"]},
+  god_mode: {group:"Player",label:"God Mode",hint:"Blocks normal damage using the character's damage flag.",aliases:["godmode","invincible","invulnerability"]},
+  skill_cooldown: {group:"Player",label:"Instant Action Skill Cooldown",hint:"Refills action-skill cooldown and supported charge pools.",aliases:["instant skill cooldown","action skill cooldown","long press skill","skill cool down"]},
+  skill_duration: {group:"Player",label:"Unlimited Action Skill Duration",hint:"Refills an active action skill's remaining duration.",aliases:["unlimited skill duration","action skill duration"]},
+  grenade_cooldown: {group:"Player",label:"Fast Grenade Cooldown",hint:"Sets supported grenade cooldown to 0.1 seconds.",aliases:["instant grenade cooldown","grenade cool down"]},
   glide_duration: {group:"Movement",label:"Unlimited Glide Duration",aliases:["glide power","infinite glide"]},
   vendor_refresh: {group:"Vendor",label:"Vendor Refresh On Close",aliases:["shop refresh","vendor restock"]},
   legendary_roll: {group:"",label:"Weighted Loot High Roll",aliases:["loot roll","legendary roll"]}
@@ -2626,7 +2645,7 @@ function syncFarmingTargetPickers() {
     if (!root.dataset.wired) {
       const label = document.createElement("span"); label.textContent = "Apply to: "; root.appendChild(label);
       const scope = document.createElement("select"); scope.dataset.farmingScope = "1";
-      [["local","Local"],["selected","Named Player"],["nonhost","Other Players"],["all","All Players"]].forEach(([value,text]) => {
+      [["local","My Character"],["selected","Named Player"],["nonhost","Other Players"],["all","All Players"]].forEach(([value,text]) => {
         const option = document.createElement("option"); option.value=value; option.textContent=text; scope.appendChild(option);
       });
       scope.addEventListener("change", () => { setPublicBoostScope(scope.value); syncFarmingLabStatus(latestFarmingStatus); });
@@ -2676,47 +2695,57 @@ function syncFarmingLabStatus(data) {
   document.querySelectorAll("[data-farming-all-off]").forEach(button => {
     if (!button.dataset.wired) {
       button.addEventListener("click", () => runFarmingLabAction({op:"off"}));
+      const note=document.createElement("p");note.className="muted-line gameplay-stop-note";
+      note.textContent="Stops weapon, survival, skill, glide, vendor-refresh and weighted-roll boosts for everyone. Game-provided toggles, 100% Drop Rate and numeric settings have separate controls.";
+      button.parentElement.after(note);
       button.dataset.wired = "1";
     }
     button.disabled = !lab || !lab.features;
   });
-  if (!lab || !lab.features) {
-    roots.forEach(root => root.querySelectorAll("button").forEach(button => { button.disabled = true; }));
-    document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, "Local test connection is unavailable.", "warning"));
-    return;
-  }
-  Object.entries(lab.features).forEach(([feature, rawValue]) => {
-    const value=farmingTargetValue(feature,rawValue,lab);
-    if (!/^[a-z_]+$/.test(feature) || !Object.hasOwn(FARMING_LAB_FEATURES,feature)) return;
+  Object.keys(FARMING_LAB_FEATURES).forEach(feature => {
+    const rawValue=lab?.features?.[feature];
+    const value=rawValue ? farmingTargetValue(feature,rawValue,lab) : {enabled:false};
     const root = document.getElementById("farmingLab" + FARMING_LAB_FEATURES[feature].group + "Controls");
     if (!root) return;
     let row = document.getElementById("farmingLab_" + feature);
     if (!row) {
       row = document.createElement("div"); row.id = "farmingLab_" + feature;
-      row.className = "button-row wrap";
-      const label = document.createElement("strong"); label.textContent = value.label || feature;
+      row.className = "gameplay-toggle-row";
+      const label = document.createElement("strong"); label.textContent = FARMING_LAB_FEATURES[feature].label;
+      label.title = FARMING_LAB_FEATURES[feature].hint || "";
       row.appendChild(label);
       [true, false].forEach(enabled => {
         const button = document.createElement("button");
         button.textContent = enabled ? "On" : "Off";
+        button.setAttribute("aria-label", `${enabled ? "Enable" : "Disable"} ${FARMING_LAB_FEATURES[feature].label}`);
         button.dataset.farmingFeature = feature; button.dataset.farmingEnabled = String(enabled);
         button.addEventListener("click", () => runFarmingLabAction({ op: "set", feature, enabled }));
         row.appendChild(button);
       });
-      const note = document.createElement("span"); note.className = "muted-line"; row.appendChild(note);
+      const note = document.createElement("span"); note.className = "muted-line gameplay-toggle-state"; row.appendChild(note);
       root.appendChild(row);
     }
-    row.querySelectorAll("button").forEach(button => { button.disabled = false; });
+    row.querySelectorAll("button").forEach(button => { button.disabled = !rawValue; });
     const actual = typeof value.actual_locked === "boolean" ? ` · game lock ${value.actual_locked ? "ON" : "OFF"}` : "";
     const damage = typeof value.actual_invulnerable === "boolean" ? ` · damage ${value.actual_invulnerable ? "BLOCKED" : "ENABLED"}` : "";
     const native = value.native && value.native.owned && !value.native.active ? " · RESTORE NEEDS ATTENTION" : "";
     const target=FARMING_GLOBAL_FEATURES.has(feature)?" · Whole lobby":value.target_note?` · ${value.target_note}`:"";
-    row.querySelector("span").textContent = `${value.enabled ? "ON" : "OFF"}${target}${actual}${damage}${native}${value.error ? " · " + value.error : ""}`;
-    row.title = value.scope || "";
+    row.querySelector("span").textContent = rawValue ? `${value.enabled ? "ON" : "OFF"}${target}${actual}${damage}${native}${value.error ? " · " + value.error : ""}` : lab?.features ? "Unavailable in the connected SDK build" : "Connect to the game to use this control";
+    row.title = FARMING_LAB_FEATURES[feature].hint || value.scope || "";
   });
+  if (!lab || !lab.features) {
+    document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, "Controls are shown below. Connect to a supported SDK build to enable them.", "warning"));
+    return;
+  }
   const active = Object.values(lab.features).filter(value => value.enabled).length;
-  const errors = Object.values(lab.features).filter(value => value.error).length;
-  document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, `Farming controls connected · ${active} active control${active === 1 ? "" : "s"} across the lobby${errors ? " · check reported errors" : ""}.`, errors ? "warning" : "ok"));
+  const errors = Object.entries(lab.features).flatMap(([feature,value]) => {
+    const label=FARMING_LAB_FEATURES[feature]?.label || feature;
+    const notes=[];
+    if(value.error)notes.push(`${label}: ${value.error}`);
+    (value.targets || []).forEach(target=>{if(target.error)notes.push(`${label} (${target.label}): ${target.error}`);});
+    return notes;
+  });
+  document.querySelectorAll("[data-farming-status]").forEach(line => setLine(line, `Gameplay controls ready · ${active} active across the lobby.${errors.length ? " Errors: " + [...new Set(errors)].join("; ") : ""}`, errors.length ? "warning" : "ok"));
 }
 
 async function runFarmingLabAction(payload) {
@@ -2725,7 +2754,7 @@ async function runFarmingLabAction(payload) {
     if (payload.target_scope==="selected") payload.target_player=state.selectedTarget || "";
   }
   const lines = document.querySelectorAll("[data-farming-status]");
-  lines.forEach(line => setLine(line, "Applying farming control…", "warning"));
+  lines.forEach(line => setLine(line, "Applying gameplay control…", "warning"));
   const result = await runAction("farming_lab", payload, els.boostOutput, 15000);
   lines.forEach(line => setLine(line, resultMessage(result), actionSucceeded(result) ? "ok" : "warning"));
   try {
@@ -3268,7 +3297,7 @@ function updateDevTargetSummary() {
   const selectedPlayer = state.players.find((player) => String(playerValue(player)) === String(state.selectedTarget));
   const scope = state.boostTargetScope || "selected";
   const scoped = playersForBoostScope(scope);
-  let text = `Dev scope: ${boostScopeLabel(scope)}`;
+  let text = `Party action target: ${boostScopeLabel(scope)}`;
   if (scope === "selected") {
     text += ` | ${selectedPlayer ? playerLabel(selectedPlayer) : state.selectedTarget || "none"}`;
   } else {
@@ -3285,6 +3314,7 @@ function updateDevTargetSummary() {
   document.querySelectorAll("[data-dev-scope]").forEach((button) => {
     button.classList.toggle("active-scope", button.dataset.devScope === scope);
   });
+  window.dispatchEvent(new Event("msbt-targets-changed"));
 }
 
 function setPublicBoostScope(scope) {
@@ -4483,7 +4513,7 @@ function combatPayload() {
     repair_kit_max: getFloat(els.combatRepairMax, 0, 99, 3),
     repair_kit_cooldown: getFloat(els.combatRepairCooldown, 0, 600, 20),
     scope: getValue(els.combatScope) || "local",
-    sticky: Boolean(els.combatSticky && els.combatSticky.checked)
+    sticky: false
   };
 }
 
@@ -4682,7 +4712,7 @@ async function bridgeStatus(options = {}) {
         const draftAction = editingAction ? String(actionSelect.value || "") : null;
         const keepPage = state.quickMenuPage;
         const keepSlot = state.quickMenuSelectedSlot;
-        state.quickMenuSnapshot = data;
+        state.quickMenuSnapshot = normalizeQuickMenuLabels(data);
         state.quickMenuPage = keepPage;
         state.quickMenuSelectedSlot = keepSlot;
         renderQuickMenuEditor();
@@ -13195,10 +13225,22 @@ function switchTab(tabId) {
 window.switchTab = switchTab;
 
 const APP_FINDER_ALIASES = {
+  "boost-weapon-tests": ["weapons farming controls","weapon cheats"],
+  "combat-skill-tests": ["survival skills farming controls","god mode"],
+  "combat-tuning": ["combat tuning","combat resource tuning"],
+  "boost-cheats": ["combat cheats"],
+  "boost-target": ["connection scope","player scope"],
+  "boost-serial": ["serial rewards"],
+  "boost-inventory": ["backpack bank size","inventory capacity"],
+  combatReapplyBtn: ["reapply after travel"],
+  combatApplyBtn: ["apply once"],
+  combatResetBtn: ["reset defaults"],
   combatRepairCooldown: ["repair kit cooldown", "repairkit cooldown", "repkit cooldown", "repkiit cooldown", "health kit cooldown", "repair kit cool down"],
   boosting: ["boost", "max all", "uvh", "cash", "eridium"],
   "quick-menu": ["qm", "f7", "quick menu editor", "slots"],
-  "boost-essentials": ["instant drops", "instant holds", "third person", "tpc"],
+  "boost-essentials": window.MsbtWorkspace?.enabled ? ["home", "start", "tools"] : ["instant drops", "instant holds", "third person", "tpc"],
+  "move-interaction": ["instant drops", "instant holds"],
+  "boost-debug": ["camera", "third person", "tpc"],
   "boost-combat-xp": ["cxp", "combat xp", "xp multiplier"],
   "travel-xyz": ["xyz", "location bookmark", "coords", "teleport save", "farm spot"],
   "serial-bookmarks": ["serial bookmarks", "saved serials"],
@@ -13220,7 +13262,13 @@ const APP_FINDER_ALIASES = {
 
 function collectAppFinderEntries() {
   const entries = [];
+  if (window.MsbtWorkspace?.enabled) {
+    [["Home", [["boosting", "Home", "overview"]]], ...window.MsbtWorkspace.groups].forEach(([group, routes]) => {
+      routes.forEach(([tab, title, section]) => entries.push({id:`page:${tab}:${section || ""}`, title, hint:group, tab, section:section || "", workspaceRoute:true, aliases:APP_FINDER_ALIASES[tab] || []}));
+    });
+  }
   document.querySelectorAll(".tab-bar [data-tab]").forEach((button) => {
+    if (window.MsbtWorkspace?.enabled) return;
     const tab = String(button.dataset.tab || "");
     if (!tab) return;
     const hidden = button.hidden || button.classList.contains("msbt-nav-tab-hidden");
@@ -13252,7 +13300,7 @@ function collectAppFinderEntries() {
   // Ignore live values/options so player data and large lists are not indexed.
   const seen = new Set();
   document.querySelectorAll(".tab-panel button, .tab-panel label, .tab-panel summary, .tab-panel h3, .tab-panel h4, .tab-panel [aria-label], .tab-panel input[placeholder], .tab-panel textarea[placeholder]").forEach(node => {
-    if (node.matches("[data-farming-feature], [data-workspace-local-section], [data-workspace-tab]")) return;
+    if (node.matches("[data-farming-feature], [data-workspace-local-section], [data-workspace-tab]") || node.closest(".workspace-redundant")) return;
     const copy = node.cloneNode(true);
     copy.querySelectorAll("input, select, textarea, button, output, .muted-line").forEach(child => child.remove());
     const title = String(node.getAttribute("aria-label") || copy.textContent || node.getAttribute("placeholder") || "").replace(/\s+/g, " ").trim();
@@ -13267,7 +13315,7 @@ function collectAppFinderEntries() {
     const control = node.matches("label") ? node.control || node.querySelector("input,select,textarea") : node;
     entries.push({id:`control:${key}`,title,tab,panel:panelId,node,
       hint:panel?.dataset.msbtTitle || tab.replace(/-/g," "),
-      aliases:APP_FINDER_ALIASES[control?.id || node.id] || []});
+      aliases:[...(APP_FINDER_ALIASES[control?.id || node.id] || []), ...(node.dataset.searchAliases || "").split("|").filter(Boolean), ...(node.hasAttribute("data-farming-all-off") ? ["Turn All Farming Controls Off","all boosts off"] : [])]});
   });
   // These rows arrive with game status. Keep them discoverable while disconnected.
   Object.entries(FARMING_LAB_FEATURES).forEach(([feature, value]) => {
@@ -13339,7 +13387,16 @@ function jumpElectronAppFinder(entry) {
     box.classList.add("hidden");
     box.hidden = true;
   }
-  if (entry.tab && typeof switchTab === "function") switchTab(entry.tab);
+  if (entry.workspaceRoute) {
+    window.MsbtWorkspace.open(entry.tab, entry.section);
+    return;
+  }
+  const workspacePanel = entry.panel && window.MsbtWorkspace?.enabled && document.querySelector(`[data-msbt-panel="${entry.panel}"]`);
+  if (workspacePanel) {
+    const destination = (window.MsbtWorkspace.sections[entry.tab] || []).find(s => s[2]?.includes(entry.panel));
+    window.MsbtWorkspace.open(entry.tab, destination?.[0]);
+  }
+  else if (entry.tab && typeof switchTab === "function") switchTab(entry.tab);
   window.setTimeout(() => {
     const panel = entry.panel
       ? document.querySelector(`[data-msbt-panel="${entry.panel}"]`)
@@ -14140,6 +14197,17 @@ function wireEvents() {
       renderDevActors();
     });
   }
+  document.querySelectorAll("[data-open-panel]").forEach(button => button.addEventListener("click", () => {
+    const panel=document.querySelector(`[data-msbt-panel="${button.dataset.openPanel}"]`);
+    if(!panel)return;
+    const tab = panel.closest(".tab-panel").id.replace(/^tab-/,"");
+    const destination = window.MsbtWorkspace?.enabled && (window.MsbtWorkspace.sections[tab] || []).find(s => s[2]?.includes(button.dataset.openPanel));
+    if (destination) window.MsbtWorkspace.open(tab, destination[0]);
+    else window.switchTab(tab);
+    window.MsbtWorkspace?.revealPanel(panel);
+    for(let node=panel.parentElement;node;node=node.parentElement)if(node.tagName==="DETAILS")node.open=true;
+    panel.scrollIntoView({block:"start"});
+  }));
   if (els.combatApplyBtn) {
     els.combatApplyBtn.addEventListener("click", () => void runCombatAction("combat_tuning_apply"));
   }
@@ -14319,7 +14387,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Add loot from Item Catalog",
-    "body": "In Item Catalog, select the items you want and click Add to AFK. The item detail also has Add This to AFK. Return to Boosting → AFK Lobby to review the list. Adding codes alone does not enable delivery: select Send selected loot before Start.",
+    "body": "Select items in Item Catalog, Inventory, or Saved Items & Community, then choose Add to AFK loot pool or Add to guaranteed items. Pasted serial lists and Serial Converter output have the same shortcuts. Review AFK list opens the destination under Party & AFK → AFK Lobby. Adding items selects Send selected loot in the saved setup but does not start AFK or send items to the game.",
     "tab": "bl4-codes",
     "target": "bl4AddToAfkBtn"
   },
@@ -14425,13 +14493,13 @@ const TUTORIAL_TOURS = {
     },
     {
       title: "Bridge & status",
-      body: "Live actions need the SDK bridge. Click Status in the header, or Refresh Status in Connection & Scope — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
+      body: "Live actions need the SDK bridge. Click Status in the header, or Refresh Status in Players & Targets — this line shows whether the bridge is up and which players are available. Offline tools (serial convert, catalogs) still work without it.",
       tab: "boosting",
       target: "bridgeSummary"
     },
     {
       title: "Boosting",
-      body: "This is the main live lobby tab. Use Local / All / Other players, or pick a named party member, for public boosts, then Essentials, Ground Loot, Chests & Vendors, UVH, Combat & Cheats, Challenges, rarity weights, backpack/bank size, and serial rewards. Drop All Backpack affects your own character; Reset Skill Tree is host-only. Kick lives next to the named roster. Most buttons need the game connected.",
+      body: "Use Home or the sidebar to choose a task, then choose its player target. Character progression, item tools, combat controls, travel and spawning have separate homes in the workspace. Classic retains the combined Boosting tab. Drop My Backpack affects your own character; Reset Skill Tree is host-only. Most live controls need the game connected.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-target']",
       revealPanels: ["boost-target", "boost-essentials"]
@@ -14642,7 +14710,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Essentials",
-      body: "Essentials is the frequent-action home: Max All, Drop My Backpack, Shinies Drop/targeted Deliver, All Customs, Super Dash, Instant Drops / Instant Holds, and Third Person camera. Instant Drops and Holds support direct oak2 hotkeys plus gold + QM pins for F7 slots and slot hotkeys.",
+      body: window.MsbtWorkspace?.enabled ? "Home is a directory of tasks. Choose a category, expand More tools, or search with Ctrl+K. The sidebar shows related pages; Back returns to the previous page. Selecting a page never runs a game action." : "Essentials groups frequent lobby actions. Instant Drops and Holds support oak2 hotkeys and + QM pins for F7.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-essentials']",
       revealPanels: ["boost-essentials"]
@@ -14684,21 +14752,21 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Combat, experience, and currency",
-      body: "Combat & Cheats groups host-only Reset Skill Tree, enemy, ammo, Demigod, loot, XP, currency, and remaining single-player max actions. Experience and currency knobs share this panel.",
+      body: "In the workspace, Enemy Actions holds Kill All Enemies. Skill reset is beside Levels & XP; loot spawning is beside backpack drops. Weapons, survival and numeric tuning have separate pages under Combat & Survival. Classic keeps its combined Combat & Character Actions panel.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-cheats']",
       revealPanels: ["boost-cheats"]
     },
     {
       title: "Combat XP",
-      body: "Combat XP is its own Boosting panel: set the multiplier, then toggle it on or off. Instant Drops / Instant Holds stay on Essentials.",
+      body: "Set the Combat XP multiplier, then toggle it on or off. In the workspace it lives beside Levels & XP. Instant Drops / Instant Holds are under World & Interaction (Essentials in Classic); they support direct oak2 hotkeys and + QM pins.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-combat-xp']",
       revealPanels: ["boost-combat-xp"]
     },
     {
       title: "Backpack / Bank Size",
-      body: "This panel changes capacities only. Drop My Backpack lives in Essentials and always affects your own character. Auto keeps sizes applied as players load.",
+      body: "This panel changes capacities only. Drop My Backpack is under Ground Loot & Backpack Drops in the workspace, or Essentials in Classic, and always affects your own character. Auto keeps sizes applied as players load.",
       tab: "boosting",
       targetSel: "#tab-boosting [data-msbt-panel='boost-inventory']",
       revealPanels: ["boost-inventory"]
@@ -14792,7 +14860,7 @@ const TAB_TUTORIALS = {
     },
     {
       title: "Capacity note",
-      body: "Open Bank Anywhere is here with inventory browsing. Capacity changes live on Boosting → Backpack / Bank Size; Drop My Backpack lives in Boosting → Essentials.",
+      body: "Open Bank Anywhere stays with inventory browsing. Related character tools links to capacity settings and backpack drops. In the workspace, these have separate pages under Character & Progression and Items & Loot.",
       tab: "inventory",
       targetSel: "#tab-inventory .inv-root"
     }
@@ -16218,6 +16286,7 @@ function runBootSplash() {
 }
 
 async function init() {
+  syncFarmingLabStatus(null);
   // Mount Dev Spawner widgets into the saved shell before wiring / panel layout.
   try {
     applyDevSpawnerLayoutMode(getDevSpawnerLayoutMode(), { init: false, skipRender: true });

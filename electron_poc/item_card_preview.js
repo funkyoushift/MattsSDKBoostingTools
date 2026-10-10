@@ -10,21 +10,25 @@
     state.button.setAttribute('aria-expanded','false');
     if(restoreFocus&&state.button.isConnected)state.button.focus();
   }
-  function laterClose(){cancelClose();closeTimer=setTimeout(()=>{if(active&&!active.panel.contains(document.activeElement))close();},250);}
+  function laterClose(){cancelClose();closeTimer=setTimeout(()=>{if(active&&!active.pinned)close();},120);}
   function open(state,focus=false){
     clearTimeout(openTimer);cancelClose();
     if(!state.current()||!state.image.isConnected)return;
-    if(active?.state===state){if(focus){active.restoreFocus=true;active.panel.querySelector('button').focus();}return;}
+    if(active?.pinned&&!focus)return;
+    if(active?.state===state&&(!focus||active.pinned))return;
     close();
     const panel=document.createElement('div');panel.className='item-card-popout';panel.setAttribute('popover','manual');
-    panel.setAttribute('role','dialog');panel.setAttribute('aria-label',state.image.alt||'Full item card');
+    panel.dataset.previewMode=focus?'pinned':'hover';
+    panel.setAttribute('role',focus?'dialog':'tooltip');panel.setAttribute('aria-label',state.image.alt||'Full item card');
+    panel.inert=!focus;
     const toolbar=document.createElement('div');toolbar.className='item-card-popout-toolbar';
     const label=document.createElement('label');label.textContent='Zoom ';
     const zoom=document.createElement('input');zoom.type='range';zoom.min='100';zoom.max='200';zoom.step='25';zoom.value='100';zoom.setAttribute('aria-label','Card zoom');
     const amount=document.createElement('output');amount.textContent='100%';label.append(zoom,amount);
     const dismiss=document.createElement('button');dismiss.type='button';dismiss.textContent='Close';dismiss.addEventListener('click',()=>close(focus));
-    toolbar.append(label,dismiss);
-    const scroll=document.createElement('div');scroll.className='item-card-popout-scroll';scroll.tabIndex=0;scroll.setAttribute('aria-label','Full card; scroll to read');
+    if(focus)toolbar.append(label,dismiss);
+    else toolbar.textContent='Preview · Click View card to keep open, scroll or zoom';
+    const scroll=document.createElement('div');scroll.className='item-card-popout-scroll';scroll.tabIndex=focus?0:-1;scroll.setAttribute('aria-label','Full card; scroll to read');
     const image=document.createElement('img');image.src=state.image.src;image.alt=state.image.alt;image.draggable=false;image.referrerPolicy='no-referrer';scroll.append(image);
     zoom.addEventListener('input',()=>{image.style.width=zoom.value+'%';amount.textContent=zoom.value+'%';});
     panel.append(toolbar,scroll);document.body.append(panel);
@@ -40,7 +44,7 @@
     panel.addEventListener('focusout',laterClose);
     const observer=new MutationObserver(()=>{if(!state.current()||!state.image.isConnected)close();});
     observer.observe(document.body,{childList:true,subtree:true});
-    active={panel,observer,state,image,restoreFocus:focus};state.button.setAttribute('aria-expanded','true');
+    active={panel,observer,state,image,pinned:focus,restoreFocus:focus};state.button.setAttribute('aria-expanded','true');
     if(focus)dismiss.focus();
   }
   function attach(host,image,current){

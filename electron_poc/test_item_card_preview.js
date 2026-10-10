@@ -27,6 +27,11 @@ app.whenReady().then(async()=>{
  check(panel.matches(':popover-open'),'preview must open above dialogs');
  check(full.getBoundingClientRect().width>thumb.getBoundingClientRect().width*2,'popout is readable at larger size');
  check(full.getBoundingClientRect().height>thumb.getBoundingClientRect().height,'full uncropped image');
+ check(panel.dataset.previewMode==='hover'&&panel.inert&&getComputedStyle(panel).pointerEvents==='none','hover must not capture pointer or keyboard');
+ const next=document.createElement('img');next.src=thumb.src;next.alt='Next item';next.style.cssText='position:fixed;left:'+panel.style.left+';top:'+panel.style.top+';width:200px;height:200px';document.body.append(next);
+ const nr=next.getBoundingClientRect();check(document.elementFromPoint(nr.left+20,nr.top+20)===next,'hover popup must allow hitting the next item underneath');next.remove();
+ button.click();panel=document.querySelector('.item-card-popout');scroll=panel.querySelector('.item-card-popout-scroll');full=scroll.querySelector('img');
+ check(panel.dataset.previewMode==='pinned'&&!panel.inert,'View card promotes hover to interactive preview');
  const zoom=panel.querySelector('input');zoom.value='200';zoom.dispatchEvent(new Event('input'));
  check(scroll.scrollWidth>scroll.clientWidth,'zoom supports horizontal scrolling');
  scroll.scrollTop=scroll.scrollHeight;check(scroll.scrollTop>0,'long cards scroll to footer');
@@ -35,11 +40,12 @@ app.whenReady().then(async()=>{
  document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));check(document.activeElement===button,'keyboard focus restored');
  button.click();await wait(()=>document.querySelector('.item-card-popout'));
  check(requests===1,'hover and zoom never regenerate a card');
- return {cropped:true,hover:true,zoom:true,scroll:true,keyboard:true,requests};
+ return {cropped:true,hover:true,hitThrough:true,pinned:true,zoom:true,scroll:true,keyboard:true,requests};
  })()`);
  assert.equal(result.requests,1);
  win.webContents.invalidate();await new Promise(r=>setTimeout(r,100));
-  fs.writeFileSync(path.resolve(__dirname,'../output/card-layout/hover-preview.png'),(await win.webContents.capturePage()).toPNG());
+ fs.mkdirSync(path.resolve(__dirname,'../output/card-layout'),{recursive:true});
+ fs.writeFileSync(path.resolve(__dirname,'../output/card-layout/hover-preview.png'),(await win.webContents.capturePage()).toPNG());
  win.setContentSize(360,600);await new Promise(r=>setTimeout(r,100));
  const narrow=await win.webContents.executeJavaScript(`(()=>{document.querySelector('.item-card-view-button').click();const r=document.querySelector('.item-card-popout').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.bottom<=innerHeight;})()`);
  assert.equal(narrow,true,'preview must stay inside narrow viewport');

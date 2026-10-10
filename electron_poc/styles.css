@@ -3361,6 +3361,8 @@ button.active-scope {
 .item-card-thumbnail, .item-card-view-button, .item-card-layout-toggle { pointer-events: auto; }
 .item-card-popout { position: fixed; margin: 0; padding: 0; border: 1px solid #60717e; border-radius: 10px; background: #111923; color: #eef2f5; box-shadow: 0 12px 40px #000b; overflow: hidden; }
 .item-card-popout:popover-open { display: flex; flex-direction: column; }
+.item-card-popout[data-preview-mode="hover"], .item-card-popout[data-preview-mode="hover"] * { pointer-events: none !important; }
+.item-card-popout::backdrop { pointer-events: none; }
 .item-card-popout-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 12px; flex: 0 0 auto; background: #192431; }
 .item-card-popout-toolbar label { display: flex; align-items: center; gap: 8px; }
 .item-card-popout-toolbar input { width: 110px; }
@@ -5406,3 +5408,14 @@ body.msbt-density-compact .activity-card {
 .credits-notices { margin: 24px 0; }
 .credits-notices summary { cursor: pointer; font-weight: 600; }
 .credits-notices pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; }
+
+/* Keep paired On/Off controls readable at every panel width. */
+.gameplay-toggle-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; margin: 12px 0; }
+.gameplay-toggle-row > strong { min-width: 0; overflow-wrap: anywhere; }
+.gameplay-toggle-state { grid-column: 1 / -1; margin: 0; overflow-wrap: anywhere; }
+.gameplay-advanced { margin-top: 16px; border-top: 1px solid var(--border, #343849); padding-top: 12px; }
+.gameplay-advanced summary { cursor: pointer; }
+[data-msbt-panel="combat-tuning"] label:has(#combatScope) { grid-column: 1 / -1; }
+.afk-item-handoff { margin: 12px 0; padding: 12px; border: 1px solid var(--border, #34445c); border-radius: 8px; background: rgba(60, 120, 190, .08); min-width: 0; }
+.afk-item-handoff p { margin: 6px 0; font-size: 12px; }
+.afk-item-handoff button { white-space: normal; }

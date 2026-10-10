@@ -70,7 +70,7 @@ async function auditWalkthroughs() {
         fixedPageTextScale: /scales docked panels, Fixed pages, and Dev Spawner/i.test(allCopy),
         instantActionHomes:
           /Essentials/i.test(allCopy) &&
-          /Combat & Cheats/i.test(allCopy) &&
+          /Combat & Character Actions/i.test(allCopy) &&
           /Debug Camera sits in its own Boosting panel/i.test(allCopy)
       },
       tourInventory: {
