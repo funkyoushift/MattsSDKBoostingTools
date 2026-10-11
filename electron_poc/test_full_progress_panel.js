@@ -1,7 +1,10 @@
 "use strict";
 const assert=require('node:assert/strict');
-const {advance,bind}=require('./full_progress_panel');
+const {advance,bind,pollDelay}=require('./full_progress_panel');
 (async()=>{
+  assert.equal(pollDelay({index:0}),180);
+  assert.equal(pollDelay({index:8,child:{kind:"final_recheck"}}),180);
+  assert.equal(pollDelay({index:1,child:{kind:"mission"}}),50);
   let calls=[];
   const final=await advance(async(a,p)=>{calls.push([a,p]);return {ok:false,state:'uncertain'};},{ok:true,id:'job',state:'running'},()=>{});
   assert.equal(calls.length,1);assert.equal(final.state,'uncertain');

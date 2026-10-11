@@ -143,3 +143,7 @@ Borderlands and its game assets belong to Gearbox / 2K and their respective owne
 Open **Missions → 100% game** in the desktop app. Check lobby access, review the shared-progress acknowledgement, then run supported missions, discoveries/travel requirements, character levels, currencies, SDU points, applicable unlocks, UVH/Mayhem and challenges. Host plus one guest can use available content; larger lobbies require everyone to have the required DLC access.
 
 The final prerequisite pass picks up newly available missions and travel requirements without resetting verified work. Missing DLC, unavailable definitions and inactive vault cards are reported separately. This preset does not promise every item/statistic/achievement or automatically purchase SDU upgrades. Save and quit normally and verify guests in their own games. See [v2.37.0 release notes](docs/releases/RELEASE_NOTES_v2.37.0.md) for limitations and recovery controls.
+
+### v2.37.0 guest mission persistence limitation
+
+The 100% game preset can report shared-lobby completion while a guest still has a mission active in their own save. The Chase remained unfinished for one tested guest after several targeted retests, including a fresh host. The cause is unresolved; save corruption has not been established. Other guest batches have passed own-game checks. Save and quit, check each guest in their own game, and report the mission, objective and any fast-forward prompt.

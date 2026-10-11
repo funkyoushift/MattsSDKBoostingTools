@@ -218,6 +218,7 @@ def start(payload):
                 dynamic=dynamic, selection_scope=scope, initial_completed=initial_completed,
                 catalog_total=len(names) + len(excluded), excluded=excluded, pending=[], stall_since=None,
                 deferred=[],
+                settle_guest_progress=payload.get('settle_guest_progress') is True, next_step_at=0.0,
                 guest_persistence='requires own-game verification')
     if not names:
         _job.update(state='completed', message='No completed missions are eligible for challenge-credit repair')
@@ -314,6 +315,9 @@ def step(job_id):
         if _binding(party) != _job['binding']:
             raise RuntimeError('Party changed; remaining work stopped')
         target = next(r['pc'] for r in party if r['pc']._path_name() == _job['target'])
+        if _job.get('settle_guest_progress') and time.monotonic() < _job.get('next_step_at',0):
+            _job['message'] = 'Waiting for mission transition to settle before the next operation'
+            return status()
         if _job.get('dynamic') and _job['phase'] == 'prepare' and not _schedule_category(before):
             if _job['state'] == 'running':
                 from . import mission_discovery as discovery
@@ -375,11 +379,23 @@ def step(job_id):
             _journal(dict(event='observed_completed', mission=name, after=row))
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
+        # Accepted is not Active: completing during activation can leave guest saves unfinished.
+        if state == 'accepted':
+            waiting = _job.get('activation_wait')
+            if not waiting or waiting['mission'] != name:
+                waiting = dict(mission=name, since=time.monotonic())
+                _job['activation_wait'] = waiting
+                _journal(dict(event='waiting_for_activation', mission=name, after=row))
+            if time.monotonic() - waiting['since'] >= 60.0:
+                raise RuntimeError(f'{CATALOG[name]["title"]}: still accepted after 60 seconds; stopped before completion. Let the mission activate normally before recovering.')
+            _job['message'] = f'{CATALOG[name]["title"]}: waiting for the mission to become active before completing'
+            return status()
+        _job.pop('activation_wait', None)
         if phase == 'prepare':
-            operation = {'completed': 'reset', 'available': 'accept', 'active': 'complete', 'accepted': 'complete'}.get(state)
+            operation = {'completed': 'reset', 'available': 'accept', 'active': 'complete'}.get(state)
         elif phase == 'accept' and state == 'available':
             operation = 'accept'
-        elif phase == 'complete' and state in ('active', 'accepted'):
+        elif phase == 'complete' and state == 'active':
             operation = 'complete'
         else:
             raise ValueError('Mission changed outside this job; stopped without retry')
@@ -414,6 +430,8 @@ def step(job_id):
                                    observed=_state(after))
             raise RuntimeError(f'{CATALOG[name]["title"]}: {operation} returned {_state(after)}; expected {", ".join(expected)}. Use Recover stopped job; no automatic retry.')
         _job['phase'] = next_phase
+        if _job.get('settle_guest_progress'):
+            _job['next_step_at'] = time.monotonic() + 2.0
         if operation == 'complete':
             if _credit_completed(engine, party, name) is False:
                 return status()

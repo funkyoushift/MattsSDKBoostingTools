@@ -62,7 +62,7 @@ class Driver:
 
     def acceptance(self,snapshot):
         r=next((r for r in snapshot['rows'] if not r['host']),snapshot['rows'][0])
-        return dict(target_scope='selected',target_player=f"{r['index']}|{r['label']}",acknowledge_shared_progress=True,reset_completed=True)
+        return dict(target_scope='selected',target_player=f"{r['index']}|{r['label']}",acknowledge_shared_progress=True,reset_completed=True,settle_guest_progress=True)
 
     def mission_result(self,result,child):
         state=result.get('state')

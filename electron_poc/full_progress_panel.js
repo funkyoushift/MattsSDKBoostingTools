@@ -1,8 +1,9 @@
 (function(root){
   "use strict";
+  function pollDelay(job){return job?.index === 0 || job?.child?.kind === "final_recheck" ? 180 : 50;}
   async function advance(call,job,report){
     while(job?.ok && job.state === "running"){
-      await new Promise(resolve=>setTimeout(resolve,50));
+      await new Promise(resolve=>setTimeout(resolve,pollDelay(job)));
       job=await call("full_progress_step",{job_id:job.id});report(job);
     }
     return job;
@@ -71,6 +72,6 @@
     });
     update();
   }
-  root.MsbtFullProgressPanel={bind,advance};
-  if(typeof module!=="undefined")module.exports={bind,advance};
+  root.MsbtFullProgressPanel={bind,advance,pollDelay};
+  if(typeof module!=="undefined")module.exports={bind,advance,pollDelay};
 })(typeof window === "undefined" ? globalThis : window);
