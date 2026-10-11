@@ -1,6 +1,7 @@
 """Offline source catalog and prerequisite checks, not guest-save proof."""
 import importlib.util
 import importlib.resources
+import json
 from pathlib import Path
 import pytest
 
@@ -45,3 +46,17 @@ def test_repairs_require_unique_completed_ordinary_parent(mod):
 def test_unknown_selection_rejected(mod):
     with pytest.raises(ValueError):
         mod.plan('travel_requirements', {'missions': []}, ['invented'])
+
+
+@pytest.mark.parametrize('key', [
+    'travel_beach_safehouse', 'travel_cello_power_cell', 'travel_mountains_entry',
+    'travel_city_entry', 'travel_city_safehouse', 'travel_shattered_generator',
+])
+def test_station_claim_repairs_have_unambiguous_positive_source_requirement(mod, key):
+    parent, address = mod.CHECKPOINTS[key]
+    stations = json.loads((ROOT / 'travelstations.json').read_text())['stations']
+    evidence = [r.get('dependency', '') for r in stations
+                if address + ' == Completed' in r.get('dependency', '')]
+    assert evidence and all('||' not in expr and '!=' not in expr for expr in evidence)
+    assert parent == address.split('.')[2]
+    assert mod.plan('travel_requirements', {'missions': []}, [key])[0]['blocked_reason']

@@ -50,5 +50,29 @@
   "travel_cowbell_ui": [
     "mission_main_cowbell1",
     "missions.missionset_main_cowbell.mission_main_cowbell1.final.findmancubus_endstate"
+  ],
+  "travel_beach_safehouse": [
+    "Mission_Main_Beach",
+    "missions.missionset_main_beach.Mission_Main_Beach.Final.activate__cl4ptps_safehouse_endstate"
+  ],
+  "travel_cello_power_cell": [
+    "Mission_DLC_Cello",
+    "Missions.MissionSet_DLC_Cello.Mission_DLC_Cello.Final.Cello_Unlock_Door_Power_Cell_1_EndState"
+  ],
+  "travel_mountains_entry": [
+    "Mission_Main_Mountains1",
+    "missions.missionset_main_mountains1.Mission_Main_Mountains1.Final.mtn1_enter_the_mountain_zone_EndState"
+  ],
+  "travel_city_entry": [
+    "Mission_Main_City1",
+    "Missions.missionset_main_city1.Mission_Main_City1.Final.inv_enter_the_city_bc5_endstate"
+  ],
+  "travel_city_safehouse": [
+    "Mission_Main_City1",
+    "missions.missionset_main_city1.Mission_Main_City1.Final.Capture_safehouse_EndState"
+  ],
+  "travel_shattered_generator": [
+    "Mission_Main_Shatteredlands2",
+    "missions.missionset_main_shatteredlands2.Mission_Main_Shatteredlands2.Final.Melee_generator_EndState"
   ]
 }

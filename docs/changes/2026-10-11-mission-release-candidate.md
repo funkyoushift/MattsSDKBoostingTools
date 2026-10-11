@@ -20,3 +20,9 @@ mission capability calls for a minor release when explicitly authorized. Public
 installer/portable packaging follows lockstep versioning. Preserve the active
 product checkout and running discovery job. Rollback UI/code through published
 version; completed gameplay progress is not undone by replacing the package.
+
+
+## 2026-10-11 - Station claim gaps
+Abandoned Post screenshot shows Claim Safehouse to unlock Fast Travel. Source audit: 82 fast_travel definitions, 53 with dependencies; 81 match discovery catalog records. Unmatched Raid2_P.BRP_Raid2_Exit is not proven to be a player destination. Receipt: ../local/mission-review-2026-10-11/station-coverage-audit.json. Source coverage is not live usability.
+Added six source-exact positive checkpoint repairs covering Abandoned Post, Demonhold, Grey Havenage, Heritage Opus, Covered Charge, The Reliquary, Final Defiance, The Lockaway and Carcadia. Previously missing in product travel_checkpoints.json. Existing unique completed ordinary parent and None-to-Completed guards remain. Alternate/negative branches excluded; objective and alternate-route requirements remain unresolved.
+Changed product/lab travel_checkpoints.json and test_mission_discovery.py; synchronized release worktree source. 27 offline discovery/full-run/startup checks and syntax passed. No new game mutations, package rebuild, installation or guest travel validation. Existing built candidate is stale for these repairs. Universal travel remains unverified. Rollback: remove six new named checkpoint entries; no runtime change to undo.
