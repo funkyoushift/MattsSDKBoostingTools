@@ -8,11 +8,23 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.33.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.33.0.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.33.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.33.0-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.36.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.36.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.36.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.36.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
+
+## New in v2.36.0: Missions and travel tools
+
+Open **Character & Progression > Missions** in the desktop app to complete the tracked mission or run campaign, side, DLC and full-catalog mission batches. The selected player supplies mission acceptance; changes affect shared host and party progress. Completed host missions can be reset and accepted normally so guests can receive completion credit. Both guests confirmed saved completion in their own games after the 200-mission test.
+
+- Locked missions wait for prerequisites; uncertain outcomes stop without automatic retries.
+- Two unavailable definitions are shown separately: **Crack This Guy's Back - Setting the Mood** and **Advanced Maneuver**. Three nonpersistent replayable Takedown definitions are excluded.
+- Map and fast-travel discovery are available alongside **19 reviewed travel prerequisite repairs**. The latest six repairs cover nine additional stations, including Abandoned Post.
+
+**Current limits:** Discovery does not guarantee every station is usable or every map tile is revealed. Actual travel and guest-save persistence for the six newest repairs remain unverified; objective-based and alternate-route station requirements still need verification. Generic objective completion, undo objective and reset-all-progress controls remain unavailable. Replacing the mod does not undo saved mission progress. Android remains version 1.6.2.
+
+[Read the v2.36.0 release notes and download](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.36.0).
 
 ## Credits
 
