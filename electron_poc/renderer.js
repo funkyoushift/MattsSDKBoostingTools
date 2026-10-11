@@ -1440,8 +1440,11 @@ async function clearCurrentQuickMenuPage() {
 }
 
 function quickMenuSerialPayload() {
+  const expanded = expandSerialTextCopies(
+    getValue(els.boostSerialText), getInt(els.boostSerialCopies, 1, 50, 1), "Serial Rewards"
+  );
   return {
-    serial_text: getValue(els.boostSerialText),
+    serial_text: expanded.text,
     serial_override_level: boolFromSelect(els.boostSerialOverride),
     serial_level: getInt(els.boostSerialLevel, 1, state.gameParameters.item_level_cap, state.gameParameters.item_level_cap)
   };
@@ -5150,20 +5153,32 @@ async function loadEditor(options = {}) {
   }
 }
 
+function serialDeliveryRows(serialText) {
+  // Preserve explicit duplicates, human-readable codes and Base85 punctuation.
+  // Leave validation and Markdown unwrapping to the backend's serial parser.
+  return String(serialText || "").split(/\r?\n/).flatMap((line) => {
+    const text = line.trim();
+    if (!text) return [];
+    if (text.includes("|")) return [text];
+    const parts = text.split(/\s+/);
+    return parts.length > 1 && parts.every((part) => /^`?@U/.test(part)) ? parts : [text];
+  });
+}
+
 function expandSerialTextCopies(serialText, copies, label = "Serial delivery") {
-  const n = Math.max(1, Math.min(50, Number(copies) || 1));
+  const n = Math.max(1, Math.min(50, Math.trunc(Number(copies) || 1)));
   const source = String(serialText || "");
+  const serials = serialDeliveryRows(source);
+  const uniqueCount = new Set(serials).size;
   if (n <= 1) {
-    const unique = serialsFromText(source);
-    return { text: source, copies: 1, uniqueCount: unique.length, totalCount: unique.length };
+    return { text: source, copies: 1, uniqueCount, totalCount: serials.length };
   }
-  const serials = serialsFromText(source);
   if (!serials.length) {
     return { text: source, copies: n, uniqueCount: 0, totalCount: 0 };
   }
   const text = serials.flatMap((serial) => Array.from({ length: n }, () => serial)).join("\n");
   appendActivity(`${label}: ${serials.length} serial(s) × ${n} = ${serials.length * n} total.`);
-  return { text, copies: n, uniqueCount: serials.length, totalCount: serials.length * n };
+  return { text, copies: n, uniqueCount, totalCount: serials.length * n };
 }
 
 async function sendEditorSerial(mode) {

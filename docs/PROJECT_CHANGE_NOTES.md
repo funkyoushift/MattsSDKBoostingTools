@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-11: Serial copy quantity](changes/2026-10-11-serial-copy-quantity.md) - v2.37.1 quantity repair for readable codes and Quick Menu payloads; offline payload regression coverage.
+
 - [2026-10-11: Full-progress preset](changes/2026-10-11-full-progress-preset.md) - Local review integration; live preview passed, end-to-end test pending.
 
 - [2026-10-11: Grassroots guest challenge credit](changes/2026-10-11-grassroots-credit.md) - Guest credit repair verified to 98, challenge and achievement confirmed; local review install only.
