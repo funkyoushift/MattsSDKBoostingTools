@@ -18,6 +18,8 @@ def mod(monkeypatch):
     spec = importlib.util.spec_from_file_location('mission_test', ROOT / 'mission_progression.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
+    monkeypatch.setattr(module, '_dlc_requirement', lambda name: None)
+    monkeypatch.setattr(module, '_credit_completed', lambda engine, party, name: None)
     return module
 
 
@@ -288,3 +290,94 @@ def test_review_console_stops_on_uncertain_step(monkeypatch):
     assert [x[0] for x in calls] == ['mission_start', 'mission_step']
     assert calls[0][1]['target_player'] == 'Guest'
     assert calls[0][1]['reset_completed'] is True
+
+
+@pytest.mark.parametrize('state,operation,returned_state,allowed', [
+    ('available','accept','available',True),
+    ('active','accept','available',True),
+    ('completed','complete','active',True),
+    ('active','complete','active',False),
+    ('locked','accept','available',False),
+])
+def test_recovery_reads_receipt_without_repeating_native_calls(mod, monkeypatch, tmp_path, state, operation, returned_state, allowed):
+    ident = 'a' * 32
+    old = row(state=returned_state)
+    current = row(state=state)
+    journal = tmp_path / (ident + '.jsonl')
+    events = [dict(event='issued', mission='Mission_Main_Beach', operation=operation, before=old, time=1),
+              dict(event='returned', mission='Mission_Main_Beach', operation=operation, after=old, time=2),
+              dict(event='state', state='uncertain')]
+    journal.write_text(''.join(json.dumps(e)+'\n' for e in events))
+    mod._job = dict(id=ident, state='uncertain', journal=str(journal), names=['Mission_Main_Beach'],
+                    index=0, completed=[], binding=['fixed'], target='pc', phase='accept')
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod, '_engine', lambda:NS(snapshot=lambda:{'missions':[current]}))
+    monkeypatch.setattr(mod, '_validate_exit', lambda *args:None)
+    monkeypatch.setattr(mod, '_party', lambda:[])
+    monkeypatch.setattr(mod, '_binding', lambda rows:['fixed'])
+    before = journal.read_bytes()
+    payload=dict(job_id=ident, mode='inspect')
+    if not allowed:
+        with pytest.raises(ValueError, match='unresolved'):mod.recover(payload)
+        assert journal.read_bytes()==before
+        return
+    assert mod.recover(payload)['observed']==state
+    assert journal.read_bytes()==before
+    result=mod.recover(dict(payload, mode='continue', acknowledge_shared_progress=True))
+    if state=='available':
+        assert result['state']=='stopped' and result['verified_count']==0 and len(result['deferred'])==1
+    else:assert result['state']=='running'
+    assert sum(json.loads(line)['event']=='issued' for line in journal.read_text().splitlines())==1
+
+
+def test_blocked_dlc_skips_before_reset_and_names_player(mod, monkeypatch, tmp_path):
+    name='mission_main_cowbell0'
+    monkeypatch.setattr(mod, '_dlc_requirement', lambda n:dict(allowed=False,title='Vault',reason='Game reports no access: Guest',blocking_players=['Guest']))
+    monkeypatch.setattr(mod, '_engine', lambda:NS(snapshot=lambda:{'missions':[]}))
+    monkeypatch.setattr(mod, '_party', lambda:[{'pc':NS(_path_name=lambda:'pc')}])
+    monkeypatch.setattr(mod, '_binding', lambda rows:['fixed'])
+    mod._job=dict(id='job',state='running',names=[name],index=0,completed=[],binding=['fixed'],target='pc',phase='prepare',journal=str(tmp_path/'job.jsonl'))
+    result=mod.step('job')
+    assert result['state']=='stopped' and result['verified_count']==0
+    assert result['deferred'][0]['blocking_players']==['Guest']
+    assert 'issued' not in [json.loads(line)['event'] for line in (tmp_path/'job.jsonl').read_text().splitlines()]
+
+
+def test_credit_repair_never_resets_completed_mission(mod, monkeypatch, tmp_path):
+    name = 'Mission_Side_Heist'
+    pc = NS(_path_name=lambda: 'pc')
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(name, 'completed')]}))
+    monkeypatch.setattr(mod, '_party', lambda: [{'pc': pc}])
+    monkeypatch.setattr(mod, '_binding', lambda rows: ['fixed'])
+    monkeypatch.setattr(mod, '_validate_exit', lambda *args: None)
+    calls = []
+    monkeypatch.setattr(mod, '_credit_completed', lambda engine, party, mission: calls.append(mission))
+    mod._job = dict(id='job', ok=True, state='running', binding=['fixed'], target='pc',
+                    names=[name], index=0, completed=[], phase='prepare', selection_scope='challenge_credit',
+                    journal=str(tmp_path/'job.jsonl'))
+    assert mod.step('job')['state'] == 'completed'
+    assert calls == [name]
+    events = [json.loads(x)['event'] for x in (tmp_path/'job.jsonl').read_text().splitlines()]
+    assert 'issued' not in events
+
+
+def test_credit_pending_does_not_advance_or_reset(mod, monkeypatch, tmp_path):
+    class CreditPending(Exception):
+        receipt = {'mission': 'Mission_Side_Heist'}
+    name = 'Mission_Side_Heist'
+    pc = NS(_path_name=lambda: 'pc')
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(name, 'completed')]}))
+    monkeypatch.setattr(mod, '_party', lambda: [{'pc': pc}])
+    monkeypatch.setattr(mod, '_binding', lambda rows: ['fixed'])
+    monkeypatch.setattr(mod, '_validate_exit', lambda *args: None)
+    def pending(*args): raise CreditPending('settling')
+    monkeypatch.setattr(mod, '_credit_completed', pending)
+    mod._job = dict(id='job', ok=True, state='running', binding=['fixed'], target='pc',
+                    names=[name], index=0, completed=[], phase='prepare', selection_scope='challenge_credit',
+                    journal=str(tmp_path/'job.jsonl'))
+    result = mod.step('job')
+    assert result['index'] == 0 and result['phase'] == 'complete'
+    assert result['state'] == 'running' and result['challenge_pending']
+    with pytest.raises(ValueError): mod.cancel('wrong')
+    assert mod.cancel('job')['cancel_requested']
+    assert mod._job['state'] == 'running'

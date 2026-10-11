@@ -16,6 +16,7 @@
     return {unavailable, remaining: rows.filter(m => !unavailable.includes(m))};
   }
   function bind(doc, call, getTarget) {
+    root.MsbtFullProgressPanel?.bind(doc, call);
     const el = id => doc.getElementById(id);
     const output = el("missionOutput");
     let job = null, busy = false, stopped = false, preview = null;
@@ -35,15 +36,20 @@
         : value?.message || (value?.state === "idle" ? "No mission job is running." : "No confirmed result. Refresh status before retrying.");
       if (value?.excluded?.length) output.textContent += `\n${value.excluded.length} nonpersistent replayable definitions excluded.`;
       if (remaining.length) output.textContent += "\nRemaining: " + remaining.map(m => `${m.title}: ${m.state || "prerequisites unavailable"}`).join("; ");
-      if (value?.total && !onlyUnavailable) output.textContent += `\n${value.index || 0} / ${value.total} ${value.unit || "missions"} verified in this lobby.`;
+      if (value?.deferred?.length) output.textContent += "\nDeferred (not completed): " + value.deferred.map(m => `${m.title}: ${m.reason}${m.blocking_players?.length ? " — players without access: " + m.blocking_players.join(", ") : ""}`).join("; ");
+      if (value?.total && !onlyUnavailable) output.textContent += `\n${value.verified_count ?? value.index ?? 0} / ${value.total} ${value.unit || "missions"} verified in this lobby.`;
     }
     function update() {
       const eligible = preview?.ok && runnable().length > 0 && runnable().length <= preview.max_batch;
       const resetting = runnable().some(m => m.resets_host_completion);
-      el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : "Complete missions";
+      el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : el("missionScope").value === "challenge_credit" ? "Repair Grassroots credit" : "Complete missions";
       el("missionRunBtn").disabled = busy || !eligible || !el("missionSharedAck").checked || (resetting && !el("missionResetCompleted").checked);
       el("missionResumeBtn").disabled = busy || job?.state !== "stopped" || (job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) || (!["accept", "complete"].includes(job?.phase) && !(job?.dynamic && job?.phase === "prepare")) || (job?.operation_scope || "missions") !== "missions";
       el("missionCancelBtn").disabled = !busy || !job?.id;
+      const recoverable = !busy && job?.id && ["uncertain", "stopped", "interrupted"].includes(job.state);
+      el("missionRecoverBtn").disabled = !recoverable || job.state === "interrupted" || !el("missionSharedAck").checked;
+      el("missionCloseBtn").disabled = !recoverable || !el("missionSharedAck").checked;
+      el("missionDlcBtn").disabled = busy;
       el("missionPreviewBtn").disabled = busy;
       el("missionScope").disabled = busy;
       el("missionNames").disabled = busy;
@@ -85,6 +91,28 @@
       try { const result = await call("mission_status", {}); if (!busy) job = result; report(result); update(); }
       catch (error) { output.textContent = error.message; }
     });
+    el("missionDlcBtn").addEventListener("click", async () => {
+      try {
+        const result = await call("mission_dlc_status", {});
+        output.textContent = result.ok ? result.packs.map(p => `${p.title}: ${p.allowed ? "all players have access" : p.reason}`).join("\n") + "\nPlayers listed lack access according to the game. They can enable their content or leave the lobby before you start a DLC-only run. Nobody is removed automatically." : result.message;
+      } catch (error) { output.textContent = error.message; }
+    });
+    for (const [button, mode] of [["missionRecoverBtn", "continue"], ["missionCloseBtn", "close"]]) {
+      el(button).addEventListener("click", async () => {
+        if (el(button).disabled) return;
+        busy = true; stopped = false; update();
+        try {
+          const target = getTarget();
+          const result = await call("mission_recover", {job_id:job.id, mode,
+            acknowledge_shared_progress:el("missionSharedAck").checked,
+            target_scope:target ? "selected" : "local", target_player:target || undefined});
+          if (!result.ok) { report(result); return; }
+          job=result; report(job);
+          if (mode === "continue") job=await advance(call,job,()=>stopped,next=>{job=next;report(next);update();});
+        } catch (error) { output.textContent = `Recovery not confirmed: ${error.message}. Check job status.`; }
+        finally { busy=false;preview=null;update(); }
+      });
+    }
     el("missionRunBtn").addEventListener("click", async () => {
       if (el("missionRunBtn").disabled) return;
       busy = true; stopped = false; update();
@@ -108,11 +136,13 @@
       finally { busy = false; preview = null; update(); }
     });
     el("missionCancelBtn").addEventListener("click", async () => {
-      stopped = true;
-      try { report(await call("mission_cancel", { job_id: job.id })); }
+      try { const result = await call("mission_cancel", { job_id: job.id });
+        if (result.ok) stopped = result.state !== "running";
+        report(result); }
       catch (error) { output.textContent = `Cancellation not confirmed: ${error.message}. Check job status.`; }
     });
     update();
+    void call("mission_status", {}).then(result=>{if(!busy){job=result;report(result);update();}}).catch(()=>{});
   }
   root.MsbtMissionPanel = { bind, advance, splitCoverage };
   if (typeof module !== "undefined") module.exports = { bind, advance, splitCoverage };

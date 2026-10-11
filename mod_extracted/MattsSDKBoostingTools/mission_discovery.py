@@ -45,8 +45,11 @@ def plan(scope, snapshot, names=None):
         if not names or len(set(names)) != len(names) or set(names) - {r['name'] for r in entries}:
             raise ValueError('Unknown or duplicate discovery selection')
         entries = [r for r in entries if r['name'] in names]
-        if scope != 'travel_requirements' and len(entries) != len(included):
-            raise ValueError('Discovery requires the complete ordered parent chain')
+        if scope != 'travel_requirements':
+            chosen = {r['name'] for r in entries}
+            if any(by_name[n]['parentlocation'] not in (None, 'None', '') and
+                   by_name[n]['parentlocation'] not in chosen for n in chosen):
+                raise ValueError('Discovery selection is missing a required parent')
     return entries
 
 

@@ -137,3 +137,9 @@ The toolkit includes boosting, item and serial workflows, save/editor tools, inv
 Original project code is covered by [LICENSE](LICENSE). Bundled and adapted code, data, libraries, and artwork retain their respective licenses or permissions; see [Third-party notices](docs/THIRD_PARTY_NOTICES.txt). Credit is not a substitute for those terms.
 
 Borderlands and its game assets belong to Gearbox / 2K and their respective owners. This is an unofficial community project and is not affiliated with or endorsed by them.
+
+
+## 100% game preset — v2.37.0
+Open **Missions → 100% game** in the desktop app. Check lobby access, review the shared-progress acknowledgement, then run supported missions, discoveries/travel requirements, character levels, currencies, SDU points, applicable unlocks, UVH/Mayhem and challenges. Host plus one guest can use available content; larger lobbies require everyone to have the required DLC access.
+
+The final prerequisite pass picks up newly available missions and travel requirements without resetting verified work. Missing DLC, unavailable definitions and inactive vault cards are reported separately. This preset does not promise every item/statistic/achievement or automatically purchase SDU upgrades. Save and quit normally and verify guests in their own games. See [v2.37.0 release notes](docs/releases/RELEASE_NOTES_v2.37.0.md) for limitations and recovery controls.

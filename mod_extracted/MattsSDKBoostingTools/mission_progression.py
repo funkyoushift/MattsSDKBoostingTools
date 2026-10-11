@@ -62,6 +62,11 @@ def _state(row):
 
 
 def select(snapshot, scope, names=None):
+    if scope == 'challenge_credit':
+        from .mission_challenges import MISSIONS
+        return [n for n in MISSIONS if any((r.get('source_identity') or {}).get('name')==n
+                and _state(r)=='completed' and not r.get('generated') and r.get('replication_type')==0
+                for r in snapshot['missions'])]
     if scope in UNVERIFIED:
         raise ValueError(UNVERIFIED[scope])
     if scope == 'current':
@@ -97,7 +102,7 @@ def preview(payload):
         if name in NONPERSISTENT:
             reason = 'This replayable mission is source-marked never saved; permanent completion is not supported'
         entries.append(dict(CATALOG[name], state=state, blocked_reason=reason,
-                            resets_host_completion=state == 'completed', excluded=name in NONPERSISTENT))
+                            resets_host_completion=state == 'completed' and scope != 'challenge_credit', excluded=name in NONPERSISTENT))
     return dict(ok=True, scope='shared_lobby', selection_scope=scope, missions=entries, max_batch=MAX_BATCH,
                 catalog_total=len(entries), excluded_total=sum(r['excluded'] for r in entries),
                 unsupported=UNVERIFIED, message='Changes can affect host and all connected players. Preview is read-only.')
@@ -105,8 +110,44 @@ def preview(payload):
 
 def status():
     if _job is None:
+        from mods_base import SETTINGS_DIR
+        folder = Path(SETTINGS_DIR) / 'msbt_missions'
+        for path in sorted(folder.glob('*.jsonl')):
+            events = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()]
+            if events and events[-1].get('state') not in ('completed', 'cancelled', 'stopped'):
+                return dict(ok=False, state='interrupted', id=path.stem,
+                            message='An interrupted job needs recovery before another run. Use Recover stopped job.')
         return dict(ok=True, state='idle', unsupported=UNVERIFIED, max_batch=MAX_BATCH)
-    return {k: v for k, v in _job.items() if k not in ('binding', 'target', 'journal', 'names')}
+    result = {k: v for k, v in _job.items() if k not in ('binding', 'target', 'journal', 'names')}
+    result['verified_count'] = len(_job.get('completed', []))
+    return result
+
+
+def dlc_status():
+    from . import mission_dlc
+    return dict(ok=True, packs=list(mission_dlc.inspect(_party()).values()))
+
+
+def _dlc_requirement(name):
+    from . import mission_dlc
+    if name not in mission_dlc.DATA['missions']:
+        return None
+    return mission_dlc.requirement(name, mission_dlc.inspect(_party()))
+
+
+def _defer(name, reason, access=None):
+    entry = dict(name=name, title=CATALOG[name]['title'], reason=reason, state='deferred')
+    if access:
+        entry.update(pack=access['title'], blocking_players=access['blocking_players'])
+    _journal(dict(event='deferred', mission=name, details=entry))
+    _job.setdefault('deferred', []).append(entry)
+    _job['index'] += 1
+    _job['phase'] = 'prepare'
+    _job['message'] = entry['title'] + ': deferred; ' + reason
+    if _job['index'] >= len(_job['names']):
+        _job.update(state='stopped', message='Finished available work; deferred missions remain.')
+    _journal(dict(event='state', state=_job['state'], index=_job['index']))
+    return status()
 
 
 def _journal(event):
@@ -118,7 +159,7 @@ def _journal(event):
 
 def start(payload):
     global _job
-    if _job and _job['state'] in ('running', 'uncertain'):
+    if _job and (_job['state'] in ('running', 'uncertain') or _job.get('challenge_pending')):
         raise ValueError('A mission job is running or has an uncertain result; inspect it before starting another')
     if payload.get('acknowledge_shared_progress') is not True:
         raise ValueError('Review and acknowledge that this changes shared host/party progress')
@@ -150,7 +191,7 @@ def start(payload):
             initial_completed.append(name)
         if not dynamic and state not in ('active', 'accepted', 'available', 'completed'):
             raise ValueError('Mission prerequisites are not available: ' + name)
-        if state == 'completed' and payload.get('reset_completed') is not True:
+        if state == 'completed' and scope != 'challenge_credit' and payload.get('reset_completed') is not True:
             raise ValueError('Host already completed this mission; explicitly choose reset-and-complete')
     from . import farming_targets
     selected = farming_targets.resolve(payload)
@@ -176,8 +217,13 @@ def start(payload):
                 journal=str(journal), phase='prepare', message='Ready for one guarded step',
                 dynamic=dynamic, selection_scope=scope, initial_completed=initial_completed,
                 catalog_total=len(names) + len(excluded), excluded=excluded, pending=[], stall_since=None,
+                deferred=[],
                 guest_persistence='requires own-game verification')
+    if not names:
+        _job.update(state='completed', message='No completed missions are eligible for challenge-credit repair')
     _journal(dict(event='start', missions=names, binding=_job['binding'], target=target))
+    if _job['state']=='completed':
+        _journal(dict(event='state',state='completed',index=0))
     return status()
 
 
@@ -212,6 +258,10 @@ def _schedule_category(snapshot):
     pending = []
     for i in range(_job['index'], len(_job['names'])):
         name = _job['names'][i]
+        access = _dlc_requirement(name)
+        if access and not access['allowed']:
+            _job['names'].insert(_job['index'], _job['names'].pop(i))
+            return True
         try:
             state = _state(_row(snapshot, name))
             reason = 'Prerequisites not yet available' if state not in ('active', 'accepted', 'available', 'completed') else None
@@ -234,6 +284,21 @@ def _schedule_category(snapshot):
         _job.update(ok=False, state='stopped', message=f"Incomplete: {len(pending)} missions remain locked or unavailable after prerequisite rechecks. No locked states were forced.")
         _journal(dict(event='state', state='stopped', index=_job['index'], pending=pending))
     return False
+
+
+def _credit_completed(engine, party, name):
+    from . import mission_challenges
+    if _job.get('challenge_pending'):
+        mission_challenges.reconcile(engine, party, _job['challenge_pending'], _journal)
+        _job.pop('challenge_pending')
+    if _job.get('cancel_requested'):
+        _job.update(state='cancelled', message='Issued credit verified; remaining work cancelled')
+        _journal(dict(event='state', state='cancelled', index=_job['index']))
+        return False
+    receipts = mission_challenges.credit_completed(engine, party, name, _journal)
+    if receipts:
+        _job['challenge_credit'] = receipts
+    return True
 
 
 def step(job_id):
@@ -280,24 +345,33 @@ def step(job_id):
             _job['completed'].append(name)
             _job['index'] += 1
             if _job['index'] == _job['total']:
-                _job['state'] = 'completed'
+                _job['state'] = 'stopped' if _job.get('deferred') else 'completed'
             _job['message'] = 'Verified locally: ' + name
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
+        access = _dlc_requirement(name)
+        if access and not access['allowed']:
+            return _defer(name, access['reason'], access)
         row = _row(before, name)
         _validate_exit(engine, row, name)
         state = _state(row)
         phase = _job['phase']
+        if _job.get('selection_scope') == 'challenge_credit':
+            if state != 'completed':
+                raise RuntimeError('Credit repair stopped: mission is no longer completed')
+            _job['phase'] = phase = 'complete'
         if phase == 'accept' and state in ('active', 'accepted', 'completed'):
             _journal(dict(event='observed_activation', mission=name, after=row))
             _job['phase'] = phase = 'complete'
         if phase == 'complete' and state == 'completed':
+            if _credit_completed(engine, party, name) is False:
+                return status()
             _job['completed'].append(name)
             _job['index'] += 1
             _job['phase'] = 'prepare'
             if _job['index'] == len(_job['names']):
-                _job['state'] = 'completed'
-            _job['message'] = f'{CATALOG[name]["title"]}: game completed it after acceptance; verified without another write'
+                _job['state'] = 'stopped' if _job.get('deferred') else 'completed'
+            _job['message'] = f'{CATALOG[name]["title"]}: completion and applicable Grassroots credit verified'
             _journal(dict(event='observed_completed', mission=name, after=row))
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
@@ -336,16 +410,24 @@ def step(job_id):
         after = _row(engine.snapshot(), name)
         _journal(dict(event='returned', mission=name, operation=operation, after=after))
         if _state(after) not in expected:
-            raise RuntimeError('Native result did not match; do not repeat automatically')
+            _job['failure'] = dict(mission=name, title=CATALOG[name]['title'], operation=operation,
+                                   observed=_state(after))
+            raise RuntimeError(f'{CATALOG[name]["title"]}: {operation} returned {_state(after)}; expected {", ".join(expected)}. Use Recover stopped job; no automatic retry.')
         _job['phase'] = next_phase
         if operation == 'complete':
+            if _credit_completed(engine, party, name) is False:
+                return status()
             _job['completed'].append(name)
             _job['index'] += 1
             if _job['index'] == len(_job['names']):
-                _job['state'] = 'completed'
+                _job['state'] = 'stopped' if _job.get('deferred') else 'completed'
         _job['message'] = f'{CATALOG[name]["title"]}: {operation} verified in shared lobby'
     except Exception as exc:
-        _job.update(ok=False, state='uncertain' if issued else 'stopped', message=str(exc))
+        if hasattr(exc, 'receipt') and exc.__class__.__name__ == 'CreditPending':
+            _job.update(challenge_pending=exc.receipt, phase='complete', state='running', message=str(exc))
+            _journal(dict(event='state', state='running', index=_job['index'], message=str(exc)))
+            return status()
+        _job.update(ok=False, state='uncertain' if issued or getattr(exc, 'issued', False) else 'stopped', message=str(exc))
     _journal(dict(event='state', state=_job['state'], index=_job['index'], message=_job['message']))
     return status()
 
@@ -381,7 +463,93 @@ def resume(job_id):
     return status()
 
 
+def recover(payload):
+    """Reconcile a recorded call by reading state. Never replay it or undo it."""
+    global _job
+    job_id = payload.get('job_id', '')
+    if not isinstance(job_id, str) or len(job_id) != 32 or any(c not in '0123456789abcdef' for c in job_id):
+        raise ValueError('Invalid recovery job identifier')
+    live = _job is not None and _job['id'] == job_id
+    if _job and _job['state'] == 'running':
+        raise ValueError('Cancel the running job before recovery')
+    from mods_base import SETTINGS_DIR
+    path = Path(_job['journal']) if live else Path(SETTINGS_DIR) / 'msbt_missions' / (job_id + '.jsonl')
+    events = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()]
+    issued = next((i for i in range(len(events)-1, -1, -1) if events[i].get('event') == 'issued'), None)
+    if issued is None:
+        raise ValueError('No recorded mission call to reconcile')
+    call = events[issued]
+    name, operation = call.get('mission'), call.get('operation')
+    if operation == 'challenge_credit':
+        from . import mission_challenges
+        returned = next((e for e in events[issued+1:] if e.get('event') == 'returned'
+                         and e.get('operation') == operation and e.get('mission') == name), None)
+        if returned is None:
+            raise ValueError('Challenge call has no durable return receipt; inspect before retry')
+        receipt = {k: v for k, v in call.items() if k not in ('event', 'time', 'job_id')}
+        mission_challenges.reconcile(_engine(), _party(), receipt, lambda event: None)
+        report = dict(ok=True, mission=name, title=CATALOG[name]['title'], operation=operation,
+                      observed='completed', acceptance_unchanged=False, access=None)
+        state = 'completed'
+    else:
+        if name not in CATALOG or operation not in ('reset', 'accept', 'complete'):
+            raise ValueError('This recovery handles mission calls only; other operations still require inspection')
+        returned = next((e for e in events[issued+1:] if e.get('event') == 'returned' and e.get('mission') == name and e.get('operation') == operation), None)
+        if returned is None or time.time() - returned['time'] < 2:
+            raise ValueError('Call has no durable return receipt or is still settling; no retry or clearance issued')
+        engine = _engine()
+        current = _row(engine.snapshot(), name)
+        if current['token'] != call['before']['token']:
+            raise ValueError('Mission identity differs from the receipt')
+        _validate_exit(engine, current, name)
+        state = _state(current)
+        accepted = state in ('active', 'accepted', 'completed')
+        safe = (operation == 'accept' and (accepted or (state == 'available' and _state(returned['after']) == 'available'))) or (operation == 'reset' and state in ('available', 'accepted', 'active', 'completed')) or (operation == 'complete' and state == 'completed')
+        if not safe:
+            raise ValueError(f'{CATALOG[name]["title"]}: {operation} still unresolved ({state}); no retry or clearance issued')
+        report = dict(ok=True, mission=name, title=CATALOG[name]['title'], operation=operation, observed=state,
+                      acceptance_unchanged=operation == 'accept' and state == 'available', access=_dlc_requirement(name))
+    mode = payload.get('mode', 'inspect')
+    if mode == 'inspect':
+        return dict(report, message=f'{report["title"]}: {operation} reconciled as {state}; no game changes made.')
+    if mode not in ('continue', 'close') or payload.get('acknowledge_shared_progress') is not True:
+        raise ValueError('Choose continue or close and acknowledge shared progress')
+    if not live and mode != 'close':
+        raise ValueError('Recovered after restart: close the reconciled job, then preview a new batch')
+    if mode == 'close':
+        event = dict(event='recovered', state='stopped', report=report, time=time.time())
+        with path.open('a', encoding='utf-8') as stream:
+            stream.write(json.dumps(event) + '\n'); stream.flush(); os.fsync(stream.fileno())
+        if live:
+            _job.pop('challenge_pending', None)
+            _job.pop('cancel_requested', None)
+            _job.update(ok=True, state='stopped', message=f'{report["title"]}: reconciled as {state}. Job closed; previous progress retained.')
+        return dict(ok=True, state='stopped', id=job_id, message=f'{report["title"]}: reconciled as {state}. Job closed; previous progress retained. Refresh preview for a new run.')
+    party = _party()
+    if _binding(party) != _job['binding']:
+        from . import farming_targets
+        selected = farming_targets.resolve(payload)
+        if len(selected) != 1:
+            raise ValueError('Select one currently loaded acceptance player')
+        _job['binding'], _job['target'] = _binding(party), selected[0]['pc']._path_name()
+    _job.pop('challenge_pending', None)
+    _job.pop('cancel_requested', None)
+    _job.update(ok=True, state='running', stall_since=None)
+    _journal(dict(event='recovered', report=report, state='running', binding=_job['binding'], target=_job['target']))
+    if report['acceptance_unchanged']:
+        return _defer(name, 'Acceptance returned unchanged; skipped without retry.', report['access'])
+    _job['phase'] = 'accept' if operation == 'reset' and state == 'available' else 'complete'
+    _job['message'] = report['title'] + ': reconciled; continuing without repeating the recorded call.'
+    return status()
+
+
 def cancel(job_id):
+    if not _job or job_id != _job['id']:
+        raise ValueError('Mission job identifier changed')
+    if _job and _job.get('challenge_pending'):
+        _job['cancel_requested'] = True
+        _job['message'] = 'Cancelling after issued Grassroots credit verifies'
+        return status()
     if not _job or job_id != _job['id']:
         raise ValueError('Mission job identifier changed')
     if _job['state'] == 'running':
@@ -402,6 +570,10 @@ def dispatch(action, payload):
     try:
         if action == 'mission_status':
             return status()
+        if action == 'mission_dlc_status':
+            return dlc_status()
+        if action == 'mission_recover':
+            return recover(payload)
         if action == 'mission_preview':
             return preview(payload)
         if action == 'mission_start':

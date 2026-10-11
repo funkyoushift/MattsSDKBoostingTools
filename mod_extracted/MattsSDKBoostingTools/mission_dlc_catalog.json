@@ -1,0 +1,310 @@
+{
+  "packs": {
+    "banjo": {
+      "title": "Rush Saves Mercenary Day",
+      "attribute": "Entitlement_Banjo"
+    },
+    "cowbell": {
+      "title": "Vault of the Damned",
+      "attribute": "Entitlement_Cowbell"
+    },
+    "harmonica": {
+      "title": "FL4K and the Last Resort",
+      "attribute": "Entitlement_Harmonica"
+    },
+    "cello": {
+      "title": "The Stone Demon",
+      "attribute": "Entitlement_Cello"
+    },
+    "harp": {
+      "title": "Murders and Acquisitions",
+      "attribute": "Entitlement_Harp"
+    },
+    "mandolin": {
+      "title": "A Zane To Kill For",
+      "attribute": "Entitlement_Mandolin"
+    },
+    "raid1": {
+      "title": "Raid1 Title",
+      "attribute": "Entitlement_Raid1"
+    },
+    "raid2": {
+      "title": "Raid2 Title",
+      "attribute": "Entitlement_Raid2"
+    },
+    "viola": {
+      "title": "Amara and the Vile Shadows",
+      "attribute": "Entitlement_Viola"
+    }
+  },
+  "missions": {
+    "mission_main_cowbell0": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell_Unlock'",
+      "source": "Nexus-Data-Mission0.json"
+    },
+    "Mission_DLC_Banjo": {
+      "pack": "banjo",
+      "mission_set": "missionset'MissionSet_DLC_Banjo'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Cello": {
+      "pack": "cello",
+      "mission_set": "missionset'MissionSet_DLC_Cello'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Harp": {
+      "pack": "harp",
+      "mission_set": "missionset'MissionSet_DLC_Harp'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Mandolin": {
+      "pack": "mandolin",
+      "mission_set": "missionset'MissionSet_DLC_Mandolin'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Raid1": {
+      "pack": "raid1",
+      "mission_set": "missionset'MissionSet_DLC_Raid1'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Raid2": {
+      "pack": "raid2",
+      "mission_set": "missionset'MissionSet_DLC_Raid2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "mission_main_cowbell1": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Cowbell2": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Cowbell3": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Cowbell4": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Cowbell5": {
+      "pack": "cowbell",
+      "mission_set": "missionset'missionset_main_cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Mandolin_CircleOfSlaughter": {
+      "pack": "mandolin",
+      "mission_set": "missionset'MissionSet_Mandolin_CircleOfSlaughter'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_Hosting": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Micro_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_IceFishing": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Micro_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_Operation": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Micro_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_WhoDidIt": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Micro_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_DutyBeyondDeath": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Invasive1": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Invasive2": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_InvasiveINVIS": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_RomeoAndRomeo": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_SafeHaven": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_SummoningCircle": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_UnfinishedBusiness": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_Side_Cowbell'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Viola": {
+      "pack": "viola",
+      "mission_set": "missionset'MissionSet_DLC_Viola'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica0": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica0'",
+      "source": "Nexus-Data-Mission0.json"
+    },
+    "mission_main_harmonica1": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica1'",
+      "source": "Nexus-Data-Mission0.json"
+    },
+    "Mission_Main_Harmonica4": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica4'",
+      "source": "Nexus-Data-Mission0.json"
+    },
+    "Mission_Main_Harmonica2": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_main_Harmonica2B": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica2B'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3_Hotel": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3_Managers'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3_Lava": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3_Managers'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3_Logistics": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3_Managers'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3_Spa": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3_Managers'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Main_Harmonica3_Theatre": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Main_Harmonica3_Managers'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_CatchingFire": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica1'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_Harmonica_Guarded": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica1'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_Harmonica_GuardedEnding": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica1'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_ManagerHand1_Pangolin": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_ManagerHand2_Tediore": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Micro_SnowCone": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Micro_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_Microplastics": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_NoVacancy": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_RescueRangers": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica1'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_SpatialAwareness1": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_SpatialAwareness2": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_SpatialAwarenessReward": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_Harmonica_TradingUp": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica2'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_SasaengInvasion": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica3'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_Side_VeryMerryUnfestival": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Side_Harmonica1'",
+      "source": "Nexus-Data-Mission4.json"
+    }
+  },
+  "source_sha256": {
+    "Nexus-Data-Resident0.json": "b68447f08a603fe26f50dcacfaf2fad039f88dd774dc8f440ed4f1bb243c47b1",
+    "Nexus-Data-Resident4.json": "35591b9795a7d6d5d9cc3fd0f5d99a2b26a61a540cbd3cd2f4d6f2bfaf48a46e",
+    "Nexus-Data-attribute4.json": "2f3be07dc6eb6dcf63c2901a32806ed49d697de1b5e98ccfed1cb3fa118cd244",
+    "Nexus-Data-attribute6.json": "cbb7ae69ebaf24fc8a201e685ac46924561e21c9874b0d58acd0323d18293ef5",
+    "Nexus-Data-Mission0.json": "16f049b1528376741c981c05232b68a394c7b982f790a4b534e521890adaa02c",
+    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75"
+  }
+}

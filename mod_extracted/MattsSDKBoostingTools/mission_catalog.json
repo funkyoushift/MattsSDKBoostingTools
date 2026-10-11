@@ -2071,5 +2071,25 @@
     "exit_names": [
       "None"
     ]
+  },
+  {
+    "name": "Mission_Micro_MountainsFaction4Intro",
+    "title": "Mountains faction finale introduction (hidden mission)",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/46/mission_micro_mountainsfaction4intro",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_AbductionInjunctionEnding",
+    "title": "Abduction Injunction ending (hidden mission)",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/1/micro_grasslands_abductioninjunctionending",
+    "exit_names": [
+      "None"
+    ]
   }
 ]

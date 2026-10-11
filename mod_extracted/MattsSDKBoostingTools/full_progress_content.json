@@ -1,0 +1,96 @@
+{
+  "packs": {
+    "banjo": {
+      "title": "Rush Saves Mercenary Day",
+      "fact": "entitlement.banjo.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/0/entries/0/dlcdef_banjo",
+      "definition": "dlcdef_banjo"
+    },
+    "vaultcard2": {
+      "title": "Vault x Hunter",
+      "fact": "entitlement.vaultcard2.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/0/entries/1/dlcdef_vaultcard2",
+      "definition": "dlcdef_vaultcard2"
+    },
+    "vaultcard3": {
+      "title": "Arcade Invaders",
+      "fact": "entitlement.vaultcard3.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/0/entries/2/dlcdef_vaultcard3",
+      "definition": "dlcdef_vaultcard3"
+    },
+    "vaultcard4": {
+      "title": "Desert Dreams",
+      "fact": "entitlement.vaultcard4.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/0/entries/3/dlcdef_vaultcard4",
+      "definition": "dlcdef_vaultcard4"
+    },
+    "vaultcard5": {
+      "title": "Warped & Weird",
+      "fact": "entitlement.vaultcard5.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/0/entries/4/dlcdef_vaultcard5",
+      "definition": "dlcdef_vaultcard5"
+    },
+    "cowbell": {
+      "title": "Vault of the Damned",
+      "fact": "entitlement.cowbell.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/1/entries/1/dlcdef_cowbell",
+      "definition": "dlcdef_cowbell"
+    },
+    "harmonica": {
+      "title": "FL4K and the Last Resort",
+      "fact": "entitlement.harmonica.enabled",
+      "source": "Nexus-Data-Resident0.json/DLCDef/records/1/entries/2/dlcdef_harmonica",
+      "definition": "dlcdef_harmonica"
+    },
+    "cello": {
+      "title": "The Stone Demon",
+      "fact": "entitlement.cello.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/0/dlcdef_cello",
+      "definition": "dlcdef_cello"
+    },
+    "harp": {
+      "title": "Murders and Acquisitions",
+      "fact": "entitlement.harp.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/1/dlcdef_harp",
+      "definition": "dlcdef_harp"
+    },
+    "mandolin": {
+      "title": "A Zane To Kill For",
+      "fact": "entitlement.mandolin.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/2/dlcdef_mandolin",
+      "definition": "dlcdef_mandolin"
+    },
+    "raid1": {
+      "title": "Raid1 Title",
+      "fact": "entitlement.raid1.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/3/dlcdef_raid1",
+      "definition": "dlcdef_raid1"
+    },
+    "raid2": {
+      "title": "Raid2 Title",
+      "fact": "entitlement.raid2.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/4/dlcdef_raid2",
+      "definition": "dlcdef_raid2"
+    },
+    "viola": {
+      "title": "Amara and the Vile Shadows",
+      "fact": "entitlement.viola.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/0/entries/5/dlcdef_viola",
+      "definition": "dlcdef_viola"
+    },
+    "tuba": {
+      "title": "*TEMP* TUBA TAKEDOWN SHORTNAME",
+      "fact": "entitlement.tuba.enabled",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/3/entries/0/dlcdef_tuba",
+      "definition": "dlcdef_tuba"
+    }
+  },
+  "source_sha256": {
+    "Nexus-Data-Resident0.json": "b68447f08a603fe26f50dcacfaf2fad039f88dd774dc8f440ed4f1bb243c47b1",
+    "Nexus-Data-Resident4.json": "35591b9795a7d6d5d9cc3fd0f5d99a2b26a61a540cbd3cd2f4d6f2bfaf48a46e"
+  },
+  "fingerprints": {
+    "0x156a95a": "56574883ec58488b05d94f190b4831e04889442450488b79104885ff753f4889",
+    "0x125f73e": "56574883ec284889d6e8a657ea024889c74885c00f94c04885f60f94c108c175"
+  }
+}

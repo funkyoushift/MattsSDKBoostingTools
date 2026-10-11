@@ -29,8 +29,10 @@ def test_parent_before_child_and_no_dummy_discoveries(mod, scope):
         assert 'RaceDummy' not in row['locationtype']
         assert 'DiscoveryNothing' not in row['locationtype']
         seen.add(name)
-    with pytest.raises(ValueError):
-        mod.plan(scope, {}, names[:1])
+    assert mod.plan(scope, {}, names[:1])  # Root-only subsets are valid.
+    child = next(r for r in mod.CATALOG if r['gbx_discovery_location_meta_data'] in names and r['parentlocation'] not in (None, 'None', ''))
+    with pytest.raises(ValueError, match='parent'):
+        mod.plan(scope, {}, [child['gbx_discovery_location_meta_data']])
 
 def test_repairs_require_unique_completed_ordinary_parent(mod):
     assert all(r['blocked_reason'] for r in mod.plan('travel_requirements', {'missions': []}))

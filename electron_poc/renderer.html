@@ -409,9 +409,17 @@
       <div class="grid two">
         <section class="panel gold" data-msbt-panel="boost-missions" data-msbt-span="12" data-msbt-title="Missions">
           <h2>Missions <small>Review build</small></h2>
+          <fieldset id="fullProgressPanel">
+            <legend>100% game</legend>
+            <p>Runs supported progress for everyone in this lobby: missions, discoveries, travel, levels, currencies, SDU points, vault cards, unlocks and challenges.</p>
+            <p class="muted-line">Host plus one guest: available content only. Two or more guests: everyone must have required DLC access. Skipped content and unverified results remain visible.</p>
+            <label><input type="checkbox" id="fullProgressAck"> Apply progress to everyone, including resetting completed host missions for normal guest completion.</label>
+            <div class="button-row"><button id="fullProgressPreview">Check lobby</button><button id="fullProgressStart" disabled>Run 100% game</button><button id="fullProgressStop" disabled>Stop remaining work</button><button id="fullProgressStatus">Status</button><button id="fullProgressContinue" disabled>Continue run</button><button id="fullProgressClose" disabled>Close stopped run</button></div>
+            <pre id="fullProgressOutput" class="status-line">Check the lobby to see included progress and unavailable content.</pre>
+          </fieldset>
           <p class="muted-line">Uses the selected player for acceptance. Changes affect the host and shared party progress. Runs stop on a failed or uncertain result.</p>
           <div class="inline-fields">
-            <label>Scope <select id="missionScope"><option value="current">Current tracked mission</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
+            <label>Scope <select id="missionScope"><option value="current">Current tracked mission</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="challenge_credit">Repair Grassroots mission credit</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
             <button id="missionPreviewBtn" type="button">Refresh preview</button>
           </div>
           <label id="missionNamesLabel" hidden>Choose missions <select id="missionNames" multiple size="7" style="width:100%"></select></label>
@@ -423,6 +431,9 @@
             <button id="missionRunBtn" type="button" disabled>Complete missions</button>
             <button id="missionResumeBtn" type="button" disabled>Continue stopped batch</button>
             <button id="missionStatusBtn" type="button">Job status</button>
+            <button id="missionRecoverBtn" type="button" disabled>Recover stopped job</button>
+            <button id="missionCloseBtn" type="button" disabled>Reconcile and close job</button>
+            <button id="missionDlcBtn" type="button">Check lobby DLC access</button>
             <button id="missionCancelBtn" type="button" disabled>Cancel remaining steps</button>
           </div>
           <p class="muted-line">Not available yet: generic objective completion, undo last objective, and reset all progress to not started.</p>
@@ -3066,6 +3077,7 @@ unofficial and claims no endorsement by these owners or credited contributors.
   <script src="workspace.js"></script>
   <script src="workspace_walkthroughs.js"></script>
   <script src="mission_panel.js"></script>
+  <script src="full_progress_panel.js"></script>
   <script src="renderer.js"></script>
   <script src="workspace_targets.js"></script>
   <script src="afk_config_upload.js"></script>

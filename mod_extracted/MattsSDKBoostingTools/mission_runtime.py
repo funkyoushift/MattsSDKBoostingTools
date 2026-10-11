@@ -125,10 +125,12 @@ class MissionRuntime:
         if self.u64(interface) != self.base + 0xb975980:
             raise RuntimeError("Unexpected mission interface")
         data, count = self.array(interface + 0x60, 2000)
+        from .mission_challenges import sparse_entries
+        live_entries = sparse_entries(self, interface + 0x60, 32, 2000)
         rows = []
         unsupported = []
-        for index in range(count):
-            entry = self.read(data + index * 32, 32)
+        for address in live_entries:
+            entry = self.read(address, 32)
             record = struct.unpack_from("<Q", entry, 16)[0]
             if not record:
                 continue

@@ -1761,6 +1761,17 @@ def repeat_last_drop(player_index_or_name: object | None = None) -> dict[str, An
     return replay_recorded_command(drop, apply_lock=False)
 
 
+def full_progress_conflict(action):
+    import sys
+    module=sys.modules.get(__package__+'.full_progress_runtime')
+    runner=getattr(module,'_runner',None) if module else None
+    if runner is None or not runner.job or runner.job['state'] not in ('running','uncertain'):
+        return False
+    if action.endswith(('_status','_preview')) or action in ('mission_dlc_status','mission_recover','mission_cancel'):
+        return False
+    return action.startswith(('mission_','uvh_boost','complete_challenges','max_','mayhem_boost','unlock_')) or action in ('set_level','give_currency','give_experience','chaos_unlock')
+
+
 def run_quick_menu_action(
     action: str,
     payload: dict[str, Any] | None = None,
@@ -1770,7 +1781,12 @@ def run_quick_menu_action(
     """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
     payload = dict(payload or {})
     key = str(action or "").strip()
-    if key in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel"):
+    if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close"):
+        from . import full_progress_runtime
+        return full_progress_runtime.dispatch(key, payload)
+    if full_progress_conflict(key):
+        return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')
+    if key in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel", "mission_recover", "mission_dlc_status"):
         from . import mission_progression
         return mission_progression.dispatch(key, payload)
     if key in ("native_card_preview_status", "native_card_preview"):
@@ -4259,7 +4275,10 @@ def uvh_boost_status() -> dict[str, Any]:
 
 
 def uvh_boost_tick() -> None:
-    global _uvh_next_at, _uvh_running
+    global _uvh_next_at, _uvh_running, _full_progress_uvh_failed
+    if not _full_progress_queue_is_current():
+        uvh_boost_cancel()
+        return
     if not _uvh_queue or time.monotonic() < _uvh_next_at:
         return
     if get_pc() is None:
@@ -4272,6 +4291,11 @@ def uvh_boost_tick() -> None:
             controller.ServerIncrementChallengeForPlayer(challenge, 1)
             sent += 1
         except Exception as exc:
+            if _full_progress_queue_guard is not None:
+                _full_progress_uvh_failed += 1
+                uvh_boost_cancel()
+                _uvh_set_status(f"Full-progress UVH result uncertain: {exc!r}; no retry issued")
+                return
             _uvh_set_status(f"{challenge} failed for one player: {exc!r}")
     _uvh_next_at = time.monotonic() + delay
     if _uvh_queue:
@@ -4465,6 +4489,8 @@ def _challenge_increment_one(controller: Any, challenge: str, amount: int) -> No
         fn(challenge, int(grant))
         return
     except Exception:
+        if _full_progress_queue_guard is not None:
+            raise  # Full-progress jobs never retry an uncertain native call.
         leftover = int(grant)
         last_exc: Exception | None = None
         while leftover > 0:
@@ -4729,9 +4755,28 @@ def _challenge_finish_reconcile(live_targets: list[Any]) -> str:
     return "; ".join(notes) if notes else ""
 
 
+_full_progress_queue_guard = None
+_full_progress_uvh_failed = 0
+_challenge_retry_failed = True
+
+
+def _full_progress_queue_is_current():
+    if _full_progress_queue_guard is None:
+        return True
+    try:
+        return bool(_full_progress_queue_guard())
+    except Exception:
+        return False
+
+
 def complete_challenges_tick() -> None:
     global _challenge_next_at, _challenge_running, _challenge_ok, _challenge_failed
     if not _challenge_queue or time.monotonic() < _challenge_next_at:
+        return
+    if not _full_progress_queue_is_current():
+        complete_challenges_cancel()
+        _challenge_failed += 1
+        _challenge_set_status("Challenges stopped: full-progress lobby changed")
         return
     if get_pc() is None:
         _challenge_queue.clear()
@@ -4776,9 +4821,15 @@ def complete_challenges_tick() -> None:
             _challenge_ok += 1
             _challenge_granted.add(challenge)
         else:
+            if not _challenge_retry_failed:
+                _challenge_failed += 1
+                _challenge_queue.clear()
+                _challenge_running = False
+                _challenge_set_status('Full-progress challenge result uncertain: ' + challenge + '; no retry issued. ' + last_error)
+                return
             attempts = _challenge_attempts.get(challenge, 0) + 1
             _challenge_attempts[challenge] = attempts
-            if attempts < 3:
+            if _challenge_retry_failed and attempts < 3:
                 _challenge_queue.append((challenge, amount))
                 _challenge_set_status(f"Retrying {challenge}: sent to {sent}/{len(_challenge_targets)} players; attempt {attempts}/3.")
             else:
