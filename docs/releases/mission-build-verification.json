@@ -1,0 +1,13 @@
+{
+  "test_packaged_runtime.cjs": {
+    "ok": true,
+    "packages": 48,
+    "errors": []
+  },
+  "test_packaged_assets.cjs": {
+    "ok": true,
+    "checked": 3258,
+    "errors": []
+  },
+  "sdk_sha256": "298a00e823aba1141804d826e09738e07055389c0abf382d73a98e7252cd71d7"
+}

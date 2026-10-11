@@ -1,0 +1,2075 @@
+[
+  {
+    "name": "Mission_Main_Beach",
+    "title": "Recruitment Drive",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/3/mission_main_beach",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Grasslands1",
+    "title": "Down and Outbound",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/30/mission_main_grasslands1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Grasslands2",
+    "title": "A Lot to Process",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/31/mission_main_grasslands2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_grasslands2b",
+    "title": "One Fell Swoop",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/10/mission_main_grasslands2b",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Grasslands3",
+    "title": "Rush the Gate",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/11/mission_main_grasslands3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Mountains1",
+    "title": "Shadow of the Mountain",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/32/mission_main_mountains1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Mountains2",
+    "title": "Crystal Brawl",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/33/mission_main_mountains2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Mountains2b",
+    "title": "Dark Subject",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/34/mission_main_mountains2b",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Mountains3",
+    "title": "His Vile Sanctum",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/12/mission_main_mountains3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Shatteredlands1",
+    "title": "Wrath of the Ripper Queen",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/15/mission_main_shatteredlands1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_shatteredlands1b",
+    "title": "Siege and Destroy",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/16/mission_main_shatteredlands1b",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Shatteredlands2",
+    "title": "Unpaid Tab",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/17/mission_main_shatteredlands2",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Main_Shatteredlands3",
+    "title": "Her Flaming Vision",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/35/mission_main_shatteredlands3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_SearchForLilith",
+    "title": "Rising Action",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/14/mission_main_searchforlilith",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_City1",
+    "title": "The Falling Wall",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/4/mission_main_city1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_city1_b",
+    "title": "Means of Ascent",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/5/mission_main_city1_b",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_City2",
+    "title": "Plan Z",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/6/mission_main_city2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_City3",
+    "title": "The Timekeeper's Order",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/7/mission_main_city3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_cityepilogue",
+    "title": "Secrets of the Vault",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/8/mission_main_cityepilogue",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Elpis",
+    "title": "Another Universe",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/9/mission_main_elpis",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_cowbell0",
+    "title": "An Invitation",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/1/entries/12/mission_main_cowbell0",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica0",
+    "title": "FL4K and the Last Resort",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/1/entries/13/mission_main_harmonica0",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_harmonica1",
+    "title": "The Skag and the Robot",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/1/entries/14/mission_main_harmonica1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica4",
+    "title": "The Rescue",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/1/entries/15/mission_main_harmonica4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Side_ClaptrapOfPandora",
+    "title": "No Place Like Home",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/0/grasslands_side_claptrapofpandora",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Side_MurderMystery",
+    "title": "Meat is Murder",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/1/grasslands_side_murdermystery",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Grasslands_Side_RocketMonsters",
+    "title": "Wayward Gun",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/3/grasslands_side_rocketmonsters",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Survivalists01",
+    "title": "Null and Void",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/5/grasslands_survivalists01",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Survivalists02",
+    "title": "All Charged Up",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/6/grasslands_survivalists02",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Survivalists03",
+    "title": "Bound for Launch",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/7/grasslands_survivalists03",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_AugerScout",
+    "title": "Way Too Chill",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/8/micro_augerscout",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "micro_blackmarketbolts",
+    "title": "Tandem Access Memory",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/9/micro_blackmarketbolts",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_BoltFuneralRites",
+    "title": "Returned to the Mountain",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/10/micro_boltfuneralrites",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway01",
+    "title": "Carried Away",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/11/micro_grasslands_carriedaway01",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway02",
+    "title": "Droning On",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/12/micro_grasslands_carriedaway02",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway03",
+    "title": "Drone Ranger",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/13/micro_grasslands_carriedaway03",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIT",
+    "title": "Free for the TASKing",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/14/micro_grasslands_extremebopit",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIt2",
+    "title": "TASK and Ye Shall Receive",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/15/micro_grasslands_extremebopit2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIt3",
+    "title": "TASK Master",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/16/micro_grasslands_extremebopit3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_HydroplantPowerUp",
+    "title": "Electroshock Therapy",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/17/micro_grasslands_hydroplantpowerup",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits",
+    "title": "To the Limb It",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/18/micro_grasslands_splicersplits",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_UnderConstruction",
+    "title": "Working for Tips",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/19/micro_grasslands_underconstruction",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Mountains_YouAreTheLifeCoachPT1",
+    "title": "The Next Quest Thing",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/20/micro_mountains_youarethelifecoachpt1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "micro_nevermeetyourheroes",
+    "title": "Never Meet Your Heroes",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/21/micro_nevermeetyourheroes",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "micro_orderup",
+    "title": "A Brother in Need",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/22/micro_orderup",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_BrokenShips",
+    "title": "Broken Ships",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/23/micro_shattered_brokenships",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_EP_Agri",
+    "title": "Enter the Electi Part 1",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/24/micro_shattered_ep_agri",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_EP_Mole",
+    "title": "Enter the Electi Part 2",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/25/micro_shattered_ep_mole",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_HOF1",
+    "title": "Her Own Funeral",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/26/micro_shattered_hof1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_HTBRipperPBJ",
+    "title": "PB&J",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/27/micro_shattered_htbripperpbj",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_RipplesAndRituals",
+    "title": "Ripples and Rituals",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/28/micro_shattered_ripplesandrituals",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_SiblingRivalry",
+    "title": "Imminent Jest",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/29/micro_shattered_siblingrivalry",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_AndWelcomeToTheJam",
+    "title": "And Welcome to the Jam",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/36/mission_micro_andwelcometothejam",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt1",
+    "title": "Crack This Guy's Back",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/37/mission_micro_backmccrackypt1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_BlackMarket",
+    "title": "The Black Market",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/38/mission_micro_blackmarket",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Catnapping",
+    "title": "The Cat's Pajamas",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/39/mission_micro_catnapping",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Demo",
+    "title": "Scoundrel Roundup: Kilo",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/40/mission_micro_heistrecruits_demo",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Tech",
+    "title": "Scoundrel Roundup: Glitch",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/41/mission_micro_heistrecruits_tech",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HuntedPart1",
+    "title": "The Neverending Quarry",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/42/mission_micro_huntedpart1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HuntedPart2",
+    "title": "A Quarry of Epic Proportions",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/43/mission_micro_huntedpart2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HuntedPart3",
+    "title": "The Final Quarrel",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/44/mission_micro_huntedpart3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_JoeAndSue",
+    "title": "Joe & Sue",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/45/mission_micro_joeandsue",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_PowercorePlinko",
+    "title": "PowerDrop",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/47/mission_micro_powercoreplinko",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_RainbowEgg",
+    "title": "Brew-ha-ha",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/48/mission_micro_rainbowegg",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Resistance",
+    "title": "Old Tricks",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/49/mission_micro_resistance",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_TheEntertainment",
+    "title": "La-La-Last Call",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/50/mission_micro_theentertainment",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_TheSupply",
+    "title": "Ain't No Sham in It",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/51/mission_micro_thesupply",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_WhackAThresher",
+    "title": "Whack-A-Thresher",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/52/mission_micro_whackathresher",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Zanzibart",
+    "title": "Forgive Me",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/53/mission_micro_zanzibart",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_AGreatDisturbance",
+    "title": "Fault Hunting",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/54/mission_side_agreatdisturbance",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_BelowTheSurface",
+    "title": "Below the Surface",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/55/mission_side_belowthesurface",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_CastingCall",
+    "title": "The Power Ballad of Rodd Vomit",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/56/mission_side_castingcall",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_City_WaterTheChances",
+    "title": "Love in the Time of Eridium Poisoning",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/57/mission_side_city_waterthechances",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission1",
+    "title": "The Council Divided",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/58/mission_side_electifactionmission1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission3",
+    "title": "The Mole's Gambit",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/59/mission_side_electifactionmission3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_FlatKairoser",
+    "title": "Flat Kairoser",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/60/mission_side_flatkairoser",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_LifeCoach",
+    "title": "Sage Against the Machine",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/61/mission_side_lifecoach",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_LifesPurpose",
+    "title": "Ready to Blow",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/62/mission_side_lifespurpose",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_MountainsFaction1",
+    "title": "Mob Mentality",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/63/mission_side_mountainsfaction1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_MountainsFaction2",
+    "title": "Mob Rules",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/64/mission_side_mountainsfaction2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_MountainsFaction3",
+    "title": "Angry Mob",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/65/mission_side_mountainsfaction3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_MountainsFaction4",
+    "title": "Mob Justice",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/66/mission_side_mountainsfaction4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ObstacleCourse_Grapple",
+    "title": "Peak Performance",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/67/mission_side_obstaclecourse_grapple",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ObstacleCourseGlide",
+    "title": "Father of the Glide",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/68/mission_side_obstaclecourseglide",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_OldRaymondPart1",
+    "title": "Old Raymond",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/69/mission_side_oldraymondpart1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_OldRaymondPart2",
+    "title": "Old Lads",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/70/mission_side_oldraymondpart2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape",
+    "title": "Exit Through the Rift Shop",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/71/mission_side_planetaryescape",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Side_SeedsOfRevolutionPart1",
+    "title": "Bad Seed ",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/72/mission_side_seedsofrevolutionpart1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_SeedsOfRevolutionPart2",
+    "title": "Bad Seed Pt. 2",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/73/mission_side_seedsofrevolutionpart2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_TheCure",
+    "title": "Hangover Helper",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/74/mission_side_thecure",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart2",
+    "title": "Price of Freedom Pt. 2",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/75/mission_side_thepriceoffreedompart2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_TheWeirdWayHome",
+    "title": "It's a Whole Phase Situation",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/76/mission_side_theweirdwayhome",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Vending",
+    "title": "Vend of the Line",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/78/mission_side_vending",
+    "exit_names": [
+      "None",
+      "Exit",
+      "Exit_0"
+    ]
+  },
+  {
+    "name": "Mission_Side_WhatLurksBeneath",
+    "title": "One Slimy Issue",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/79/mission_side_whatlurksbeneath",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "VendingMicro1_Zink",
+    "title": "Vicious News Cycle: Cannon Fodder",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/80/vendingmicro1_zink",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_AbductionInjunction",
+    "title": "Abduction Injunction",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/0/micro_grasslands_abductioninjunction",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_GottaGoFast",
+    "title": "Finway's Cup",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/2/micro_grasslands_gottagofast",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_HydroplantPowerup2",
+    "title": "Electroshock Therapy: The Second Session",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/3/micro_grasslands_hydroplantpowerup2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits2",
+    "title": "To the Limb It: Redux",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/4/micro_grasslands_splicersplits2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits3",
+    "title": "To the Limb It: Couples Therapy",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/5/micro_grasslands_splicersplits3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_VGDave",
+    "title": "Vicious News Cycle: Hot Tag ",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/6/micro_shattered_vgdave",
+    "exit_names": [
+      "None",
+      "Exit",
+      "Exit_0",
+      "Exit_1"
+    ]
+  },
+  {
+    "name": "Micro_Shattered_William",
+    "title": "Vicious News Cycle: Mine Time Live",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/7/micro_shattered_william",
+    "exit_names": [
+      "None",
+      "Exit_0",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Micro_Mountains_WhoNeedsInstructions",
+    "title": "The Importance of Being Furnished",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/4/entries/0/micro_mountains_whoneedsinstructions",
+    "exit_names": [
+      "None",
+      "Exit",
+      "Exit_0"
+    ]
+  },
+  {
+    "name": "Mission_City_Side_OverwritingAWrong",
+    "title": "Overwriting a Wrong",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/2/mission_city_side_overwritingawrong",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_City_AAAForEffort",
+    "title": "AAA for Effort",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/18/mission_side_city_aaaforeffort",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "MIssion_Side_ClapGen",
+    "title": "Potty Mouth",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/19/mission_side_clapgen",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission2",
+    "title": "A Traitor Within",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/20/mission_side_electifactionmission2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_GrasslandsVault",
+    "title": "Primordial Vault: Fadefields",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/21/mission_side_grasslandsvault",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Heist",
+    "title": "The Kairos Job",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/22/mission_side_heist",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_MadScientist",
+    "title": "A Call for Help",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/23/mission_side_madscientist",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Side_NoEscapeRoom",
+    "title": "No-Escape Room",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/24/mission_side_noescaperoom",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_OneGassyIssue",
+    "title": "One Gassy Issue",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/25/mission_side_onegassyissue",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ResonatorVault",
+    "title": "Primordial Vault: Carcadia Burn",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/26/mission_side_resonatorvault",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart1",
+    "title": "Price of Freedom",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/27/mission_side_thepriceoffreedompart1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart3",
+    "title": "Price of Freedom Pt. 3",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/28/mission_side_thepriceoffreedompart3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ThresherRancher",
+    "title": "Breeding Daisies",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/29/mission_side_thresherrancher",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Vault_Glide",
+    "title": "Primordial Vault: Terminus Range",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/30/mission_side_vault_glide",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Side_Grasslands_LighthouseKeeper",
+    "title": "Gone Are My Leggies",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/31/side_grasslands_lighthousekeeper",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Side_Grasslands_SalvageRipperTunnels",
+    "title": "Savage Salvage",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/32/side_grasslands_salvagerippertunnels",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Side_Grasslands_SumOfHisParts",
+    "title": "Sum of His Parts",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/33/side_grasslands_sumofhisparts",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Banjo",
+    "title": "The War On Mercenary Day",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/56/mission_dlc_banjo",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Cello",
+    "title": "The Cursed Mine",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/57/mission_dlc_cello",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Harp",
+    "title": "Murders & Acquisitions",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/58/mission_dlc_harp",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Mandolin",
+    "title": "A Zane to Kill For",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/59/mission_dlc_mandolin",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Raid1",
+    "title": "The Wrath of Bloomreaper",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/60/mission_dlc_raid1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Raid2",
+    "title": "Brothers in Harm",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/61/mission_dlc_raid2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "mission_main_cowbell1",
+    "title": "On Icebound Shores Abandoned",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/64/mission_main_cowbell1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Cowbell2",
+    "title": "Hearing Things",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/65/mission_main_cowbell2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Cowbell3",
+    "title": "It Grows Below",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/66/mission_main_cowbell3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Cowbell4",
+    "title": "What Lies Dreaming",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/67/mission_main_cowbell4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Cowbell5",
+    "title": "Damnation Encroaches",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/68/mission_main_cowbell5",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica2",
+    "title": "The Chase",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/69/mission_main_harmonica2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_main_Harmonica2B",
+    "title": "Clear Comms",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/70/mission_main_harmonica2b",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3",
+    "title": "Throwing Down the Digi-Gauntlet",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/71/mission_main_harmonica3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Hotel",
+    "title": "Digi-Gauntlet: Team Building",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/73/mission_main_harmonica3_hotel",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Lava",
+    "title": "Digi-Gauntlet: Some Like It Hot",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/74/mission_main_harmonica3_lava",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Logistics",
+    "title": "Digi-Gauntlet: M3_Final_v5",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/75/mission_main_harmonica3_logistics",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Spa",
+    "title": "Digi-Gauntlet: You Can't Fire Me, I Quit",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/76/mission_main_harmonica3_spa",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Theatre",
+    "title": "Digi-Gauntlet: R&D",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/77/mission_main_harmonica3_theatre",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_CatchingFire",
+    "title": "Burnt Offering",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/79/mission_micro_catchingfire",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Harmonica_Guarded",
+    "title": "The Relieving of the Guard",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/80/mission_micro_harmonica_guarded",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Harmonica_GuardedEnding",
+    "title": "The Second Relieving of the Guard",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/81/mission_micro_harmonica_guardedending",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Hosting",
+    "title": "Host in the Shell",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/82/mission_micro_hosting",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_IceFishing",
+    "title": "Ice Fishing",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/83/mission_micro_icefishing",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_ManagerHand1_Pangolin",
+    "title": "No Sunrise",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/84/mission_micro_managerhand1_pangolin",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_ManagerHand2_Tediore",
+    "title": "Disallowed Leftward",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/85/mission_micro_managerhand2_tediore",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_Operation",
+    "title": "Doc of the Bay",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/86/mission_micro_operation",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Micro_SnowCone",
+    "title": "Pay to Play",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/87/mission_micro_snowcone",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_WhoDidIt",
+    "title": "Yes, Chef",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/88/mission_micro_whodidit",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_DutyBeyondDeath",
+    "title": "Voices Carry",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/95/mission_side_dutybeyonddeath",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_Microplastics",
+    "title": "The Tainted Truth",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/96/mission_side_harmonica_microplastics",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_NoVacancy",
+    "title": "The Rusty Butler",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/97/mission_side_harmonica_novacancy",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_RescueRangers",
+    "title": "Rescue Rangers",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/99/mission_side_harmonica_rescuerangers",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwareness1",
+    "title": "Spatial Awareness",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/100/mission_side_harmonica_spatialawareness1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwareness2",
+    "title": "The Parting of the Ways",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/101/mission_side_harmonica_spatialawareness2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwarenessReward",
+    "title": "Old Friend",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/102/mission_side_harmonica_spatialawarenessreward",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Harmonica_TradingUp",
+    "title": "Barter Up",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/103/mission_side_harmonica_tradingup",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Invasive1",
+    "title": "Symbiotic Security",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/104/mission_side_invasive1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_Invasive2",
+    "title": "Symbiotic Security Part 2",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/105/mission_side_invasive2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_RomeoAndRomeo",
+    "title": "Star-Crossed",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/107/mission_side_romeoandromeo",
+    "exit_names": [
+      "None",
+      "Exit",
+      "Exit_0",
+      "Exit_1"
+    ]
+  },
+  {
+    "name": "Mission_Side_SafeHaven",
+    "title": "A Humble Abode",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/108/mission_side_safehaven",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_SasaengInvasion",
+    "title": "Fandomination",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/109/mission_side_sasaenginvasion",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_SummoningCircle",
+    "title": "Summoner's Gift",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/110/mission_side_summoningcircle",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_UnfinishedBusiness",
+    "title": "Ghost Stories",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/111/mission_side_unfinishedbusiness",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_VeryMerryUnfestival",
+    "title": "A Festivus for the Electivus",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/112/mission_side_verymerryunfestival",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_BackMcCrackyPt1",
+    "title": "Crack This Guy's Back",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/2/micro_backmccrackypt1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Intro",
+    "title": "Scoundrel Roundup: Shim",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/9/mission_micro_heistrecruits_intro",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Viola",
+    "title": "The Rift Crisis",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/4/entries/0/mission_dlc_viola",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Side_MurderMystery_Beckon",
+    "title": "Grasslands_Side_MurderMystery_Beckon",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/2/grasslands_side_murdermystery_beckon",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Grasslands_Side_SalvageRipperTunnelsIntro",
+    "title": "Grasslands_Side_SalvageRipperTunnelsIntro",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/4/grasslands_side_salvagerippertunnelsintro",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_ThresherRancherIntro",
+    "title": "Mission_GL_Side_ThresherRancher_InvisIntro",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/2/entries/77/mission_side_thresherrancherintro",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_InvasiveINVIS",
+    "title": "Side_Invasive_INVIS",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/106/mission_side_invasiveinvis",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro",
+    "title": "Mission_Side_PlanetaryEscape_Intro",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/11/mission_side_planetaryescape_intro",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_UVH_BlackMarketTutorial",
+    "title": "Ultimate Vault Hunter: Maurice's Bounty",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/8/micro_uvh_blackmarkettutorial",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "micro_uvh_trait",
+    "title": "Ultimate Vault Hunter: Wildcard Missions",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/3/entries/9/micro_uvh_trait",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Micro_UVH_FirmwareTransferTutorial",
+    "title": "Ultimate Vault Hunter: Zane's Firmware",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/0/micro_uvh_firmwaretransfertutorial",
+    "exit_names": [
+      "None",
+      "Micro_UVH_FirmwareTransferTutorial_GRA_Exit",
+      "Micro_UVH_FirmwareTransferTutorial_MOU_Exit",
+      "Micro_UVH_FirmwareTransferTutorial_SHA_Exit"
+    ]
+  },
+  {
+    "name": "Micro_UVH_TrueBoss",
+    "title": "Ultimate Vault Hunter: Big Encore",
+    "category": "sides",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/1/micro_uvh_trueboss",
+    "exit_names": [
+      "None",
+      "Exit"
+    ]
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt2",
+    "title": "Crack This Guy's Back - Setting the Mood",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/7/mission_micro_backmccrackypt2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt3",
+    "title": "Crack This Guy's Back - Advanced Maneuver",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/8/mission_micro_backmccrackypt3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Tuba",
+    "title": "Takedown: Child of Terramorphous",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/62/mission_dlc_tuba",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Tuba_Base",
+    "title": "The Shape of Slaughter: Takedown at Hadron Abyss",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/63/mission_dlc_tuba_base",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Mandolin_CircleOfSlaughter",
+    "title": "Silent Crisis: Time Scope 5",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/78/mission_mandolin_circleofslaughter",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Tuba_Hardcore",
+    "title": "The Shape of Slaughter: Hardcore Takedown at Hadron Abyss",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission6.json",
+    "pointer": "/mission/records/3/entries/43/mission_dlc_tuba_hardcore",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_DLC_Tuba_TimerBase",
+    "title": "The Shape of Slaughter: Mayhem Takedown at Hadron Abyss",
+    "category": "dlc",
+    "source": "Nexus-Data-Mission6.json",
+    "pointer": "/mission/records/3/entries/44/mission_dlc_tuba_timerbase",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo1",
+    "title": "Silo: The Stockroom",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/13/zoneactivity_grasslands_silo1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo2",
+    "title": "Silo: The Kit Hole",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/14/zoneactivity_grasslands_silo2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo3",
+    "title": "Silo: Deep Seven",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/15/zoneactivity_grasslands_silo3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo1",
+    "title": "Silo: Covered Charge",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/20/zoneactivity_mountains_silo1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo2",
+    "title": "Silo: The Reliquary",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/21/zoneactivity_mountains_silo2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo3",
+    "title": "Silo: Deathright",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/22/zoneactivity_mountains_silo3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo1",
+    "title": "Silo: Rustical Hurl",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/23/zoneactivity_shatteredlands_silo1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo2",
+    "title": "Silo: Judgement's Lapse",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/24/zoneactivity_shatteredlands_silo2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo3",
+    "title": "Silo: Site Unseen",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/25/zoneactivity_shatteredlands_silo3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse2",
+    "title": "Safehouse: The Food Court",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/4/zoneactivity_city_safehouse2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse3",
+    "title": "Safehouse: Sumpview Falls",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/5/zoneactivity_city_safehouse3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse2",
+    "title": "Safehouse: Shut-Eye Keep",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/17/zoneactivity_grasslands_safehouse2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse3",
+    "title": "Safehouse: Someday Rise",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/18/zoneactivity_grasslands_safehouse3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse4",
+    "title": "Safehouse: Wyclef's Reprieve",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/19/zoneactivity_grasslands_safehouse4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse1",
+    "title": "Safehouse: Grey Havenage",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/27/zoneactivity_mountains_safehouse1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse2",
+    "title": "Safehouse: Heritage Opus",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/28/zoneactivity_mountains_safehouse2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse3",
+    "title": "Safehouse: The Nightcap",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/29/zoneactivity_mountains_safehouse3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse4",
+    "title": "Safehouse: Snowy Wells",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/30/zoneactivity_mountains_safehouse4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse1",
+    "title": "Safehouse: The Lowrise",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/40/zoneactivity_shatteredlands_safehouse1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse2",
+    "title": "Safehouse: Makeshift Chalet",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/41/zoneactivity_shatteredlands_safehouse2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse3",
+    "title": "Safehouse: Wildhorn's Beard",
+    "category": "sides",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/42/zoneactivity_shatteredlands_safehouse3",
+    "exit_names": [
+      "None"
+    ]
+  }
+]

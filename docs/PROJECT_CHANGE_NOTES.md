@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-11: Mission release candidate](changes/2026-10-11-mission-release-candidate.md) - Guest persistence confirmed; unavailable entries separated; isolated v2.35.2-based candidate built and checked. Not published.
+
 - [2026-10-10: Translations and walkthroughs](changes/2026-10-10-translations-and-walkthroughs.md) — v2.35.2 release preparation; desktop/editor language coverage, Australian copy and task-layout tours. Android APK unchanged.
 
 - [2026-10-10: Desktop layout release](changes/2026-10-10-layout-release.md) — Navigation, targeting, AFK shortcuts and hover fixes; 2.35.1 published stable; source/package checks, all 11 public hashes and release-policy CI passed.

@@ -267,6 +267,7 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
         "inventory_capacity": ["start_auto_inventory_worker"],
         "external_bridge": ["start_bridge"],
         "external_app_launcher": ["_cmd_msbt_external_app"],
+        "mission_commands": ["mission_command"],
         "backend_actions": ["_cmd_msbt_complete_challenges", "_cmd_msbt_complete_challenges_cancel",
                             "_cmd_msbt_fog", "_cmd_msbt_probe_challenge_apis", "challenge_api_probe_enabled"],
         "quick_menu": ["_cmd_msbt_quick_menu", "_cmd_msbt_quick_menu_lock", "_cmd_msbt_quick_menu_pin",
@@ -286,6 +287,8 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
             else:
                 attrs[name] = name
         install(f"{package}.{sibling}", **attrs)
+    mission_cleanup = []
+    install(f"{package}.mission_progression", clear_runtime_state=lambda: mission_cleanup.append(True))
 
     monkeypatch.setattr(builtins, "__import__", guarded_import)
     spec = importlib.util.spec_from_file_location(package, PKG / "__init__.py",
@@ -302,9 +305,11 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
     monkeypatch.setattr(native.override, "set_enabled", lambda value: calls.append(value) or {"ok": True})
     registration["on_disable"]()
     assert calls == [False]
+    assert mission_cleanup == [True]
     assert registration["keybinds"] == ["quick_menu_toggle", "quick_menu_unstuck_key", "mobile_pair_toggle",
                                          "OPEN_GOLDEN_CHEST_KEY", "CLOSE_GOLDEN_CHEST_KEY", "ICH_KEYBINDS", "TPC_KEYBINDS"]
-    assert len(registration["commands"]) == 13
+    assert len(registration["commands"]) == 14
+    assert "mission_command" in registration["commands"]
     assert "_cmd_msbt_quick_menu" in registration["commands"]
     assert "_cmd_msbt_mobile_pair" in registration["commands"]
     assert not (PKG / "blimgui_panel.py").exists()

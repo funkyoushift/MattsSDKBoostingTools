@@ -18,6 +18,7 @@ from .farming_controls import clear_runtime_state as _clear_farming
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
 from .external_app_launcher import _cmd_msbt_external_app
+from .mission_commands import mission_command
 from .backend_actions import (
     _cmd_msbt_complete_challenges,
     _cmd_msbt_complete_challenges_cancel,
@@ -47,6 +48,7 @@ start_quick_menu()
 start_mobile_pairing()
 
 _extra_commands = [
+    mission_command,
     _cmd_msbt_external_app,
     _cmd_msbt_quick_menu,
     _cmd_msbt_quick_menu_pin,
@@ -67,6 +69,8 @@ if challenge_api_probe_enabled():
 def _disable_runtime_controls():
     _clear_farming()
     _clear_drop_rate()
+    from .mission_progression import clear_runtime_state
+    clear_runtime_state()
 
 
 build_mod(

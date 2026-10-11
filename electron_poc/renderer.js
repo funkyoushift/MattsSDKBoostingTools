@@ -14035,6 +14035,13 @@ function wireEvents() {
   const spawnItempoolCancelBtn = document.getElementById("spawnItempoolCancelBtn");
   if (spawnItempoolCancelBtn) spawnItempoolCancelBtn.addEventListener("click", () => void cancelItemPoolBulk());
   const mayhemBoostBtn = document.getElementById("mayhemBoostBtn");
+  window.MsbtMissionPanel?.bind(document, async (action, payload) => {
+    const result = await bridgeAction(action, payload, 30000);
+    return quickMenuData(result);
+  }, () => state.selectedTarget);
+  if (new URLSearchParams(location.search).get("missionsReview") === "1") {
+    window.MsbtWorkspace?.open?.("boosting", "missions");
+  }
   if (mayhemBoostBtn) {
     mayhemBoostBtn.addEventListener("click", () => {
       const mayhem_rank = getInt("mayhemBoostRank", 1, 20, 20);

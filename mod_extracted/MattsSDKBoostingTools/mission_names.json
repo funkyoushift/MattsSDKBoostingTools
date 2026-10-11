@@ -1,0 +1,3302 @@
+[
+  {
+    "name": "Contract_Bounty_Bandit",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Beast",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Cat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Order",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Pangolin",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Bounty_Thresher",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Bandit",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Beast",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Cat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Order",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Pangolin",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Collect_Thresher",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Bandit",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Beast",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Cat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Order",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Pangolin",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Corrupt_Thresher",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Bandit",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Beast",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Cat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Order",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Pangolin",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Patrol_Thresher",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Search_Bandit",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Search_Creature",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Search_Order",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_Colosseum",
+    "type": "Colosseum",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship",
+    "type": "Airship",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_MeteorDestroyer",
+    "type": "Meteor",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Bandit_Blade",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Bandit_Book",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Bandit_Pill",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Creature_Crystal",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Creature_Egg",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Creature_Ore",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Order_Ball",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Order_Plant",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Deliver_Order_Tablet",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_DigiDimension",
+    "type": "DigispaceBoss",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_GeyserEvent",
+    "type": "Volcano",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_GeyserEvent_StoryVariant",
+    "type": "Volcano",
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_cowbell0",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica0",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_harmonica1",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica4",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_ClaptrapOfPandora",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_MurderMystery",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_MurderMystery_Beckon",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_RocketMonsters",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_SalvageRipperTunnelsIntro",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Survivalists01",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Survivalists02",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Survivalists03",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_AugerScout",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "micro_blackmarketbolts",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_BoltFuneralRites",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway01",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway02",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAway03",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIT",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIt2",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_ExtremeBopIt3",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_HydroplantPowerUp",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_UnderConstruction",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Mountains_YouAreTheLifeCoachPT1",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "micro_nevermeetyourheroes",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "micro_orderup",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_BrokenShips",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_EP_Agri",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_EP_Mole",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_HOF1",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_HTBRipperPBJ",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_RipplesAndRituals",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_SiblingRivalry",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Grasslands1",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Grasslands2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Mountains1",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Mountains2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Mountains2b",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Shatteredlands3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_AndWelcomeToTheJam",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt1",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_BlackMarket",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Catnapping",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Demo",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Tech",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HuntedPart1",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HuntedPart2",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HuntedPart3",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_JoeAndSue",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_MountainsFaction4Intro",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_PowercorePlinko",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_RainbowEgg",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Resistance",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_TheEntertainment",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_TheSupply",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_WhackAThresher",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Zanzibart",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_AGreatDisturbance",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_BelowTheSurface",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_CastingCall",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_City_WaterTheChances",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission1",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission3",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_FlatKairoser",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_LifeCoach",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_LifesPurpose",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MountainsFaction1",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MountainsFaction2",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MountainsFaction3",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MountainsFaction4",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ObstacleCourse_Grapple",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ObstacleCourseGlide",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_OldRaymondPart1",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_OldRaymondPart2",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_SeedsOfRevolutionPart1",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_SeedsOfRevolutionPart2",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_TheCure",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart2",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_TheWeirdWayHome",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ThresherRancherIntro",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Vending",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_WhatLurksBeneath",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "VendingMicro1_Zink",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_AbductionInjunction",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_AbductionInjunctionEnding",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_GottaGoFast",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_HydroplantPowerup2",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits2",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_SplicerSplits3",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_VGDave",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Shattered_William",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_UVH_BlackMarketTutorial",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "micro_uvh_trait",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Mountains_WhoNeedsInstructions",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_UVH_FirmwareTransferTutorial",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Micro_UVH_TrueBoss",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_City_Side_OverwritingAWrong",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Beach",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_City1",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_city1_b",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_City2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_City3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_cityepilogue",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Elpis",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_grasslands2b",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Grasslands3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Mountains3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_PrisonPrologue",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_SearchForLilith",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Shatteredlands1",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_shatteredlands1b",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Shatteredlands2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_City_AAAForEffort",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "MIssion_Side_ClapGen",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ElectiFactionMission2",
+    "type": "FactionMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_GrasslandsVault",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Heist",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MadScientist",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_NoEscapeRoom",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_OneGassyIssue",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ResonatorVault",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart1",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ThePriceOfFreedomPart3",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_ThresherRancher",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Vault_Glide",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Side_Grasslands_LighthouseKeeper",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Side_Grasslands_SalvageRipperTunnels",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Side_Grasslands_SumOfHisParts",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Activity_Cowbell_SpeakeasyPortal1",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_CreatureBat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_CreatureCreep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_CreatureKraggon",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_Dahl",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_Dahl_Urgent",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_Scav",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Bounty_Scav_Urgent",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Collect_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Collect_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Collect_Dahl",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Collect_Scav",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Patrol_Bat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Patrol_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Patrol_Dahl",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Patrol_Kraggon",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Patrol_Scav",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Trace_Creature",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Trace_Creature_Urgent",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Trace_Dahl",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC1_Trace_Scav",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Cat",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Creep",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Pangolin",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Rip",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Rip_Urgent",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Ted",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Bounty_Ted_Urgent",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Collect_Creature",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Collect_Ripper",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Collect_Tediore",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_MrChewChallenge_Generic",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_MrChewChallenge_Loot",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_MrChewChallenge_Puzzle",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Patrol_Creature",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Patrol_Rip",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Patrol_Ted",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Search_Crea",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Search_Rip",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_Search_Ted",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "ContractDLC2_WaveCombat_Ted",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Cowbell_Side_MiscConvos_EllieMoxxi_Invisible",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "MIssion_Cello_Pearl_Gear_Gen",
+    "type": "PearlGenerator",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_RiftBoss",
+    "type": "RiftBoss",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_BuyerRemorse",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_LaLlorona1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_LaLlorona2",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_LaLlorona3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Lucine1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Lucine2",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Lucine3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Lucine4",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Lucine5",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_LucineIntro",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_PrettierSmile",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_SpookyStory_Voodoo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Banjo",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Cello",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Harp",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Mandolin",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Raid1",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Raid2",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Tuba",
+    "type": "Takedown",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Tuba_Base",
+    "type": "Takedown",
+    "mission_set": null
+  },
+  {
+    "name": "mission_main_cowbell1",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Cowbell2",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Cowbell3",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Cowbell4",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Cowbell5",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica2",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_main_Harmonica2B",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_HandyCounter",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Hotel",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Lava",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Logistics",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Spa",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Main_Harmonica3_Theatre",
+    "type": "DLC_MainStory",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Mandolin_CircleOfSlaughter",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_CatchingFire",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Harmonica_Guarded",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Harmonica_GuardedEnding",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Hosting",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_IceFishing",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_ManagerHand1_Pangolin",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_ManagerHand2_Tediore",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_Operation",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_SnowCone",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_WhoDidIt",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_PearlGen_GRA",
+    "type": "PearlGenerator",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_PearlGen_MOU",
+    "type": "PearlGenerator",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_PearlGen_SHA",
+    "type": "PearlGenerator",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Repeatable_Raid1",
+    "type": "Raid",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Repeatable_Raid1_UVHM",
+    "type": "Raid",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Repeatable_Raid2_UVHM",
+    "type": "Raid",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_DutyBeyondDeath",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_Microplastics",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_NoVacancy",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_NoVacancyEpilogue",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_RescueRangers",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwareness1",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwareness2",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_SpatialAwarenessReward",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Harmonica_TradingUp",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Invasive1",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_Invasive2",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_InvasiveINVIS",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_RomeoAndRomeo",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_SafeHaven",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_SasaengInvasion",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_SummoningCircle",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_UnfinishedBusiness",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_VeryMerryUnfestival",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Creature_October",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Default",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Default2",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Default3",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Order_October",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldBossEvent_Ripper_October",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_DLC1_Bunker",
+    "type": "DahlBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_DLC1_FuelSiphon1",
+    "type": "FuelSiphon",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_DLC1_FuelSiphon2",
+    "type": "FuelSiphon",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grotto_Jungle",
+    "type": "TedioreGrotto",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grotto_Lava",
+    "type": "TedioreGrotto",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Harmonica_TreasureHunt",
+    "type": "DLC_MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Intro_Safehouse_Horde",
+    "type": "TikiBar",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Jungle_Safehouse_Horde",
+    "type": "TikiBar",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Lava_Safehouse_Horde",
+    "type": "TikiBar",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Lockdown_Jungle",
+    "type": "TedioreLockdown",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Lockdown_Lava",
+    "type": "TedioreLockdown",
+    "mission_set": null
+  },
+  {
+    "name": "Event_Micro_JoeAndSue",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Event_Side_ThePriceOfFreedomPart1",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_BackMcCrackyPt1",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_BackMcCrackyPt2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Micro_BackMcCrackyPt3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_CarriedAwayEnding",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_Faction03Intro",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt2",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_BackMcCrackyPt3",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Micro_HeistRecruits_Intro",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_MurderMysteryNPCSpawnShattered",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_TheCureIntro",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo1",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo2",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Silo3",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler1",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler2",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler3",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler4",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo1",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo2",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Silo3",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo1",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo2",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Silo3",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_Crawler",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_DrillSite",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_Mine",
+    "type": "Test",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_OrderBunker",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_Safehouse",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Template_Silo",
+    "type": "Silo",
+    "mission_set": null
+  },
+  {
+    "name": "Event_Side_NoEscapeRoom",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_City_Mine1",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_City_OrderBunker1",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse1",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse2",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse3",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler1",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler2",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler3",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler4",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_DrillSite1",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_DrillSite2",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Mine1",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Mine2",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_OrderBunker1",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_OrderBunker2",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse2",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse3",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Safehouse4",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Grasslands_SafehouseMain",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_DrillSite1",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_DrillSite2",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Mine1",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Mine2",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_OrderBunker1",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_OrderBunker2",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse1",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse2",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse3",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Mountains_Safehouse4",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler1",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler2",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler3",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler4",
+    "type": "Crawler",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_DrillSite1",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_DrillSite2",
+    "type": "DrillSite",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Mine1",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Mine2",
+    "type": "Mine",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_OrderBunker1",
+    "type": "OrderBunker",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse1",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse2",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Safehouse3",
+    "type": "Safehouse",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_ClaptrapOfPandora_Invis_PostMission",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Grasslands_Side_ClaptrapOfPandora_Invis_Respawn",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_Faction01Intro",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Micro_Grasslands_Faction02Outro",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_CastingCall_KickOff",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_ConmanCorpseAchievement",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro2",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro3",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro4",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Side_PlanetaryEscape_Intro5",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Viola",
+    "type": "DLC_SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "City_SM_72x50_LurksBeneath_A",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "City_SM_AB_25x25_LootBait_A",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "City_SM_RB_15x15_Combat_A",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Contract_Test_Mission",
+    "type": "Contract",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_AirCargo_AttackedAmbush",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_AirCargo_FactionFight",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Airship_Guarded",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Ambient_Order_V1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Ambient_Order_V2",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Ambient_Order_V3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Ambient_Ripper_V1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_ArrowPuzzle",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Caravan_Combat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Caravan_Default",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Caravan_Encounter",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Caravan_Ripper",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_CombatNPC",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Bat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_DecoNPC",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Fight_OrderNPC_MulStamp",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Fight_OrderNPC_V1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Fight_OrderRipper_V1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Fishing",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_RescueNPC",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_TreasureBox",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_VehicleOnFire",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_VehicleOnFire_Ambush",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_VehicleOnFire_Combat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_AirCargo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_DogFight",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Elpis_Fall",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_ElpisFall3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_GuardedCaravan_Beast_Ripper",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_GuardedCaravan_Order",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_HelpNPC_Ambush",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_HelpNPC_Hostage",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_HelpNPC_JumpPuzzle",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_HelpNPC_SearchItem",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Electi",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Electi_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Farmers",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Farmers_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Grazers",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Grazers_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Survivalist",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Survivalist_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Transhuman",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_NPC_Transhuman_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_BeastRider",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_BeastRider_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_CatRider",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_CatRider_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_PangolinRider",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_PangolinRider_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Bats_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Bats_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Beasts_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Beasts_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Cats_Medium",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Cats_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Cats_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Creeps_Medium",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Creeps_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Creeps_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Pangolin_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Pangolin_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Threshers_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Threshers_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_EventTracker",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_EventTracker_RelicCurse",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_LegendOfVaultHunter",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_BattlefieldRomance",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_CallisLoyalty",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_ElectiMoleTalk",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_Colosseum_V2",
+    "type": "Colosseum",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Base",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave1",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave1_Lighting_Alarm",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave1_Lighting_Normal",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave2",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave2_Lighting_Alarm",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave2_Lighting_Normal",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave2a",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave3",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave3_Lighting_Alarm",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave3_Lighting_Normal",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave3a",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave4",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave4_Lighting_Alarm",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_EnterAirship_Interior_Wave4_Lighting_Normal",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_Meteor_Lighting_Powered",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_Meteor_Lighting_Unpowered",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "MissionExample_RippersEggSpawner",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_BioArmorChest",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_DLC1_Dahl",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_DLC1_Dressings",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_DLC1_Scav",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_FoodDelivery",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DE_PairedBattery",
+    "type": "SideMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_ElpisFall_Large",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_ElpisFall_Single",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_ChildSnatcher",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_Confrontation",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_GhostHunted",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_GhostStory1",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_GhostStory2",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_GhostStory3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_HauntedHaunting",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_Predator",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_Slipped",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC1_LostSoul_WorkingLate",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Cats",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Creep",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Electi",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Mech",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Pangolin",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Ripper",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenFarAway_Tediore",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenNearby_Creep",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_AmbientStamp_Small_SpawnsWhenNearby_Tediore",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_DigiDimension_DEBUG",
+    "type": "DigispaceBoss",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_DigiDimension_Test",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_DressingStamps",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Cats",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Cats_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Creeps",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Creeps_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Mech",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Mech_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Pangos",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Pangos_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Rippers",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Rippers_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Tediore",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC2_Migration_Tediore_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_StorySoFar",
+    "type": "MicroMission",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Tuba_Hardcore",
+    "type": "Takedown_Hardcore",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DLC_Tuba_TimerBase",
+    "type": "Takedown_Timer",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Combat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Creatures",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Electi",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Gunk",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Heist",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Mech",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvent_MultiStamp_PumpJack_Scientists",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Addons_Random",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Addons_Random_Order",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Addons_Random_Ripper",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Beast",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Creep",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Kraggon",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Pangolin",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Threshers",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_CreatureCage_Default",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_CreatureCage_Order",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_CreatureCage_Ripper",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_Elemental",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_Grapple",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_GrappleGrenade",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_GrappleTurret",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_Slam",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Driller_SlamAmbush",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_Carryable",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_CarryableAmbush",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_EasyHack",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_Hacking",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_Puzzle",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_Slam",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Droppod_SlamWithOrder",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_FishingSite_Deco02",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_FishingSite_Default",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_IceFishing",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_T1",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_T2",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Migration_Ripper_T3",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Order_Rare",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Order_Small",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Order_T1",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Order_T2",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_Event_Patrol_Order_T3",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_MigrationEvent_DLC1_Dahl",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_MigrationEvent_DLC1_Kraggon",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_MigrationEvent_DLC1_Scav",
+    "type": "Event",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_MultiStamp_Large",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoment_DLC2_HubConvo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoment_DLC2_HubConvo2",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoment_DLC2_HubConvo3",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoment_Speakeasy_NachosConvo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_FA_BachelorParty",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_FA_HecklingTheOrder",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_FA_ScaryStories",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_FA_TheOldResistance",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_OW_FiveYearPlans",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_OW_LosingTheWall",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_OW_OrderFamilyRejects",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_OW_PropagandaComplaints",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_OW_SpoiledForChoice",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_SH_BeforeTheMoonFall",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_SH_EscapePod",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_CITY_SH_QuarantineDilemmas",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_General_EnemyBullyNPC_Order01",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_General_EnemyChatter_Psycho01",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_General_NPCChatter01",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_FA_ClaptrapChat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_FA_OrderInterrogation",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_FA_OrderPrisonBreak",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_FA_StolenMachineParts",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_FA_TallTales",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_HUB_AboutRush",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_HUB_LegendofSal",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_DinnerConversation",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_InventoryCheck",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_KidsTheseDays",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_OrdervsRipper",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_RipperBreakUp",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_RipperFuneral",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_RockAndRoll",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_SynthDetainsGrazer",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_OW_SynthShootingConvo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_SH_Augbounders",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_GRA_SH_ElectiDefector",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_HUB_OutbounderLosingHope",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_FA_AdoptionDay",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_FA_AugerFlirting",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_FA_LegendaryBasketballMan",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_FA_NewMovieHype",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_FA_VaultHunterWannabe",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_HUB_AugerDiscussion",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_HUB_AugerShip",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_HUB_OutboundersAreWeird",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_BackFromVacation",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_BarrelOfFun",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_DidYouHearAboutJanice",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_GrapplingTalk",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_PerformanceReview",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_Rip-tirement",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_RunFromTheSynth",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_UnlikelyFriendships",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_OW_WhoWasThatRobot",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_SH_AugmentationChat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_MOU_SH_ChattyAugerGossip",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_FA_ElectiBeingMocked",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_FA_ElectiFriend",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_FA_ElectiRebels",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_FA_HouseDiscussion",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_FA_RipperRobbery",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_HUB_ElectiChess",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_HUB_RipperQueenDefeated",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_HUB_ThresherTalk",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_MourningTheRipperQueen",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_OrderDefection",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_PsychoArgument",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_RipperAndOrderStandoff",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_RipperExistentialConvo",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_SelfRipping",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_OW_TimeOffRequest",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_SH_BoltTalk",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_NPCMoments_SHA_SH_ElectiDistrust",
+    "type": null,
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_VolcanoEvent_Manager",
+    "type": "Volcano",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_VolcanoEvent_Manager_TEST",
+    "type": "Volcano",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_WorldEvent_VolcanoEvent_UITImer",
+    "type": "Volcano",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_Creature_Cat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  },
+  {
+    "name": "Mission_DynamicEvents_CreatureFight_Order_Cat",
+    "type": "DynamicEvent",
+    "mission_set": null
+  }
+]

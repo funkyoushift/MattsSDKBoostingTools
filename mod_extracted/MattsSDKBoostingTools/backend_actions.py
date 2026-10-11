@@ -1770,6 +1770,9 @@ def run_quick_menu_action(
     """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
     payload = dict(payload or {})
     key = str(action or "").strip()
+    if key in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel"):
+        from . import mission_progression
+        return mission_progression.dispatch(key, payload)
     if key in ("native_card_preview_status", "native_card_preview"):
         from . import native_preview_service
         return (native_preview_service.status() if key.endswith("_status")

@@ -407,6 +407,33 @@
       </div>
 
       <div class="grid two">
+        <section class="panel gold" data-msbt-panel="boost-missions" data-msbt-span="12" data-msbt-title="Missions">
+          <h2>Missions <small>Review build</small></h2>
+          <p class="muted-line">Uses the selected player for acceptance. Changes affect the host and shared party progress. Runs stop on a failed or uncertain result.</p>
+          <div class="inline-fields">
+            <label>Scope <select id="missionScope"><option value="current">Current tracked mission</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
+            <button id="missionPreviewBtn" type="button">Refresh preview</button>
+          </div>
+          <label id="missionNamesLabel" hidden>Choose missions <select id="missionNames" multiple size="7" style="width:100%"></select></label>
+          <p class="muted-line">Map &amp; travel: discovery adds source-listed locations and stations. Some stations also require completed missions or objectives. Travel repairs cover reviewed requirements in completed missions; they do not guarantee every station or reveal all fog.</p>
+          <div id="missionPreviewList" class="muted-line">Refresh to detect the tracked mission and current progress.</div>
+          <label><input type="checkbox" id="missionResetCompleted"> Reset completed host missions before completing them again</label>
+          <label><input type="checkbox" id="missionSharedAck"> I understand this changes shared host and party progress</label>
+          <div class="button-grid compact-buttons">
+            <button id="missionRunBtn" type="button" disabled>Complete missions</button>
+            <button id="missionResumeBtn" type="button" disabled>Continue stopped batch</button>
+            <button id="missionStatusBtn" type="button">Job status</button>
+            <button id="missionCancelBtn" type="button" disabled>Cancel remaining steps</button>
+          </div>
+          <p class="muted-line">Not available yet: generic objective completion, undo last objective, and reset all progress to not started.</p>
+          <div class="button-grid compact-buttons"><button disabled title="Objective transition testing is unfinished">Complete objective</button><button disabled title="Objective side effects cannot yet be restored reliably">Undo last objective</button><button disabled title="Full objective and checkpoint reset is unverified">Reset all progress</button></div>
+          <pre id="missionOutput" class="output">Waiting for preview.</pre>
+          <section id="missionUnavailable" hidden aria-label="Unavailable mission entries">
+            <h3>Unavailable in this game session</h3>
+            <p class="muted-line">These catalog entries could not be resolved as playable shared missions. They were not completed and are listed separately from verified progress. This does not establish whether they are released content.</p>
+            <pre id="missionUnavailableList" class="output"></pre>
+          </section>
+        </section>
         <section class="panel gold" data-msbt-panel="boost-uvh" data-msbt-span="8" data-msbt-title="Mayhem &amp; UVH">
           <h2>Mayhem &amp; UVH</h2>
           <h3>Mayhem 1–20</h3>
@@ -3038,6 +3065,7 @@ unofficial and claims no endorsement by these owners or credited contributors.
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="workspace_walkthroughs.js"></script>
+  <script src="mission_panel.js"></script>
   <script src="renderer.js"></script>
   <script src="workspace_targets.js"></script>
   <script src="afk_config_upload.js"></script>

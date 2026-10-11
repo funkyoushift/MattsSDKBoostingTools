@@ -750,6 +750,8 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
+    if action in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel"):
+        return backend_actions.run_quick_menu_action(action, payload, record=False)
     if action in ("native_card_preview_status", "native_card_preview"):
         return backend_actions.run_quick_menu_action(action, payload, record=False)
     if action == "afk_inventory_audit":

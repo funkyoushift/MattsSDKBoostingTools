@@ -1,0 +1,41 @@
+Mission progression release candidate
+
+Confirmed by Martin: Rev and Bubbah saved, quit, opened their own games, and
+confirmed completion after the 200-mission run. This is guest persistence evidence
+for that run, not a guarantee of all rewards, map tiles, or station prerequisites.
+
+Feature scope
+- Current, named, story, side, DLC and reviewed all-mission completion.
+- Normal acceptance with optional reset of completed host records; shared lobby.
+- Forward-transition handling and guarded continuation without repeating progress.
+- Reviewed prerequisite repair; stop on uncertain results or party/world changes.
+- Map/station discovery and reviewed travel requirements as separate actions.
+- Two unavailable Back-Cracky entries displayed separately, never marked completed.
+- Three nonpersistent replayable variants excluded from permanent completion.
+
+Not included in release scope
+Generic objective completion, objective undo and total progress erasure. Their
+controls remain disabled with explanations. Discovery guest-save/station usability
+coverage remains distinct from mission persistence. Known legacy Party Reveal
+crash is separate and must not be advertised as fixed by this feature.
+
+Packaging and release boundary
+SDK review package is installed and hash recorded in build-receipt.json. This
+source review checkout is dirty and has older public version metadata. Do not
+publish it wholesale. Mission feature has been integrated onto v2.35.2 in this isolated release checkout.
+Apply the public lockstep version and build public installer/portable artifacts only
+for an authorized public release. No tag, upload, publication or version change performed here.
+Desktop additions require the matching mission_panel.js and renderer integration;
+copying only the sdkmod does not update the desktop panel.
+
+Validation
+35 focused Python tests and JS stepping/coverage tests passed. Python module
+syntax and archive integrity checked before installation. Local guest persistence
+confirmed by both players via Martin. Native full discovery and every travel
+station remain separate from these results.
+
+Clean candidate validation: 35 focused tests, release SDK import test, 41-route
+Electron navigation, offline SDK installation, packaged dependency graph and
+packaged source/resource hash checks passed. Full receipts are adjacent.
+Desktop source in the main working checkout remains running an active user map
+discovery job; do not interrupt it to preview the new UI.

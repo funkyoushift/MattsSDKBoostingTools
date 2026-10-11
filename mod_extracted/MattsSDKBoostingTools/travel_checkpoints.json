@@ -1,0 +1,54 @@
+{
+  "electi": [
+    "Mission_Main_Shatteredlands2",
+    "missions.missionset_main_shatteredlands2.Mission_Main_Shatteredlands2.Final.Repair_Leaders_Chamber_critical_systems_EndState"
+  ],
+  "heist": [
+    "Mission_Side_Heist",
+    "missions.MissionSet_Side_GrasslandsB.Mission_Side_Heist.Final.Take_a_walk_with_Shim_EndState"
+  ],
+  "vending": [
+    "Mission_Side_Vending",
+    "missions.MissionSet_Side_ShatteredlandsA.Mission_Side_Vending.Final.TalkStreamsStart_EndState"
+  ],
+  "clapgen": [
+    "mission_main_shatteredlands1b",
+    "missions.missionset_main_shatteredlands1.mission_main_shatteredlands1b.Final.meet_zane_endstate"
+  ],
+  "cowbell_ellie": [
+    "Mission_Main_Cowbell4",
+    "Missions.MissionSet_Main_Cowbell.Mission_Main_Cowbell4.Final.Follow_Ellie_EndState"
+  ],
+  "cowbell_hatchery": [
+    "Mission_Main_Cowbell2",
+    "missions.missionset_main_cowbell.Mission_Main_Cowbell2.Final.InvestigateHatchery_EndState"
+  ],
+  "travel_0": [
+    "Mission_Main_SearchForLilith",
+    "missions.missionset_main_searchforlilith.Mission_Main_SearchForLilith.Final.SFL_Talk_To_Amara_EndState"
+  ],
+  "travel_1": [
+    "Mission_Main_SearchForLilith",
+    "missions.missionset_main_searchforlilith.Mission_Main_SearchForLilith.Final.sfl_activate_space_elevator_endstate"
+  ],
+  "travel_2": [
+    "Mission_Main_Grasslands3",
+    "missions.missionset_main_grasslands3.Mission_Main_Grasslands3.Final.enterfortress_endstate"
+  ],
+  "travel_3": [
+    "Mission_Main_Grasslands2",
+    "missions.missionset_main_grasslands2a.Mission_Main_Grasslands2.Final.Find_Zadra_1_EndState"
+  ],
+  "travel_4": [
+    "Mission_Main_Grasslands1",
+    "missions.MissionSet_Main_Grasslands1.Mission_Main_Grasslands1.Final.Meet_Nudge_EndState"
+  ],
+  "travel_5": [
+    "Mission_Main_Mountains3",
+    "Missions.missionset_main_mountains3.Mission_Main_Mountains3.Final.invis_obj_waypointforwayback_endstate"
+  ],
+  "travel_cowbell_ui": [
+    "mission_main_cowbell1",
+    "missions.missionset_main_cowbell.mission_main_cowbell1.final.findmancubus_endstate"
+  ]
+}

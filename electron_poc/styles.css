@@ -5419,3 +5419,8 @@ body.msbt-density-compact .activity-card {
 .afk-item-handoff { margin: 12px 0; padding: 12px; border: 1px solid var(--border, #34445c); border-radius: 8px; background: rgba(60, 120, 190, .08); min-width: 0; }
 .afk-item-handoff p { margin: 6px 0; font-size: 12px; }
 .afk-item-handoff button { white-space: normal; }
+/* Mission review controls retain native hidden semantics and compact checks. */
+[data-msbt-panel="boost-missions"] [hidden] { display: none !important; }
+[data-msbt-panel="boost-missions"] label:has(input[type="checkbox"]) { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
+[data-msbt-panel="boost-missions"] input[type="checkbox"] { width: 20px; height: 20px; min-height: 20px; flex: 0 0 20px; margin: 0; }
+#missionPreviewList { max-height: 260px; overflow: auto; margin: 12px 0; }
