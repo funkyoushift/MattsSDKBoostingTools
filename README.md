@@ -8,11 +8,21 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.36.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.36.0.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.36.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.36.0-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.37.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.37.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.37.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.37.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
+
+## 100% game preset — v2.37.0
+Open **Missions → 100% game** in the desktop app. Check lobby access, review the shared-progress acknowledgement, then run supported missions, discoveries/travel requirements, character levels, currencies, SDU points, applicable unlocks, UVH/Mayhem and challenges. Host plus one guest can use available content; larger lobbies require everyone to have the required DLC access.
+
+The final prerequisite pass picks up newly available missions and travel requirements without resetting verified work. Missing DLC, unavailable definitions and inactive vault cards are reported separately. This preset does not promise every item/statistic/achievement or automatically purchase SDU upgrades. Save and quit normally and verify guests in their own games. See [v2.37.0 release notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.37.0) for limitations and recovery controls.
+
+### v2.37.0 guest mission persistence limitation
+
+The 100% game preset can report shared-lobby completion while a guest still has a mission active in their own save. The Chase remained unfinished for one tested guest after several targeted retests, including a fresh host. The cause is unresolved; save corruption has not been established. Other guest batches have passed own-game checks. Save and quit, check each guest in their own game, and report the mission, objective and any fast-forward prompt.
+
 
 ## New in v2.36.0: Missions and travel tools
 
