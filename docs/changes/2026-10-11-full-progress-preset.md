@@ -111,3 +111,5 @@ Martin confirmed normal Harmonica entry done. Fresh world2865ceacb97b458a9cff473
 
 ### Release authorization with unresolved guest-save limitation
 Martin reported fresh-host Chase still unfinished; guest also reported accepting a fast-forward prompt. Cause unresolved; corruption is speculation, not a finding. Martin explicitly authorized releasing now and gathering more cases. Release hold lifted by this instruction. Known issue disclosed in release notes and README. Diagnostic DLC-map overrides remain excluded. Pending readiness guard and conservative mission pacing retained; neither claimed to fix persistence.
+
+Release candidate validation:86 focused checks passed, Quick Menu regression and Python compile passed, desktop full suite including600 responsive checks passed. Final packaging references source cb09c5a;48 packaged runtime and3259 asset checks plus startup/updater passed. SDK core files match finalized source bytes. Ten payload hashes plus checksum-file hash recorded; publication verification follows.
