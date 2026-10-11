@@ -14,3 +14,10 @@ Mario reported Give Items by Serial delivers one item even with 5 or 10 copies s
 `node --check electron_poc/renderer.js`, `node electron_poc/test_serial_copies.js`, and `python tools/tests/test_quick_menu_no_blimgui.py` passed. Backend parsing/resolution/queue inspection preserves duplicate serial entries; no native insertion defect was established. These are offline payload checks, not live inventory proof. No test items were delivered.
 
 Local source only: no version bump, packaged install or release. Rollback consists of reverting the quantity helper and Quick Menu payload edits, preserving unrelated renderer changes. If Mario used desktop Base85 delivery, inspect delivery receipts/native insertion results before claiming his exact problem is fixed.
+
+
+## Reporter follow-up and authorized release
+
+Martin supplied a follow-up screenshot showing desktop Give Items by Serial with readable numeric input, consistent with the verified expansion defect, then explicitly requested the fix and release. Isolated release checkout carries only the quantity changes over v2.37.0. Source commit 603194f. Version 2.37.1; Android unchanged 1.6.2. Desktop full check suite, serial payload regression, Python compile, Quick Menu check and 14 pytest release/import checks passed. An initial unittest invocation discovered zero tests and was replaced with the successful pytest run. Packaging/publication verification follows. No live inventory result is claimed.
+
+Packaged verification passed: quantity regression executed against renderer extracted from app.asar, runtime dependency checks, 3259 asset checks, startup smoke and updater packaging. Installer and portable produced successfully; 11 release asset hashes recorded locally. No live inventory mutation.
