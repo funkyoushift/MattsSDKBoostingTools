@@ -1,15 +1,11 @@
 (function (root) {
   "use strict";
   async function advance(call, job, stopped, report) {
-    // Never send a new step after a rejected/unknown transport result.
-    while (job?.ok && job.state === "running" && !stopped()) {
-      job = await call("mission_step", { job_id: job.id });
-      report(job);
-      if (!job?.ok || job.state !== "running") break;
-      await new Promise(resolve => setTimeout(resolve, 120));
-    }
-    return job;
+    return root.MsbtFullProgressPanel.advance(call,job,report,{
+      step:"mission_step",status:"mission_status",stopped
+    });
   }
+
   const unavailableNames = new Set(["Mission_Micro_BackMcCrackyPt2", "Mission_Micro_BackMcCrackyPt3"]);
   function splitCoverage(rows = []) {
     const unavailable = rows.filter(m => unavailableNames.has(m.name) && m.state === "unavailable");
@@ -44,7 +40,7 @@
       const resetting = runnable().some(m => m.resets_host_completion);
       el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : el("missionScope").value === "challenge_credit" ? "Repair Grassroots credit" : "Complete missions";
       el("missionRunBtn").disabled = busy || !eligible || !el("missionSharedAck").checked || (resetting && !el("missionResetCompleted").checked);
-      el("missionResumeBtn").disabled = busy || job?.state !== "stopped" || (job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) || (!["accept", "complete"].includes(job?.phase) && !(job?.dynamic && job?.phase === "prepare")) || (job?.operation_scope || "missions") !== "missions";
+      el("missionResumeBtn").disabled = busy || !["running", "stopped"].includes(job?.state) || (job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) || (!["accept", "complete"].includes(job?.phase) && !(job?.dynamic && job?.phase === "prepare")) || (job?.operation_scope || "missions") !== "missions";
       el("missionCancelBtn").disabled = !busy || !job?.id;
       const recoverable = !busy && job?.id && ["uncertain", "stopped", "interrupted"].includes(job.state);
       el("missionRecoverBtn").disabled = !recoverable || job.state === "interrupted" || !el("missionSharedAck").checked;
@@ -88,7 +84,7 @@
     el("missionNames").addEventListener("change", () => { preview = null; update(); });
     for (const id of ["missionSharedAck", "missionResetCompleted"]) el(id).addEventListener("change", update);
     el("missionStatusBtn").addEventListener("click", async () => {
-      try { const result = await call("mission_status", {}); if (!busy) job = result; report(result); update(); }
+      try { const result = await call("mission_status", {}); if (!busy && result?.id) job = result; report(result); update(); }
       catch (error) { output.textContent = error.message; }
     });
     el("missionDlcBtn").addEventListener("click", async () => {
@@ -130,7 +126,11 @@
       if (el("missionResumeBtn").disabled) return;
       busy = true; stopped = false; update();
       try {
-        job = await call("mission_resume", {job_id: job.id}); report(job);
+        const current = await call("mission_status", {});
+        if(current?.id !== job.id){report({message:"Could not recover this batch status; try again when connected."});return;}
+        job=current;
+        if(job.state === "stopped") job = await call("mission_resume", {job_id: job.id});
+        report(job);
         job = await advance(call, job, () => stopped, next => {job = next; report(next); update();});
       } catch (error) { stopped = true; output.textContent = `Result not confirmed: ${error.message}. Check job status.`; }
       finally { busy = false; preview = null; update(); }

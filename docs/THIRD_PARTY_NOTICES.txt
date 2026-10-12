@@ -89,3 +89,8 @@ the 100% Drop Rate zero-roll behavior. Credit for this research lead belongs
 to FLiNG. MSBT independently implements a guarded four-byte replacement; no
 trainer runtime, UI, or injection script is bundled. Evidence and limitations:
 docs/changes/2026-10-08-trainer-drop-rate.md
+
+
+Dialog Skipper — Yeti
+https://github.com/RedxYeti/yeti-bl4-sdk
+User-supplied Dialog Skipper v1 package declares GPL3. Its source informed the native GbxDialogProvider.NetMulticast_StopDialog call used by progress_dialogue.py. MSBT uses a separate bounded game-thread scheduler; see docs/changes/2026-10-11-progress-dialogue.md for provenance and verification.

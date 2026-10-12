@@ -62,16 +62,52 @@ class Driver:
 
     def acceptance(self,snapshot):
         r=next((r for r in snapshot['rows'] if not r['host']),snapshot['rows'][0])
-        return dict(target_scope='selected',target_player=f"{r['index']}|{r['label']}",acknowledge_shared_progress=True,reset_completed=True,settle_guest_progress=True)
+        return dict(target_scope='selected',target_player=f"{r['index']}|{r['label']}",acknowledge_shared_progress=True,reset_completed=True,settle_guest_progress=False)
 
     def mission_result(self,result,child):
         state=result.get('state')
+        if state == 'stopped' and missions._job and missions._job.get('activation_wait') and missions._job['id'] == child['id']:
+            name = missions._job['names'][missions._job['index']]
+            current = missions._state(missions._row(missions._engine().snapshot(), name))
+            if current in ('active', 'completed'):
+                result = missions.resume(child['id'])
+                state = result['state']
+            elif current == 'accepted':
+                missions._job.update(ok=True, state='running')
+                missions._job.pop('activation_wait', None)
+                result = missions._defer(name, 'Activation timed out; continuing other work and checking again in the final pass')
+                state = result['state']
         if state=='running':return dict(state='running',child=child,message=result.get('message',''))
         if state=='cancelled':return dict(state='cancelled',child=child,message=result.get('message','Cancelled'))
         if state=='completed':return dict(state='finished',child=child,message=result.get('message',''),details=result)
         if state=='stopped' and (result.get('pending') or result.get('deferred')):
             return dict(state='partial',child=child,message=result.get('message',''),details=result)
         return dict(state='uncertain',child=child,message=result.get('message','Unconfirmed mission result'),details=result)
+
+    def recover(self,child,snapshot):
+        if child and child.get('kind') == 'character':
+            if not child.get('pending') and child['index'] < len(snapshot['rows']):
+                row = snapshot['rows'][child['index']]
+                child['results'].append(dict(player=row['label'], currencies=[],
+                    skipped=['Previous character request stopped after partial changes; not repeated.'],
+                    message='Retained applied progress; continuing remaining players and stages'))
+                child['index'] += 1
+            return
+        if child and child.get('kind') == 'final_recheck' and child.get('active'):
+            return self.recover(child['active']['child'],snapshot)
+        if not child or child.get('kind') != 'mission':
+            raise RuntimeError('This operation has no verified recovery path; no calls repeated')
+        status = missions.status()
+        if status.get('id') != child['id']:
+            raise RuntimeError('Original mission batch is not loaded')
+        if status['state'] in ('running','completed'):
+            return
+        if status['state'] == 'stopped':
+            missions.resume(child['id'])
+        elif status['state'] == 'uncertain':
+            missions.recover(dict(job_id=child['id'],mode='continue',acknowledge_shared_progress=True))
+        else:
+            raise RuntimeError('Mission batch cannot be safely continued')
 
     def begin(self,name,snapshot):
         if name=='final_recheck':
@@ -165,7 +201,7 @@ class Driver:
         if all(p['allowed'] for p in snapshot['packs'].values() if p.get('required',True)):
             pc.ServerActivateDevPerk(4)
             ok,detail=backend._unlock_all_vehicles_for_pc(pc)
-            if not ok:raise RuntimeError(detail)
+            if not ok:skipped.append('Vehicle unlocks incomplete: '+str(detail))
         else:
             from . import vehicle_tuning
             for vehicle in vehicle_tuning._load_vehicle_catalog_rows():
@@ -179,16 +215,13 @@ class Driver:
     def poll(self,name,child,snapshot):
         if name=='final_recheck':return self.final_recheck(child,snapshot)
         if child['kind']=='mission':
-            # Only synchronous discovery/requirement operations are batched. Each
-            # step retains its own fresh world/party check, journal and readback.
-            deadline=time.monotonic()+0.020
-            limit=4 if name in ('map_locations','travel_stations','travel_requirements') else 1
-            for _ in range(limit):
-                result=missions.step(child['id'])
-                if result.get('state')!='running' or time.monotonic()>=deadline:break
+            result=missions.poll(child['id'])
             return self.mission_result(result,child)
         if name=='character':
             i=child['index']
+            if i >= len(snapshot['rows']):
+                return dict(state='partial' if any(r['skipped'] for r in child['results']) else 'finished',
+                    child=child, details=child['results'], message='Character stage finished; unconfirmed unlocks listed separately', completion_verified=False)
             if child.get('pending'):
                 result=child['pending'];sample=snapshot['samples'][i]
                 confirmed=(sample.get('level',0)>=MAX_PLAYER_LEVEL and sample.get('specialization',0)>=MAX_SPEC_LEVEL
@@ -299,6 +332,7 @@ def dispatch(action,payload):
         if action=='full_progress_status':return _runner.status()
         if action=='full_progress_start':return _runner.start(payload)
         if action=='full_progress_step':return _runner.step(payload.get('job_id'))
+        if action=='full_progress_resume':return _runner.resume(payload)
         if action=='full_progress_close':return _runner.close(payload)
         if action=='full_progress_cancel':return _runner.cancel(payload.get('job_id'))
         raise ValueError('Unknown full-progress action')

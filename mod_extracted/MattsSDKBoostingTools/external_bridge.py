@@ -333,6 +333,15 @@ def _clear_pending_queue_locked() -> int:
     return _clear_pending_matching_locked(lambda _item: True)
 
 
+_PROGRESS_JOB_ACTIONS = frozenset({
+    "full_progress_preview", "full_progress_status", "full_progress_start",
+    "full_progress_step", "full_progress_cancel", "full_progress_close",
+    "full_progress_resume", "mission_status", "mission_preview", "mission_start",
+    "mission_step", "mission_resume", "mission_cancel", "mission_recover",
+    "mission_dlc_status",
+})
+
+
 def _prepare_queue_for_enqueue_locked(action: str) -> int:
     """Prune stale waiting work before enqueueing a user-facing command.
 
@@ -347,17 +356,19 @@ def _prepare_queue_for_enqueue_locked(action: str) -> int:
       cancelled. Chunk sequences already running are outside this queue and are
       never cleared here.
     """
-    if action in _QUEUE_PRESERVING_ACTIONS or action in _IMMEDIATE_LIVE_MOD_ACTIONS:
+    # Job requests coexist with other app/companion traffic in both directions.
+    # Only their explicit cancel action may cancel an ongoing progress job.
+    if action in _PROGRESS_JOB_ACTIONS or action in _QUEUE_PRESERVING_ACTIONS or action in _IMMEDIATE_LIVE_MOD_ACTIONS:
         return 0
     if action in _SERIAL_DELIVERY_ACTIONS:
         return _clear_pending_matching_locked(
             lambda item: str(item.get("action") or "") not in (
-                _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS
+                _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS | _PROGRESS_JOB_ACTIONS
             )
         )
     return _clear_pending_matching_locked(
         lambda item: str(item.get("action") or "") not in (
-            _SERIAL_DELIVERY_ACTIONS | _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS
+            _SERIAL_DELIVERY_ACTIONS | _QUICK_MENU_LAYOUT_MUTATIONS | _IMMEDIATE_LIVE_MOD_ACTIONS | _PROGRESS_JOB_ACTIONS
         )
     )
 
@@ -750,7 +761,7 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
-    if action in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close"):
+    if action in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume"):
         return backend_actions.run_quick_menu_action(action, payload, record=False)
     if backend_actions.full_progress_conflict(action):
         return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')

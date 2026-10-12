@@ -129,20 +129,10 @@ def test_reset_accept_complete_is_one_call_per_step_and_never_retries_uncertain(
         assert len(calls) == 1
     else:
         assert first['phase'] == 'accept'
-        if paced:
-            assert mod.step('job')['phase']=='accept'
-            assert len(calls)==1
-            clock[0]+=2.0
         assert mod.step('job')['phase'] == 'complete'
         assert len(calls) == 2
-        if paced:
-            assert mod.step('job')['phase']=='complete'
-            assert len(calls)==2
-            clock[0]+=2.0
-        assert mod.step('job')['state'] == 'running'
-        assert len(calls) == 2  # Acceptance alone must never trigger completion.
-        r['status_fact']['known_status'] = 'active'
-        assert mod.step('job')['state'] == 'completed'
+        result = mod.step('job')
+        assert result['state'] == 'completed'
         mod.step('job')
         assert len(calls) == 3
 
@@ -246,10 +236,6 @@ def test_auto_activation_after_reset_skips_duplicate_accept(mod, monkeypatch, tm
                     names=['Mission_Main_Beach'], index=0, completed=[], phase='accept',
                     journal=str(tmp_path/'job.jsonl'))
     assert mod.resume('job')['state'] == 'running'
-    if natural_state == 'accepted':
-        assert mod.step('job')['state'] == 'running'
-        assert calls == []
-        r['status_fact']['known_status'] = 'active'
     assert mod.step('job')['state'] == 'completed'
     assert calls == ([] if natural_state == 'completed' else [base + 0xf19ee4])
 
@@ -402,24 +388,32 @@ def test_credit_pending_does_not_advance_or_reset(mod, monkeypatch, tmp_path):
     assert mod._job['state'] == 'running'
 
 
-@pytest.mark.parametrize('phase', ['prepare', 'complete'])
-def test_accepted_activation_wait_is_bounded_and_never_mutates(mod, monkeypatch, tmp_path, phase):
-    clock = [100.0]
-    monkeypatch.setattr(mod.time, 'monotonic', lambda: clock[0])
-    pc = NS(_path_name=lambda: 'pc')
-    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(state='accepted')]}))
-    monkeypatch.setattr(mod, '_party', lambda: [{'pc': pc}])
-    monkeypatch.setattr(mod, '_binding', lambda rows: ['fixed'])
-    monkeypatch.setattr(mod, '_validate_exit', lambda *args: None)
-    mod._job = dict(id='job', ok=True, state='running', binding=['fixed'], target='pc',
-                    names=['Mission_Main_Beach'], index=0, completed=[], phase=phase,
-                    journal=str(tmp_path/'job.jsonl'))
-    assert mod.step('job')['state'] == 'running'
-    clock[0] += 59
-    assert mod.step('job')['state'] == 'running'
-    clock[0] += 1
-    assert mod.step('job')['state'] == 'stopped'
-    assert 'still accepted' in mod._job['message']
-    events = [json.loads(line)['event'] for line in (tmp_path/'job.jsonl').read_text().splitlines()]
-    assert 'issued' not in events
-    assert mod._job['completed'] == []
+@pytest.mark.parametrize('end_state', ['running', 'uncertain', 'completed'])
+def test_shared_poll_stops_on_terminal_result_and_has_count_bound(mod, monkeypatch, end_state):
+    calls=[]
+    mod._job=dict(id='job',state='running',operation_scope='map_locations')
+    monkeypatch.setattr(mod.time,'monotonic',lambda:0)
+    monkeypatch.setattr(mod,'step',lambda ident:calls.append(ident) or dict(state=end_state))
+    assert mod.poll('job')['state']==end_state
+    assert len(calls)==(16 if end_state=='running' else 1)
+
+
+def test_shared_poll_yields_on_time_budget(mod,monkeypatch):
+    mod._job=dict(id='job',state='running',operation_scope='travel_stations')
+    times=iter([0,.021]);calls=[]
+    monkeypatch.setattr(mod.time,'monotonic',lambda:next(times))
+    monkeypatch.setattr(mod,'step',lambda ident:calls.append(ident) or dict(state='running'))
+    mod.poll('job');assert calls==['job']
+
+@pytest.mark.parametrize('observed', ['active', 'available', 'accepted'])
+def test_completion_readiness_mismatch_never_reissues(mod, monkeypatch, tmp_path, observed):
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(state=observed)]}))
+    monkeypatch.setattr(mod, '_party', lambda: [dict(pc=NS(_path_name=lambda:'pc'))])
+    monkeypatch.setattr(mod, '_binding', lambda rows:['fixed'])
+    mod._job=dict(id='job',state='running',binding=['fixed'],target='pc',names=['Mission_Main_Beach'],
+        index=0,phase='complete',completed=[],journal=str(tmp_path/'job.jsonl'),
+        transition_readiness=dict(mission='Mission_Main_Beach',operation='complete',expected=['completed']))
+    result=mod.step('job')
+    assert result['state']=='stopped'
+    assert mod._job['completed']==[]
+    assert mod._job['transition_readiness']['operation']=='complete'

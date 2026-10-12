@@ -315,9 +315,6 @@ def step(job_id):
         if _binding(party) != _job['binding']:
             raise RuntimeError('Party changed; remaining work stopped')
         target = next(r['pc'] for r in party if r['pc']._path_name() == _job['target'])
-        if _job.get('settle_guest_progress') and time.monotonic() < _job.get('next_step_at',0):
-            _job['message'] = 'Waiting for mission transition to settle before the next operation'
-            return status()
         if _job.get('dynamic') and _job['phase'] == 'prepare' and not _schedule_category(before):
             if _job['state'] == 'running':
                 from . import mission_discovery as discovery
@@ -379,23 +376,13 @@ def step(job_id):
             _journal(dict(event='observed_completed', mission=name, after=row))
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
-        # Accepted is not Active: completing during activation can leave guest saves unfinished.
-        if state == 'accepted':
-            waiting = _job.get('activation_wait')
-            if not waiting or waiting['mission'] != name:
-                waiting = dict(mission=name, since=time.monotonic())
-                _job['activation_wait'] = waiting
-                _journal(dict(event='waiting_for_activation', mission=name, after=row))
-            if time.monotonic() - waiting['since'] >= 60.0:
-                raise RuntimeError(f'{CATALOG[name]["title"]}: still accepted after 60 seconds; stopped before completion. Let the mission activate normally before recovering.')
-            _job['message'] = f'{CATALOG[name]["title"]}: waiting for the mission to become active before completing'
-            return status()
+        # Restore the original normal-acceptance completion path.
         _job.pop('activation_wait', None)
         if phase == 'prepare':
-            operation = {'completed': 'reset', 'available': 'accept', 'active': 'complete'}.get(state)
+            operation = {'completed': 'reset', 'available': 'accept', 'active': 'complete', 'accepted': 'complete'}.get(state)
         elif phase == 'accept' and state == 'available':
             operation = 'accept'
-        elif phase == 'complete' and state == 'active':
+        elif phase == 'complete' and state in ('active', 'accepted'):
             operation = 'complete'
         else:
             raise ValueError('Mission changed outside this job; stopped without retry')
@@ -430,8 +417,6 @@ def step(job_id):
                                    observed=_state(after))
             raise RuntimeError(f'{CATALOG[name]["title"]}: {operation} returned {_state(after)}; expected {", ".join(expected)}. Use Recover stopped job; no automatic retry.')
         _job['phase'] = next_phase
-        if _job.get('settle_guest_progress'):
-            _job['next_step_at'] = time.monotonic() + 2.0
         if operation == 'complete':
             if _credit_completed(engine, party, name) is False:
                 return status()
@@ -473,7 +458,8 @@ def resume(job_id):
         return status()
     row = _row(snapshot, _job['names'][_job['index']])
     _validate_exit(_engine(), row, _job['names'][_job['index']])
-    allowed = ('accepted', 'active', 'completed') if _job['phase'] == 'accept' else ('completed',)
+    activation_wait = _job.get('activation_wait', {}).get('mission') == _job['names'][_job['index']]
+    allowed = ('accepted', 'active', 'completed') if _job['phase'] == 'accept' else ('active', 'completed') if activation_wait else ('completed',)
     if _state(row) not in allowed:
         raise ValueError('Pending mission is not confirmed completed or naturally activated for this phase; no retry issued')
     _job.update(ok=True, state='running', message='Confirmed forward game progression; ready to continue remaining missions')
@@ -584,6 +570,32 @@ def clear_runtime_state():
     _runtime = None
 
 
+def poll(job_id):
+    """Shared scoped/full-run pump: normal transitions, dialogue and credit checks."""
+    global _dialogue_skipper
+    if not _job or _job['id'] != job_id:
+        raise ValueError('Mission job identifier changed')
+    if _job['state'] == 'running' and _job.get('operation_scope', 'missions') == 'missions' and not _job.get('dialogue', {}).get('disabled'):
+        try:
+            from .progress_dialogue import DialogueSkipper
+            from mods_base import ENGINE
+            import unrealsdk
+            if '_dialogue_skipper' not in globals():
+                _dialogue_skipper = DialogueSkipper()
+            world_path = ENGINE.GameViewport.World._path_name()
+            _job['dialogue'] = _dialogue_skipper.poll(
+                (job_id, world_path), world_path,
+                unrealsdk.find_all('GbxDialogProvider'), time.monotonic())
+        except Exception as exc:
+            _job['dialogue'] = dict(disabled=True, error=str(exc))
+    deadline = time.monotonic() + 0.020
+    for _ in range(16):
+        result = step(job_id)
+        if result.get('state') != 'running' or time.monotonic() >= deadline:
+            break
+    return result
+
+
 def dispatch(action, payload):
     try:
         if action == 'mission_status':
@@ -597,7 +609,7 @@ def dispatch(action, payload):
         if action == 'mission_start':
             return start(payload)
         if action == 'mission_step':
-            return step(payload.get('job_id'))
+            return poll(payload.get('job_id'))
         if action == 'mission_resume':
             return resume(payload.get('job_id'))
         if action == 'mission_cancel':

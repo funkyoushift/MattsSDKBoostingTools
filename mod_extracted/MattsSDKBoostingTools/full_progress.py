@@ -131,6 +131,26 @@ class Run:
             self.record('stopped',message=str(exc))
         return self.status()
 
+    def resume(self, payload):
+        if not self.job or self.job['id'] != payload.get('job_id'):
+            raise ValueError('Original run is not loaded; inspect its receipt before starting another run')
+        if payload.get('acknowledge_shared_progress') is not True:
+            raise ValueError('Acknowledge shared progress before recovery')
+        if self.job['state'] not in ('stopped', 'uncertain'):
+            raise ValueError('This run does not need recovery')
+        name = STAGES[self.job['index']][0]
+        snapshot = self.driver.step_snapshot(name)
+        if snapshot['binding'] != self.job['binding']:
+            raise ValueError('Original lobby changed; cannot resume this run')
+        gate = eligibility(snapshot['players'], snapshot['packs'])
+        if not gate['allowed']:
+            raise ValueError(gate['reason'])
+        if self.job['phase'] == 'issued':
+            self.driver.recover(self.job['child'], snapshot)
+        self.job.update(ok=True, state='running', message='Reconciled current work; continuing remaining stages')
+        self.record('resumed', stage=name)
+        return self.status()
+
     def close(self, payload):
         if payload.get('acknowledge_shared_progress') is not True:
             raise ValueError('Acknowledge that applied changes remain and this closes only the run record')

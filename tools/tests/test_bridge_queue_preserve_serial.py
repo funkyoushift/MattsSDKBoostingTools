@@ -21,6 +21,7 @@ def _load_bridge():
     sys.modules["MattsSDKBoostingTools"] = pkg
 
     ba = types.ModuleType("MattsSDKBoostingTools.backend_actions")
+    ba.full_progress_conflict = lambda action: False
     ba.set_target_player = lambda *a, **k: {"ok": True}
     ba.afk_lobby_status = lambda: {"enabled": False}
     ba.get_status = lambda **_kwargs: {"players": [], "selected_player": "", "serial_delivery": {}}
@@ -166,3 +167,14 @@ def test_quick_menu_bridge_actions_dispatch():
     assert ("set-layout", {"pages": []}) in calls
     assert ("assign-slot", {"page": 0, "slot": 1, "action": "max_all"}) in calls
     assert ("clear-page", {"page": 2}) in calls
+
+
+def test_progress_requests_coexist_with_serials_and_other_commands():
+    bridge=_load_bridge()
+    for incoming in ('give_serial_selected','max_all','full_progress_step','mission_step'):
+        bridge._queue.clear()
+        bridge._queue.extend([dict(id='progress',action='full_progress_step'),dict(id='mission',action='mission_step'),dict(id='serial',action='give_serial_selected')])
+        bridge._prepare_queue_for_enqueue_locked(incoming)
+        ids={i['id'] for i in bridge._queue}
+        assert {'progress','mission'} <= ids
+        if incoming in ('full_progress_step','mission_step'):assert 'serial' in ids

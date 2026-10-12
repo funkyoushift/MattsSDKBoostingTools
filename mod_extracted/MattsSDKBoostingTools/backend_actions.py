@@ -1781,7 +1781,7 @@ def run_quick_menu_action(
     """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
     payload = dict(payload or {})
     key = str(action or "").strip()
-    if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close"):
+    if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume"):
         from . import full_progress_runtime
         return full_progress_runtime.dispatch(key, payload)
     if full_progress_conflict(key):

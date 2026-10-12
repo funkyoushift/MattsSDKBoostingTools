@@ -131,27 +131,13 @@ def test_stage_snapshot_still_checks_binding(tmp_path):
     assert seen==['missions'] and not d.calls
 
 
-def test_discovery_batch_stops_immediately_on_uncertain():
+@pytest.mark.parametrize('stage',['missions','map_locations','travel_stations','travel_requirements'])
+def test_full_progress_uses_shared_mission_pump(stage):
     from types import SimpleNamespace as NS
     d,_=character_driver();env=d.poll.__globals__;calls=[]
-    def step(ident):
-        calls.append(ident)
-        return dict(state='uncertain' if len(calls)==2 else 'running')
-    env['missions']=NS(step=step)
-    env['time']=NS(monotonic=lambda:0)
-    assert d.poll('map_locations',dict(kind='mission',id='child'),{})['state']=='uncertain'
-    assert len(calls)==2
-
-
-def test_discovery_batch_has_count_and_time_bounds_and_missions_stay_single():
-    from types import SimpleNamespace as NS
-    d,_=character_driver();env=d.poll.__globals__;calls=[]
-    env['missions']=NS(step=lambda ident:calls.append(ident) or dict(state='running'))
-    env['time']=NS(monotonic=lambda:0)
-    d.poll('map_locations',dict(kind='mission',id='child'),{});assert len(calls)==4
-    calls.clear();d.poll('missions',dict(kind='mission',id='child'),{});assert len(calls)==1
-    calls.clear();times=iter([0,.021]);env['time']=NS(monotonic=lambda:next(times))
-    d.poll('map_locations',dict(kind='mission',id='child'),{});assert len(calls)==1
+    env['missions']=NS(poll=lambda ident:calls.append(ident) or dict(state='uncertain'))
+    assert d.poll(stage,dict(kind='mission',id='child'),{})['state']=='uncertain'
+    assert calls==['child']
 
 
 @pytest.mark.parametrize('raises',[False,True])
@@ -221,3 +207,47 @@ def test_final_pass_rechecks_dependencies_after_child_completion():
     assert 'first' in child['done'] and child['active'] is None
     d.final_recheck(child,dict(packs={}))
     assert starts[0]['missions']==['next'] and not starts[0]['reset_completed']
+
+
+def test_resume_keeps_stage_and_never_reissues_begin(tmp_path):
+    d=Driver();d.wait=True;d.step_snapshot=lambda stage:d.preflight()
+    repaired=[];d.recover=lambda child,snapshot:repaired.append(child)
+    r=m.Run(d,tmp_path);j=r.start({'acknowledge_shared_progress':True})
+    r.step(j['id'])
+    r.job.update(state='uncertain',ok=False)
+    r.resume({'job_id':j['id'],'acknowledge_shared_progress':True})
+    assert repaired == ['missions']
+    assert r.step(j['id'])['index'] == 1
+    assert d.calls == ['missions']
+
+
+def test_resume_failure_preserves_stopped_run(tmp_path):
+    d=Driver();d.wait=True;d.step_snapshot=lambda stage:d.preflight()
+    def fail(*args):raise RuntimeError('Unresolved native call')
+    d.recover=fail
+    r=m.Run(d,tmp_path);j=r.start({'acknowledge_shared_progress':True});r.step(j['id'])
+    r.job.update(state='uncertain',ok=False)
+    with pytest.raises(ValueError):r.resume({'job_id':j['id']})
+    with pytest.raises(RuntimeError,match='Unresolved'):r.resume({'job_id':j['id'],'acknowledge_shared_progress':True})
+    assert r.job['state']=='uncertain' and d.calls==['missions']
+    d.binding='changed'
+    with pytest.raises(ValueError,match='lobby'):r.resume({'job_id':j['id'],'acknowledge_shared_progress':True})
+
+
+def test_activation_wait_automatically_resumes_without_begin():
+    from types import SimpleNamespace as NS
+    d,calls=character_driver()
+    env=d.mission_result.__globals__
+    resumed=[]
+    env['missions']=NS(_job={'id':'child','activation_wait':{'mission':'m'},'names':['m'],'index':0},
+        _engine=lambda:NS(snapshot=lambda:{}),_row=lambda snapshot,name:{},_state=lambda row:'accepted',
+        CATALOG={'m':{'title':'Mission'}},resume=lambda ident:resumed.append(ident) or {'state':'running'},
+        _defer=lambda name,reason:resumed.append(('deferred',name)) or {'state':'running'})
+    child={'kind':'mission','id':'child'}
+    assert d.mission_result({'state':'stopped'},child)['state']=='running'
+    assert resumed == [('deferred','m')]
+    resumed.clear()
+    env['missions']._job['activation_wait']={'mission':'m'}
+    env['missions']._state=lambda row:'active'
+    assert d.mission_result({'state':'stopped'},child)['state']=='running'
+    assert resumed==['child']

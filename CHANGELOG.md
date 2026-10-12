@@ -1,3 +1,7 @@
+# v2.37.2
+
+Progress-run speed, shared scoped processing, recovery and bridge queue coexistence repairs. See docs/releases/RELEASE_NOTES_v2.37.2.md.
+
 # v2.35.0
 
 Mayhem 1-20 selected-player and optional AFK guest unlock controls and tested bridge, camera, Party Reveal, and Farming status repairs. See docs/releases/RELEASE_NOTES_v2.35.0.md.

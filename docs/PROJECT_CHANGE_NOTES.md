@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-11: Scoped progress parity and v2.37.2](changes/2026-10-11-scoped-progress-parity.md) - Shared fast processing and reconnect path; release authorized after passing checks.
+
 - [2026-10-11: Serial copy quantity](changes/2026-10-11-serial-copy-quantity.md) - v2.37.1 quantity repair for readable codes and Quick Menu payloads; offline payload regression coverage.
 
 - [2026-10-11: Full-progress preset](changes/2026-10-11-full-progress-preset.md) - Local review integration; live preview passed, end-to-end test pending.
