@@ -40,7 +40,7 @@
       const resetting = runnable().some(m => m.resets_host_completion);
       el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : el("missionScope").value === "challenge_credit" ? "Repair Grassroots credit" : "Complete missions";
       el("missionRunBtn").disabled = busy || !eligible || !el("missionSharedAck").checked || (resetting && !el("missionResetCompleted").checked);
-      el("missionResumeBtn").disabled = busy || !["running", "stopped"].includes(job?.state) || (job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) || (!["accept", "complete"].includes(job?.phase) && !(job?.dynamic && job?.phase === "prepare")) || (job?.operation_scope || "missions") !== "missions";
+      el("missionResumeBtn").disabled = busy || !job?.id || !(job.state === "running" || (job.state === "stopped" && !(job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) && (["accept", "complete"].includes(job?.phase) || (job?.dynamic && job?.phase === "prepare")) && (job?.operation_scope || "missions") === "missions"));
       el("missionCancelBtn").disabled = !busy || !job?.id;
       const recoverable = !busy && job?.id && ["uncertain", "stopped", "interrupted"].includes(job.state);
       el("missionRecoverBtn").disabled = !recoverable || job.state === "interrupted" || !el("missionSharedAck").checked;
