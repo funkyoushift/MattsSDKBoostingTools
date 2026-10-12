@@ -14,6 +14,14 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
 
+## v2.37.2 progress repairs
+
+Scoped mission and discovery controls now share the 100% Game processing loop and connection recovery. Mission runs use the same dialogue skipping and guest challenge-credit checks. Other app or companion requests no longer cancel queued progress steps. Repair and continue keeps applied work; inactive vault cards and failed vehicle unlocks remain visible without blocking later stages.
+
+The full preset retains its final pass for later unlocks. Scope selection, acceptance player and reset options still apply to individual runs. The reported **The Chase** guest-save issue remains unresolved; verify saved progress in each player's own game. Generic objective completion, undo and reset-all remain unavailable.
+
+Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](docs/releases/RELEASE_NOTES_v2.37.2.md).
+
 ## Credits
 
 ### Community Discords
