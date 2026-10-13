@@ -1786,6 +1786,18 @@ def run_quick_menu_action(
         return full_progress_runtime.dispatch(key, payload)
     if full_progress_conflict(key):
         return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')
+    if key in ('mission_objective_preview', 'mission_objective_complete', 'mission_objective_status', 'mission_objective_replay'):
+        from . import mission_objectives
+        try:
+            if key == 'mission_objective_preview':
+                return mission_objectives.preview(payload)
+            if key == 'mission_objective_complete':
+                return mission_objectives.complete(payload)
+            if key == 'mission_objective_replay':
+                return mission_objectives.replay_last(payload)
+            return mission_objectives.status()
+        except Exception as exc:
+            return dict(ok=False, message=str(exc))
     if key in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel", "mission_recover", "mission_dlc_status"):
         from . import mission_progression
         return mission_progression.dispatch(key, payload)

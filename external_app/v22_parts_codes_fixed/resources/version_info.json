@@ -1,8 +1,8 @@
 {
-  "package_version": "2.37.2",
-  "app_version": "2.37.2",
-  "sdkmod_version": "2.37.2",
-  "resources_version": "2.37.2",
+  "package_version": "2.38.0",
+  "app_version": "2.38.0",
+  "sdkmod_version": "2.38.0",
+  "resources_version": "2.38.0",
   "git_commit": "603194feb7ba9c30c5a6c02738ce2b7b6031d466",
   "built_at_utc": "2026-10-11T23:35:25.457441+00:00",
   "sdk_required": "oak2-mod-manager v0.3",
@@ -12,5 +12,6 @@
   "latest_manifest_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json",
   "external_exe_sha256": "",
   "sdkmod_sha256": "",
-  "ui_layout_sha256": ""
+  "ui_layout_sha256": "",
+  "electron_version": "2.38.0"
 }

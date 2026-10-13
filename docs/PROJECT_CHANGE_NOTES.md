@@ -4,6 +4,16 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-12: Playable progress effects and replay scope](changes/2026-10-12-playable-progress-effects.md) - NG+-style retention clarified; source audit identifies the Beach/safehouse dependency gap. Native objective checkpoint replay implemented and saved across reload; bridge completion/replay verified. Safehouse interaction reset persisted; 251 completion entries, 63 activity resets and DLC map replay installed. Full 285-record campaign reset retained character progression and restored Arjay; broader world-effect and guest-save coverage remain unfinished.
+
+- [2026-10-12: Campaign reset sequencing](changes/2026-10-12-campaign-reset.md) - Expanded named-record reset and read-only recovery candidate; Guns Blazing advances normally and reads active after reload. Installed phased reset retains zero named completed records through save/reload; full campaign gameplay remains unverified.
+
+- [2026-10-12: Visible dropdowns and expandable sections](changes/2026-10-12-control-affordances.md) - Shared desktop control styling; 41 navigation routes passed; installed locally.
+
+- [2026-10-12: Individual objective advancement investigation](changes/2026-10-12-objective-advancement.md) - Single objective and mission reopening passed host pilots; objective picker, restart and completed-record reset installed locally. Bulk reset and guest/bounty proof pending.
+
+- [2026-10-12: Current mission and bounty controls](changes/2026-10-12-current-mission-bounty.md) - Refresh stale world between finished jobs, separate tracked mission/bounty, live bounty completion verified; installed locally, unreleased.
+
 - [2026-10-11: Scoped progress parity and v2.37.2](changes/2026-10-11-scoped-progress-parity.md) - Shared fast processing and reconnect path; release authorized after passing checks.
 
 - [2026-10-11: Serial copy quantity](changes/2026-10-11-serial-copy-quantity.md) - v2.37.1 quantity repair for readable codes and Quick Menu payloads; offline payload regression coverage.

@@ -1,5 +1,25 @@
 [
   {
+    "name": "ZoneActivity_Grasslands_SafehouseMain",
+    "title": "Safehouse: Abandoned Post",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/20/zoneactivity_grasslands_safehousemain",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "Mission_Main_PrisonPrologue",
+    "title": "Guns Blazing",
+    "category": "story",
+    "source": "Nexus-Data-Mission0.json",
+    "pointer": "/mission/records/5/entries/13/mission_main_prisonprologue",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
     "name": "Mission_Main_Beach",
     "title": "Recruitment Drive",
     "category": "story",
@@ -2088,6 +2108,426 @@
     "category": "sides",
     "source": "Nexus-Data-Mission0.json",
     "pointer": "/mission/records/3/entries/1/micro_grasslands_abductioninjunctionending",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_City_Safehouse1",
+    "title": "Safehouse: The Lockaway",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/3/zoneactivity_city_safehouse1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler1",
+    "title": "Crawler: The Great Work",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/16/zoneactivity_mountains_crawler1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler2",
+    "title": "Crawler: The Stonewarden",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/17/zoneactivity_mountains_crawler2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler3",
+    "title": "Crawler: Forgotten Cornerstone",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/18/zoneactivity_mountains_crawler3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Crawler4",
+    "title": "Crawler: Eureka Stane",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/19/zoneactivity_mountains_crawler4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler1",
+    "title": "Crawler: Slugmetal Ditch",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/6/zoneactivity_grasslands_crawler1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler2",
+    "title": "Crawler: The Roaming Pasture",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/7/zoneactivity_grasslands_crawler2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler3",
+    "title": "Crawler: Pester's Grotto",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/8/zoneactivity_grasslands_crawler3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Crawler4",
+    "title": "Crawler: The Eminent Husk",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/9/zoneactivity_grasslands_crawler4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler1",
+    "title": "Crawler: The Belle",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/31/zoneactivity_shatteredlands_crawler1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler2",
+    "title": "Crawler: Wanton Tread",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/32/zoneactivity_shatteredlands_crawler2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler3",
+    "title": "Crawler: Crumpled Lurch",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/33/zoneactivity_shatteredlands_crawler3",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Crawler4",
+    "title": "Crawler: Ruined Sumplands",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/34/zoneactivity_shatteredlands_crawler4",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_DrillSite1",
+    "title": "Drill Site: The Prospects",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/10/zoneactivity_grasslands_drillsite1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_DrillSite2",
+    "title": "Drill Site: The Pitted Stain",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/11/zoneactivity_grasslands_drillsite2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_DrillSite1",
+    "title": "Drill Site: The Old Scrape",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/21/zoneactivity_mountains_drillsite1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_DrillSite2",
+    "title": "Drill Site: The Lowering March",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/22/zoneactivity_mountains_drillsite2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_DrillSite1",
+    "title": "Drill Site: Saw's Clench",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/35/zoneactivity_shatteredlands_drillsite1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_DrillSite2",
+    "title": "Drill Site: Tendercage",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/36/zoneactivity_shatteredlands_drillsite2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_City_Mine1",
+    "title": "Mine: The Toil of Spoiling Vis",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/1/zoneactivity_city_mine1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Mine1",
+    "title": "Mine: Timid Kyle's Neglected Opening",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/12/zoneactivity_grasslands_mine1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_Mine2",
+    "title": "Mine: The Claim",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/13/zoneactivity_grasslands_mine2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Mine1",
+    "title": "Mine: Whistler's Maw",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/23/zoneactivity_mountains_mine1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_Mine2",
+    "title": "Mine: Bittervein",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/24/zoneactivity_mountains_mine2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Mine1",
+    "title": "Mine: Embossed Fault",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/37/zoneactivity_shatteredlands_mine1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_Mine2",
+    "title": "Mine: Trinket Crevass",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/38/zoneactivity_shatteredlands_mine2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_City_OrderBunker1",
+    "title": "Bunker: Ironwall Resolve",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/2/zoneactivity_city_orderbunker1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_OrderBunker1",
+    "title": "Bunker: Blacklime Bunker",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/14/zoneactivity_grasslands_orderbunker1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grasslands_OrderBunker2",
+    "title": "Bunker: Tipping Point",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/15/zoneactivity_grasslands_orderbunker2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_OrderBunker1",
+    "title": "Bunker: The Wireworks",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/25/zoneactivity_mountains_orderbunker1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Mountains_OrderBunker2",
+    "title": "Bunker: Craven's Nook",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/26/zoneactivity_mountains_orderbunker2",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Shatteredlands_OrderBunker1",
+    "title": "Bunker: The Crawlcroft",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/39/zoneactivity_shatteredlands_orderbunker1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grotto_Jungle",
+    "title": "Occupied Sector: Akela Island",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/122/zoneactivity_grotto_jungle",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Grotto_Lava",
+    "title": "Occupied Sector: Pyroclast Grotto",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/123/zoneactivity_grotto_lava",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Lockdown_Jungle",
+    "title": "Tediore Lockdown: Shere Cliff",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/128/zoneactivity_lockdown_jungle",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Lockdown_Lava",
+    "title": "Tediore Lockdown: Lapillus Bend",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/129/zoneactivity_lockdown_lava",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Intro_Safehouse_Horde",
+    "title": "Tiki Bar: The Surly Centipede",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/125/zoneactivity_intro_safehouse_horde",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Jungle_Safehouse_Horde",
+    "title": "Tiki Bar: The Sauced Snake",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/126/zoneactivity_jungle_safehouse_horde",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_Lava_Safehouse_Horde",
+    "title": "Tiki Bar: The Wrecked Ratch",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/127/zoneactivity_lava_safehouse_horde",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_DLC1_Bunker",
+    "title": "Bunker: Crisis Scar Weeping",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/119/zoneactivity_dlc1_bunker",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_DLC1_FuelSiphon1",
+    "title": "Fuel Siphon: Thrombosis Purge",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/120/zoneactivity_dlc1_fuelsiphon1",
+    "exit_names": [
+      "None"
+    ]
+  },
+  {
+    "name": "ZoneActivity_DLC1_FuelSiphon2",
+    "title": "Fuel Siphon: The Gurgling Stent",
+    "category": "activities",
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/121/zoneactivity_dlc1_fuelsiphon2",
     "exit_names": [
       "None"
     ]

@@ -1,0 +1,70 @@
+{
+  "source_sha256": {
+    "Nexus-Data-Mission0.json": "16f049b1528376741c981c05232b68a394c7b982f790a4b534e521890adaa02c",
+    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75"
+  },
+  "missions": {
+    "mission_main_harmonica1": [
+      {
+        "mission": "ZoneActivity_Intro_Safehouse_Horde",
+        "source": "Nexus-Data-Mission0.json",
+        "pointer": "/mission/records/1/entries/14/__dep_entries/5/claim_safehouse/graph_data/gameplay",
+        "objective": "Claim_safehouse"
+      }
+    ],
+    "Mission_Main_City1": [
+      {
+        "mission": "ZoneActivity_City_Safehouse1",
+        "source": "Nexus-Data-Mission0.json",
+        "pointer": "/mission/records/5/entries/4/__dep_entries/0/capture_safehouse/graph_data/gameplay",
+        "objective": "Capture_safehouse"
+      }
+    ],
+    "Mission_Side_Heist": [
+      {
+        "mission": "Mission_Micro_HeistRecruits_Demo",
+        "source": "Nexus-Data-Mission0.json",
+        "pointer": "/mission/records/5/entries/22/__dep_entries/120/kilo_mission_area_waypoint/graph_data/gameplay",
+        "objective": "kilo_mission_area_WAYPOINT"
+      },
+      {
+        "mission": "Mission_Micro_HeistRecruits_Tech",
+        "source": "Nexus-Data-Mission0.json",
+        "pointer": "/mission/records/5/entries/22/__dep_entries/139/recruit_glitch/graph_data/gameplay",
+        "objective": "Recruit_Glitch"
+      }
+    ],
+    "Mission_Main_Harmonica3": [
+      {
+        "mission": "Mission_Main_Harmonica3_Hotel",
+        "source": "Nexus-Data-Mission4.json",
+        "pointer": "/mission/records/0/entries/71/__dep_entries/5/_invismanagermissiontracker_sub0/graph_data/gameplay",
+        "objective": "_INVISManagerMissionTracker_Sub0"
+      },
+      {
+        "mission": "Mission_Main_Harmonica3_Lava",
+        "source": "Nexus-Data-Mission4.json",
+        "pointer": "/mission/records/0/entries/71/__dep_entries/6/_invismanagermissiontracker_sub1/graph_data/gameplay",
+        "objective": "_INVISManagerMissionTracker_Sub1"
+      },
+      {
+        "mission": "Mission_Main_Harmonica3_Logistics",
+        "source": "Nexus-Data-Mission4.json",
+        "pointer": "/mission/records/0/entries/71/__dep_entries/7/_invismanagermissiontracker_sub2/graph_data/gameplay",
+        "objective": "_INVISManagerMissionTracker_Sub2"
+      },
+      {
+        "mission": "Mission_Main_Harmonica3_Spa",
+        "source": "Nexus-Data-Mission4.json",
+        "pointer": "/mission/records/0/entries/71/__dep_entries/8/_invismanagermissiontracker_sub3/graph_data/gameplay",
+        "objective": "_INVISManagerMissionTracker_Sub3"
+      },
+      {
+        "mission": "Mission_Main_Harmonica3_Theatre",
+        "source": "Nexus-Data-Mission4.json",
+        "pointer": "/mission/records/0/entries/71/__dep_entries/9/_invismanagermissiontracker_sub4/graph_data/gameplay",
+        "objective": "_INVISManagerMissionTracker_Sub4"
+      }
+    ]
+  }
+}

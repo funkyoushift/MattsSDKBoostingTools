@@ -33,3 +33,19 @@ def test_dlc_catalog_pins_sources_and_maps_invitation():
     assert data['missions']['Mission_Side_Invasive1']['pack']=='cowbell'
     assert data['source_sha256'] and all(len(h)==64 for h in data['source_sha256'].values())
     assert 'Mission_Main_Beach' not in data['missions']
+
+def test_playable_dlc_activity_coverage_is_entitlement_gated():
+    data=json.loads((ROOT/'mission_dlc_catalog.json').read_text())
+    catalog={row['name']:row for row in json.loads((ROOT/'mission_catalog.json').read_text())}
+    expected={
+        'harmonica':('ZoneActivity_Grotto_Jungle','ZoneActivity_Grotto_Lava',
+                    'ZoneActivity_Lockdown_Jungle','ZoneActivity_Lockdown_Lava',
+                    'ZoneActivity_Intro_Safehouse_Horde','ZoneActivity_Jungle_Safehouse_Horde',
+                    'ZoneActivity_Lava_Safehouse_Horde'),
+        'cowbell':('ZoneActivity_DLC1_Bunker','ZoneActivity_DLC1_FuelSiphon1','ZoneActivity_DLC1_FuelSiphon2'),
+    }
+    for pack,names in expected.items():
+        for name in names:
+            assert catalog[name]['category']=='activities'
+            assert data['missions'][name]['pack']==pack
+    assert not any('Template' in name for name in catalog)

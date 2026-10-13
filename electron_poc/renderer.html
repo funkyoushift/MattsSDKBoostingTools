@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="vendor/gridstack/gridstack.min.css">
   <link rel="stylesheet" href="workspace.css">
   <link rel="stylesheet" href="afk_lobby.css">
+  <link rel="stylesheet" href="control_affordances.css">
 </head>
 <body>
   <div id="msbtBootSplash" class="msbt-boot-splash" role="dialog" aria-modal="true" aria-labelledby="msbtBootSplashTitle">
@@ -408,7 +409,61 @@
 
       <div class="grid two">
         <section class="panel gold" data-msbt-panel="boost-missions" data-msbt-span="12" data-msbt-title="Missions">
-          <h2>Missions <small>Review build</small></h2>
+          <h2>Missions</h2>
+          <p>Choose a mission, then complete one objective, finish the mission, or reopen it to play again.</p>
+
+          <p class="muted-line">Changes apply to the shared lobby. The selected player is used to accept missions.</p>
+          <div class="inline-fields">
+            <label>Work on <select id="missionScope"><option value="current">Current tracked mission</option><option value="bounty">Current tracked bounty</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="challenge_credit">Repair Grassroots mission credit</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
+            <button id="missionPreviewBtn" type="button">Refresh from game</button>
+          </div>
+          <div id="missionNamesLabel" hidden>
+            <div class="inline-fields">
+              <label>Search <input id="missionNameSearch" type="search" placeholder="Mission name"></label>
+              <label>Status <select id="missionStateFilter"><option value="all">All statuses</option><option value="completed">Completed</option><option value="progress">In progress / accepted</option><option value="not_started">Not started</option><option value="available">Available</option><option value="locked">Locked</option><option value="unavailable">Unavailable / unknown</option><option value="failed">Failed</option></select></label>
+              <label>Type <select id="missionTypeFilter"><option value="all">All types</option></select></label>
+              <label>Sort <select id="missionSort"><option value="name">Name A–Z</option><option value="status">Status, then name</option><option value="type">Type, then name</option></select></label>
+            </div>
+            <label>Choose missions <select id="missionNames" multiple size="7" style="width:100%"></select></label>
+            <p id="missionSelectionCount" aria-live="polite"></p>
+            <button id="missionClearSelectionBtn" type="button">Clear selection</button>
+          </div>
+          <details><summary>About map and travel changes</summary><p class="muted-line">Map &amp; travel: discovery adds source-listed locations and stations. Some stations also require completed missions or objectives. Travel repairs cover reviewed requirements in completed missions; they do not guarantee every station or reveal all fog.</p></details>
+          <div id="missionPreviewList" class="muted-line">Refresh to detect the tracked mission and current progress.</div>
+          <label id="missionResetOption"><input type="checkbox" id="missionResetCompleted"> Include completed missions again (for guest progression)</label>
+          <label><input type="checkbox" id="missionSharedAck"> Allow changes to shared lobby progress</label>
+          <fieldset>
+            <legend>Choose an action</legend>
+            <label>Objective <select id="missionObjectiveSelect" style="width:100%"></select></label>
+            <p id="missionObjectiveNote" class="muted-line">Active objectives appear automatically. The final objective can finish its mission.</p>
+            <div class="button-row">
+              <button id="missionObjectiveBtn" disabled>Complete objective</button>
+              <button id="missionRunBtn" type="button" disabled>Complete mission</button>
+              <button id="missionReopenBtn" type="button" disabled>Reopen mission</button>
+            </div>
+            <p id="missionActionHint" class="muted-line" aria-live="polite"></p>
+          </fieldset>
+          <div class="button-row">
+            <button id="missionResumeBtn" type="button" disabled>Continue run</button>
+            <button id="missionRecoverBtn" type="button" disabled>Repair and continue</button>
+            <button id="missionCancelBtn" type="button" disabled>Stop run</button>
+          </div>
+          <details><summary>Run details and recovery</summary>
+            <div class="button-row">
+              <button id="missionStatusBtn" type="button">Refresh run status</button>
+              <button id="missionObjectiveStatusBtn">Check last objective</button>
+              <button id="missionReplayObjectiveBtn" disabled>Replay last objective</button>
+              <button id="missionCloseBtn" type="button" disabled>Close stopped run</button>
+              <button id="missionDlcBtn" type="button">Check lobby DLC access</button>
+            </div>
+          </details>
+          <details><summary>Restart and reset options</summary>
+            <p>Reopen restarts one mission's local progress. Reset all resets the loaded named missions and activities, reloads the opening map, and starts Guns Blazing. This travels the whole lobby. Equipment, levels, discoveries and other non-mission progress stay, so the character's overall campaign percentage may remain above zero. Generated bounties are not included. Any missions still completed are listed in the result.</p>
+            <p class="muted-line">Replay last objective returns an active mission to that step's checkpoint, including linked objectives and later steps. Earned items, levels and ranks stay. If the mission has finished, use Reopen mission.</p>
+            <div class="button-row"><button id="missionRestartLastBtn" disabled>Reopen last advanced mission</button><button id="missionResetAllBtn" disabled>Reset all missions for replay</button></div>
+          </details>
+          <pre id="missionOutput" class="output">Waiting for preview.</pre>
+          <details id="missionFullProgressSection"><summary>100% game — missions, levels, unlocks and more</summary>
           <fieldset id="fullProgressPanel">
             <legend>100% game</legend>
             <p>Runs supported progress for everyone in this lobby: missions, discoveries, travel, levels, currencies, SDU points, vault cards, unlocks and challenges.</p>
@@ -417,28 +472,7 @@
             <div class="button-row"><button id="fullProgressPreview">Check lobby</button><button id="fullProgressStart" disabled>Run 100% game</button><button id="fullProgressStop" disabled>Stop remaining work</button><button id="fullProgressStatus">Status</button><button id="fullProgressContinue" disabled>Continue run</button><button id="fullProgressClose" disabled>Close stopped run</button></div>
             <pre id="fullProgressOutput" class="status-line">Check the lobby to see included progress and unavailable content.</pre>
           </fieldset>
-          <p class="muted-line">Uses the selected player for acceptance. Changes affect the host and shared party progress. Runs stop on a failed or uncertain result.</p>
-          <div class="inline-fields">
-            <label>Scope <select id="missionScope"><option value="current">Current tracked mission</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="challenge_credit">Repair Grassroots mission credit</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
-            <button id="missionPreviewBtn" type="button">Refresh preview</button>
-          </div>
-          <label id="missionNamesLabel" hidden>Choose missions <select id="missionNames" multiple size="7" style="width:100%"></select></label>
-          <p class="muted-line">Map &amp; travel: discovery adds source-listed locations and stations. Some stations also require completed missions or objectives. Travel repairs cover reviewed requirements in completed missions; they do not guarantee every station or reveal all fog.</p>
-          <div id="missionPreviewList" class="muted-line">Refresh to detect the tracked mission and current progress.</div>
-          <label><input type="checkbox" id="missionResetCompleted"> Reset completed host missions before completing them again</label>
-          <label><input type="checkbox" id="missionSharedAck"> I understand this changes shared host and party progress</label>
-          <div class="button-grid compact-buttons">
-            <button id="missionRunBtn" type="button" disabled>Complete missions</button>
-            <button id="missionResumeBtn" type="button" disabled>Continue stopped batch</button>
-            <button id="missionStatusBtn" type="button">Job status</button>
-            <button id="missionRecoverBtn" type="button" disabled>Recover stopped job</button>
-            <button id="missionCloseBtn" type="button" disabled>Reconcile and close job</button>
-            <button id="missionDlcBtn" type="button">Check lobby DLC access</button>
-            <button id="missionCancelBtn" type="button" disabled>Cancel remaining steps</button>
-          </div>
-          <p class="muted-line">Not available yet: generic objective completion, undo last objective, and reset all progress to not started.</p>
-          <div class="button-grid compact-buttons"><button disabled title="Objective transition testing is unfinished">Complete objective</button><button disabled title="Objective side effects cannot yet be restored reliably">Undo last objective</button><button disabled title="Full objective and checkpoint reset is unverified">Reset all progress</button></div>
-          <pre id="missionOutput" class="output">Waiting for preview.</pre>
+          </details>
           <section id="missionUnavailable" hidden aria-label="Unavailable mission entries">
             <h3>Unavailable in this game session</h3>
             <p class="muted-line">These catalog entries could not be resolved as playable shared missions. They were not completed and are listed separately from verified progress. This does not establish whether they are released content.</p>

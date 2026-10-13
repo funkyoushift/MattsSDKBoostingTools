@@ -417,3 +417,151 @@ def test_completion_readiness_mismatch_never_reissues(mod, monkeypatch, tmp_path
     assert result['state']=='stopped'
     assert mod._job['completed']==[]
     assert mod._job['transition_readiness']['operation']=='complete'
+
+def test_current_ignores_concurrently_tracked_bounty(mod):
+    mission = row()
+    bounty = dict(row(token='02'*12), source_identity=None, generated=1, ownership=0)
+    snapshot = dict(missions=[mission,bounty],tracked=[mission['token'],bounty['token']])
+    assert mod.select(snapshot,'current') == ['Mission_Main_Beach']
+    assert mod.select(snapshot,'bounty') == ['bounty:'+bounty['token']]
+    assert mod._row(snapshot,'bounty:'+bounty['token']) is bounty
+    with pytest.raises(ValueError,match='changed'):
+        mod.select(snapshot,'bounty',['bounty:'+'03'*12])
+
+@pytest.mark.parametrize('field,value',[('ownership',1),('replication_type',1),('generated',0)])
+def test_bounty_rejects_non_shared_instance(mod,field,value):
+    bounty=dict(row(),source_identity=None,generated=1,ownership=0)
+    bounty[field]=value
+    with pytest.raises(ValueError):
+        mod._row(dict(missions=[bounty]),'bounty:'+bounty['token'])
+
+
+@pytest.mark.parametrize('mode', ['reopen', 'reset_completed'])
+def test_reopen_resets_once_and_never_completes(mod, monkeypatch, tmp_path, mode):
+    r = row('Mission_Main_Grasslands1', 'completed')
+    calls=[]
+    def reset(engine, current, journal):
+        calls.append('reset')
+        r['status_fact']['known_status']='locked'
+    monkeypatch.setitem(sys.modules,'reopen_test',NS(mission_reset=NS(reopen=reset)))
+    monkeypatch.setattr(mod,'__package__','reopen_test')
+    engine=NS(snapshot=lambda:dict(missions=[r]))
+    mod._job=dict(id='job',mode=mode,state='running',phase='prepare',index=0,
+                  total=1,completed=[],journal=str(tmp_path/'job.jsonl'))
+    result=mod._reopen_step(engine,r,'Mission_Main_Grasslands1',None)
+    assert calls==['reset']
+    if mode=='reset_completed':
+        assert result['state']=='completed'
+        assert mod._state(r)=='locked'
+    else:
+        mod._reopen_step(engine,r,'Mission_Main_Grasslands1',None)
+        assert calls==['reset']
+        r['status_fact']['known_status']='active'
+        assert mod._reopen_step(engine,r,'Mission_Main_Grasslands1',None)['state']=='completed'
+        assert mod._state(r)=='active'
+
+
+def test_reopen_failure_preserves_pending_phase(mod, monkeypatch, tmp_path):
+    def fail(*args):raise RuntimeError('native call uncertain')
+    monkeypatch.setitem(sys.modules,'reopen_test',NS(mission_reset=NS(reopen=fail)))
+    monkeypatch.setattr(mod,'__package__','reopen_test')
+    mod._job=dict(id='job',mode='reopen',state='running',phase='prepare',index=0,
+                  journal=str(tmp_path/'job.jsonl'))
+    with pytest.raises(RuntimeError,match='uncertain'):
+        mod._reopen_step(None,row(state='completed'),'Mission_Main_Beach',None)
+    assert mod._job['state']=='uncertain'
+    assert mod._job['phase']=='reopen_wait'
+    assert mod.step('job')['state']=='uncertain'
+
+
+@pytest.mark.parametrize('later_state, expected', [('None','completed'), ('active','stopped')])
+def test_campaign_reset_waits_for_group_progression_without_repeating(mod, monkeypatch, tmp_path, later_state, expected):
+    rows=[row('Mission_Main_Beach','accepted'),row('Mission_Main_Grasslands1','active')]
+    calls=[]
+    def reset(engine, selected, journal):
+        calls.append([r['source_identity']['name'] for r in selected])
+        rows[1]['status_fact']['known_status']=later_state
+    monkeypatch.setitem(sys.modules,'campaign_test',NS(mission_reset=NS(reset_campaign=reset)))
+    monkeypatch.setattr(mod,'__package__','campaign_test')
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=rows)))
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=NS(_path_name=lambda:'pc'))])
+    monkeypatch.setattr(mod,'_binding',lambda rows:['fixed'])
+    mod._job=dict(id='job',state='running',mode='reset_completed',binding=['fixed'],target='pc',
+        names=['Mission_Main_Beach','Mission_Main_Grasslands1'],phase='prepare',completed=[],index=0,
+        journal=str(tmp_path/'job.jsonl'))
+    assert mod.step('job')['phase']=='campaign_verify'
+    assert mod.step('job')['state']==expected
+    mod.step('job')
+    assert len(calls)==1
+
+
+def test_campaign_reset_failure_is_not_reissued(mod, monkeypatch, tmp_path):
+    calls=[]
+    def reset(*args):
+        calls.append(1)
+        raise RuntimeError('native result unknown')
+    monkeypatch.setitem(sys.modules,'campaign_test',NS(mission_reset=NS(reset_campaign=reset)))
+    monkeypatch.setattr(mod,'__package__','campaign_test')
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=[row()])))
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=NS(_path_name=lambda:'pc'))])
+    monkeypatch.setattr(mod,'_binding',lambda rows:['fixed'])
+    mod._job=dict(id='job',state='running',mode='reset_completed',binding=['fixed'],target='pc',
+        names=['Mission_Main_Beach'],phase='prepare',completed=[],index=0,journal=str(tmp_path/'job.jsonl'))
+    assert mod.step('job')['state']=='uncertain'
+    mod.step('job')
+    assert calls==[1]
+
+
+def test_campaign_inventory_includes_internal_and_prologue_records(mod):
+    records = [row('Mission_Main_PrisonPrologue', 'completed'),
+               row('Mission_Main_Harmonica3_HandyCounter', 'completed'),
+               row('ZoneActivity_Grasslands_SafehouseMain', 'active'),
+               row('Mission_Main_Beach', 'None')]
+    generated = row('generated'); generated['generated'] = 1
+    unnamed = row(); unnamed['source_identity'] = None
+    names = mod._campaign_names(dict(missions=records + [generated, unnamed]))
+    assert names == [r['source_identity']['name'] for r in records]
+    with pytest.raises(ValueError, match='Ambiguous'):
+        mod._campaign_names(dict(missions=records + [records[0]]))
+
+
+@pytest.mark.parametrize('mode', ['inspect', 'continue', 'close'])
+def test_campaign_recovery_keeps_partial_results_without_repeating_reset(mod, monkeypatch, tmp_path, mode):
+    ident = 'a' * 32
+    name = 'ZoneActivity_Grasslands_Silo1'  # Not in completion's catalog.
+    record = row(name, 'completed')
+    path = tmp_path / (ident + '.jsonl')
+    events = [dict(event='campaign_reset_issued', missions=[name], tokens={name: record['token']}),
+              dict(event='campaign_reset_returned')]
+    path.write_text(''.join(json.dumps(e) + '\n' for e in events))
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: dict(missions=[record])))
+    mod._job = dict(id=ident, state='stopped', mode='reset_completed', phase='campaign_verify',
+                    journal=str(path), completed=[], index=0)
+    result = mod.recover(dict(job_id=ident, mode=mode, acknowledge_shared_progress=True))
+    assert result['ok']
+    if mode == 'continue':
+        assert result['state'] == 'running' and result['phase'] == 'campaign_verify'
+    else:
+        assert result['remaining_completed'][0]['name'] == name
+        if mode == 'close':
+            assert result['state'] == 'stopped'
+            assert json.loads(path.read_text().splitlines()[-1])['event'] == 'recovered'
+    assert 'issued' not in [json.loads(line)['event'] for line in path.read_text().splitlines()]
+
+
+@pytest.mark.parametrize('has_return,token', [(False, '01' * 12), (True, '02' * 12)])
+def test_campaign_recovery_rejects_unknown_outcome_or_changed_identity(mod, monkeypatch, tmp_path, has_return, token):
+    ident = 'a' * 32
+    name = 'Mission_Main_Beach'
+    path = tmp_path / (ident + '.jsonl')
+    events = [dict(event='campaign_reset_issued', missions=[name], tokens={name: '01' * 12})]
+    if has_return:
+        events.append(dict(event='campaign_reset_returned'))
+    path.write_text(''.join(json.dumps(e) + '\n' for e in events))
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: dict(missions=[row(name, 'None', token)])))
+    mod._job = dict(id=ident, state='uncertain', journal=str(path))
+    with pytest.raises(ValueError, match='return receipt|identity differs'):
+        mod.recover(dict(job_id=ident, mode='close', acknowledge_shared_progress=True))
+    assert len(path.read_text().splitlines()) == len(events)

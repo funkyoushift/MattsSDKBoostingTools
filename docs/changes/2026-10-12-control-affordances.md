@@ -1,0 +1,5 @@
+# Visible dropdowns and expandable sections
+
+Users could not distinguish expandable sections from plain text. Existing shared summary styles used text-only padding and muted colors. Added control_affordances.css after the other desktop stylesheets: bordered, filled disclosure headers, rotating chevrons, clear select borders/down arrows, keyboard focus rings, disabled states and forced-color support. Native select/details semantics and all action handlers are unchanged. Multi-selects retain list behavior. Applies to desktop renderer pages, sidebar and menus; embedded item editor and mobile styles are separate and unchanged.
+
+Mirrored only this stylesheet and its renderer link to review source and installed ASAR. Existing isolated Electron navigation check passed 41 routes, control homes, unique IDs and zero game actions. This is navigation proof, not exhaustive visual proof for every state. Installed locally and restarted MSBT only; no release/version change. Rollback: remove stylesheet link and file.

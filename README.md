@@ -1,3 +1,6 @@
+<!-- v2.38.0 progress update -->
+Mission tools now support one-objective advancement, authored checkpoint replay, mission reopening and campaign reset that retains character equipment and progression. Host save retention and opening NPC behavior were verified; guest-save and exhaustive world-effect coverage remain limited. See [v2.38.0 release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
+
 # Borderlands 4 Modding Tools
 
 **Powered by Funk · Built on the work of the Borderlands modding community**
@@ -8,19 +11,19 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.37.2.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.37.2.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.37.2-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.37.2-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.38.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.38.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.38.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.38.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
 
-## v2.37.2 progress repairs
+## v2.38.0 progress repairs
 
 Scoped mission and discovery controls now share the 100% Game processing loop and connection recovery. Mission runs use the same dialogue skipping and guest challenge-credit checks. Other app or companion requests no longer cancel queued progress steps. Repair and continue keeps applied work; inactive vault cards and failed vehicle unlocks remain visible without blocking later stages.
 
 The full preset retains its final pass for later unlocks. Scope selection, acceptance player and reset options still apply to individual runs. The reported **The Chase** guest-save issue remains unresolved; verify saved progress in each player's own game. Generic objective completion, undo and reset-all remain unavailable.
 
-Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](docs/releases/RELEASE_NOTES_v2.37.2.md).
+Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
 ## Credits
 
@@ -147,7 +150,7 @@ Original project code is covered by [LICENSE](LICENSE). Bundled and adapted code
 Borderlands and its game assets belong to Gearbox / 2K and their respective owners. This is an unofficial community project and is not affiliated with or endorsed by them.
 
 
-## Serial quantity repair — v2.37.2
+## Serial quantity repair — v2.38.0
 
 Give Items by Serial now honors the copies setting for readable numeric codes and Quick Menu shortcuts. Repeated pasted codes retain their requested quantity.
 

@@ -297,6 +297,56 @@
       "pack": "harmonica",
       "mission_set": "missionset'MissionSet_Side_Harmonica1'",
       "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Grotto_Jungle": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Grotto'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Grotto_Lava": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Grotto'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Lockdown_Jungle": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Lockdown'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Lockdown_Lava": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Lockdown'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Intro_Safehouse_Horde": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Safehouse'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Jungle_Safehouse_Horde": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Safehouse'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_Lava_Safehouse_Horde": {
+      "pack": "harmonica",
+      "mission_set": "missionset'MissionSet_Harmonica_ZoneActivity_Safehouse'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_DLC1_Bunker": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_ZoneActivity_DLC1_Bunker'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_DLC1_FuelSiphon1": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_ZoneActivity_DLC1_FuelSiphon'",
+      "source": "Nexus-Data-Mission4.json"
+    },
+    "ZoneActivity_DLC1_FuelSiphon2": {
+      "pack": "cowbell",
+      "mission_set": "missionset'MissionSet_ZoneActivity_DLC1_FuelSiphon'",
+      "source": "Nexus-Data-Mission4.json"
     }
   },
   "source_sha256": {
@@ -305,6 +355,7 @@
     "Nexus-Data-attribute4.json": "2f3be07dc6eb6dcf63c2901a32806ed49d697de1b5e98ccfed1cb3fa118cd244",
     "Nexus-Data-attribute6.json": "cbb7ae69ebaf24fc8a201e685ac46924561e21c9874b0d58acd0323d18293ef5",
     "Nexus-Data-Mission0.json": "16f049b1528376741c981c05232b68a394c7b982f790a4b534e521890adaa02c",
-    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75"
+    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75",
+    "Nexus-Data-missionset4.json": "1be0e50bec96306f5f9f4d53fa7bd082503dd43c27478115c17562969a036e0f"
   }
 }

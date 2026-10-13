@@ -14,6 +14,10 @@ from importlib.resources import files
 import unrealsdk
 from mods_base import ENGINE, get_pc
 
+# Authored discovery maps, including DLC and instanced campaign destinations.
+GAMEPLAY_MAPS = frozenset(row["worldmapname"] for row in json.loads(
+    files(__package__).joinpath("discovery_catalog.json").read_text(encoding="utf-8")))
+
 class MissionRuntime:
     def __init__(self):
         self.manifest = json.loads(files(__package__).joinpath("mission_build.json").read_text())
@@ -89,9 +93,14 @@ class MissionRuntime:
 
     def ensure_world(self):
         # Fail before enumerating old world objects or following shared-shard
-        # pointers after host exit. This run is bound to the observed World_P.
+        # pointers after host exit. Each run stays bound to one world instance.
+        # Intro_P uses the same validated mission interface; its shared records
+        # and normal prologue acceptance were inspected in the reset pilot.
         world = getattr(getattr(ENGINE, "GameViewport", None), "World", None)
-        if world is None or world._path_name() != "/Game/Maps/WorldLevels/World_P.World_P":
+        path = world._path_name() if world is not None else ''
+        map_name = path.rsplit('.', 1)[-1]
+        if (not path.startswith('/Game/') or map_name not in GAMEPLAY_MAPS
+                or path.rsplit('/', 1)[-1] != map_name + '.' + map_name):
             raise RuntimeError("Mission run stopped: gameplay world left or changing")
         pc = get_pc()
         if pc is None or getattr(pc, "Pawn", None) is None or getattr(pc, "PlayerState", None) is None:

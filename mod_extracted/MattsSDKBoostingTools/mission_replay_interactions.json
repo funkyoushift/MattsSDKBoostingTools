@@ -1,0 +1,372 @@
+{
+  "source_sha256": {
+    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75"
+  },
+  "missions": {
+    "ZoneActivity_City_Safehouse2": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_MNT_Safehouse",
+            "registryname": "IO_Safehouse_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/4/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_MNT_Safehouse",
+            "registryname": "CommandConsole_a"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/4/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_City_Safehouse3": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_GRA_Safehouse",
+            "registryname": "IO_Safehouse_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/5/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_GRA_Safehouse",
+            "registryname": "CommandConsole_a"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/5/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Grasslands_Safehouse2": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "GrasslandsWest_NorthSafehouse",
+            "registryname": "DataLog_a"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/17/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "registryname": "io_switch_commandconsole3"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/17/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Grasslands_Safehouse3": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "GRA_Safehouse3",
+            "registryname": "IO_GRA_Safehouse3_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/18/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SH_Farmlands",
+            "registryname": "SH_GRA_Noose_Console"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/18/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Grasslands_Safehouse4": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "GRA_Safehouse4",
+            "registryname": "IO_GRA_SH4_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/19/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "GRA_Safehouse4",
+            "registryname": "IO_GRA_SH4_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/19/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Mountains_Safehouse1": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P3_MTNS_Safehouse1",
+            "registryname": "IO_MTN_Safehouse1_DataLog2"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/27/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P3_MTNS_Safehouse1",
+            "registryname": "IO_MTN_Safehouse1_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/27/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Mountains_Safehouse2": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P3_MTNS_Safehouse2",
+            "registryname": "IO_MTN_Safehouse2_DataLog"
+          },
+          "objective": "reach_the_safehouse",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/28/__dep_entries/5/reach_the_safehouse/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P3_MTNS_Safehouse2",
+            "registryname": "IO_MTN_Safehouse2_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/28/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Mountains_Safehouse3": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P4_MTNS_Safehouse3",
+            "registryname": "IO_MTN_Safehouse1_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/29/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P4_MTNS_Safehouse3",
+            "registryname": "io_switch_commandconsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/29/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Mountains_Safehouse4": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P4_MTNS_Safehouse4",
+            "registryname": "IO_MTN_Safehouse4_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/30/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "P4_MTNS_Safehouse4",
+            "registryname": "IO_MTN_Safehouse4_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/30/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Shatteredlands_Safehouse1": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SHA_Safehouse1",
+            "registryname": "IO_SHA_Safehouse1_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/40/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SHA_Safehouse1",
+            "registryname": "IO_SHA_Safehouse1_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/40/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Shatteredlands_Safehouse2": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SHA_Safehouse2",
+            "registryname": "IO_SHA_Safehouse2_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/41/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SHA_Safehouse2",
+            "registryname": "IO_SHA_Safehouse2_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/41/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Shatteredlands_Safehouse3": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "SHA_Safehouse3",
+            "registryname": "IO_SHA_Safehouse3_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/42/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "registryname": "IO_SHA_Safehouse3_CommandConsole"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/42/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_City_Safehouse1": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_SHA_Safehouse",
+            "registryname": "IO_City_Safehouse1_DataLog"
+          },
+          "objective": "find_the_datapad",
+          "order": 0,
+          "pointer": "/mission/records/2/entries/3/__dep_entries/3/find_the_datapad/graph_data/gameplay"
+        },
+        {
+          "actor": {
+            "map": "World_P",
+            "groupname": "City_SHA_Safehouse",
+            "registryname": "CommandConsole_a"
+          },
+          "objective": "claim_the_command_console",
+          "order": 3,
+          "pointer": "/mission/records/2/entries/3/__dep_entries/0/claim_the_command_console/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Intro_Safehouse_Horde": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "Harmonica_P",
+            "registryname": "io_switch_floorlever3"
+          },
+          "objective": "pull_lever",
+          "order": 4,
+          "pointer": "/mission/records/0/entries/125/__dep_entries/3/pull_lever/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Jungle_Safehouse_Horde": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "Harmonica_P",
+            "registryname": "io_switch_floorlever"
+          },
+          "objective": "pull_lever",
+          "order": 4,
+          "pointer": "/mission/records/0/entries/126/__dep_entries/4/pull_lever/graph_data/gameplay"
+        }
+      ]
+    },
+    "ZoneActivity_Lava_Safehouse_Horde": {
+      "source": "Nexus-Data-Mission4.json",
+      "interactions": [
+        {
+          "actor": {
+            "map": "Harmonica_P",
+            "registryname": "IO_SafehouseJumpstartLever"
+          },
+          "objective": "pull_lever",
+          "order": 4,
+          "pointer": "/mission/records/0/entries/127/__dep_entries/3/pull_lever/graph_data/gameplay"
+        }
+      ]
+    }
+  }
+}

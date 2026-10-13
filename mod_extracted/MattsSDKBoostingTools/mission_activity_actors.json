@@ -1,0 +1,569 @@
+{
+  "ZoneActivity_Mountains_Crawler1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MTN_Crawler1",
+      "registryname": "PoAActor_MTN_Crawler1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/16/zoneactivity_mountains_crawler1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Crawler2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MTN_Crawler2",
+      "registryname": "PoAActor_MTN_Crawler2_Timberland"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/17/zoneactivity_mountains_crawler2/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Crawler3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MTN_Crawler3_IceCrawler",
+      "registryname": "PoAActor_MTN_Crawler3_IceCrawler"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/18/zoneactivity_mountains_crawler3/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Crawler4": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MTN_Crawler4_CreatureCrawler",
+      "registryname": "PoAActor_MTN_Crawler4_CreatureCrawler"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/19/zoneactivity_mountains_crawler4/alias_nodes"
+  },
+  "ZoneActivity_City_Mine1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "City_SHA_AugurMine",
+      "registryname": "PoAActor_City_SHA_AugurMine"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/1/zoneactivity_city_mine1/alias_nodes"
+  },
+  "ZoneActivity_City_OrderBunker1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "City_MNT_Bunker",
+      "registryname": "PoAActor_City_MNT_Bunker"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/2/zoneactivity_city_orderbunker1/alias_nodes"
+  },
+  "ZoneActivity_City_Safehouse1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "City_SHA_Safehouse",
+      "registryname": "PoAActor_City_SHA_Safehouse1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/3/zoneactivity_city_safehouse1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Crawler1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "POAGroup_GRA_West_Crawler1",
+      "registryname": "PoAActor_GRA_West_Crawler1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/6/zoneactivity_grasslands_crawler1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Crawler2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "POAGroup_GRA_West_Crawler2",
+      "registryname": "PoAActor_GRA_West_Crawler2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/7/zoneactivity_grasslands_crawler2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Crawler3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "GRA_Crawler3_KOTOCoast",
+      "registryname": "PoAActor_GRA_Crawler3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/8/zoneactivity_grasslands_crawler3/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Crawler4": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "GRA_Crawler4_Farmlands",
+      "registryname": "PoAActor_GRA_Crawler4"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/9/zoneactivity_grasslands_crawler4/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_DrillSite1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "POA_GRA_West_DrillGroup",
+      "registryname": "POA_GRA_West_Drill"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/10/zoneactivity_grasslands_drillsite1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_DrillSite2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "VG_Farmlands",
+      "registryname": "PoAActor_GRA_DrillSite2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/11/zoneactivity_grasslands_drillsite2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Mine1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P1_AugerMine",
+      "registryname": "P1_AugerMine"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/12/zoneactivity_grasslands_mine1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Mine2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "AU_FortressFlats",
+      "registryname": "PoAActor_GRA_AugerMine2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/13/zoneactivity_grasslands_mine2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_OrderBunker1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P1_OrderBunker",
+      "registryname": "PoA_GRA_OrderBunker_Flooded"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/14/zoneactivity_grasslands_orderbunker1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_OrderBunker2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "BU_KOTOCoast",
+      "registryname": "PoAActor_GRA_Bunker2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/15/zoneactivity_grasslands_orderbunker2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_SafehouseMain": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "BeachTower",
+      "registryname": "PoAActor_GRA_Safehouse1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/20/zoneactivity_grasslands_safehousemain/alias_nodes"
+  },
+  "ZoneActivity_Mountains_DrillSite1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MOU_DS_1",
+      "registryname": "PoAActor_[MOU]_[DS][1]"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/21/zoneactivity_mountains_drillsite1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_DrillSite2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "Poa_Actor_MTNS_NorthDrill",
+      "registryname": "PoAActor_MTNS_NorthDrill"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/22/zoneactivity_mountains_drillsite2/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Mine1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MOU_AugerMine1",
+      "registryname": "PoAActor_MOU_AugerMine1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/23/zoneactivity_mountains_mine1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Mine2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MOUAugerMine2",
+      "registryname": "PoAActor_MOU_AugerMine2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/24/zoneactivity_mountains_mine2/alias_nodes"
+  },
+  "ZoneActivity_Mountains_OrderBunker1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P4_OrderBunker",
+      "registryname": "P4_OrderBunker"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/25/zoneactivity_mountains_orderbunker1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_OrderBunker2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MOUOrderBunker2",
+      "registryname": "PoAActor_MOU_OrderBunker2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/26/zoneactivity_mountains_orderbunker2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Crawler1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SHAT_Crawler1",
+      "registryname": "PoAActor_SHAT_Crawler1_NaturalPlateau"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/31/zoneactivity_shatteredlands_crawler1/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Crawler2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "POA_Shat_Crawler2_Canyon",
+      "registryname": "PoAActor_SHAT_Crawler2_Canyon"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/32/zoneactivity_shatteredlands_crawler2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Crawler3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SHAT_Crawler3",
+      "registryname": "PoAActor_SHAT_Crawler3_Beach"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/33/zoneactivity_shatteredlands_crawler3/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_DrillSite1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "Shat_DrillStation3",
+      "registryname": "PoAActor_SHA_DrillSite1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/35/zoneactivity_shatteredlands_drillsite1/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_DrillSite2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SHA_DrillSite2",
+      "registryname": "PoAActor_SHA_DrillSite2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/36/zoneactivity_shatteredlands_drillsite2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Mine1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P6_AugerMine",
+      "registryname": "P6_AugerMine"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/37/zoneactivity_shatteredlands_mine1/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Mine2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P5_AugerMine",
+      "registryname": "P5_AugerMine"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/38/zoneactivity_shatteredlands_mine2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_OrderBunker1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P6_OrderBunker",
+      "registryname": "P6_OrderBunker"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/39/zoneactivity_shatteredlands_orderbunker1/alias_nodes"
+  },
+  "ZoneActivity_Grotto_Jungle": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "IslandGrotto",
+      "registryname": "PoAActor_IslandGrotto"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/122/zoneactivity_grotto_jungle/alias_nodes"
+  },
+  "ZoneActivity_Grotto_Lava": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "VolcanoGrotto",
+      "registryname": "PoAActor_VolcanoGrotto"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/123/zoneactivity_grotto_lava/alias_nodes"
+  },
+  "ZoneActivity_Lockdown_Jungle": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "Lava_Lockdown",
+      "registryname": "PoAActor_Lockdown_Jungle"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/128/zoneactivity_lockdown_jungle/alias_nodes"
+  },
+  "ZoneActivity_Lockdown_Lava": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "Lava_Lockdown",
+      "registryname": "PoAActor_Lockdown_Lava"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/129/zoneactivity_lockdown_lava/alias_nodes"
+  },
+  "ZoneActivity_Intro_Safehouse_Horde": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "NorthSafehouse",
+      "registryname": "PoAActor_IntroSafehouse"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/125/zoneactivity_intro_safehouse_horde/alias_nodes"
+  },
+  "ZoneActivity_Jungle_Safehouse_Horde": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "JungleSafehouse",
+      "registryname": "PoAActor_JungleSafehouse"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/126/zoneactivity_jungle_safehouse_horde/alias_nodes"
+  },
+  "ZoneActivity_Lava_Safehouse_Horde": {
+    "actor": {
+      "map": "Harmonica_P",
+      "groupname": "LavaSafehouse",
+      "registryname": "PoAActor_LavaSafehouse"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/127/zoneactivity_lava_safehouse_horde/alias_nodes"
+  },
+  "ZoneActivity_DLC1_Bunker": {
+    "actor": {
+      "map": "Cowbell_P",
+      "groupname": "BU_WindSweptWaste",
+      "registryname": "PoAActor_WSW_Bunker"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/119/zoneactivity_dlc1_bunker/alias_nodes"
+  },
+  "ZoneActivity_DLC1_FuelSiphon1": {
+    "actor": {
+      "map": "Cowbell_P",
+      "groupname": "POA_CT_FuelSiteGroup",
+      "registryname": "POA_CT_Fuelsite"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/120/zoneactivity_dlc1_fuelsiphon1/alias_nodes"
+  },
+  "ZoneActivity_DLC1_FuelSiphon2": {
+    "actor": {
+      "map": "Cowbell_P",
+      "groupname": "POA_BSH_FuelSiteGroup",
+      "registryname": "POA_BSH_FuelSite"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/0/entries/121/zoneactivity_dlc1_fuelsiphon2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Silo1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "Group_PoAActor_GrasslandsWestSiloOne",
+      "registryname": "PoAActor_GRA_Silo1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/13/zoneactivity_grasslands_silo1/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Silo2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "PoAActor_GRA_West_Silo2_Group",
+      "registryname": "PoAActor_GRA_Silo2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/14/zoneactivity_grasslands_silo2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Silo3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SI_HydroHills",
+      "registryname": "PoAActor_GRA_Silo3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/15/zoneactivity_grasslands_silo3/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Silo1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "MTN_Silo1",
+      "registryname": "PoAActor_MTN_Silo1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/20/zoneactivity_mountains_silo1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Silo2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P3_MTNS_Silo2",
+      "registryname": "POAActor_MTN_Silo2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/21/zoneactivity_mountains_silo2/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Silo3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "ValleySilo",
+      "registryname": "ValleySilo"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/22/zoneactivity_mountains_silo3/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Silo1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SH_Silo01",
+      "registryname": "PoAActor_SHAT_Silo1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/23/zoneactivity_shatteredlands_silo1/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Silo2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "ElectiPlateau_Silo",
+      "registryname": "PoAActor_SHAT_Silo2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/24/zoneactivity_shatteredlands_silo2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Silo3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SH_Silo03",
+      "registryname": "PoAActor_SHAT_Silo3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/1/entries/25/zoneactivity_shatteredlands_silo3/alias_nodes"
+  },
+  "ZoneActivity_City_Safehouse2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "City_MNT_Safehouse",
+      "registryname": "PoAActor_City_MNT_Safehouse2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/4/zoneactivity_city_safehouse2/alias_nodes"
+  },
+  "ZoneActivity_City_Safehouse3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "City_GRA_Safehouse",
+      "registryname": "PoAActor_City_GRA_Safehouse3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/5/zoneactivity_city_safehouse3/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Safehouse2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "GrasslandsWest_NorthSafehouse",
+      "registryname": "PoAActor_GRA_Safehouse2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/17/zoneactivity_grasslands_safehouse2/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Safehouse3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SH_Farmlands",
+      "registryname": "PoAActor_GRA_Safehouse3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/18/zoneactivity_grasslands_safehouse3/alias_nodes"
+  },
+  "ZoneActivity_Grasslands_Safehouse4": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "GRA_Safehouse4",
+      "registryname": "PoAActor_GRA_Safehouse4"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/19/zoneactivity_grasslands_safehouse4/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Safehouse1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P3_MTNS_Safehouse1",
+      "registryname": "PoAActor_MTN_Safehouse1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/27/zoneactivity_mountains_safehouse1/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Safehouse2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P3_MTNS_Safehouse2",
+      "registryname": "PoAActor_MTN_Safehouse2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/28/zoneactivity_mountains_safehouse2/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Safehouse3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P4_MTNS_Safehouse3",
+      "registryname": "PoAActor_MTN_Safehouse3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/29/zoneactivity_mountains_safehouse3/alias_nodes"
+  },
+  "ZoneActivity_Mountains_Safehouse4": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "P4_MTNS_Safehouse4",
+      "registryname": "P4_MTNS_Safehouse4"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/30/zoneactivity_mountains_safehouse4/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Safehouse1": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SHA_Safehouse1",
+      "registryname": "PoAActor_SHA_Safehouse1"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/40/zoneactivity_shatteredlands_safehouse1/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Safehouse2": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "PoAActor_SHA_Safehouse2",
+      "registryname": "PoAActor_SHA_Safehouse2"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/41/zoneactivity_shatteredlands_safehouse2/alias_nodes"
+  },
+  "ZoneActivity_Shatteredlands_Safehouse3": {
+    "actor": {
+      "map": "World_P",
+      "groupname": "SHA_Safehouse3",
+      "registryname": "PoAActor_SHA_Safehouse3"
+    },
+    "source": "Nexus-Data-Mission4.json",
+    "pointer": "/mission/records/2/entries/42/zoneactivity_shatteredlands_safehouse3/alias_nodes"
+  }
+}

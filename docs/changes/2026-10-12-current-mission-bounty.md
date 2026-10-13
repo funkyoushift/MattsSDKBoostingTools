@@ -1,0 +1,11 @@
+# Current mission and generated bounty controls — 2026-10-12
+
+Symptoms: current tracked mission disabled after travel, with world instance changed error; ordinary mission and generated bounty simultaneously tracked made selection ambiguous.
+
+Root cause: completed jobs retained an old MissionRuntime world binding, and current selection counted generated tracked slots. Refresh runtime only between terminal mission/full jobs on the exact changed-world error. Preserve active/uncertain bindings. Current mission filters to ordinary catalog records; new bounty scope selects one tracked active/accepted shared generated instance by full token and rejects preview-to-start replacement. Bounty uses the existing build-pinned native completion callback, shared ownership checks and single default exit validation; no generated reset/accept, catalog injection or Grassroots callback. Re-resolves same token before/after completion. This is whole-mission/contract completion, not generic objective advancement.
+
+UI: add Current tracked bounty and Complete bounty, preview automatically on bind and show preview errors beside controls. Files: mission_progression.py, mission_panel.js, renderer.html, test_mission_progression.py. Source mirrored to mission-release review worktree without copying product version metadata.
+
+Validation: 47 mission tests passed, Python/JS syntax and Quick Menu no-BLImGui script passed. Live read-only previews returned active Down and Outbound and generated Charlie bounty separately. Job 06c7eb76225b4e668c7938b7ad8c1f05 completed the bounty once through mission_start/mission_step and read back completed. HUD then showed Acquire: Speller Yeller; Down and Outbound remained active. Receipts ../local/current-mission-refresh-installed.json, bounty-start.json, bounty-result.json. No guest or own-save persistence proof added; no generic objective completion claimed.
+
+Installed modified SDK archive and patched live function definitions without resetting job state. Installed desktop app.asar updated for the two UI files; review desktop restarted using npm start. No version bump or public release. Rollback to public2.37.2 code/artifacts does not undo game progress. Bounty title currently generic; exact localized contract title and additional generated types remain follow-up work.
