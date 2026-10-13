@@ -8,8 +8,8 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.37.2.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.37.2.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.37.2-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.37.2-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.38.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.38.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.38.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.38.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
@@ -17,6 +17,12 @@ These counters track the installer, portable ZIP, and Android APK on the latest 
 ## Serial quantity repair — v2.37.1
 
 Give Items by Serial now honors the copies setting for readable numeric codes and Quick Menu shortcuts. Repeated pasted codes retain their requested quantity. Reconfigure existing pinned serial shortcuts to capture the corrected quantity.
+
+## Mission progress and replay — v2.38.0
+
+Advance one mission or bounty objective, replay an ordinary mission checkpoint, reopen a mission, or reset the playable campaign while retaining character equipment, levels, ranks, currencies and map discoveries. Mission completion includes reviewed travel unlocks and unfinished related missions; the chooser shows progress with search, sorting and filters.
+
+Host reset and checkpoint pilots passed. Generated bounty replay, broader world-effect coverage and new guest-save checks remain unverified; the reported The Chase guest-save issue is unresolved. The mission/objective teleport practice selector is not included. See the [v2.38.0 release notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.38.0).
 
 ## 100% game preset — v2.37.0
 Open **Missions → 100% game** in the desktop app. Check lobby access, review the shared-progress acknowledgement, then run supported missions, discoveries/travel requirements, character levels, currencies, SDU points, applicable unlocks, UVH/Mayhem and challenges. Host plus one guest can use available content; larger lobbies require everyone to have the required DLC access.
@@ -40,13 +46,13 @@ Open **Character & Progression > Missions** in the desktop app to complete the t
 
 [Read the v2.36.0 release notes and download](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.36.0).
 
-## v2.37.2 progress repairs
+## v2.38.0 progress repairs
 
 Scoped mission and discovery controls now share the 100% Game processing loop and connection recovery. Mission runs use the same dialogue skipping and guest challenge-credit checks. Other app or companion requests no longer cancel queued progress steps. Repair and continue keeps applied work; inactive vault cards and failed vehicle unlocks remain visible without blocking later stages.
 
 The full preset retains its final pass for later unlocks. Scope selection, acceptance player and reset options still apply to individual runs. The reported **The Chase** guest-save issue remains unresolved; verify saved progress in each player's own game. Generic objective completion, undo and reset-all remain unavailable.
 
-Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.37.2).
+Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.38.0).
 
 ## Credits
 
