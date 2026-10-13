@@ -764,7 +764,8 @@ function createWindow() {
     }
   });
   bindWindowState(win, (snapshot) => saveWindowState(win, snapshot));
-  win.loadFile(path.join(__dirname, "renderer.html"));
+  win.loadFile(path.join(__dirname, "renderer.html"), process.argv.includes("--missions-review")
+    ? { query: { missionsReview: "1", nosplash: "1" } } : undefined);
 }
 
 async function requestBridge({ method = "GET", path: route = "/status", payload = null, timeoutMs = 8000 }) {

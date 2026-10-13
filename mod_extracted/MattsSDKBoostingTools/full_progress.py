@@ -99,6 +99,15 @@ class Run:
         if self.job['state']!='running': return self.status()
         try:
             name,title=STAGES[self.job['index']]
+            if hasattr(self.driver,'observe_transition'):
+                transition=self.driver.observe_transition(self.job['child'],self.job['binding'])
+                if transition is not None:
+                    if not transition['ready']:
+                        self.job['message']=transition['message']
+                        return self.status()
+                    if transition['binding']!=self.job['binding']:
+                        self.record('mission_map_binding',before=self.job['binding'],binding=transition['binding'])
+                        self.job['binding']=transition['binding']
             snapshot=self.driver.step_snapshot(name) if hasattr(self.driver,'step_snapshot') else self.driver.preflight()
             if snapshot['binding']!=self.job['binding']: raise RuntimeError('Lobby changed; run stopped')
             gate=eligibility(snapshot['players'],snapshot['packs'])
@@ -124,11 +133,21 @@ class Run:
             self.job['results'].append(dict(stage=name,**result))
             self.job.update(index=self.job['index']+1,phase='ready',child=None)
             if self.job['index']==len(STAGES):
-                self.job.update(state='finished',message='Run finished. Review stage results and verify each character in their own game.')
+                counts = {state: sum(r['state'] == state for r in self.job['results'])
+                          for state in ('finished', 'partial', 'skipped')}
+                message = (f"Run finished with {counts['partial']} incomplete and {counts['skipped']} skipped stages. "
+                           if counts['partial'] or counts['skipped'] else 'All stages finished. ')
+                self.job.update(state='finished', stage_summary=counts,
+                    message=message + '100% completion is not verified. Review the results and check each saved character.')
             self.record('stage_finished',stage=name)
         except Exception as exc:
-            self.job.update(ok=False,state='uncertain' if self.job['phase']=='issued' else 'stopped',message=str(exc))
-            self.record('stopped',message=str(exc))
+            message=str(exc)
+            try:
+                if hasattr(self.driver,'stop'):self.driver.stop(self.job.get('child'))
+            except Exception as cleanup:
+                message+='; selection restoration needs attention: '+str(cleanup)
+            self.job.update(ok=False,state='uncertain' if self.job['phase']=='issued' else 'stopped',message=message)
+            self.record('stopped',message=message,child=self.job.get('child'))
         return self.status()
 
     def resume(self, payload):
@@ -136,8 +155,19 @@ class Run:
             raise ValueError('Original run is not loaded; inspect its receipt before starting another run')
         if payload.get('acknowledge_shared_progress') is not True:
             raise ValueError('Acknowledge shared progress before recovery')
+        if self.job.get('cancel_requested'):
+            raise RuntimeError('Cancellation is pending; restore the original selection and close this run before further work')
         if self.job['state'] not in ('stopped', 'uncertain'):
             raise ValueError('This run does not need recovery')
+        if hasattr(self.driver,'observe_transition'):
+            transition=self.driver.observe_transition(self.job['child'],self.job['binding'])
+            if transition is not None:
+                if not transition['ready']:
+                    self.job['message']=transition['message']
+                    return self.status()
+                if transition['binding']!=self.job['binding']:
+                    self.record('mission_map_binding',before=self.job['binding'],binding=transition['binding'])
+                    self.job['binding']=transition['binding']
         name = STAGES[self.job['index']][0]
         snapshot = self.driver.step_snapshot(name)
         if snapshot['binding'] != self.job['binding']:
@@ -174,8 +204,17 @@ class Run:
     def cancel(self, ident):
         if not self.job or self.job['id']!=ident: raise ValueError('Run identity changed')
         if self.job['state']!='running': return self.status()
-        result=self.driver.cancel(self.job['child'])
-        if not result: raise RuntimeError('Issued operation is still settling; continue verification before cancelling')
+        self.job['cancel_requested']=True
+        self.record('cancel_requested',child=self.job.get('child'))
+        try:
+            result=self.driver.cancel(self.job['child'])
+        except Exception as exc:
+            self.job.update(ok=False,state='uncertain',message='Cancellation cleanup needs attention: '+str(exc))
+            self.record('cancel_failed',child=self.job.get('child'),message=self.job['message'])
+            raise
+        if not result:
+            self.job.pop('cancel_requested',None)
+            raise RuntimeError('Issued operation is still settling; continue verification before cancelling')
         self.job.update(state='cancelled',message='Remaining stages cancelled; applied progress retained')
         self.record('cancelled')
         return self.status()

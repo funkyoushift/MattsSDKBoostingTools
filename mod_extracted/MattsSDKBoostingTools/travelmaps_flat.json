@@ -242,7 +242,7 @@
       "defaultstation": "Harmonica_P.LTS_HarmonicaToSanctuary",
       "canbecooked": true,
       "category": "DLC",
-      "synthetic": true
+      "synthetic": false
     },
     {
       "map": "VolcanoFortress_P",

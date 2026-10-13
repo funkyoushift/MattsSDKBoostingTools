@@ -51,3 +51,13 @@ def test_new_world_instance_requires_refresh(runtime):
 def test_controller_from_previous_world_rejected(runtime):
     m,obj=runtime;bind(m,'/Game/DLC/Cowbell/Maps/Cowbell_P.Cowbell_P',pc_path='/Game/Maps/WorldLevels/World_P.World_P:PersistentLevel.Player')
     with pytest.raises(RuntimeError,match='controller belongs to another world'):obj.ensure_world()
+
+
+def test_lightweight_context_retains_thread_build_and_world_checks(runtime,monkeypatch):
+    m,obj=runtime;calls=[];obj.thread=m.threading.get_ident()
+    monkeypatch.setattr(obj,'check_build',lambda:calls.append('build'))
+    monkeypatch.setattr(obj,'ensure_world',lambda:calls.append('world'))
+    obj.validate_context();assert calls==['build','world']
+    obj.thread=-1;calls.clear()
+    with pytest.raises(RuntimeError,match='game thread'):obj.validate_context()
+    assert not calls

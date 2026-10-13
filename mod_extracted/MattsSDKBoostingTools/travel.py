@@ -450,7 +450,7 @@ def _close_quick_menu_before_travel() -> None:
             pass
 
 
-def travel_to_map(map_name: str) -> str:
+def travel_to_map(map_name: str, *, before_issue=None) -> str:
     """Travel to a map, preferring a known station over raw servertravel.
 
     Raw ``servertravel`` can persist a bad checkpoint into the character save
@@ -479,7 +479,7 @@ def travel_to_map(map_name: str) -> str:
     station = _resolve_default_station(map_name)
     if station:
         _log(f"Map travel routed via station {station} (safer than raw servertravel).")
-        return travel_to_station(station)
+        return travel_to_station(station,before_issue=before_issue)
 
     if map_norm in _BLOCK_RAW_SERVERTRAVEL_NORMS:
         raise RuntimeError(
@@ -489,11 +489,13 @@ def travel_to_map(map_name: str) -> str:
 
     _log(f"No default station for {map_name}; falling back to raw servertravel.")
     _close_quick_menu_before_travel()
+    _restore_controls_before_travel()
+    if before_issue is not None:before_issue()
     _exec_console(f"servertravel {map_name}")
     return f"Requested travel to map {map_name}."
 
 
-def travel_to_station(station: str) -> str:
+def travel_to_station(station: str, *, before_issue=None) -> str:
     station = str(station or '').strip()
     if not station:
         raise RuntimeError('No travel station selected.')
@@ -502,8 +504,20 @@ def travel_to_station(station: str) -> str:
         # Allow typed/custom stations, but make the risk visible in the log.
         _log(f"Station '{station}' is not in travelstations.json; sending anyway.")
     _close_quick_menu_before_travel()
+    _restore_controls_before_travel()
+    if before_issue is not None:before_issue()
     _exec_console(f"gbx.servertraveltostation {station}")
     return f"Requested travel to station {station}."
+
+
+def _restore_controls_before_travel():
+    # Host server travel can reparent the same pawn without firing ClientTravel.
+    # Restore while the original object paths still resolve; never guess a new
+    # owner from a reused native address after travel.
+    from . import farming_controls
+    result=farming_controls.off()
+    if not result.get('ok'):
+        raise RuntimeError('Travel stopped: temporary player settings could not be restored. '+str(result))
 
 
 # ---------------------------------------------------------------------------

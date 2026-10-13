@@ -4,7 +4,11 @@
   async function advance(call,job,report,options={}){
     const stepAction=options.step || "full_progress_step", statusAction=options.status || "full_progress_status";
     const stopped=options.stopped || (()=>false);
-    while(job?.ok && job.state === "running" && !stopped()){
+    // A cancelled mission can still own movement cleanup. Its failure flag
+    // describes unfinished mission work; the explicit cleanup state is safe
+    // to poll without issuing another objective.
+    const canPoll=value=>value?.ok || (["mission_step","mission_objective_step"].includes(stepAction) && value?.completion_context?.placement?.stop_state);
+    while(canPoll(job) && job.state === "running" && !stopped()){
       await new Promise(resolve=>setTimeout(resolve,pollDelay(job)));
       const ident=job.id;
       let next;

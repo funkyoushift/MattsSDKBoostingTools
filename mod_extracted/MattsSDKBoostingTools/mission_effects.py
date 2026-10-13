@@ -17,7 +17,7 @@ SAFEHOUSE_SWITCHES = (
 )
 
 
-def _reset_stored_fact(name, address, allowed, value, journal):
+def _reset_stored_fact(name, address, allowed, value, journal, *, validate_only=False):
     """Reset an authored registry fact even when its actor is streamed out."""
     import unrealsdk
     from mods_base import get_pc
@@ -29,17 +29,19 @@ def _reset_stored_fact(name, address, allowed, value, journal):
         return str(lib.ReadFact(OwnerContext=pc, AddressString=address,
                                AsName='None', AsInt=0, AsBool=False)[1])
     before = read()
-    if before in ('None', value):
-        journal(dict(event='stored_interaction_unchanged', mission=name, address=address, before=before))
+    if before.casefold() in ('none', value.casefold()):
+        if not validate_only:
+            journal(dict(event='stored_interaction_unchanged', mission=name, address=address, before=before))
         return
-    if before not in allowed:
-        raise RuntimeError('Unknown stored activity state; reset not issued')
+    if before.casefold() not in {s.casefold() for s in allowed}:
+        raise RuntimeError(f'Unknown stored activity state {before!r} at {address}; this fact was not reset')
+    if validate_only:return
     journal(dict(event='stored_interaction_reset_issued', mission=name, address=address, before=before))
     try:
         lib.WriteFact(OwnerContext=pc, AddressString=address, AsName=value, AsInt=0, AsBool=False)
         after = read()
         journal(dict(event='stored_interaction_reset_returned', mission=name, address=address, after=after))
-        if after != value:
+        if after.casefold() != value.casefold():
             raise RuntimeError('Stored activity state did not reset')
     except Exception as exc:
         error = RuntimeError('Stored activity reset unconfirmed; inspect before retrying')
@@ -47,7 +49,7 @@ def _reset_stored_fact(name, address, allowed, value, journal):
         raise error from exc
 
 
-def reset_activity_state(name, journal):
+def reset_activity_state(name, journal, *, validate_only=False):
     """Restart the loaded activity marker's native state machine, not discovery.
 
     Actor identities are extracted from each reviewed mission's authored alias.
@@ -61,12 +63,15 @@ def reset_activity_state(name, journal):
     import unrealsdk
     identity = identities[name]['actor']
     actors = [a for a in unrealsdk.find_all('PoAActor')
-              if str(a.FactsConduit.GroupName.Name) == identity.get('groupname', 'None')
-              and str(a.FactsConduit.RegistryName.Name.Name) == identity['registryname']]
+              if str(a.FactsConduit.GroupName.Name).casefold() == identity.get('groupname', 'None').casefold()
+              and str(a.FactsConduit.RegistryName.Name.Name).casefold() == identity['registryname'].casefold()]
     if not actors:
         address = '.'.join(('registry', identity['map'], 'top',
                             identity.get('groupname', 'None'), identity['registryname'], 'State'))
-        _reset_stored_fact(name, address, ('Claimed', 'Claimable'), 'Initialization', journal)
+        # Discovered is retained by an unclaimed activity too (live Silo1
+        # receipt in completion-and-ui-verification); it needs the same reset.
+        _reset_stored_fact(name, address, ('Claimed', 'Claimable', 'Discovered'),
+                           'Initialization', journal, validate_only=validate_only)
         return
     if len(actors) != 1:
         raise RuntimeError('Activity actor identity is ambiguous; reset not issued')
@@ -75,18 +80,18 @@ def reset_activity_state(name, journal):
                                '/Script/GbxEngine.Default__GbxActorStateBlueprintLibrary')
     key = unrealsdk.make_struct('/Script/GbxEngine.GbxActorStateMachineKey', Name='State', Index=0)
     states = lib.GetActorStateMachineStates(OwnerContext=actor, StateMachine=key)[0]
-    initial = [s for s in states if str(s.Name) == 'Initialization']
+    initial = [s for s in states if str(s.Name).casefold() == 'initialization']
     if len(initial) != 1:
         raise RuntimeError('Activity has no known initialization state; reset not issued')
     before = str(lib.GetActorStateValue(OwnerContext=actor, StateName=key)[0])
-    if before == 'Initialization':
+    if validate_only or before.casefold() == 'initialization':
         return
     journal(dict(event='activity_reset_issued', mission=name, before=before))
     try:
         lib.SetActorStateValue(OwnerContext=actor, StateName=key, StateValue=initial[0])
         after = str(lib.GetActorStateValue(OwnerContext=actor, StateName=key)[0])
         journal(dict(event='activity_reset_returned', mission=name, after=after))
-        if after != 'Initialization':
+        if after.casefold() != 'initialization':
             raise RuntimeError('Activity initialization not confirmed')
     except Exception as exc:
         error = RuntimeError('Activity reset unconfirmed; inspect before retrying')
@@ -94,7 +99,7 @@ def reset_activity_state(name, journal):
         raise error from exc
 
 
-def reset_interactions(name, journal, objective=None):
+def reset_interactions(name, journal, objective=None, *, validate_only=False):
     """Clear authored interaction latches before native checkpoint reset.
 
     Native reset clears objective memory but can retain safehouse switch presses.
@@ -142,9 +147,17 @@ def reset_interactions(name, journal, objective=None):
         if alias in actors:
             raise RuntimeError('Duplicate safehouse interaction alias; reset not issued')
         current = str(lib.GetActorStateValue(OwnerContext=actor, StateName=key)[0])
-        if current not in ('TRUE', 'FALSE'):
+        if current.casefold() not in ('true', 'false'):
             raise RuntimeError('Unknown safehouse switch state; reset not issued')
         actors[alias] = (actor, current)
+    # Validate streamed-out switches before changing any loaded switch.
+    for alias in names:
+        if alias not in actors:
+            identity = identities[alias]
+            address = '.'.join(('registry', identity['map'], 'top',
+                                identity.get('groupname', 'None'), alias, 'Pressed'))
+            _reset_stored_fact(name, address, ('TRUE',), 'FALSE', journal, validate_only=True)
+    if validate_only:return
     for alias in names:
         if alias not in actors:
             identity = identities[alias]
@@ -153,14 +166,14 @@ def reset_interactions(name, journal, objective=None):
             _reset_stored_fact(name, address, ('TRUE',), 'FALSE', journal)
             continue
         actor, before = actors[alias]
-        if before == 'FALSE':
+        if before.casefold() == 'false':
             continue
         journal(dict(event='interaction_reset_issued', mission=name, alias=alias, before=before))
         try:
             lib.SetActorStateValue(OwnerContext=actor, StateName=key, StateValue=value)
             after = str(lib.GetActorStateValue(OwnerContext=actor, StateName=key)[0])
             journal(dict(event='interaction_reset_returned', mission=name, alias=alias, after=after))
-            if after != 'FALSE':
+            if after.casefold() != 'false':
                 raise RuntimeError('Switch did not return to its unused state')
         except Exception as exc:
             error = RuntimeError('Safehouse interaction reset unconfirmed; inspect before retrying')

@@ -42,6 +42,14 @@ def test_verification_requires_exact_bit_and_count_change(mod):
         assert not mod.verified(before,dict(after,**update),6)
 
 
+def test_concurrent_mission_credit_does_not_strand_verified_target(mod):
+    before=dict(pid=257,path='guest',count=2,credited={1,5})
+    after=dict(pid=257,path='guest',count=4,credited={1,5,6,7})
+    assert mod.verified(before,after,6)
+    assert not mod.verified(before,dict(after,credited={1,5,7,8}),6)
+    assert not mod.verified(before,dict(after,count=3,credited={1,6,7}),6)
+
+
 def test_freed_sparse_slot_is_not_dereferenced(mod):
     reads=[]
     def read(address,size):

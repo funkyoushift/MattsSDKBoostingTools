@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-13: Experimental mission tools release](changes/2026-10-13-mission-tools-experimental-release.md) — Tested installed behavior, amber experimental controls, explicit remaining limitations.
+
 - [2026-10-12: Playable progress effects and replay scope](changes/2026-10-12-playable-progress-effects.md) - NG+-style retention clarified; source audit identifies the Beach/safehouse dependency gap. Native objective checkpoint replay implemented and saved across reload; bridge completion/replay verified. Safehouse interaction reset persisted; 251 completion entries, 63 activity resets and DLC map replay installed. Full 285-record campaign reset retained character progression and restored Arjay; broader world-effect and guest-save coverage remain unfinished.
 
 - [2026-10-12: Campaign reset sequencing](changes/2026-10-12-campaign-reset.md) - Expanded named-record reset and read-only recovery candidate; Guns Blazing advances normally and reads active after reload. Installed phased reset retains zero named completed records through save/reload; full campaign gameplay remains unverified.

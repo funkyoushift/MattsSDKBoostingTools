@@ -13419,6 +13419,7 @@ function jumpElectronAppFinder(entry) {
     const node = entry.node?.isConnected ? entry.node : panel;
     if (!node) return;
     window.MsbtWorkspace?.revealPanel?.(panel);
+    window.MsbtMissionPanel?.revealControl?.(node);
     for (let parent = node.parentElement; parent && parent !== panel?.parentElement; parent = parent.parentElement) {
       if (parent.tagName === "DETAILS") parent.open = true;
     }
@@ -15751,6 +15752,7 @@ function prepareWalkthroughTarget(step) {
     walkthroughState._didRevealPanels = revealed;
   }
   // Dialog/menu targets may be nested in more than one collapsed disclosure.
+  window.MsbtMissionPanel?.revealControl?.(resolveWalkthroughTarget(step));
   for(let node=resolveWalkthroughTarget(step)?.parentElement;node;node=node.parentElement){
     if(node.tagName==='DETAILS')node.open=true;
   }

@@ -338,7 +338,8 @@ _PROGRESS_JOB_ACTIONS = frozenset({
     "full_progress_step", "full_progress_cancel", "full_progress_close",
     "full_progress_resume", "mission_status", "mission_preview", "mission_start",
     "mission_step", "mission_resume", "mission_cancel", "mission_recover",
-    "mission_dlc_status", "mission_objective_preview", "mission_objective_complete", "mission_objective_status", "mission_objective_replay",
+    "mission_dlc_status", "mission_objective_preview", "mission_objective_complete", "mission_objective_status", "mission_objective_replay", "mission_objective_step", "mission_objective_cancel", "mission_objective_recover",
+    "mission_practice_preview", "mission_practice_start", "mission_practice_step", "mission_practice_status", "mission_practice_cancel",
 })
 
 
@@ -765,7 +766,7 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
         return backend_actions.run_quick_menu_action(action, payload, record=False)
     if backend_actions.full_progress_conflict(action):
         return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')
-    if action in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel", "mission_recover", "mission_dlc_status", "mission_objective_preview", "mission_objective_complete", "mission_objective_status", "mission_objective_replay"):
+    if action in ("mission_status", "mission_preview", "mission_start", "mission_step", "mission_resume", "mission_cancel", "mission_recover", "mission_dlc_status", "mission_objective_preview", "mission_objective_complete", "mission_objective_status", "mission_objective_replay", "mission_objective_step", "mission_objective_cancel", "mission_objective_recover", "mission_practice_preview", "mission_practice_start", "mission_practice_step", "mission_practice_status", "mission_practice_cancel"):
         return backend_actions.run_quick_menu_action(action, payload, record=False)
     if action in ("native_card_preview_status", "native_card_preview"):
         return backend_actions.run_quick_menu_action(action, payload, record=False)

@@ -21,7 +21,7 @@
   document.body.classList.add("msbt-workspace");
   const groups = [
     ["Party & AFK", [["boosting", "Players & Targets", "players"], ["boosting", "AFK Lobby", "afk"], ["combat-vehicle", "Party & Chaos", "chaos"]]],
-    ["Character & Progression", [["boosting", "Levels, XP & Skills", "levels"], ["boosting", "Currency & Vault Keys", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Missions", "missions"], ["boosting", "Mayhem, UVH & Challenges", "challenges"], ["boosting", "Experimental Character Tools", "experimental"]]],
+    ["Character & Progression", [["boosting", "Missions & Replay", "missions"], ["boosting", "Levels, XP & Skills", "levels"], ["boosting", "Currency & Vault Keys", "currency"], ["boosting", "Unlocks & Capacity", "capacity"], ["boosting", "Mayhem, UVH & Challenges", "challenges"], ["boosting", "Experimental Character Tools", "experimental"]]],
     ["Items & Loot", [["inventory", "Inventory & Bank"], ["bl4-codes", "Item Catalog"], ["serial-tools", "Saved Items & Community", "saved"], ["boosting", "Give Items by Serial", "rewards"], ["matt-editor", "Matt Editor"], ["serial-tools", "Serial Converter", "convert"], ["serial-tools", "Item Validation", "validate"], ["boosting", "Ground Loot & Backpack Drops", "loot"], ["boosting", "Chests & Vendors", "vendors"], ["boosting", "Drop Rates & Rarity", "rarity"], ["item-pool", "Random Loot Pools"]]],
     ["Combat & Survival", [["boosting", "Weapons & Ammo", "combat"], ["combat-vehicle", "God Mode & Action Skills", "combat"], ["combat-vehicle", "Damage & Repair Kits", "tuning"]]],
     ["Movement & World", [["player-movement", "Movement & Flight", "movement"], ["player-movement", "Player Teleport", "teleport"], ["map-travel", "Map Travel & Favorites", "travel"], ["map-travel", "Saved Locations", "locations"], ["map-travel", "Map Reveal & Fog", "reveal"], ["boosting", "Camera & Third Person", "camera"], ["player-movement", "World & Interaction", "world"]]],
@@ -36,7 +36,7 @@
       ["levels", "Levels, XP & Skills", ["boost-levels", "boost-combat-xp", "boost-max-all"]],
       ["currency", "Currency", ["boost-currency"]],
       ["capacity", "Unlocks & Capacity", ["boost-unlocks", "boost-inventory"]],
-      ["missions", "Missions", ["boost-missions"]],
+      ["missions", "Missions & Replay", ["boost-missions"]],
       ["challenges", "Mayhem, UVH & Challenges", ["boost-uvh", "boost-challenges"]],
       ["rewards", "Give Items", ["boost-serial"]],
       ["loot", "Ground Loot & Backpack Drops", ["boost-drops", "boost-ground-loot"]],

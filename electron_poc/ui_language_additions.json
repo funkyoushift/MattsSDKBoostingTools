@@ -6516,6 +6516,33 @@
     "de": "🟣🏷️ Markieren Sie Gruppe 3",
     "nl": "🟣🏷️Taggroep 3"
   },
+  "Mission selection": {
+    "es":"Selección de misión","fr":"Sélection de mission","pt-BR":"Seleção de missão","de":"Missionsauswahl","nl":"Missieselectie"
+  },
+  "Select a mission or objective for replay": {
+    "es":"Selecciona una misión u objetivo para repetir","fr":"Choisir une mission ou un objectif à rejouer","pt-BR":"Selecione uma missão ou objetivo para repetir","de":"Mission oder Ziel zum Wiederholen auswählen","nl":"Selecteer een missie of doel om opnieuw te spelen"
+  },
+  "Replay from": {
+    "es":"Repetir desde","fr":"Rejouer à partir de","pt-BR":"Repetir a partir de","de":"Wiederholen ab","nl":"Opnieuw spelen vanaf"
+  },
+  "Replay mission": {
+    "es":"Repetir misión","fr":"Rejouer la mission","pt-BR":"Repetir missão","de":"Mission wiederholen","nl":"Missie opnieuw spelen"
+  },
+  "Replay from selected objective": {
+    "es":"Repetir desde el objetivo seleccionado","fr":"Rejouer depuis l’objectif sélectionné","pt-BR":"Repetir a partir do objetivo selecionado","de":"Ab ausgewähltem Ziel wiederholen","nl":"Opnieuw spelen vanaf het geselecteerde doel"
+  },
+  "Stop replay setup": {
+    "es":"Detener preparación de repetición","fr":"Arrêter la préparation","pt-BR":"Parar preparação da repetição","de":"Vorbereitung abbrechen","nl":"Voorbereiding stoppen"
+  },
+  "Continue replay setup": {
+    "es":"Continuar preparación de repetición","fr":"Continuer la préparation","pt-BR":"Continuar preparação da repetição","de":"Vorbereitung fortsetzen","nl":"Voorbereiding voortzetten"
+  },
+  "Replay status": {
+    "es":"Estado de repetición","fr":"État de la préparation","pt-BR":"Status da repetição","de":"Wiederholungsstatus","nl":"Status van opnieuw spelen"
+  },
+  "Stop objective setup": {
+    "es":"Detener preparación del objetivo","fr":"Arrêter la préparation de l’objectif","pt-BR":"Parar preparação do objetivo","de":"Zielvorbereitung abbrechen","nl":"Doelvoorbereiding stoppen"
+  },
   "🧊 Arctic Blast": {
     "es": "🧊 Explosión ártica",
     "fr": "🧊 Explosion arctique",

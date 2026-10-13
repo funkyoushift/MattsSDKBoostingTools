@@ -1,4 +1,7 @@
 <!-- v2.38.0 progress update -->
+
+> **Mission tools are experimental in v2.38.1.** Amber labels identify mission selection and bulk progress that may stop or leave NPCs, doors or encounters unready. Mission opening, selected-objective completion and native objective rewind have host test evidence; all-mission playability and guest save persistence are not verified. A finished full-game run does not guarantee saved 100% completion.
+
 Mission tools now support one-objective advancement, authored checkpoint replay, mission reopening and campaign reset that retains character equipment and progression. Host save retention and opening NPC behavior were verified; guest-save and exhaustive world-effect coverage remain limited. See [v2.38.0 release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
 # Borderlands 4 Modding Tools
@@ -11,8 +14,8 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.38.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.38.0.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.38.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.38.0-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.38.1.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.38.1.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.38.1-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.38.1-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.

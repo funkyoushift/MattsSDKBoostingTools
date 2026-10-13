@@ -238,3 +238,51 @@ def test_activity_catalog_has_no_templates_or_invented_actors():
     assert len(catalog)==63
     assert all('Template' not in name and row['actor']['map'] in ('World_P','Cowbell_P','Harmonica_P') for name,row in catalog.items())
     assert 'ZoneActivity_Shatteredlands_Crawler4' not in catalog  # source alias unresolved
+
+
+@pytest.mark.parametrize('before',['Discovered','discovered','Claimed','claimable'])
+def test_streamed_out_activity_preflight_is_read_only_and_reset_accepts_native_states(monkeypatch,before):
+    import importlib.resources
+    monkeypatch.setattr(importlib.resources,'files',lambda package:PATH.parent)
+    value=[before];writes=[]
+    def write(**kw):writes.append(kw);value[0]=kw['AsName'].lower()
+    facts=NS(ReadFact=lambda **kw:(None,value[0]),WriteFact=write)
+    monkeypatch.setitem(sys.modules,'unrealsdk',NS(find_all=lambda *args:[],find_object=lambda *args:facts))
+    monkeypatch.setitem(sys.modules,'mods_base',NS(get_pc=lambda:object()))
+    effects.reset_activity_state('ZoneActivity_Grasslands_Silo1',lambda e:None,validate_only=True)
+    assert value[0]==before and not writes
+    effects.reset_activity_state('ZoneActivity_Grasslands_Silo1',lambda e:None)
+    assert value[0]=='initialization' and len(writes)==1
+
+
+def test_unknown_unloaded_second_switch_prevents_loaded_first_write(monkeypatch):
+    actors,writes,events=switch_context(monkeypatch,('TRUE',))
+    actor_lib=sys.modules['unrealsdk'].find_object('', '')
+    sys.modules['unrealsdk'].find_object=lambda cls,*args: NS(ReadFact=lambda **kw:(None,'Unexpected')) if cls=='FactsBlueprintLibrary' else actor_lib
+    monkeypatch.setitem(sys.modules,'mods_base',NS(get_pc=lambda:object()))
+    with pytest.raises(RuntimeError,match='Unknown stored activity state'):
+        effects.reset_interactions(effects.SAFEHOUSE,events.append)
+    assert not writes and actors[0].state=='TRUE'
+
+
+def test_campaign_checks_all_interactions_before_any_native_reset(monkeypatch):
+    spec=importlib.util.spec_from_file_location('reset_preflight.mission_reset',PATH.parent/'mission_reset.py')
+    reset=importlib.util.module_from_spec(spec);spec.loader.exec_module(reset)
+    calls=[];checked=[];memory={}
+    engine=NS(base=0x100000000,ensure_world=lambda:None,check_build=lambda:None,u64=lambda p:memory[p])
+    rows=[]
+    for i,name in enumerate(['first','unsupported']):
+        record=0x1000+i*0x1000;storage=record+0x300;fields=record+0x400;group=record+0x500
+        memory.update({record:engine.base+0xb973820,record+0xa8:storage,storage+8:fields,
+            fields:engine.base+0xb3f6810,engine.base+0xb3f6810+8:engine.base+0x61aaf4a,
+            record+0x28:group,group:engine.base+0xb973a20})
+        rows.append(dict(record=hex(record),storage=hex(storage),replication_type=0,source_identity=dict(name=name)))
+    def validate(name,journal,*,validate_only=False):
+        assert validate_only
+        checked.append(name)
+        if name=='unsupported':raise RuntimeError('Unknown activity')
+    monkeypatch.setitem(sys.modules,'reset_preflight',NS())
+    monkeypatch.setitem(sys.modules,'reset_preflight.mission_effects',NS(reset_activity_state=validate,reset_interactions=lambda *a,**kw:None))
+    monkeypatch.setattr(reset.C,'WINFUNCTYPE',lambda *a:lambda address:lambda *args:calls.append((address,args)))
+    with pytest.raises(RuntimeError,match='Unknown activity'):reset.reset_campaign(engine,rows,lambda e:None)
+    assert checked==['first','unsupported'] and not calls

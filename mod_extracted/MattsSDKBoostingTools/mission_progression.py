@@ -24,6 +24,13 @@ UNVERIFIED = {
 CATEGORY_SCOPES = ('story', 'sides', 'dlc', 'all')
 MAX_BATCH = len(CATALOG)  # Bound jobs to the reviewed mission catalog.
 NONPERSISTENT = {'Mission_DLC_Tuba_Base', 'Mission_DLC_Tuba_Hardcore', 'Mission_DLC_Tuba_TimerBase'}
+# Mission4 /mission/records/0/entries/78: brepeatable=true. A normal reload
+# reopens this arena, so automatic completion must not farm it on every run.
+AUTOMATIC_REPEATABLE = {'Mission_Mandolin_CircleOfSlaughter'}
+# Mission4 /mission/records/1/entries/7 and /8 have no mission set/type;
+# registered Part 1 contains the later stages. Keep authored rows visible, and
+# only exclude these legacy splits when the current native inventory lacks them.
+LEGACY_SPLITS = {'Mission_Micro_BackMcCrackyPt2', 'Mission_Micro_BackMcCrackyPt3'}
 _runtime = None
 _job = None
 
@@ -82,6 +89,18 @@ def _row(snapshot, name):
 
 def _state(row):
     return (row['status_fact'] or {}).get('known_status')
+
+
+def _automatic_exclusion(snapshot, name):
+    if name in NONPERSISTENT:
+        return 'This replayable mission is source-marked never saved; permanent completion is not supported'
+    if name in AUTOMATIC_REPEATABLE:
+        return 'Repeatable arena; use individual completion or Practice to play another run'
+    if name in LEGACY_SPLITS and not any(
+            str((row.get('source_identity') or {}).get('name', '')).casefold() == name.casefold()
+            for row in snapshot['missions']):
+        return 'Legacy split definition not registered in this game; the playable first mission contains these stages'
+    return None
 
 
 def _campaign_names(snapshot):
@@ -148,10 +167,12 @@ def preview(payload):
             reason = None if state in ('active', 'accepted', 'available', 'completed') else 'Mission prerequisites are not available'
         except ValueError as exc:
             state, reason = 'unavailable', str(exc)
-        if name in NONPERSISTENT:
-            reason = 'This replayable mission is source-marked never saved; permanent completion is not supported'
+        exclusion = _automatic_exclusion(snapshot, name) if scope in CATEGORY_SCOPES else (
+            _automatic_exclusion(snapshot, name) if name in NONPERSISTENT else None)
+        if exclusion:
+            reason = exclusion
         entries.append(dict(_metadata(name), state=state, blocked_reason=reason,
-                            resets_host_completion=state == 'completed' and scope != 'challenge_credit', excluded=name in NONPERSISTENT))
+                            resets_host_completion=state == 'completed' and scope != 'challenge_credit', excluded=bool(exclusion)))
     return dict(ok=True, scope='shared_lobby', selection_scope=scope, missions=entries, max_batch=MAX_BATCH,
                 catalog_total=len(entries), excluded_total=sum(r['excluded'] for r in entries),
                 unsupported=UNVERIFIED, message='Changes can affect host and all connected players. Preview is read-only.')
@@ -206,7 +227,19 @@ def _journal(event):
         os.fsync(stream.fileno())
 
 
-def start(payload):
+def require_clear_journals():
+    """Reject an interrupted run before either coordinator changes the world."""
+    from mods_base import SETTINGS_DIR
+    folder = Path(SETTINGS_DIR) / 'msbt_missions'
+    for previous in folder.glob('*.jsonl'):
+        lines = previous.read_text(encoding='utf-8').splitlines()
+        if lines and json.loads(lines[-1]).get('state') not in ('completed', 'cancelled', 'stopped'):
+            raise RuntimeError('An earlier job was interrupted or uncertain; reconcile its receipt before another run: ' + previous.name)
+
+
+def start(payload, *, manage_replay_travel=True):
+    # Practice owns the same unload/return sequence around its child reset.
+    # This internal argument is deliberately not accepted from bridge payloads.
     global _job
     if _job and (_job['state'] in ('running', 'uncertain') or _job.get('challenge_pending')):
         raise ValueError('A mission job is running or has an uncertain result; inspect it before starting another')
@@ -224,6 +257,9 @@ def start(payload):
     mode = payload.get('mode', 'complete')
     if mode not in ('complete', 'reopen', 'reset_completed'):
         raise ValueError('Unknown mission operation')
+    preserve_completed = payload.get('preserve_completed') is True
+    if preserve_completed and mode != 'complete':
+        raise ValueError('Preserving completed missions requires completion mode')
     if mode == 'reopen' and (discovery_job or scope not in ('named', 'current') or len(names) != 1):
         raise ValueError('Choose one started ordinary mission to reopen')
     if mode == 'reset_completed':
@@ -235,8 +271,32 @@ def start(payload):
     if not discovery_job and mode != 'reset_completed' and len(names) > MAX_BATCH:
         raise ValueError(f'A job cannot exceed the reviewed catalog of {MAX_BATCH} missions')
     dynamic = scope in CATEGORY_SCOPES and mode == 'complete'
-    excluded = [n for n in names if n in NONPERSISTENT] if dynamic else []
+    exclusion_reasons = {n: reason for n in names
+                         if dynamic and (reason := _automatic_exclusion(snapshot, n))}
+    excluded = list(exclusion_reasons)
     names = [n for n in names if n not in excluded]
+    graph = mode == 'complete' and not discovery_job and scope not in ('bounty','challenge_credit')
+    replay_travel = mode == 'reopen' and manage_replay_travel
+    if replay_travel:
+        from .mission_execution import DATA
+        definition = DATA.get(names[0], {})
+        maps = definition.get('execution_maps') or [definition.get('execution_map')]
+        if not definition.get('execution_map') or not maps or any(not m for m in maps):
+            raise ValueError('Authored mission map is unresolved; no replay reset started')
+    coverage_issues = {}
+    if graph:
+        from . import mission_execution
+        for name in names:
+            if preserve_completed:
+                try:
+                    if _state(_row(snapshot,name)) == 'completed':continue
+                except ValueError:pass
+            reason=mission_execution.coverage_error(name)
+            definition=mission_execution.DATA.get(name,{})
+            reason=reason or (None if definition.get('execution_map') else 'Authored mission map is unresolved')
+            if reason:coverage_issues[name]=reason
+        if coverage_issues and not dynamic:
+            raise ValueError('; '.join(_metadata(n)['title']+': '+reason for n,reason in coverage_issues.items()))
     initial_completed = []
     for name in ([] if discovery_job else names):
         if name in NONPERSISTENT and mode != 'reset_completed':
@@ -253,24 +313,27 @@ def start(payload):
             raise ValueError('Choose a started mission to reopen')
         if mode != 'reset_completed' and not dynamic and state not in ('active', 'accepted', 'available', 'completed'):
             raise ValueError('Mission prerequisites are not available: ' + name)
-        if state == 'completed' and scope != 'challenge_credit' and payload.get('reset_completed') is not True:
+        if state == 'completed' and scope != 'challenge_credit' and payload.get('reset_completed') is not True and not preserve_completed:
             raise ValueError('Host already completed this mission; explicitly choose reset-and-complete')
     from . import farming_targets
     selected = farming_targets.resolve(payload)
     if len(selected) != 1:
         raise ValueError('Choose one acceptance player; completion still affects the shared lobby')
     rows = _party()
+    if preserve_completed and len(rows) != 1:
+        raise ValueError('Completed missions can only be preserved in solo completion; guest credit needs separate verification')
     target = selected[0]['pc']._path_name()
     if target not in [r['pc']._path_name() for r in rows]:
         raise ValueError('Selected player is no longer in this lobby')
+    completion_context=None
+    if graph or replay_travel:
+        from .mission_completion_context import begin
+        completion_context=begin(rows,target)
     from mods_base import SETTINGS_DIR
     ident = uuid.uuid4().hex
     folder = Path(SETTINGS_DIR) / 'msbt_missions'
     folder.mkdir(parents=True, exist_ok=True)
-    for previous in folder.glob('*.jsonl'):
-        lines = previous.read_text(encoding='utf-8').splitlines()
-        if lines and json.loads(lines[-1]).get('state') not in ('completed', 'cancelled', 'stopped'):
-            raise RuntimeError('An earlier job was interrupted or uncertain; reconcile its receipt before another run: ' + previous.name)
+    require_clear_journals()
     journal = folder / (ident + '.jsonl')
     journal.touch(exist_ok=False)
     _job = dict(ok=True, id=ident, state='running', scope='shared_lobby', names=names,
@@ -278,15 +341,21 @@ def start(payload):
                 operation_scope=scope if discovery_job else 'missions', unit='locations or requirements' if discovery_job else 'missions',
                 journal=str(journal), phase='prepare', message='Ready for one guarded step',
                 dynamic=dynamic, selection_scope=scope, initial_completed=initial_completed,
-                mode=mode,
+                mode=mode, preserve_completed=preserve_completed,
+                completion_path='objective_graph' if graph else 'mission_replay' if replay_travel else 'normal_acceptance', objective_runs={},
+                coverage_issues=coverage_issues,
                 campaign_replay=mode == 'reset_completed',
                 catalog_total=len(names) + len(excluded), excluded=excluded, pending=[], stall_since=None,
+                exclusion_reasons=exclusion_reasons,
                 deferred=[],
                 settle_guest_progress=payload.get('settle_guest_progress') is True, next_step_at=0.0,
                 guest_persistence='requires own-game verification')
+    if graph or replay_travel:
+        _job['completion_context']=completion_context
     if not names:
         _job.update(state='completed', message='No completed missions are eligible for this operation')
     _journal(dict(event='start', missions=names, binding=_job['binding'], target=target,
+                  completion_path=_job['completion_path'],
                   campaign_replay=_job['campaign_replay']))
     if _job['state']=='completed':
         _journal(dict(event='state',state='completed',index=0))
@@ -378,17 +447,30 @@ def step(job_id):
     if _job['state'] != 'running':
         return status()
     issued = False
+    _job.pop('await_tick', None)
     try:
         if _job.get('campaign_replay'):
             import sys
             from . import campaign_replay
             campaign_replay.step(sys.modules[__name__])
             return status()
+        if _job.get('completion_path') in ('objective_graph', 'mission_replay'):
+            import sys
+            from .mission_completion_context import observe
+            if not observe(sys.modules[__name__]):return status()
         engine = _engine()
-        before = engine.snapshot()
+        if _job.get('operation_scope') in ('map_locations', 'travel_stations'):
+            # These reads use the discovery manager, not mission records. Keep
+            # all context guards without rescanning every mission per location.
+            engine.validate_context()
+            before = {}
+        else:
+            before = engine.snapshot()
         party = _party()
         if _binding(party) != _job['binding']:
             raise RuntimeError('Party changed; remaining work stopped')
+        if _job.get('preserve_completed') and len(party) != 1:
+            raise RuntimeError('Solo completion changed; guest credit is not inferred from host progress')
         target = next(r['pc'] for r in party if r['pc']._path_name() == _job['target'])
         if _job.get('mode') == 'reset_completed':
             from . import mission_reset
@@ -445,12 +527,15 @@ def step(job_id):
         if _job.get('operation_scope', 'missions') != 'missions':
             from . import mission_discovery as discovery
             old, mutate, confirmed = discovery.operation(engine, _job['operation_scope'], name, before, target)
-            _journal(dict(event='issued', operation=_job['operation_scope'], name=name, before=old))
-            issued = True
-            after = mutate()
-            _journal(dict(event='returned', name=name, after=after))
-            if not confirmed(after):
-                raise RuntimeError('Discovery or travel requirement result unconfirmed; do not retry automatically')
+            if confirmed(old):
+                _journal(dict(event='already_complete', operation=_job['operation_scope'], name=name, observed=old))
+            else:
+                _journal(dict(event='issued', operation=_job['operation_scope'], name=name, before=old))
+                issued = True
+                after = mutate()
+                _journal(dict(event='returned', name=name, after=after))
+                if not confirmed(after):
+                    raise RuntimeError('Discovery or travel requirement result unconfirmed; do not retry automatically')
             _job['completed'].append(name)
             _job['index'] += 1
             if _job['index'] == _job['total']:
@@ -465,6 +550,8 @@ def step(job_id):
         _validate_exit(engine, row, name)
         state = _state(row)
         phase = _job['phase']
+        if _job.get('preserve_completed') and state == 'completed' and phase == 'prepare':
+            _job['phase'] = phase = 'complete'
         if name in _job.get('related_completion', ()) and phase == 'prepare':
             if state == 'completed':
                 _job['phase'] = phase = 'complete'  # Never reset a cascaded completion.
@@ -477,6 +564,15 @@ def step(job_id):
             else:
                 _job.pop('related_wait_since', None)
         if _job.get('mode') in ('reopen', 'reset_completed'):
+            if _job.get('completion_path') == 'mission_replay':
+                import sys
+                from . import mission_execution, mission_completion_context
+                definition = mission_execution.DATA[name]
+                owner = sys.modules[__name__]
+                if phase == 'prepare':
+                    if not mission_completion_context.prepare_reset(owner,name,row,definition):return status()
+                elif not mission_completion_context.travel_to(owner,name,row,definition['title'],definition['execution_map']):
+                    return status()
             issued = phase == 'prepare' or state == 'available'
             return _reopen_step(engine, row, name, target)
         if _job.get('selection_scope') == 'challenge_credit':
@@ -498,6 +594,24 @@ def step(job_id):
             _journal(dict(event='observed_completed', mission=name, after=row))
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
+        native_graph = (_job.get('completion_path') == 'objective_graph' and
+                        not name.startswith('bounty:'))
+        if native_graph:
+            reason=_job.get('coverage_issues',{}).get(name)
+            if reason:return _defer(name,reason)
+            import sys
+            from . import mission_execution,mission_completion_context
+            definition=mission_execution.DATA.get(name)
+            mission_execution.require_coverage(name)
+            prepare=(mission_completion_context.prepare_reset if state=='completed' and phase=='prepare'
+                     else mission_completion_context.prepare)
+            if not prepare(sys.modules[__name__],name,row,definition):return status()
+        if native_graph and state in ('locked', None) and phase == 'accept':
+            since = _job.setdefault('activation_since', time.monotonic())
+            if time.monotonic() - since > 120:
+                raise RuntimeError('Reopened mission prerequisites did not activate; no reset repeated')
+            _job['message'] = 'Waiting for reopened mission prerequisites; no reset repeated'
+            return status()
         # Restore the original normal-acceptance completion path.
         _job.pop('activation_wait', None)
         if phase == 'prepare':
@@ -512,6 +626,25 @@ def step(job_id):
             raise ValueError('Bounty action only completes the existing active instance; refresh preview')
         if operation is None:
             raise ValueError('Mission is not eligible for this step')
+        if native_graph and operation == 'complete':
+            from . import mission_execution
+            definition = mission_execution.DATA.get(name)
+            if definition is None:
+                raise RuntimeError('Authored mission graph is unavailable; no status shortcut issued')
+            receipt = _job.setdefault('objective_runs', {}).setdefault(name, {})
+            if state == 'accepted':
+                since = receipt.setdefault('progress_at', time.monotonic())
+                if time.monotonic() - since > 120:
+                    return _defer(name,'Mission opening actions did not activate on its authored map; no acceptance repeated')
+                _job.update(phase='complete', await_tick=True, message='Waiting for normal mission opening actions.')
+                return status()
+            mission_completion_context.expect_finish(sys.modules[__name__],name,row,definition)
+            result = mission_execution.advance(engine, row, name, receipt, _journal,
+                current_map=mission_completion_context.map_name(mission_completion_context.world()),
+                before_outcome=lambda objective: mission_completion_context.objective_ready(
+                    sys.modules[__name__],name,row,definition,objective))
+            _job.update(phase='complete', await_tick=True, message=result['message'])
+            return status()
         record, storage = int(row['record'], 16), int(row['storage'], 16)
         vt = engine.u64(record)
         if engine.u64(vt + 0xf8) != engine.base + 0xd80660 or engine.u64(vt + 0x110) != engine.base + 0x419fefa:
@@ -521,8 +654,16 @@ def step(job_id):
         _journal(dict(event='issued', mission=name, operation=operation, before=row))
         issued = True
         if operation == 'reset':
-            C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(engine.base + 0x3d32a5c)(storage, 2, False)
-            expected, next_phase = ('available',), 'accept'
+            if native_graph:
+                from . import mission_reset
+                mission_reset.reopen(engine, row, _journal)
+                _job.setdefault('objective_runs', {}).pop(name, None)
+                _job.pop('activation_since', None)
+                expected = ('locked', None, 'available', 'accepted', 'active')
+            else:
+                C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(engine.base + 0x3d32a5c)(storage, 2, False)
+                expected = ('available',)
+            next_phase = 'accept'
         elif operation == 'accept':
             import unrealsdk
             token = unrealsdk.make_struct('/Script/CoreUObject.SToken',
@@ -539,7 +680,7 @@ def step(job_id):
         if _state(after) not in expected:
             _job['failure'] = dict(mission=name, title=_metadata(name)['title'], operation=operation,
                                    observed=_state(after))
-            raise RuntimeError(f'{_metadata(name)["title"]}: {operation} returned {_state(after)}; expected {", ".join(expected)}. Use Recover stopped job; no automatic retry.')
+            raise RuntimeError(f'{_metadata(name)["title"]}: {operation} returned {_state(after)}; expected {", ".join(map(str, expected))}. Use Recover stopped job; no automatic retry.')
         _job['phase'] = next_phase
         if operation == 'complete':
             if _credit_completed(engine, party, name) is False:
@@ -555,7 +696,13 @@ def step(job_id):
             _journal(dict(event='state', state='running', index=_job['index'], message=str(exc)))
             return status()
         pending_campaign = _job.get('campaign_replay') and _job.get('state') == 'uncertain'
-        _job.update(ok=False, state='uncertain' if issued or pending_campaign or getattr(exc, 'issued', False) else 'stopped', message=str(exc))
+        pending_travel = _job.get('completion_context',{}).get('travel') and _job.get('state')=='uncertain'
+        if _job.get('completion_context',{}).get('placement'):
+            import sys
+            from .mission_completion_placement import stop
+            stop(sys.modules[__name__],str(exc),'stopped')
+            return status()
+        _job.update(ok=False, state='uncertain' if issued or pending_campaign or pending_travel or getattr(exc, 'issued', False) else 'stopped', message=str(exc))
     _journal(dict(event='state', state=_job['state'], index=_job['index'], message=_job['message']))
     return status()
 
@@ -582,6 +729,11 @@ def _reopen_step(engine, row, name, target):
             if _job['index'] == _job['total']:
                 _job['state'] = 'completed'
             _job['message'] = f'{_metadata(name)["title"]}: completed mission data reset. Eligible missions may activate again normally.'
+    elif state == 'accepted' and _job.get('completion_path') == 'mission_replay':
+        since = _job.setdefault('reopen_activation_since', time.monotonic())
+        if time.monotonic() - since > 120:
+            raise RuntimeError('Mission opening did not activate after reload; no reset or acceptance repeated')
+        _job.update(await_tick=True, message='Mission area reloaded; waiting for its opening objectives to activate.')
     elif state in ('active', 'accepted'):
         _job.update(state='completed', index=1, completed=[name],
                     message=(f'{_metadata(name)["title"]}: reset and accepted; opening sequence is still pending. '
@@ -612,6 +764,10 @@ def resume(job_id):
     """Only recover a stopped job whose pending completion is already confirmed."""
     if not _job or job_id != _job['id']:
         raise ValueError('Mission job identifier changed')
+    if _job.get('completion_path') in ('objective_graph', 'mission_replay'):
+        import sys
+        from .mission_completion_context import observe
+        if not observe(sys.modules[__name__]):return status()
     if _job['state'] != 'stopped' or _job.get('operation_scope', 'missions') != 'missions' or (_job.get('phase') not in ('accept', 'complete') and not (_job.get('dynamic') and _job.get('phase') == 'prepare')):
         raise ValueError('This stopped job requires separate review; it cannot be resumed automatically')
     if _binding(_party()) != _job['binding']:
@@ -632,9 +788,16 @@ def resume(job_id):
     row = _row(snapshot, _job['names'][_job['index']])
     _validate_exit(_engine(), row, _job['names'][_job['index']])
     activation_wait = _job.get('activation_wait', {}).get('mission') == _job['names'][_job['index']]
-    allowed = ('accepted', 'active', 'completed') if _job['phase'] == 'accept' else ('active', 'completed') if activation_wait else ('completed',)
+    graph_run = _job.get('completion_path') == 'objective_graph'
+    allowed = ('accepted', 'active', 'completed') if _job['phase'] == 'accept' else ('active', 'completed') if activation_wait or graph_run else ('completed',)
+    if graph_run and any(r.get('pending') for r in _job.get('objective_runs', {}).values()):
+        raise ValueError('An objective has no return receipt; recover it before continuing')
     if _state(row) not in allowed:
         raise ValueError('Pending mission is not confirmed completed or naturally activated for this phase; no retry issued')
+    if graph_run:
+        receipt = _job.get('objective_runs', {}).get(_job['names'][_job['index']])
+        if receipt is not None:
+            receipt['progress_at'] = time.monotonic()
     _job.update(ok=True, state='running', message='Confirmed forward game progression; ready to continue remaining missions')
     _journal(dict(event='resume', state='running', index=_job['index'], observed=row))
     return status()
@@ -697,6 +860,17 @@ def recover(payload):
     from mods_base import SETTINGS_DIR
     path = Path(_job['journal']) if live else Path(SETTINGS_DIR) / 'msbt_missions' / (job_id + '.jsonl')
     events = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()]
+    if live and _job.get('completion_path') in ('objective_graph', 'mission_replay'):
+        import sys
+        from . import mission_completion_context
+        result=mission_completion_context.recover(sys.modules[__name__],payload,events,live,path)
+        if result is not None:return result
+        if not mission_completion_context.observe(sys.modules[__name__]):return status()
+    elif any(e.get('event')=='completion_map_issued' for e in events):
+        import sys
+        from . import mission_completion_context
+        result=mission_completion_context.recover(sys.modules[__name__],payload,events,live,path)
+        if result is not None:return result
     if any(e.get('campaign_replay') for e in events):
         import sys
         from . import campaign_replay
@@ -710,6 +884,19 @@ def recover(payload):
         raise ValueError('No recorded mission call to reconcile')
     call = events[issued]
     name, operation = call.get('mission'), call.get('operation')
+    if not live and operation == 'objective_complete' and name in CATALOG and payload.get('mode') == 'close':
+        if payload.get('acknowledge_shared_progress') is not True:
+            raise ValueError('Acknowledge shared progress before closing this interrupted run')
+        # Native tokens contain process-local name identities. After reload they
+        # cannot prove what the old call did. Explicit close abandons that run;
+        # it neither verifies completion nor resumes/reissues the native call.
+        report = dict(operation=operation, mission=name, observed='unverified_after_reload')
+        event = dict(event='recovered', state='stopped', closed=True, report=report, time=time.time())
+        with path.open('a', encoding='utf-8') as stream:
+            stream.write(json.dumps(event) + '\n'); stream.flush(); os.fsync(stream.fileno())
+        return dict(ok=True, state='stopped', closed=True, id=job_id, report=report,
+                    message='Interrupted objective run closed without verifying completion or repeating calls. '
+                            'Applied progress is retained. Refresh preview before starting another run.')
     if operation == 'challenge_credit':
         from . import mission_challenges
         returned = next((e for e in events[issued+1:] if e.get('event') == 'returned'
@@ -722,7 +909,7 @@ def recover(payload):
                       observed='completed', acceptance_unchanged=False, access=None)
         state = 'completed'
     else:
-        if name not in CATALOG or operation not in ('reset', 'accept', 'complete', 'reopen', 'reopen_accept'):
+        if name not in CATALOG or operation not in ('reset', 'accept', 'complete', 'reopen', 'reopen_accept', 'objective_complete'):
             raise ValueError('This recovery handles mission calls only; other operations still require inspection')
         returned = next((e for e in events[issued+1:] if e.get('event') == 'returned' and e.get('mission') == name and e.get('operation') == operation), None)
         if returned is None or time.time() - returned['time'] < 2:
@@ -737,6 +924,11 @@ def recover(payload):
         safe = (operation == 'accept' and (accepted or (state == 'available' and _state(returned['after']) == 'available'))) or (operation == 'reset' and state in ('available', 'accepted', 'active', 'completed')) or (operation == 'complete' and state == 'completed')
         if operation in ('reopen','reopen_accept'):
             safe = state in ('locked','available','accepted','active')
+        if operation == 'objective_complete':
+            from .mission_objectives import read
+            objective = call['objective']
+            observed = next((o for o in read(engine, current) if o['token'] == objective['token']), None)
+            safe = (observed is not None and observed['state'] == 13) or (observed is None and state == 'completed')
         if not safe:
             raise ValueError(f'{_metadata(name)["title"]}: {operation} still unresolved ({state}); no retry or clearance issued')
         report = dict(ok=True, mission=name, title=_metadata(name)['title'], operation=operation, observed=state,
@@ -760,6 +952,8 @@ def recover(payload):
             _job.update(ok=True, state='stopped', closed=True, message=f'{report["title"]}: reconciled as {state}. Job closed; previous progress retained.')
         return dict(ok=True, state='stopped', closed=True, id=job_id, message=f'{report["title"]}: reconciled as {state}. Job closed; previous progress retained. Refresh preview for a new run.')
     party = _party()
+    if _job.get('preserve_completed') and len(party) != 1:
+        raise ValueError('Solo completion cannot resume with guests; close and preview a new job')
     if _binding(party) != _job['binding']:
         from . import farming_targets
         selected = farming_targets.resolve(payload)
@@ -768,6 +962,12 @@ def recover(payload):
         _job['binding'], _job['target'] = _binding(party), selected[0]['pc']._path_name()
     _job.pop('challenge_pending', None)
     _job.pop('cancel_requested', None)
+    if operation == 'objective_complete':
+        receipt = _job.setdefault('objective_runs', {}).setdefault(name, dict(token=current['token'], issued=[]))
+        if objective['token'] not in receipt['issued']:
+            receipt['issued'].append(objective['token'])
+        receipt.pop('pending', None)
+        receipt['progress_at'] = time.monotonic()
     _job.update(ok=True, state='running', stall_since=None)
     _journal(dict(event='recovered', report=report, state='running', binding=_job['binding'], target=_job['target']))
     if report['acceptance_unchanged']:
@@ -782,6 +982,11 @@ def recover(payload):
 def cancel(job_id):
     if not _job or job_id != _job['id']:
         raise ValueError('Mission job identifier changed')
+    if _job.get('completion_context',{}).get('placement'):
+        import sys
+        from .mission_completion_placement import stop
+        stop(sys.modules[__name__],retry=True)
+        return status()
     if _job and _job.get('challenge_pending'):
         _job['cancel_requested'] = True
         _job['message'] = 'Cancelling after issued Grassroots credit verifies'
@@ -803,27 +1008,15 @@ def clear_runtime_state():
 
 
 def poll(job_id):
-    """Shared scoped/full-run pump: normal transitions, dialogue and credit checks."""
-    global _dialogue_skipper
+    """Shared scoped/full-run pump: normal transitions and credit checks."""
     if not _job or _job['id'] != job_id:
         raise ValueError('Mission job identifier changed')
-    if _job['state'] == 'running' and _job.get('mode', 'complete') == 'complete' and _job.get('operation_scope', 'missions') == 'missions' and not _job.get('dialogue', {}).get('disabled'):
-        try:
-            from .progress_dialogue import DialogueSkipper
-            from mods_base import ENGINE
-            import unrealsdk
-            if '_dialogue_skipper' not in globals():
-                _dialogue_skipper = DialogueSkipper()
-            world_path = ENGINE.GameViewport.World._path_name()
-            _job['dialogue'] = _dialogue_skipper.poll(
-                (job_id, world_path), world_path,
-                unrealsdk.find_all('GbxDialogProvider'), time.monotonic())
-        except Exception as exc:
-            _job['dialogue'] = dict(disabled=True, error=str(exc))
+    # Let authored dialogue finish: stopping its audio can strand PlayMoment
+    # finish actions, even though the objective already reads "completed".
     deadline = time.monotonic() + 0.020
     for _ in range(16):
         result = step(job_id)
-        if result.get('state') != 'running' or time.monotonic() >= deadline:
+        if result.get('state') != 'running' or _job.get('await_tick') or time.monotonic() >= deadline:
             break
     return result
 

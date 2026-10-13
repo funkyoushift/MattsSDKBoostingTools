@@ -112,11 +112,14 @@ class MissionRuntime:
             raise RuntimeError("Mission run stopped: world instance changed; explicit reload required")
         self.world_address = current_world
 
-    def snapshot(self):
+    def validate_context(self):
         if threading.get_ident() != self.thread:
             raise RuntimeError("Probe must run on its loading/game thread")
         self.check_build()
         self.ensure_world()
+
+    def snapshot(self):
+        self.validate_context()
         instances = list(unrealsdk.find_all("OakGameInstance"))
         instances = [x for x in instances
                      if "Default__" not in x._path_name()

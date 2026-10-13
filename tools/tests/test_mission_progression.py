@@ -37,6 +37,33 @@ def test_current_requires_exact_tracked_record(mod):
         mod.select(snapshot, 'current')
 
 
+@pytest.mark.parametrize('name', ['Mission_Micro_BackMcCrackyPt2', 'Mission_Micro_BackMcCrackyPt3'])
+def test_legacy_split_exclusion_requires_native_absence(mod, name):
+    assert 'Legacy split' in mod._automatic_exclusion({'missions': []}, name)
+    for status in ('available', 'locked', 'completed'):
+        assert mod._automatic_exclusion({'missions': [row(name, status)]}, name) is None
+    # Ambiguous/generated records must reach the existing rejection path.
+    assert mod._automatic_exclusion({'missions': [dict(row(name), generated=1)]}, name) is None
+
+
+def test_other_missing_missions_are_never_silently_excluded(mod):
+    assert mod._automatic_exclusion({'missions': []}, 'Mission_Main_Beach') is None
+
+
+@pytest.mark.parametrize('scope,excluded', [('all', True), ('dlc', True), ('named', False), ('current', False)])
+def test_repeatable_arena_excluded_only_from_automatic_completion(mod, monkeypatch, scope, excluded):
+    name = 'Mission_Mandolin_CircleOfSlaughter'
+    r = row(name, 'available')
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: dict(missions=[r], tracked=[r['token']])))
+    monkeypatch.setattr(mod, 'CATALOG', {name: dict(name=name, title='Circle of Slaughter', category='dlc')})
+    monkeypatch.setattr(mod, '__package__', 'arena_preview_test')
+    monkeypatch.setitem(sys.modules, 'arena_preview_test', NS(mission_discovery=NS(SCOPES=())))
+    result = mod.preview(dict(scope=scope, missions=[name]))['missions'][0]
+    assert result['excluded'] is excluded
+    assert bool(result['blocked_reason']) is excluded
+    assert name not in mod.NONPERSISTENT
+
+
 @pytest.mark.parametrize('scope', ['objective', 'undo_objective', 'reset_all'])
 def test_unverified_operations_do_not_touch_runtime(mod, scope):
     with pytest.raises(ValueError):
@@ -55,6 +82,55 @@ def test_unknown_duplicate_and_generated_missions_rejected(mod):
 def test_explicit_shared_acknowledgement_before_native_access(mod):
     assert not mod.dispatch('mission_start', {})['ok']
     assert mod._runtime is None
+
+
+def test_interrupted_receipt_blocks_preflight_until_explicitly_closed(mod, monkeypatch, tmp_path):
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(SETTINGS_DIR=tmp_path))
+    folder = tmp_path / 'msbt_missions'; folder.mkdir()
+    receipt = folder / ('a' * 32 + '.jsonl')
+    receipt.write_text(json.dumps(dict(event='issued', state='uncertain')) + '\n')
+    with pytest.raises(RuntimeError, match='interrupted or uncertain'):
+        mod.require_clear_journals()
+    with receipt.open('a') as stream:
+        stream.write(json.dumps(dict(event='recovered', state='stopped')) + '\n')
+    mod.require_clear_journals()
+
+
+def test_mission_pump_does_not_interrupt_a_scene_waiting_for_dialogue(mod, monkeypatch):
+    calls = []
+    monkeypatch.setattr(mod, '__package__', 'scene_test')
+    monkeypatch.setitem(sys.modules, 'scene_test.progress_dialogue', NS(
+        DialogueSkipper=lambda:NS(poll=lambda *args:calls.append('interrupted'))))
+    monkeypatch.setitem(sys.modules, 'unrealsdk', NS(find_all=lambda cls:[]))
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(ENGINE=NS(GameViewport=NS(World=NS(_path_name=lambda:'World')))))
+    mod._job = dict(id='job', state='running', mode='complete', operation_scope='missions')
+    def step(ident):
+        mod._job['await_tick'] = True
+        return dict(state='running', message='Waiting for native scene')
+    monkeypatch.setattr(mod, 'step', step)
+    assert mod.poll('job')['state'] == 'running'
+    assert calls == []
+
+
+@pytest.mark.parametrize('acknowledged', [False, True])
+def test_close_unloaded_objective_run_never_reads_or_repeats_native_calls(mod, monkeypatch, tmp_path, acknowledged):
+    monkeypatch.setitem(sys.modules, 'mods_base', NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod, '_engine', lambda: pytest.fail('Old process identities must not be dereferenced'))
+    folder = tmp_path / 'msbt_missions'; folder.mkdir()
+    ident = 'a' * 32; path = folder / (ident + '.jsonl')
+    event = dict(event='issued', operation='objective_complete', mission='Mission_Main_Beach',
+                 before=dict(token='old-process-token'), objective=dict(token='old-objective'))
+    path.write_text(json.dumps(event) + '\n')
+    if not acknowledged:
+        with pytest.raises(ValueError, match='Acknowledge'):
+            mod.recover(dict(job_id=ident, mode='close'))
+        assert len(path.read_text().splitlines()) == 1
+        return
+    result = mod.recover(dict(job_id=ident, mode='close', acknowledge_shared_progress=True))
+    assert result['closed'] and result['report']['observed'] == 'unverified_after_reload'
+    saved = json.loads(path.read_text().splitlines()[-1])
+    assert saved['state'] == 'stopped' and saved['closed']
+    mod.require_clear_journals()
 
 
 def test_party_change_stops_before_journal_or_native_mutation(mod, monkeypatch, tmp_path):
@@ -151,6 +227,26 @@ def test_game_completed_after_acceptance_advances_without_native_call(mod, monke
     assert mod._job['completed'] == ['Mission_Main_Beach']
     events = [json.loads(x)['event'] for x in (tmp_path/'job.jsonl').read_text().splitlines()]
     assert events == ['resume', 'observed_completed', 'state']
+
+
+@pytest.mark.parametrize('party_size', [1, 2])
+@pytest.mark.parametrize('phase', ['prepare', 'complete'])
+def test_preserved_completed_mission_checks_credit_without_reset(mod, monkeypatch, tmp_path, party_size, phase):
+    pc = NS(_path_name=lambda: 'pc')  # No native mutation methods on the fake.
+    monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(state='completed')]}))
+    monkeypatch.setattr(mod, '_party', lambda: [{'pc': pc}] * party_size)
+    monkeypatch.setattr(mod, '_binding', lambda rows: ['fixed'])
+    monkeypatch.setattr(mod, '_validate_exit', lambda *args: None)
+    credits=[]
+    monkeypatch.setattr(mod, '_credit_completed', lambda e,p,n: credits.append(n))
+    mod._job = dict(id='job', ok=True, state='running', binding=['fixed'], target='pc',
+                    names=['Mission_Main_Beach'], index=0, completed=[], phase=phase,
+                    preserve_completed=True, journal=str(tmp_path/'job.jsonl'))
+    result=mod.step('job')
+    assert result['state'] == ('completed' if party_size==1 else 'stopped')
+    assert credits == (['Mission_Main_Beach'] if party_size==1 else [])
+    events=[json.loads(x)['event'] for x in (tmp_path/'job.jsonl').read_text().splitlines()]
+    assert 'issued' not in events
 
 
 @pytest.mark.parametrize('state', ['uncertain', 'cancelled', 'completed', 'running'])
@@ -405,6 +501,35 @@ def test_shared_poll_yields_on_time_budget(mod,monkeypatch):
     monkeypatch.setattr(mod,'step',lambda ident:calls.append(ident) or dict(state='running'))
     mod.poll('job');assert calls==['job']
 
+
+@pytest.mark.parametrize('scope',['map_locations','travel_stations','travel_requirements'])
+@pytest.mark.parametrize('already_complete',[True,False])
+def test_discovery_uses_only_required_snapshot_and_skips_completed_writes(mod,monkeypatch,tmp_path,scope,already_complete):
+    calls=[]
+    engine=NS(validate_context=lambda:calls.append('guard'),snapshot=lambda:calls.append('snapshot') or {})
+    monkeypatch.setattr(mod,'_engine',lambda:engine)
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=NS(_path_name=lambda:'pc'))])
+    monkeypatch.setattr(mod,'_binding',lambda rows:['fixed'])
+    def operation(*args):
+        calls.append('read')
+        return 2 if already_complete else 0,lambda:calls.append('write') or 2,lambda value:value==2
+    monkeypatch.setitem(sys.modules,'discovery_progress_test',NS(mission_discovery=NS(operation=operation)))
+    mod.__package__='discovery_progress_test'
+    mod._job=dict(id='job',ok=True,state='running',binding=['fixed'],target='pc',names=['location'],
+        index=0,total=1,phase='prepare',completed=[],operation_scope=scope,journal=str(tmp_path/'job.jsonl'))
+    assert mod.step('job')['state']=='completed'
+    assert calls==(['snapshot'] if scope=='travel_requirements' else ['guard'])+['read']+([] if already_complete else ['write'])
+    events=[json.loads(line)['event'] for line in (tmp_path/'job.jsonl').read_text().splitlines()]
+    assert events==(['already_complete'] if already_complete else ['issued','returned'])+['state']
+
+
+def test_discovery_context_failure_prevents_read_or_mutation(mod,monkeypatch,tmp_path):
+    def fail():raise RuntimeError('World changed')
+    monkeypatch.setattr(mod,'_engine',lambda:NS(validate_context=fail))
+    mod._job=dict(id='job',state='running',operation_scope='map_locations',index=0,journal=str(tmp_path/'job.jsonl'))
+    result=mod.step('job')
+    assert result['state']=='stopped' and result['message']=='World changed'
+
 @pytest.mark.parametrize('observed', ['active', 'available', 'accepted'])
 def test_completion_readiness_mismatch_never_reissues(mod, monkeypatch, tmp_path, observed):
     monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [row(state=observed)]}))
@@ -472,6 +597,88 @@ def test_reopen_failure_preserves_pending_phase(mod, monkeypatch, tmp_path):
     assert mod._job['state']=='uncertain'
     assert mod._job['phase']=='reopen_wait'
     assert mod.step('job')['state']=='uncertain'
+
+
+@pytest.mark.parametrize('initial_state', ['active', 'accepted', 'completed'])
+def test_standalone_replay_unloads_resets_once_and_returns_before_success(mod, monkeypatch, tmp_path, initial_state):
+    name='Mission_Main_Beach';r=row(name,initial_state);calls=[]
+    gates={'unloaded':False,'returned':False}
+    def reset(*args):
+        calls.append('reset');r['status_fact']['known_status']='accepted'
+    def unload(*args):
+        calls.append('unload');return gates['unloaded']
+    def arrive(*args):
+        calls.append('return');return gates['returned']
+    context=NS(observe=lambda owner:True,prepare_reset=unload,travel_to=arrive)
+    monkeypatch.setattr(mod,'__package__','reopen_world_test')
+    monkeypatch.setitem(sys.modules,mod.__name__,mod)
+    monkeypatch.setitem(sys.modules,'reopen_world_test',NS(mission_reset=NS(reopen=reset),
+        mission_execution=NS(DATA={name:dict(title='Mission',execution_map='world_p')}),
+        mission_completion_context=context))
+    monkeypatch.setitem(sys.modules,'reopen_world_test.mission_completion_context',context)
+    pc=NS(_path_name=lambda:'host');party=[dict(pc=pc)]
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=[r])))
+    monkeypatch.setattr(mod,'_party',lambda:party)
+    monkeypatch.setattr(mod,'_binding',lambda rows:['same'])
+    monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    mod._job=dict(id='job',mode='reopen',completion_path='mission_replay',completion_context={},
+        state='running',phase='prepare',index=0,total=1,names=[name],completed=[],
+        binding=['same'],target='host',journal=str(tmp_path/'job.jsonl'))
+    assert mod.step('job')['state']=='running' and calls==['unload']
+    gates['unloaded']=True
+    assert mod.step('job')['state']=='running' and calls==['unload','unload','reset']
+    # Acceptance alone is not replay readiness, even after the return request.
+    for _ in range(2):assert mod.step('job')['state']=='running'
+    gates['returned']=True
+    assert mod.step('job')['state']=='running'
+    assert 'opening objectives' in mod._job['message']
+    r['status_fact']['known_status']='active'
+    assert mod.step('job')['state']=='completed'
+    assert calls.count('reset')==1
+    assert not any(e.get('operation')=='complete' for e in map(json.loads,Path(mod._job['journal']).read_text().splitlines()))
+
+
+def test_replay_opening_timeout_does_not_reset_again(mod, monkeypatch, tmp_path):
+    monkeypatch.setitem(sys.modules,'reopen_wait_test',NS(mission_reset=NS(reopen=lambda *a:pytest.fail('No repeated reset'))))
+    monkeypatch.setattr(mod,'__package__','reopen_wait_test')
+    mod._job=dict(id='job',mode='reopen',completion_path='mission_replay',state='running',
+        phase='reopen_wait',index=0,reopen_activation_since=10.,journal=str(tmp_path/'job.jsonl'))
+    monkeypatch.setattr(mod.time,'monotonic',lambda:131.)
+    with pytest.raises(RuntimeError,match='opening did not activate'):
+        mod._reopen_step(None,row(state='accepted'),'Mission_Main_Beach',None)
+
+
+@pytest.mark.parametrize('owned_by_practice',[False,True])
+def test_replay_start_attaches_world_guard_unless_internal_practice_owns_it(mod,monkeypatch,tmp_path,owned_by_practice):
+    name='Mission_Main_Beach';r=row(name);pc=NS(_path_name=lambda:'host');party=[dict(pc=pc)]
+    context=NS(begin=lambda *args:dict(marker='world guard'))
+    monkeypatch.setattr(mod,'__package__','reopen_start_test')
+    execution=NS(DATA={name:dict(execution_map='world_p',execution_maps=['world_p'])})
+    monkeypatch.setitem(sys.modules,'reopen_start_test',NS(mission_discovery=NS(SCOPES=()),
+        farming_targets=NS(resolve=lambda payload:party)))
+    monkeypatch.setitem(sys.modules,'reopen_start_test.mission_execution',execution)
+    monkeypatch.setitem(sys.modules,'reopen_start_test.mission_completion_context',context)
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=[r])))
+    monkeypatch.setattr(mod,'_party',lambda:party)
+    monkeypatch.setattr(mod,'_binding',lambda rows:['same'])
+    monkeypatch.setattr(mod,'require_clear_journals',lambda:None)
+    payload=dict(scope='named',missions=[name],mode='reopen',acknowledge_shared_progress=True,
+                 manage_replay_travel=False)  # A bridge field cannot bypass travel.
+    result=mod.start(payload,**(dict(manage_replay_travel=False) if owned_by_practice else {}))
+    assert result['completion_path']==('normal_acceptance' if owned_by_practice else 'mission_replay')
+    assert ('completion_context' in result) is not owned_by_practice
+
+
+def test_unresolved_replay_map_rejected_before_reset_or_journal(mod,monkeypatch):
+    name='Mission_Main_Beach'
+    monkeypatch.setattr(mod,'__package__','reopen_missing_map_test')
+    monkeypatch.setitem(sys.modules,'reopen_missing_map_test',NS(mission_discovery=NS(SCOPES=())))
+    monkeypatch.setitem(sys.modules,'reopen_missing_map_test.mission_execution',NS(DATA={name:{}}))
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=[row(name)])))
+    with pytest.raises(ValueError,match='map is unresolved'):
+        mod.start(dict(scope='named',missions=[name],mode='reopen',acknowledge_shared_progress=True))
+    assert mod._job is None
 
 
 @pytest.mark.parametrize('later_state, expected', [('None','completed'), ('active','stopped')])

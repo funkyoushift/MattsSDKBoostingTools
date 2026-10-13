@@ -394,86 +394,88 @@ def _get_player_state(pc: Any) -> Any | None:
     return None
 
 
+def _native_unlock_name(pc: Any, name: str) -> Any:
+    """Single-token SName with its token produced by the game's own parser.
+
+    GbxPlayerState.ClientUnlockUnlockable takes two SName references, not strings
+    or definition pointers. The one-token layout is also exposed by the native
+    ExperienceState SNames. See the completion-and-UI verification change note.
+    """
+    import unrealsdk
+
+    if not name or not all(c.isascii() and (c.isalnum() or c == "_") for c in name):
+        raise ValueError("Unlock identifiers must be single native tokens")
+    library = unrealsdk.find_object(
+        "FactsBlueprintLibrary", "/Script/GbxGame.Default__FactsBlueprintLibrary")
+    if library is None:
+        raise RuntimeError("Native name parser is unavailable")
+    # Keep the owning FactAddress alive until the new struct has copied its token.
+    address = library.GetFactAddress(OwnerContext=pc, RegistryChannel=name)
+    parsed = address.address
+    count = int(parsed.TokenCount)
+    if count == 1:
+        token = parsed.InlineTokens
+    elif 1 < count <= 32 and len(parsed.ExternalTokens) == count:
+        token = parsed.ExternalTokens[count - 1]
+    else:
+        raise RuntimeError("Native name parser returned an invalid token array")
+    if str(token.Name).casefold() != name.casefold():
+        raise RuntimeError("Native name parser returned a different identifier")
+    return unrealsdk.make_struct("/Script/CoreUObject.SName", SummaryHash=int(token.Hash),
+                                TokenCount=1, InlineTokens=token)
+
+
 def _try_unlock_unlockable(pc: Any, token: str) -> tuple[bool, str]:
-    """Best-effort ClientUnlockUnlockable on PlayerState (no ultra_local_menu dependency)."""
+    """Send one correctly typed unlock request; persistence needs separate proof."""
     ps = _get_player_state(pc)
     if ps is None:
         return False, "no PlayerState"
     fn = getattr(ps, "ClientUnlockUnlockable", None)
     if not callable(fn):
         return False, "ClientUnlockUnlockable missing"
-    last = "unlock failed"
-    candidates: list[Any] = []
     try:
-        from unrealsdk.unreal import FGbxDefPtr  # type: ignore[import-not-found]
-
-        ptr = FGbxDefPtr(token, type="UnlockableEntryDef")
-        inst = getattr(ptr, "_experimental_instance", None)
-        if inst is not None:
-            candidates.extend([inst, ptr])
-    except Exception:
-        pass
-    candidates.append(token)
-    if "." in token:
-        ledger, entry = token.split(".", 1)
-        for lv, ev in ((ledger, entry), (f"/Script/OakGame.{ledger}", entry)):
-            for args in ((lv, ev), (ev, lv)):
-                try:
-                    fn(*args)
-                    return True, f"ClientUnlockUnlockable({lv},{ev})"
-                except Exception as exc:
-                    last = str(exc)
-    for arg in candidates:
-        try:
-            fn(arg)
-            return True, f"ClientUnlockUnlockable({token})"
-        except TypeError:
-            continue
-        except Exception as exc:
-            last = str(exc)
-    return False, last
+        ledger, entry = token.split(".")
+        ledger_name = _native_unlock_name(pc, ledger)
+        entry_name = _native_unlock_name(pc, entry)
+        fn(LedgerIdent=ledger_name, EntryIdent=entry_name)
+        return True, f"Unlock request sent: {ledger}.{entry}; saved unlock not yet verified"
+    except Exception as exc:
+        # An exception can follow a native request. Never try alternate argument
+        # orders or repeat it automatically.
+        return False, str(exc)
 
 
 def _try_unlock_vehicle_for_spawn(pc: Any, def_id: str, entry: dict[str, Any] | None = None) -> tuple[bool, str]:
     token = _unlock_token_for_vehicle(def_id, entry)
     if not token:
         return False, "no unlock token"
+    if token.casefold() not in {r['unlock'].casefold() for r in _load_vehicle_unlock_rows()}:
+        return False, "vehicle has no authored unlock entry"
     return _try_unlock_unlockable(pc, token)
 
 
+def _load_vehicle_unlock_rows() -> list[dict[str, Any]]:
+    """Game-authored unlock ledger; the developer spawn list is a separate set."""
+    data = pkgutil.get_data(__package__, 'vehicle_unlock_catalog.json')
+    if not data:
+        raise RuntimeError('Authored vehicle unlock catalog is unavailable')
+    return json.loads(data)['entries']
+
+
 def unlock_all_vehicles_for_pc(pc: Any) -> tuple[bool, str]:
-    """Best-effort unlock of every catalog vehicle + known Unlockable_Vehicles tokens."""
+    """Request authored vehicle unlocks, retaining the prototype exclusion."""
     if pc is None:
         return False, "no PlayerController"
-    ok = 0
-    fail = 0
+    ok = fail = excluded = 0
     seen: set[str] = set()
-    for row in _load_vehicle_catalog_rows():
-        def_id = str(row.get("id") or "").strip()
-        token = _unlock_token_for_vehicle(def_id, row)
-        if not token or token in seen:
+    for row in _load_vehicle_unlock_rows():
+        if row.get("prototype"):
+            excluded += 1
             continue
-        seen.add(token)
-        success, _how = _try_unlock_unlockable(pc, token)
-        if success:
-            ok += 1
-        else:
+        token = str(row.get("unlock") or "").strip()
+        if not token:
             fail += 1
-    # Also hit common personal-vehicle unlock stems even if catalog missed them.
-    for stem in (
-        "Grazer",
-        "Borg",
-        "Base",
-        "ShatterlandV1",
-        "City",
-        "CityOrder",
-        "Mountain",
-        "DarkSiren",
-        "ExoSoldier",
-        "Gravitar",
-        "Paladin",
-    ):
-        token = f"Unlockable_Vehicles.{stem}"
+            continue
         if token in seen:
             continue
         seen.add(token)
@@ -482,9 +484,9 @@ def unlock_all_vehicles_for_pc(pc: Any) -> tuple[bool, str]:
             ok += 1
         else:
             fail += 1
-    detail = f"unlocked={ok} failed={fail} tokens={len(seen)}"
+    detail = f"requested={ok} failed={fail} prototypes_excluded={excluded}; saved unlocks unverified"
     _log(f"unlock_all_vehicles: {detail}")
-    return ok > 0, detail
+    return ok > 0 and fail == 0, detail
 
 
 def spawn_personal_vehicle(def_id_or_alias: str, *, scope: str = "local") -> str:

@@ -98,9 +98,13 @@ def needs_credit(before, index):
 
 
 def verified(before, after, index):
+    # Other missions can settle in the same game tick (including subordinate
+    # authored completions). Preserve all prior credit and require this exact
+    # mission's bit; a valid extra credit must not strand the shared batch.
     return (before['pid']==after['pid'] and before['path']==after['path']
-            and after['credited']==before['credited'] | {index}
-            and after['count']==before['count']+1)
+            and after['credited'] >= before['credited'] | {index}
+            and after['count']==len(after['credited'])
+            and after['count']>before['count'])
 
 
 def reconcile(engine, party, receipt, journal):

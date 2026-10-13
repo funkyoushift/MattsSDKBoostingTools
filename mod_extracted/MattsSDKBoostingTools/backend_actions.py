@@ -1781,12 +1781,22 @@ def run_quick_menu_action(
     """Dispatch a Quick Menu / pin-friendly named action through backend handlers."""
     payload = dict(payload or {})
     key = str(action or "").strip()
+    import sys
+    practice = sys.modules.get(__package__ + '.mission_practice')
+    if practice and practice.conflict(key):
+        return dict(ok=False, message='Replay setup is running. Stop it before another mission action.')
+    objective = sys.modules.get(__package__ + '.mission_objectives')
+    if objective and objective.conflict(key):
+        return dict(ok=False, message='An objective run needs completion or recovery before another mission action.')
     if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume"):
         from . import full_progress_runtime
         return full_progress_runtime.dispatch(key, payload)
     if full_progress_conflict(key):
         return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')
-    if key in ('mission_objective_preview', 'mission_objective_complete', 'mission_objective_status', 'mission_objective_replay'):
+    if key in ('mission_practice_preview','mission_practice_start','mission_practice_step','mission_practice_status','mission_practice_cancel'):
+        from . import mission_practice
+        return mission_practice.dispatch(key,payload)
+    if key in ('mission_objective_preview', 'mission_objective_complete', 'mission_objective_status', 'mission_objective_replay', 'mission_objective_step', 'mission_objective_cancel', 'mission_objective_recover'):
         from . import mission_objectives
         try:
             if key == 'mission_objective_preview':
@@ -1795,6 +1805,12 @@ def run_quick_menu_action(
                 return mission_objectives.complete(payload)
             if key == 'mission_objective_replay':
                 return mission_objectives.replay_last(payload)
+            if key == 'mission_objective_step':
+                return mission_objectives.step(payload)
+            if key == 'mission_objective_cancel':
+                return mission_objectives.cancel(payload)
+            if key == 'mission_objective_recover':
+                return mission_objectives.recover(payload)
             return mission_objectives.status()
         except Exception as exc:
             return dict(ok=False, message=str(exc))
@@ -4493,6 +4509,9 @@ def _challenge_is_host() -> tuple[bool, str]:
 
 def _challenge_increment_one(controller: Any, challenge: str, amount: int) -> None:
     """Grant the full catalog amount; chunk only if the native RPC rejects the full value."""
+    from .challenge_objective_complete import is_complete
+    if is_complete(controller, challenge):
+        return
     fn = getattr(controller, "ServerIncrementChallengeForPlayer", None)
     if not callable(fn):
         raise RuntimeError("ServerIncrementChallengeForPlayer unavailable")
@@ -4754,6 +4773,8 @@ def complete_challenges_status() -> dict[str, Any]:
 
 
 def _challenge_finish_reconcile(live_targets: list[Any]) -> str:
+    if _full_progress_queue_guard is not None:
+        return 'Native challenge verification follows in bounded batches.'
     notes: list[str] = []
     try:
         from .challenge_objective_complete import reconcile_after_bulk

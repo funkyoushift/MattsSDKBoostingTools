@@ -24,6 +24,8 @@ def reopen(engine, row, journal):
     # Pinned executable hash is checked by MissionRuntime; these functions are
     # the exact sequence in eebb94 after its repeatable-definition eligibility.
     from .mission_effects import reset_interactions, reset_activity_state
+    reset_activity_state(row['source_identity']['name'], journal, validate_only=True)
+    reset_interactions(row['source_identity']['name'], journal, validate_only=True)
     reset_activity_state(row['source_identity']['name'], journal)
     reset_interactions(row['source_identity']['name'], journal)
     for rva, arg in ((0x89062d0, record), (0x61aaf4a, fields), (0xce3150, record)):
@@ -55,6 +57,11 @@ def reset_campaign(engine, rows, journal):
             raise RuntimeError('Campaign reset layout changed before any calls')
         records.append((row, record, fields))
         groups.add(group)
+    from .mission_effects import reset_interactions, reset_activity_state
+    for row, _, _ in records:
+        name = row['source_identity']['name']
+        reset_activity_state(name, journal, validate_only=True)
+        reset_interactions(name, journal, validate_only=True)
     for group in sorted(groups):
         journal(dict(event='campaign_group_issued', group=hex(group)))
         C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8)(engine.base + 0x3df1dfe)(group, 0)
@@ -62,7 +69,6 @@ def reset_campaign(engine, rows, journal):
     for row, record, fields in records:
         name = row['source_identity']['name']
         journal(dict(event='campaign_record_issued', mission=name))
-        from .mission_effects import reset_interactions, reset_activity_state
         reset_activity_state(name, journal)
         reset_interactions(name, journal)
         if (row.get('status_fact') or {}).get('known_status') in ('accepted','active','completed','failed'):

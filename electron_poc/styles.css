@@ -5424,3 +5424,9 @@ body.msbt-density-compact .activity-card {
 [data-msbt-panel="boost-missions"] label:has(input[type="checkbox"]) { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
 [data-msbt-panel="boost-missions"] input[type="checkbox"] { width: 20px; height: 20px; min-height: 20px; flex: 0 0 20px; margin: 0; }
 #missionPreviewList { max-height: 260px; overflow: auto; margin: 12px 0; }
+#missionPracticeUnavailableList { max-height: 14rem; overflow-y: auto; padding-left: 1.4rem; }
+#missionPracticeUnavailableList li { margin: .5rem 0; overflow-wrap: anywhere; }
+.mission-tool-views { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.mission-tool-views button { flex: 1 1 7rem; min-height: 2.5rem; }
+.mission-tool-views button[aria-pressed="true"] { background: var(--accent, #77dbff); color: #111923; border-color: var(--accent, #77dbff); font-weight: 700; }
+[data-msbt-panel="boost-missions"] fieldset { min-width: 0; margin: 1rem 0; }

@@ -1,0 +1,1749 @@
+{
+  "reason": "Inheritance parents locked by dummy prerequisite and absent from every authored challenge list",
+  "sources": {
+    "Nexus-Data-challenge0.json": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+    "Nexus-Data-challenge4.json": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+    "Nexus-Data-challenge6.json": "290e13b1ef594bf9ba7cc88158498d2e611583316798e6541aa657c831590dd2",
+    "Nexus-Data-challenge_list0.json": "9380569814e4271aac3f8d889c267d78d3a967ce77d1886fc39fa3523f61c66d",
+    "Nexus-Data-challenge_list4.json": "1a1f81ccdcdf0b0886f5ec9e3da3ba7c3806df15b9a8ed782dd44f21dcf1fd8c",
+    "Nexus-Data-challenge_list6.json": "fe12a6d1cc3aaf2559a40d66c93fe620315149f5fe3fd06733092b0b2967b8ed"
+  },
+  "names": [
+    "VCChallenge_AcquireContract10",
+    "VCChallenge_AcquireContract20",
+    "VCChallenge_AcquireContract30",
+    "VCChallenge_BadassSecondWind1",
+    "VCChallenge_BadassSecondWind2",
+    "VCChallenge_BadassSecondWind3",
+    "VCChallenge_BanditAcquire2",
+    "VCChallenge_BanditAcquire4",
+    "VCChallenge_BanditAcquire6",
+    "VCChallenge_BanditBounty2",
+    "VCChallenge_BanditBounty4",
+    "VCChallenge_BanditBounty6",
+    "VCChallenge_BanditCollect2",
+    "VCChallenge_BanditCollect4",
+    "VCChallenge_BanditCollect6",
+    "VCChallenge_BanditPatrol2",
+    "VCChallenge_BanditPatrol4",
+    "VCChallenge_BanditPatrol6",
+    "VCChallenge_BanditSearch2",
+    "VCChallenge_BanditSearch4",
+    "VCChallenge_BanditSearch6",
+    "VCChallenge_BountyContract10",
+    "VCChallenge_BountyContract20",
+    "VCChallenge_BountyContract30",
+    "VCChallenge_CollectContract10",
+    "VCChallenge_CollectContract20",
+    "VCChallenge_CollectContract30",
+    "VCChallenge_CorruptedBountyContract10",
+    "VCChallenge_CorruptedBountyContract20",
+    "VCChallenge_CorruptedBountyContract30",
+    "VCChallenge_CreatureAcquire2",
+    "VCChallenge_CreatureAcquire4",
+    "VCChallenge_CreatureAcquire6",
+    "VCChallenge_CreatureBounty2",
+    "VCChallenge_CreatureBounty4",
+    "VCChallenge_CreatureBounty6",
+    "VCChallenge_CreatureCollect2",
+    "VCChallenge_CreatureCollect4",
+    "VCChallenge_CreatureCollect6",
+    "VCChallenge_CreaturePatrol2",
+    "VCChallenge_CreaturePatrol4",
+    "VCChallenge_CreaturePatrol6",
+    "VCChallenge_CreatureSearch2",
+    "VCChallenge_CreatureSearch4",
+    "VCChallenge_CreatureSearch6",
+    "VCChallenge_FirmwareTransfer5",
+    "VCChallenge_FirmwareTransfer7",
+    "VCChallenge_FirmwareTransfer9",
+    "VCChallenge_GetSecondWind10",
+    "VCChallenge_GetSecondWind15",
+    "VCChallenge_GetSecondWind5",
+    "VCChallenge_Heal10000",
+    "VCChallenge_Heal100000",
+    "VCChallenge_Heal1000000",
+    "VCChallenge_KillArmature10",
+    "VCChallenge_KillArmature15",
+    "VCChallenge_KillArmature20",
+    "VCChallenge_KillBadassEnemies10",
+    "VCChallenge_KillBadassEnemies15",
+    "VCChallenge_KillBadassEnemies20",
+    "VCChallenge_KillBandits20",
+    "VCChallenge_KillBandits25",
+    "VCChallenge_KillBandits30",
+    "VCChallenge_KillBanditsinCITY15",
+    "VCChallenge_KillBanditsinCITY20",
+    "VCChallenge_KillBanditsinCITY25",
+    "VCChallenge_KillBanditsinGRA15",
+    "VCChallenge_KillBanditsinGRA20",
+    "VCChallenge_KillBanditsinGRA25",
+    "VCChallenge_KillBanditsinMOU15",
+    "VCChallenge_KillBanditsinMOU20",
+    "VCChallenge_KillBanditsinMOU25",
+    "VCChallenge_KillBanditsinSHA15",
+    "VCChallenge_KillBanditsinSHA20",
+    "VCChallenge_KillBanditsinSHA25",
+    "VCChallenge_KillBossReplay3",
+    "VCChallenge_KillBossReplay5",
+    "VCChallenge_KillBossReplay7",
+    "VCChallenge_KillBulkhead10",
+    "VCChallenge_KillBulkhead15",
+    "VCChallenge_KillBulkhead20",
+    "VCChallenge_KillCorrupted10",
+    "VCChallenge_KillCorrupted15",
+    "VCChallenge_KillCorrupted20",
+    "VCChallenge_KillCreature20",
+    "VCChallenge_KillCreature25",
+    "VCChallenge_KillCreature30",
+    "VCChallenge_KillCreatureBossReplay1",
+    "VCChallenge_KillCreatureBossReplay2",
+    "VCChallenge_KillCreatureBossReplay3",
+    "VCChallenge_KillCreatureinCITY15",
+    "VCChallenge_KillCreatureinCITY20",
+    "VCChallenge_KillCreatureinCITY25",
+    "VCChallenge_KillCreatureinGRA15",
+    "VCChallenge_KillCreatureinGRA20",
+    "VCChallenge_KillCreatureinGRA25",
+    "VCChallenge_KillCreatureinMOU15",
+    "VCChallenge_KillCreatureinMOU20",
+    "VCChallenge_KillCreatureinMOU25",
+    "VCChallenge_KillCreatureinSHA15",
+    "VCChallenge_KillCreatureinSHA20",
+    "VCChallenge_KillCreatureinSHA25",
+    "VCChallenge_KillCreep10",
+    "VCChallenge_KillCreep15",
+    "VCChallenge_KillCreep20",
+    "VCChallenge_KillEnemies20",
+    "VCChallenge_KillEnemies200",
+    "VCChallenge_KillEnemies25",
+    "VCChallenge_KillEnemies30",
+    "VCChallenge_KillEnemies400",
+    "VCChallenge_KillEnemies600",
+    "VCChallenge_KillEnemiesInCity100",
+    "VCChallenge_KillEnemiesInCity200",
+    "VCChallenge_KillEnemiesInCity300",
+    "VCChallenge_KillEnemiesInGRA100",
+    "VCChallenge_KillEnemiesInGRA200",
+    "VCChallenge_KillEnemiesInGRA300",
+    "VCChallenge_KillEnemiesInMOU100",
+    "VCChallenge_KillEnemiesInMOU200",
+    "VCChallenge_KillEnemiesInMOU300",
+    "VCChallenge_KillEnemiesInSHA100",
+    "VCChallenge_KillEnemiesInSHA200",
+    "VCChallenge_KillEnemiesInSHA300",
+    "VCChallenge_KillEnemiesWithAR10",
+    "VCChallenge_KillEnemiesWithAR20",
+    "VCChallenge_KillEnemiesWithAR30",
+    "VCChallenge_KillEnemiesWithBorg10",
+    "VCChallenge_KillEnemiesWithBorg15",
+    "VCChallenge_KillEnemiesWithBorg20",
+    "VCChallenge_KillEnemiesWithCorrosive10",
+    "VCChallenge_KillEnemiesWithCorrosive100",
+    "VCChallenge_KillEnemiesWithCorrosive15",
+    "VCChallenge_KillEnemiesWithCorrosive20",
+    "VCChallenge_KillEnemiesWithCorrosive300",
+    "VCChallenge_KillEnemiesWithCorrosive500",
+    "VCChallenge_KillEnemiesWithCryo10",
+    "VCChallenge_KillEnemiesWithCryo100",
+    "VCChallenge_KillEnemiesWithCryo15",
+    "VCChallenge_KillEnemiesWithCryo20",
+    "VCChallenge_KillEnemiesWithCryo300",
+    "VCChallenge_KillEnemiesWithCryo500",
+    "VCChallenge_KillEnemiesWithDaedalus10",
+    "VCChallenge_KillEnemiesWithDaedalus15",
+    "VCChallenge_KillEnemiesWithDaedalus20",
+    "VCChallenge_KillEnemiesWithGrenades10",
+    "VCChallenge_KillEnemiesWithGrenades15",
+    "VCChallenge_KillEnemiesWithGrenades20",
+    "VCChallenge_KillEnemiesWithHeavyWeapon10",
+    "VCChallenge_KillEnemiesWithHeavyWeapon20",
+    "VCChallenge_KillEnemiesWithHeavyWeapon30",
+    "VCChallenge_KillEnemiesWithIncendiary10",
+    "VCChallenge_KillEnemiesWithIncendiary100",
+    "VCChallenge_KillEnemiesWithIncendiary15",
+    "VCChallenge_KillEnemiesWithIncendiary20",
+    "VCChallenge_KillEnemiesWithIncendiary300",
+    "VCChallenge_KillEnemiesWithIncendiary500",
+    "VCChallenge_KillEnemiesWithJakobs10",
+    "VCChallenge_KillEnemiesWithJakobs15",
+    "VCChallenge_KillEnemiesWithJakobs20",
+    "VCChallenge_KillEnemiesWithMaliwan10",
+    "VCChallenge_KillEnemiesWithMaliwan15",
+    "VCChallenge_KillEnemiesWithMaliwan20",
+    "VCChallenge_KillEnemiesWithOrder10",
+    "VCChallenge_KillEnemiesWithOrder15",
+    "VCChallenge_KillEnemiesWithOrder20",
+    "VCChallenge_KillEnemiesWithPistol10",
+    "VCChallenge_KillEnemiesWithPistol20",
+    "VCChallenge_KillEnemiesWithPistol30",
+    "VCChallenge_KillEnemiesWithRadiation10",
+    "VCChallenge_KillEnemiesWithRadiation100",
+    "VCChallenge_KillEnemiesWithRadiation15",
+    "VCChallenge_KillEnemiesWithRadiation20",
+    "VCChallenge_KillEnemiesWithRadiation300",
+    "VCChallenge_KillEnemiesWithRadiation500",
+    "VCChallenge_KillEnemiesWithSMG10",
+    "VCChallenge_KillEnemiesWithSMG20",
+    "VCChallenge_KillEnemiesWithSMG30",
+    "VCChallenge_KillEnemiesWithShock10",
+    "VCChallenge_KillEnemiesWithShock100",
+    "VCChallenge_KillEnemiesWithShock15",
+    "VCChallenge_KillEnemiesWithShock20",
+    "VCChallenge_KillEnemiesWithShock300",
+    "VCChallenge_KillEnemiesWithShock500",
+    "VCChallenge_KillEnemiesWithShotgun10",
+    "VCChallenge_KillEnemiesWithShotgun20",
+    "VCChallenge_KillEnemiesWithShotgun30",
+    "VCChallenge_KillEnemiesWithSniper10",
+    "VCChallenge_KillEnemiesWithSniper20",
+    "VCChallenge_KillEnemiesWithSniper30",
+    "VCChallenge_KillEnemiesWithTediore10",
+    "VCChallenge_KillEnemiesWithTediore15",
+    "VCChallenge_KillEnemiesWithTediore20",
+    "VCChallenge_KillEnemiesWithTorgue10",
+    "VCChallenge_KillEnemiesWithTorgue15",
+    "VCChallenge_KillEnemiesWithTorgue20",
+    "VCChallenge_KillEnemiesWithVladof10",
+    "VCChallenge_KillEnemiesWithVladof15",
+    "VCChallenge_KillEnemiesWithVladof20",
+    "VCChallenge_KillEnemyGroundPound100",
+    "VCChallenge_KillEnemyGroundPound150",
+    "VCChallenge_KillEnemyGroundPound50",
+    "VCChallenge_KillEnemyMelee20",
+    "VCChallenge_KillEnemyMelee40",
+    "VCChallenge_KillEnemyMelee60",
+    "VCChallenge_KillEngine10",
+    "VCChallenge_KillEngine15",
+    "VCChallenge_KillEngine20",
+    "VCChallenge_KillGrunt10",
+    "VCChallenge_KillGrunt15",
+    "VCChallenge_KillGrunt20",
+    "VCChallenge_KillGunToter10",
+    "VCChallenge_KillGunToter15",
+    "VCChallenge_KillGunToter20",
+    "VCChallenge_KillKratch10",
+    "VCChallenge_KillKratch15",
+    "VCChallenge_KillKratch20",
+    "VCChallenge_KillMangler10",
+    "VCChallenge_KillMangler15",
+    "VCChallenge_KillMangler20",
+    "VCChallenge_KillMeathead10",
+    "VCChallenge_KillMeathead15",
+    "VCChallenge_KillMeathead20",
+    "VCChallenge_KillOppressors10",
+    "VCChallenge_KillOppressors15",
+    "VCChallenge_KillOppressors20",
+    "VCChallenge_KillOrder20",
+    "VCChallenge_KillOrder25",
+    "VCChallenge_KillOrder30",
+    "VCChallenge_KillOrderBossReplay1",
+    "VCChallenge_KillOrderBossReplay2",
+    "VCChallenge_KillOrderBossReplay3",
+    "VCChallenge_KillOrderinCITY15",
+    "VCChallenge_KillOrderinCITY20",
+    "VCChallenge_KillOrderinCITY25",
+    "VCChallenge_KillOrderinGRA15",
+    "VCChallenge_KillOrderinGRA20",
+    "VCChallenge_KillOrderinGRA25",
+    "VCChallenge_KillOrderinMOU15",
+    "VCChallenge_KillOrderinMOU20",
+    "VCChallenge_KillOrderinMOU25",
+    "VCChallenge_KillOrderinSHA15",
+    "VCChallenge_KillOrderinSHA20",
+    "VCChallenge_KillOrderinSHA25",
+    "VCChallenge_KillPangolin10",
+    "VCChallenge_KillPangolin15",
+    "VCChallenge_KillPangolin20",
+    "VCChallenge_KillPhalanx10",
+    "VCChallenge_KillPhalanx15",
+    "VCChallenge_KillPhalanx20",
+    "VCChallenge_KillPsycho10",
+    "VCChallenge_KillPsycho15",
+    "VCChallenge_KillPsycho20",
+    "VCChallenge_KillRipperBossReplay1",
+    "VCChallenge_KillRipperBossReplay2",
+    "VCChallenge_KillRipperBossReplay3",
+    "VCChallenge_KillSplice10",
+    "VCChallenge_KillSplice15",
+    "VCChallenge_KillSplice20",
+    "VCChallenge_KillThresher10",
+    "VCChallenge_KillThresher15",
+    "VCChallenge_KillThresher20",
+    "VCChallenge_KillTrueBoss",
+    "VCChallenge_KillTurret10",
+    "VCChallenge_KillTurret15",
+    "VCChallenge_KillTurret20",
+    "VCChallenge_KillWarden10",
+    "VCChallenge_KillWarden15",
+    "VCChallenge_KillWarden20",
+    "VCChallenge_KillWildhorn10",
+    "VCChallenge_KillWildhorn15",
+    "VCChallenge_KillWildhorn20",
+    "VCChallenge_KillWitness10",
+    "VCChallenge_KillWitness15",
+    "VCChallenge_KillWitness20",
+    "VCChallenge_LootClassMod3",
+    "VCChallenge_LootClassMod5",
+    "VCChallenge_LootClassMod7",
+    "VCChallenge_LootGadget3",
+    "VCChallenge_LootGadget5",
+    "VCChallenge_LootGadget7",
+    "VCChallenge_LootLegendary10",
+    "VCChallenge_LootLegendary15",
+    "VCChallenge_LootLegendary5",
+    "VCChallenge_LootPurple10",
+    "VCChallenge_LootPurple15",
+    "VCChallenge_LootPurple5",
+    "VCChallenge_LootRepkit3",
+    "VCChallenge_LootRepkit5",
+    "VCChallenge_LootRepkit7",
+    "VCChallenge_LootShield3",
+    "VCChallenge_LootShield5",
+    "VCChallenge_LootShield7",
+    "VCChallenge_LootWeapon10",
+    "VCChallenge_LootWeapon15",
+    "VCChallenge_LootWeapon5",
+    "VCChallenge_OpenLootables20",
+    "VCChallenge_OpenLootables30",
+    "VCChallenge_OpenLootables40",
+    "VCChallenge_OrderAcquire2",
+    "VCChallenge_OrderAcquire4",
+    "VCChallenge_OrderAcquire6",
+    "VCChallenge_OrderBounty2",
+    "VCChallenge_OrderBounty4",
+    "VCChallenge_OrderBounty6",
+    "VCChallenge_OrderCollect2",
+    "VCChallenge_OrderCollect4",
+    "VCChallenge_OrderCollect6",
+    "VCChallenge_OrderPatrol2",
+    "VCChallenge_OrderPatrol4",
+    "VCChallenge_OrderPatrol6",
+    "VCChallenge_OrderSearch2",
+    "VCChallenge_OrderSearch4",
+    "VCChallenge_OrderSearch6",
+    "VCChallenge_PatrolContract10",
+    "VCChallenge_PatrolContract20",
+    "VCChallenge_PatrolContract30",
+    "VCChallenge_PickupCash1000",
+    "VCChallenge_PickupCash100000",
+    "VCChallenge_PickupCash1000000",
+    "VCChallenge_PickupCash1500",
+    "VCChallenge_PickupCash500",
+    "VCChallenge_PickupCash500000",
+    "VCChallenge_PickupEridium100",
+    "VCChallenge_PickupEridium200",
+    "VCChallenge_PickupEridium300",
+    "VCChallenge_PurchaseItemFromBMVM2",
+    "VCChallenge_PurchaseItemFromBMVM4",
+    "VCChallenge_PurchaseItemFromBMVM6",
+    "VCChallenge_SearchContract10",
+    "VCChallenge_SearchContract20",
+    "VCChallenge_SearchContract30",
+    "VCChallenge_SellItemToVendingMachine20",
+    "VCChallenge_SellItemToVendingMachine30",
+    "VCChallenge_SellItemToVendingMachine40",
+    "VCChallenge_WeeklyTraitMission",
+    "VCChallenge_openlootables100",
+    "VCChallenge_openlootables200",
+    "VCChallenge_openlootables300"
+  ],
+  "evidence": {
+    "VCChallenge_BanditAcquire2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1725/vcchallenge_banditacquire2"
+    },
+    "VCChallenge_BanditAcquire4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1726/vcchallenge_banditacquire4"
+    },
+    "VCChallenge_BanditAcquire6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1727/vcchallenge_banditacquire6"
+    },
+    "VCChallenge_BanditBounty2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1728/vcchallenge_banditbounty2"
+    },
+    "VCChallenge_BanditBounty4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1729/vcchallenge_banditbounty4"
+    },
+    "VCChallenge_BanditBounty6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1730/vcchallenge_banditbounty6"
+    },
+    "VCChallenge_BanditCollect2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1731/vcchallenge_banditcollect2"
+    },
+    "VCChallenge_BanditCollect4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1732/vcchallenge_banditcollect4"
+    },
+    "VCChallenge_BanditCollect6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1733/vcchallenge_banditcollect6"
+    },
+    "VCChallenge_BanditPatrol2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1734/vcchallenge_banditpatrol2"
+    },
+    "VCChallenge_BanditPatrol4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1735/vcchallenge_banditpatrol4"
+    },
+    "VCChallenge_BanditPatrol6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1736/vcchallenge_banditpatrol6"
+    },
+    "VCChallenge_BanditSearch2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1737/vcchallenge_banditsearch2"
+    },
+    "VCChallenge_BanditSearch4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1738/vcchallenge_banditsearch4"
+    },
+    "VCChallenge_BanditSearch6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1739/vcchallenge_banditsearch6"
+    },
+    "VCChallenge_CreatureAcquire2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1740/vcchallenge_creatureacquire2"
+    },
+    "VCChallenge_CreatureAcquire4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1741/vcchallenge_creatureacquire4"
+    },
+    "VCChallenge_CreatureAcquire6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1742/vcchallenge_creatureacquire6"
+    },
+    "VCChallenge_CreatureBounty2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1743/vcchallenge_creaturebounty2"
+    },
+    "VCChallenge_CreatureBounty4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1744/vcchallenge_creaturebounty4"
+    },
+    "VCChallenge_CreatureBounty6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1745/vcchallenge_creaturebounty6"
+    },
+    "VCChallenge_CreatureCollect2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1746/vcchallenge_creaturecollect2"
+    },
+    "VCChallenge_CreatureCollect4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1747/vcchallenge_creaturecollect4"
+    },
+    "VCChallenge_CreatureCollect6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1748/vcchallenge_creaturecollect6"
+    },
+    "VCChallenge_CreaturePatrol2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1749/vcchallenge_creaturepatrol2"
+    },
+    "VCChallenge_CreaturePatrol4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1750/vcchallenge_creaturepatrol4"
+    },
+    "VCChallenge_CreaturePatrol6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1751/vcchallenge_creaturepatrol6"
+    },
+    "VCChallenge_CreatureSearch2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1752/vcchallenge_creaturesearch2"
+    },
+    "VCChallenge_CreatureSearch4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1753/vcchallenge_creaturesearch4"
+    },
+    "VCChallenge_CreatureSearch6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1754/vcchallenge_creaturesearch6"
+    },
+    "VCChallenge_GetSecondWind10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1755/vcchallenge_getsecondwind10"
+    },
+    "VCChallenge_GetSecondWind15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1756/vcchallenge_getsecondwind15"
+    },
+    "VCChallenge_GetSecondWind5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1757/vcchallenge_getsecondwind5"
+    },
+    "VCChallenge_Heal10000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1758/vcchallenge_heal10000"
+    },
+    "VCChallenge_Heal100000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1759/vcchallenge_heal100000"
+    },
+    "VCChallenge_Heal1000000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1760/vcchallenge_heal1000000"
+    },
+    "VCChallenge_KillArmature10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1761/vcchallenge_killarmature10"
+    },
+    "VCChallenge_KillArmature15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1762/vcchallenge_killarmature15"
+    },
+    "VCChallenge_KillArmature20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1763/vcchallenge_killarmature20"
+    },
+    "VCChallenge_KillBadassEnemies10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1764/vcchallenge_killbadassenemies10"
+    },
+    "VCChallenge_KillBadassEnemies15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1765/vcchallenge_killbadassenemies15"
+    },
+    "VCChallenge_KillBadassEnemies20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1766/vcchallenge_killbadassenemies20"
+    },
+    "VCChallenge_KillBandits20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1767/vcchallenge_killbandits20"
+    },
+    "VCChallenge_KillBandits25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1768/vcchallenge_killbandits25"
+    },
+    "VCChallenge_KillBandits30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1769/vcchallenge_killbandits30"
+    },
+    "VCChallenge_KillBanditsinCITY15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1770/vcchallenge_killbanditsincity15"
+    },
+    "VCChallenge_KillBanditsinCITY20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1771/vcchallenge_killbanditsincity20"
+    },
+    "VCChallenge_KillBanditsinCITY25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1772/vcchallenge_killbanditsincity25"
+    },
+    "VCChallenge_KillBanditsinGRA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1773/vcchallenge_killbanditsingra15"
+    },
+    "VCChallenge_KillBanditsinGRA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1774/vcchallenge_killbanditsingra20"
+    },
+    "VCChallenge_KillBanditsinGRA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1775/vcchallenge_killbanditsingra25"
+    },
+    "VCChallenge_KillBanditsinMOU15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1776/vcchallenge_killbanditsinmou15"
+    },
+    "VCChallenge_KillBanditsinMOU20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1777/vcchallenge_killbanditsinmou20"
+    },
+    "VCChallenge_KillBanditsinMOU25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1778/vcchallenge_killbanditsinmou25"
+    },
+    "VCChallenge_KillBanditsinSHA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1779/vcchallenge_killbanditsinsha15"
+    },
+    "VCChallenge_KillBanditsinSHA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1780/vcchallenge_killbanditsinsha20"
+    },
+    "VCChallenge_KillBanditsinSHA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1781/vcchallenge_killbanditsinsha25"
+    },
+    "VCChallenge_KillBossReplay3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1782/vcchallenge_killbossreplay3"
+    },
+    "VCChallenge_KillBossReplay5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1783/vcchallenge_killbossreplay5"
+    },
+    "VCChallenge_KillBossReplay7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1784/vcchallenge_killbossreplay7"
+    },
+    "VCChallenge_KillBulkhead10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1785/vcchallenge_killbulkhead10"
+    },
+    "VCChallenge_KillBulkhead15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1786/vcchallenge_killbulkhead15"
+    },
+    "VCChallenge_KillBulkhead20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1787/vcchallenge_killbulkhead20"
+    },
+    "VCChallenge_KillCorrupted10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1788/vcchallenge_killcorrupted10"
+    },
+    "VCChallenge_KillCorrupted15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1789/vcchallenge_killcorrupted15"
+    },
+    "VCChallenge_KillCorrupted20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1790/vcchallenge_killcorrupted20"
+    },
+    "VCChallenge_KillCreature20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1791/vcchallenge_killcreature20"
+    },
+    "VCChallenge_KillCreature25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1792/vcchallenge_killcreature25"
+    },
+    "VCChallenge_KillCreature30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1793/vcchallenge_killcreature30"
+    },
+    "VCChallenge_KillCreatureBossReplay1": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1794/vcchallenge_killcreaturebossreplay1"
+    },
+    "VCChallenge_KillCreatureBossReplay2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1795/vcchallenge_killcreaturebossreplay2"
+    },
+    "VCChallenge_KillCreatureBossReplay3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1796/vcchallenge_killcreaturebossreplay3"
+    },
+    "VCChallenge_KillCreatureinCITY15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1797/vcchallenge_killcreatureincity15"
+    },
+    "VCChallenge_KillCreatureinCITY20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1798/vcchallenge_killcreatureincity20"
+    },
+    "VCChallenge_KillCreatureinCITY25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1799/vcchallenge_killcreatureincity25"
+    },
+    "VCChallenge_KillCreatureinGRA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1800/vcchallenge_killcreatureingra15"
+    },
+    "VCChallenge_KillCreatureinGRA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1801/vcchallenge_killcreatureingra20"
+    },
+    "VCChallenge_KillCreatureinGRA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1802/vcchallenge_killcreatureingra25"
+    },
+    "VCChallenge_KillCreatureinMOU15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1803/vcchallenge_killcreatureinmou15"
+    },
+    "VCChallenge_KillCreatureinMOU20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1804/vcchallenge_killcreatureinmou20"
+    },
+    "VCChallenge_KillCreatureinMOU25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1805/vcchallenge_killcreatureinmou25"
+    },
+    "VCChallenge_KillCreatureinSHA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1806/vcchallenge_killcreatureinsha15"
+    },
+    "VCChallenge_KillCreatureinSHA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1807/vcchallenge_killcreatureinsha20"
+    },
+    "VCChallenge_KillCreatureinSHA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1808/vcchallenge_killcreatureinsha25"
+    },
+    "VCChallenge_KillCreep10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1809/vcchallenge_killcreep10"
+    },
+    "VCChallenge_KillCreep15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1810/vcchallenge_killcreep15"
+    },
+    "VCChallenge_KillCreep20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1811/vcchallenge_killcreep20"
+    },
+    "VCChallenge_KillEnemiesWithAR10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1812/vcchallenge_killenemieswithar10"
+    },
+    "VCChallenge_KillEnemiesWithAR20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1813/vcchallenge_killenemieswithar20"
+    },
+    "VCChallenge_KillEnemiesWithAR30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1814/vcchallenge_killenemieswithar30"
+    },
+    "VCChallenge_KillEnemiesWithBorg10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1815/vcchallenge_killenemieswithborg10"
+    },
+    "VCChallenge_KillEnemiesWithBorg15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1816/vcchallenge_killenemieswithborg15"
+    },
+    "VCChallenge_KillEnemiesWithBorg20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1817/vcchallenge_killenemieswithborg20"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1818/vcchallenge_killenemieswithcorrosive10"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1819/vcchallenge_killenemieswithcorrosive15"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1820/vcchallenge_killenemieswithcorrosive20"
+    },
+    "VCChallenge_KillEnemiesWithCryo10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1821/vcchallenge_killenemieswithcryo10"
+    },
+    "VCChallenge_KillEnemiesWithCryo15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1822/vcchallenge_killenemieswithcryo15"
+    },
+    "VCChallenge_KillEnemiesWithCryo20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1823/vcchallenge_killenemieswithcryo20"
+    },
+    "VCChallenge_KillEnemiesWithDaedalus10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1824/vcchallenge_killenemieswithdaedalus10"
+    },
+    "VCChallenge_KillEnemiesWithDaedalus15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1825/vcchallenge_killenemieswithdaedalus15"
+    },
+    "VCChallenge_KillEnemiesWithDaedalus20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1826/vcchallenge_killenemieswithdaedalus20"
+    },
+    "VCChallenge_KillEnemiesWithGrenades10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1827/vcchallenge_killenemieswithgrenades10"
+    },
+    "VCChallenge_KillEnemiesWithGrenades15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1828/vcchallenge_killenemieswithgrenades15"
+    },
+    "VCChallenge_KillEnemiesWithGrenades20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1829/vcchallenge_killenemieswithgrenades20"
+    },
+    "VCChallenge_KillEnemiesWithHeavyWeapon10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1830/vcchallenge_killenemieswithheavyweapon10"
+    },
+    "VCChallenge_KillEnemiesWithHeavyWeapon20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1831/vcchallenge_killenemieswithheavyweapon20"
+    },
+    "VCChallenge_KillEnemiesWithHeavyWeapon30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1832/vcchallenge_killenemieswithheavyweapon30"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1833/vcchallenge_killenemieswithincendiary10"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1834/vcchallenge_killenemieswithincendiary15"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1835/vcchallenge_killenemieswithincendiary20"
+    },
+    "VCChallenge_KillEnemiesWithJakobs10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1836/vcchallenge_killenemieswithjakobs10"
+    },
+    "VCChallenge_KillEnemiesWithJakobs15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1837/vcchallenge_killenemieswithjakobs15"
+    },
+    "VCChallenge_KillEnemiesWithJakobs20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1838/vcchallenge_killenemieswithjakobs20"
+    },
+    "VCChallenge_KillEnemiesWithMaliwan10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1839/vcchallenge_killenemieswithmaliwan10"
+    },
+    "VCChallenge_KillEnemiesWithMaliwan15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1840/vcchallenge_killenemieswithmaliwan15"
+    },
+    "VCChallenge_KillEnemiesWithMaliwan20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1841/vcchallenge_killenemieswithmaliwan20"
+    },
+    "VCChallenge_KillEnemiesWithOrder10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1842/vcchallenge_killenemieswithorder10"
+    },
+    "VCChallenge_KillEnemiesWithOrder15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1843/vcchallenge_killenemieswithorder15"
+    },
+    "VCChallenge_KillEnemiesWithOrder20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1844/vcchallenge_killenemieswithorder20"
+    },
+    "VCChallenge_KillEnemiesWithPistol10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1845/vcchallenge_killenemieswithpistol10"
+    },
+    "VCChallenge_KillEnemiesWithPistol20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1846/vcchallenge_killenemieswithpistol20"
+    },
+    "VCChallenge_KillEnemiesWithPistol30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1847/vcchallenge_killenemieswithpistol30"
+    },
+    "VCChallenge_KillEnemiesWithRadiation10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1848/vcchallenge_killenemieswithradiation10"
+    },
+    "VCChallenge_KillEnemiesWithRadiation15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1849/vcchallenge_killenemieswithradiation15"
+    },
+    "VCChallenge_KillEnemiesWithRadiation20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1850/vcchallenge_killenemieswithradiation20"
+    },
+    "VCChallenge_KillEnemiesWithShock10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1851/vcchallenge_killenemieswithshock10"
+    },
+    "VCChallenge_KillEnemiesWithShock15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1852/vcchallenge_killenemieswithshock15"
+    },
+    "VCChallenge_KillEnemiesWithShock20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1853/vcchallenge_killenemieswithshock20"
+    },
+    "VCChallenge_KillEnemiesWithShotgun10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1854/vcchallenge_killenemieswithshotgun10"
+    },
+    "VCChallenge_KillEnemiesWithShotgun20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1855/vcchallenge_killenemieswithshotgun20"
+    },
+    "VCChallenge_KillEnemiesWithShotgun30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1856/vcchallenge_killenemieswithshotgun30"
+    },
+    "VCChallenge_KillEnemiesWithSMG10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1857/vcchallenge_killenemieswithsmg10"
+    },
+    "VCChallenge_KillEnemiesWithSMG20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1858/vcchallenge_killenemieswithsmg20"
+    },
+    "VCChallenge_KillEnemiesWithSMG30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1859/vcchallenge_killenemieswithsmg30"
+    },
+    "VCChallenge_KillEnemiesWithSniper10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1860/vcchallenge_killenemieswithsniper10"
+    },
+    "VCChallenge_KillEnemiesWithSniper20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1861/vcchallenge_killenemieswithsniper20"
+    },
+    "VCChallenge_KillEnemiesWithSniper30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1862/vcchallenge_killenemieswithsniper30"
+    },
+    "VCChallenge_KillEnemiesWithTediore10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1863/vcchallenge_killenemieswithtediore10"
+    },
+    "VCChallenge_KillEnemiesWithTediore15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1864/vcchallenge_killenemieswithtediore15"
+    },
+    "VCChallenge_KillEnemiesWithTediore20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1865/vcchallenge_killenemieswithtediore20"
+    },
+    "VCChallenge_KillEnemiesWithTorgue10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1866/vcchallenge_killenemieswithtorgue10"
+    },
+    "VCChallenge_KillEnemiesWithTorgue15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1867/vcchallenge_killenemieswithtorgue15"
+    },
+    "VCChallenge_KillEnemiesWithTorgue20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1868/vcchallenge_killenemieswithtorgue20"
+    },
+    "VCChallenge_KillEnemiesWithVladof10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1869/vcchallenge_killenemieswithvladof10"
+    },
+    "VCChallenge_KillEnemiesWithVladof15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1870/vcchallenge_killenemieswithvladof15"
+    },
+    "VCChallenge_KillEnemiesWithVladof20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1871/vcchallenge_killenemieswithvladof20"
+    },
+    "VCChallenge_KillEngine10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1872/vcchallenge_killengine10"
+    },
+    "VCChallenge_KillEngine15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1873/vcchallenge_killengine15"
+    },
+    "VCChallenge_KillEngine20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1874/vcchallenge_killengine20"
+    },
+    "VCChallenge_KillGrunt10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1875/vcchallenge_killgrunt10"
+    },
+    "VCChallenge_KillGrunt15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1876/vcchallenge_killgrunt15"
+    },
+    "VCChallenge_KillGrunt20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1877/vcchallenge_killgrunt20"
+    },
+    "VCChallenge_KillGunToter10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1878/vcchallenge_killguntoter10"
+    },
+    "VCChallenge_KillGunToter15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1879/vcchallenge_killguntoter15"
+    },
+    "VCChallenge_KillGunToter20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1880/vcchallenge_killguntoter20"
+    },
+    "VCChallenge_KillKratch10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1881/vcchallenge_killkratch10"
+    },
+    "VCChallenge_KillKratch15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1882/vcchallenge_killkratch15"
+    },
+    "VCChallenge_KillKratch20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1883/vcchallenge_killkratch20"
+    },
+    "VCChallenge_KillMangler10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1884/vcchallenge_killmangler10"
+    },
+    "VCChallenge_KillMangler15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1885/vcchallenge_killmangler15"
+    },
+    "VCChallenge_KillMangler20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1886/vcchallenge_killmangler20"
+    },
+    "VCChallenge_KillMeathead10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1887/vcchallenge_killmeathead10"
+    },
+    "VCChallenge_KillMeathead15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1888/vcchallenge_killmeathead15"
+    },
+    "VCChallenge_KillMeathead20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1889/vcchallenge_killmeathead20"
+    },
+    "VCChallenge_KillOppressors10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1890/vcchallenge_killoppressors10"
+    },
+    "VCChallenge_KillOppressors15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1891/vcchallenge_killoppressors15"
+    },
+    "VCChallenge_KillOppressors20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1892/vcchallenge_killoppressors20"
+    },
+    "VCChallenge_KillOrder20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1893/vcchallenge_killorder20"
+    },
+    "VCChallenge_KillOrder25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1894/vcchallenge_killorder25"
+    },
+    "VCChallenge_KillOrder30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1895/vcchallenge_killorder30"
+    },
+    "VCChallenge_KillOrderBossReplay1": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1896/vcchallenge_killorderbossreplay1"
+    },
+    "VCChallenge_KillOrderBossReplay2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1897/vcchallenge_killorderbossreplay2"
+    },
+    "VCChallenge_KillOrderBossReplay3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1898/vcchallenge_killorderbossreplay3"
+    },
+    "VCChallenge_KillOrderinCITY15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1899/vcchallenge_killorderincity15"
+    },
+    "VCChallenge_KillOrderinCITY20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1900/vcchallenge_killorderincity20"
+    },
+    "VCChallenge_KillOrderinCITY25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1901/vcchallenge_killorderincity25"
+    },
+    "VCChallenge_KillOrderinGRA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1902/vcchallenge_killorderingra15"
+    },
+    "VCChallenge_KillOrderinGRA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1903/vcchallenge_killorderingra20"
+    },
+    "VCChallenge_KillOrderinGRA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1904/vcchallenge_killorderingra25"
+    },
+    "VCChallenge_KillOrderinMOU15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1905/vcchallenge_killorderinmou15"
+    },
+    "VCChallenge_KillOrderinMOU20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1906/vcchallenge_killorderinmou20"
+    },
+    "VCChallenge_KillOrderinMOU25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1907/vcchallenge_killorderinmou25"
+    },
+    "VCChallenge_KillOrderinSHA15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1908/vcchallenge_killorderinsha15"
+    },
+    "VCChallenge_KillOrderinSHA20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1909/vcchallenge_killorderinsha20"
+    },
+    "VCChallenge_KillOrderinSHA25": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1910/vcchallenge_killorderinsha25"
+    },
+    "VCChallenge_KillPangolin10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1911/vcchallenge_killpangolin10"
+    },
+    "VCChallenge_KillPangolin15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1912/vcchallenge_killpangolin15"
+    },
+    "VCChallenge_KillPangolin20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1913/vcchallenge_killpangolin20"
+    },
+    "VCChallenge_KillPhalanx10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1914/vcchallenge_killphalanx10"
+    },
+    "VCChallenge_KillPhalanx15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1915/vcchallenge_killphalanx15"
+    },
+    "VCChallenge_KillPhalanx20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1916/vcchallenge_killphalanx20"
+    },
+    "VCChallenge_KillPsycho10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1917/vcchallenge_killpsycho10"
+    },
+    "VCChallenge_KillPsycho15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1918/vcchallenge_killpsycho15"
+    },
+    "VCChallenge_KillPsycho20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1919/vcchallenge_killpsycho20"
+    },
+    "VCChallenge_KillRipperBossReplay1": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1920/vcchallenge_killripperbossreplay1"
+    },
+    "VCChallenge_KillRipperBossReplay2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1921/vcchallenge_killripperbossreplay2"
+    },
+    "VCChallenge_KillRipperBossReplay3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1922/vcchallenge_killripperbossreplay3"
+    },
+    "VCChallenge_KillSplice10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1923/vcchallenge_killsplice10"
+    },
+    "VCChallenge_KillSplice15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1924/vcchallenge_killsplice15"
+    },
+    "VCChallenge_KillSplice20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1925/vcchallenge_killsplice20"
+    },
+    "VCChallenge_KillThresher10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1926/vcchallenge_killthresher10"
+    },
+    "VCChallenge_KillThresher15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1927/vcchallenge_killthresher15"
+    },
+    "VCChallenge_KillThresher20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1928/vcchallenge_killthresher20"
+    },
+    "VCChallenge_KillTurret10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1929/vcchallenge_killturret10"
+    },
+    "VCChallenge_KillTurret15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1930/vcchallenge_killturret15"
+    },
+    "VCChallenge_KillTurret20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1931/vcchallenge_killturret20"
+    },
+    "VCChallenge_KillWarden10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1932/vcchallenge_killwarden10"
+    },
+    "VCChallenge_KillWarden15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1933/vcchallenge_killwarden15"
+    },
+    "VCChallenge_KillWarden20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1934/vcchallenge_killwarden20"
+    },
+    "VCChallenge_KillWildhorn10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1935/vcchallenge_killwildhorn10"
+    },
+    "VCChallenge_KillWildhorn15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1936/vcchallenge_killwildhorn15"
+    },
+    "VCChallenge_KillWildhorn20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1937/vcchallenge_killwildhorn20"
+    },
+    "VCChallenge_KillWitness10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1938/vcchallenge_killwitness10"
+    },
+    "VCChallenge_KillWitness15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1939/vcchallenge_killwitness15"
+    },
+    "VCChallenge_KillWitness20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1940/vcchallenge_killwitness20"
+    },
+    "VCChallenge_LootClassMod3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1941/vcchallenge_lootclassmod3"
+    },
+    "VCChallenge_LootClassMod5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1942/vcchallenge_lootclassmod5"
+    },
+    "VCChallenge_LootClassMod7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1943/vcchallenge_lootclassmod7"
+    },
+    "VCChallenge_LootGadget3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1944/vcchallenge_lootgadget3"
+    },
+    "VCChallenge_LootGadget5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1945/vcchallenge_lootgadget5"
+    },
+    "VCChallenge_LootGadget7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1946/vcchallenge_lootgadget7"
+    },
+    "VCChallenge_LootPurple10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1947/vcchallenge_lootpurple10"
+    },
+    "VCChallenge_LootPurple15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1948/vcchallenge_lootpurple15"
+    },
+    "VCChallenge_LootPurple5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1949/vcchallenge_lootpurple5"
+    },
+    "VCChallenge_LootRepkit3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1950/vcchallenge_lootrepkit3"
+    },
+    "VCChallenge_LootRepkit5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1951/vcchallenge_lootrepkit5"
+    },
+    "VCChallenge_LootRepkit7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1952/vcchallenge_lootrepkit7"
+    },
+    "VCChallenge_LootShield3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1953/vcchallenge_lootshield3"
+    },
+    "VCChallenge_LootShield5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1954/vcchallenge_lootshield5"
+    },
+    "VCChallenge_LootShield7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1955/vcchallenge_lootshield7"
+    },
+    "VCChallenge_LootWeapon10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1956/vcchallenge_lootweapon10"
+    },
+    "VCChallenge_LootWeapon15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1957/vcchallenge_lootweapon15"
+    },
+    "VCChallenge_LootWeapon5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1958/vcchallenge_lootweapon5"
+    },
+    "VCChallenge_OpenLootables20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1959/vcchallenge_openlootables20"
+    },
+    "VCChallenge_OpenLootables30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1960/vcchallenge_openlootables30"
+    },
+    "VCChallenge_OpenLootables40": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1961/vcchallenge_openlootables40"
+    },
+    "VCChallenge_OrderAcquire2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1962/vcchallenge_orderacquire2"
+    },
+    "VCChallenge_OrderAcquire4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1963/vcchallenge_orderacquire4"
+    },
+    "VCChallenge_OrderAcquire6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1964/vcchallenge_orderacquire6"
+    },
+    "VCChallenge_OrderBounty2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1965/vcchallenge_orderbounty2"
+    },
+    "VCChallenge_OrderBounty4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1966/vcchallenge_orderbounty4"
+    },
+    "VCChallenge_OrderBounty6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1967/vcchallenge_orderbounty6"
+    },
+    "VCChallenge_OrderCollect2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1968/vcchallenge_ordercollect2"
+    },
+    "VCChallenge_OrderCollect4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1969/vcchallenge_ordercollect4"
+    },
+    "VCChallenge_OrderCollect6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1970/vcchallenge_ordercollect6"
+    },
+    "VCChallenge_OrderPatrol2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1971/vcchallenge_orderpatrol2"
+    },
+    "VCChallenge_OrderPatrol4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1972/vcchallenge_orderpatrol4"
+    },
+    "VCChallenge_OrderPatrol6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1973/vcchallenge_orderpatrol6"
+    },
+    "VCChallenge_OrderSearch2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1974/vcchallenge_ordersearch2"
+    },
+    "VCChallenge_OrderSearch4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1975/vcchallenge_ordersearch4"
+    },
+    "VCChallenge_OrderSearch6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1976/vcchallenge_ordersearch6"
+    },
+    "VCChallenge_PickupCash1000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1977/vcchallenge_pickupcash1000"
+    },
+    "VCChallenge_PickupCash1500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1978/vcchallenge_pickupcash1500"
+    },
+    "VCChallenge_PickupCash500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1979/vcchallenge_pickupcash500"
+    },
+    "VCChallenge_PickupEridium100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1980/vcchallenge_pickuperidium100"
+    },
+    "VCChallenge_PickupEridium200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1981/vcchallenge_pickuperidium200"
+    },
+    "VCChallenge_PickupEridium300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/1/entries/1982/vcchallenge_pickuperidium300"
+    },
+    "VCChallenge_AcquireContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/0/vcchallenge_acquirecontract10"
+    },
+    "VCChallenge_AcquireContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/1/vcchallenge_acquirecontract20"
+    },
+    "VCChallenge_AcquireContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/2/vcchallenge_acquirecontract30"
+    },
+    "VCChallenge_BadassSecondWind1": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/3/vcchallenge_badasssecondwind1"
+    },
+    "VCChallenge_BadassSecondWind2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/4/vcchallenge_badasssecondwind2"
+    },
+    "VCChallenge_BadassSecondWind3": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/5/vcchallenge_badasssecondwind3"
+    },
+    "VCChallenge_BountyContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/6/vcchallenge_bountycontract10"
+    },
+    "VCChallenge_BountyContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/7/vcchallenge_bountycontract20"
+    },
+    "VCChallenge_BountyContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/8/vcchallenge_bountycontract30"
+    },
+    "VCChallenge_CollectContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/9/vcchallenge_collectcontract10"
+    },
+    "VCChallenge_CollectContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/10/vcchallenge_collectcontract20"
+    },
+    "VCChallenge_CollectContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/11/vcchallenge_collectcontract30"
+    },
+    "VCChallenge_CorruptedBountyContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/12/vcchallenge_corruptedbountycontract10"
+    },
+    "VCChallenge_CorruptedBountyContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/13/vcchallenge_corruptedbountycontract20"
+    },
+    "VCChallenge_CorruptedBountyContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/14/vcchallenge_corruptedbountycontract30"
+    },
+    "VCChallenge_FirmwareTransfer5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/15/vcchallenge_firmwaretransfer5"
+    },
+    "VCChallenge_FirmwareTransfer7": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/16/vcchallenge_firmwaretransfer7"
+    },
+    "VCChallenge_FirmwareTransfer9": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/17/vcchallenge_firmwaretransfer9"
+    },
+    "VCChallenge_KillEnemies200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/18/vcchallenge_killenemies200"
+    },
+    "VCChallenge_KillEnemies400": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/19/vcchallenge_killenemies400"
+    },
+    "VCChallenge_KillEnemies600": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/20/vcchallenge_killenemies600"
+    },
+    "VCChallenge_KillEnemiesInCity100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/21/vcchallenge_killenemiesincity100"
+    },
+    "VCChallenge_KillEnemiesInCity200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/22/vcchallenge_killenemiesincity200"
+    },
+    "VCChallenge_KillEnemiesInCity300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/23/vcchallenge_killenemiesincity300"
+    },
+    "VCChallenge_KillEnemiesInGRA100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/24/vcchallenge_killenemiesingra100"
+    },
+    "VCChallenge_KillEnemiesInGRA200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/25/vcchallenge_killenemiesingra200"
+    },
+    "VCChallenge_KillEnemiesInGRA300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/26/vcchallenge_killenemiesingra300"
+    },
+    "VCChallenge_KillEnemiesInMOU100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/27/vcchallenge_killenemiesinmou100"
+    },
+    "VCChallenge_KillEnemiesInMOU200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/28/vcchallenge_killenemiesinmou200"
+    },
+    "VCChallenge_KillEnemiesInMOU300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/29/vcchallenge_killenemiesinmou300"
+    },
+    "VCChallenge_KillEnemiesInSHA100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/30/vcchallenge_killenemiesinsha100"
+    },
+    "VCChallenge_KillEnemiesInSHA200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/31/vcchallenge_killenemiesinsha200"
+    },
+    "VCChallenge_KillEnemiesInSHA300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/32/vcchallenge_killenemiesinsha300"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/33/vcchallenge_killenemieswithcorrosive100"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/34/vcchallenge_killenemieswithcorrosive300"
+    },
+    "VCChallenge_KillEnemiesWithCorrosive500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/35/vcchallenge_killenemieswithcorrosive500"
+    },
+    "VCChallenge_KillEnemiesWithCryo100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/36/vcchallenge_killenemieswithcryo100"
+    },
+    "VCChallenge_KillEnemiesWithCryo300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/37/vcchallenge_killenemieswithcryo300"
+    },
+    "VCChallenge_KillEnemiesWithCryo500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/38/vcchallenge_killenemieswithcryo500"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/39/vcchallenge_killenemieswithincendiary100"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/40/vcchallenge_killenemieswithincendiary300"
+    },
+    "VCChallenge_KillEnemiesWithIncendiary500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/41/vcchallenge_killenemieswithincendiary500"
+    },
+    "VCChallenge_KillEnemiesWithRadiation100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/42/vcchallenge_killenemieswithradiation100"
+    },
+    "VCChallenge_KillEnemiesWithRadiation300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/43/vcchallenge_killenemieswithradiation300"
+    },
+    "VCChallenge_KillEnemiesWithRadiation500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/44/vcchallenge_killenemieswithradiation500"
+    },
+    "VCChallenge_KillEnemiesWithShock100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/45/vcchallenge_killenemieswithshock100"
+    },
+    "VCChallenge_KillEnemiesWithShock300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/46/vcchallenge_killenemieswithshock300"
+    },
+    "VCChallenge_KillEnemiesWithShock500": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/47/vcchallenge_killenemieswithshock500"
+    },
+    "VCChallenge_KillEnemyGroundPound100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/48/vcchallenge_killenemygroundpound100"
+    },
+    "VCChallenge_KillEnemyGroundPound150": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/49/vcchallenge_killenemygroundpound150"
+    },
+    "VCChallenge_KillEnemyGroundPound50": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/50/vcchallenge_killenemygroundpound50"
+    },
+    "VCChallenge_KillEnemyMelee20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/51/vcchallenge_killenemymelee20"
+    },
+    "VCChallenge_KillEnemyMelee40": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/52/vcchallenge_killenemymelee40"
+    },
+    "VCChallenge_KillEnemyMelee60": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/53/vcchallenge_killenemymelee60"
+    },
+    "VCChallenge_KillTrueBoss": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/54/vcchallenge_killtrueboss"
+    },
+    "VCChallenge_LootLegendary10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/55/vcchallenge_lootlegendary10"
+    },
+    "VCChallenge_LootLegendary15": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/56/vcchallenge_lootlegendary15"
+    },
+    "VCChallenge_LootLegendary5": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/57/vcchallenge_lootlegendary5"
+    },
+    "VCChallenge_openlootables100": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/58/vcchallenge_openlootables100"
+    },
+    "VCChallenge_openlootables200": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/59/vcchallenge_openlootables200"
+    },
+    "VCChallenge_openlootables300": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/60/vcchallenge_openlootables300"
+    },
+    "VCChallenge_PatrolContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/61/vcchallenge_patrolcontract10"
+    },
+    "VCChallenge_PatrolContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/62/vcchallenge_patrolcontract20"
+    },
+    "VCChallenge_PatrolContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/63/vcchallenge_patrolcontract30"
+    },
+    "VCChallenge_PickupCash100000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/64/vcchallenge_pickupcash100000"
+    },
+    "VCChallenge_PickupCash1000000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/65/vcchallenge_pickupcash1000000"
+    },
+    "VCChallenge_PickupCash500000": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/66/vcchallenge_pickupcash500000"
+    },
+    "VCChallenge_PurchaseItemFromBMVM2": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/67/vcchallenge_purchaseitemfrombmvm2"
+    },
+    "VCChallenge_PurchaseItemFromBMVM4": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/68/vcchallenge_purchaseitemfrombmvm4"
+    },
+    "VCChallenge_PurchaseItemFromBMVM6": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/69/vcchallenge_purchaseitemfrombmvm6"
+    },
+    "VCChallenge_SearchContract10": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/70/vcchallenge_searchcontract10"
+    },
+    "VCChallenge_SearchContract20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/71/vcchallenge_searchcontract20"
+    },
+    "VCChallenge_SearchContract30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/72/vcchallenge_searchcontract30"
+    },
+    "VCChallenge_SellItemToVendingMachine20": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/73/vcchallenge_sellitemtovendingmachine20"
+    },
+    "VCChallenge_SellItemToVendingMachine30": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/74/vcchallenge_sellitemtovendingmachine30"
+    },
+    "VCChallenge_SellItemToVendingMachine40": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/75/vcchallenge_sellitemtovendingmachine40"
+    },
+    "VCChallenge_WeeklyTraitMission": {
+      "source": "Nexus-Data-challenge0.json",
+      "pointer": "/challenge/records/4/entries/76/vcchallenge_weeklytraitmission"
+    },
+    "VCChallenge_KillEnemies20": {
+      "source": "Nexus-Data-challenge6.json",
+      "pointer": "/challenge/records/1/entries/58/vcchallenge_killenemies20"
+    },
+    "VCChallenge_KillEnemies25": {
+      "source": "Nexus-Data-challenge6.json",
+      "pointer": "/challenge/records/1/entries/59/vcchallenge_killenemies25"
+    },
+    "VCChallenge_KillEnemies30": {
+      "source": "Nexus-Data-challenge6.json",
+      "pointer": "/challenge/records/1/entries/60/vcchallenge_killenemies30"
+    }
+  },
+  "repeatable_names": [
+    "LoyaltyChallenge_Borg",
+    "LoyaltyChallenge_Daedalus",
+    "LoyaltyChallenge_Jakobs",
+    "LoyaltyChallenge_Maliwan",
+    "LoyaltyChallenge_Order",
+    "LoyaltyChallenge_Tediore",
+    "LoyaltyChallenge_Torgue",
+    "LoyaltyChallenge_Vladof"
+  ],
+  "repeatable_evidence": {
+    "LoyaltyChallenge_Borg": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/33/loyaltychallenge_borg"
+    },
+    "LoyaltyChallenge_Daedalus": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/34/loyaltychallenge_daedalus"
+    },
+    "LoyaltyChallenge_Jakobs": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/35/loyaltychallenge_jakobs"
+    },
+    "LoyaltyChallenge_Maliwan": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/36/loyaltychallenge_maliwan"
+    },
+    "LoyaltyChallenge_Order": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/37/loyaltychallenge_order"
+    },
+    "LoyaltyChallenge_Tediore": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/38/loyaltychallenge_tediore"
+    },
+    "LoyaltyChallenge_Torgue": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/39/loyaltychallenge_torgue"
+    },
+    "LoyaltyChallenge_Vladof": {
+      "source": "Nexus-Data-challenge4.json",
+      "pointer": "/challenge/records/2/entries/40/loyaltychallenge_vladof"
+    }
+  }
+}

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-__version__: str = "2.38.0"
-__version_info__: tuple[int, int, int] = (2, 35, 2)
+__version__: str = "2.38.1"
+__version_info__: tuple[int, int, int] = (2, 38, 1)
 
 from mods_base import CoopSupport, Game, build_mod
 
@@ -74,7 +74,7 @@ def _disable_runtime_controls():
 
 
 build_mod(
-    name="Borderlands 4 Modding Tools â€” Powered by Funk",
+    name="Borderlands 4 Modding Tools — Powered by Funk",
     author="FunkYouSHiFT; original project by Mattmab (Matt)",
     description=(
         "Boosting-focused SDK mod with a native UMG Quick Menu and external bridge "

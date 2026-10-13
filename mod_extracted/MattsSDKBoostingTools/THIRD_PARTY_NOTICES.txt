@@ -1,0 +1,96 @@
+THIRD-PARTY NOTICES
+
+MSBT's project license does not replace the licenses or permissions of the
+components below. Original copyright and license files remain with the software.
+Contributor acknowledgments and public project links are in the root README.
+
+Mattmab / Galoob: original MSBT and in-game menu; player economy, serial
+conversion and reward delivery, movement, inventory, party, travel, item-pool
+and shiny spawning, developer tools, and Python Legit Builder implementations.
+His save/item editor and portable Legit Builder supplied retained editor styles,
+parsing, part selection, data loading and tab components. Incorporated with
+direct permission. The external control app and game bridge were developed by
+FunkYouSHiFT's project. The editor's ISC notice remains in
+external_app/v22_parts_codes_fixed/matt_editor/LICENSE_MATTMAB_ISC.txt.
+
+RDP / Squ1ggs: later player-targeting, P2P teleport, combat/resource tuning,
+vehicle tuning, nearest-NPC anchor and re-aggro adaptations and references. This credit
+does not assign Matt's original gameplay modules or third-party catalogs to
+Squ1ggs. MIT notice:
+Copyright (c) 2026 Squ1ggs. Full LICENSE_SQU1GGS_MIT.txt is retained in both
+mod_extracted/MattsSDKBoostingTools and external_app/v22_parts_codes_fixed.
+Source: https://github.com/Squ1ggs/Bl4SDKmods
+
+SQBT also served as a behavior reference for challenge-category filtering and
+non-UVHM completion. This does not assign Matt's challenge-path discoveries to
+Squ1ggs or claim the complete Challenge Ticker implementation is bundled.
+
+Azalea Asvail: Azzy UVH Booster workflow and native-menu inspiration. Reviewed
+source metadata declares MIT. PyrexBLJ is credited for earlier UVHM discoveries;
+Matt for challenge-path discoveries. FunkYouSHiFT assisted with the UVHM work.
+Source: https://github.com/AzaleaAsvailAMW/amw-Uvhbooster
+
+Pyrex: Bonk Utilities, a gameplay-utility reference for god/demigod mode, noclip,
+time controls, no-target, ground-item cleanup and developer-perk actions.
+Public source metadata declares MIT. This reference credit is separate from
+Pyrex's UVHM discoveries and does not claim that the entire mod is bundled.
+Source: https://github.com/PyrexBLJ/BL4-SDK-Mods/tree/main/BonkUtilities
+
+Matt: Actor Script Deployer, including actor spawning, placement and spacing,
+tracking, and cleanup. It is the standard Dev Spawner backend. MIT notice remains
+in tools/third_party/sdk_mods/ActorScriptDeployer/LICENSE.
+
+Renil: Third Person Camera SDK controller; the incorporated archive also credits
+Epilow. Used under the author's public modification/redistribution permission.
+This component is not represented as MSBT-authored or relicensed as MIT.
+Source: https://www.nexusmods.com/borderlands4/mods/259
+
+Dominic / Cr4nkSt4r: previously supplied Nexus data and retained overrides.
+The received MIT notice remains in the editor's LegitItems/LICENSE_CR4NKST4R.txt.
+Current local game extractions are separately identified as game-owned data.
+Source: https://github.com/Cr4nkSt4r/Borderlands-4.NcsParser
+
+Ynot / GZO and Levin / Lootlemon: catalogs, references and linked images used
+with the respective owners' direct permission; not relicensed as MSBT code.
+Sources: https://save-editor.be/GZO/ and https://www.lootlemon.com/
+
+Glacierpiece: save encryption/decryption wrapper adapted through Mattmab's
+editor. MIT, Copyright (c) 2025 glacierpiece. Full notice remains in
+external_app/v22_parts_codes_fixed/LICENSE_GLACIERPIECE_MIT.txt.
+Source: https://github.com/glacierpiece/borderlands-4-save-utility
+
+bl-sdk contributors, including apple1417 and Faultz: oak2 Mod Manager,
+pyunrealsdk and unrealsdk. The bundled official SDK retains its LGPL/GPL texts,
+Python license, and component notices. Pinned sources and archive hash are in
+electron_poc/vendor/oak2/NOTICE.txt. These components are not relicensed as MIT.
+Source: https://github.com/bl-sdk/oak2-mod-manager
+
+juso and smugg: BLImGui, the historical in-game UI framework, declared MIT.
+Source: https://github.com/juso40/blimgui
+
+GridStack / Alain Dumesny: MIT notice beside electron_poc/vendor/gridstack.
+js-yaml, pako and Monaco: retained notices beside the editor's browser bundle
+in THIRD_PARTY_LICENSES.txt, including pako's identified zlib portions.
+Electron and Chromium: distribution notices beside the packaged executable.
+Python: original runtime license retained. npm dependency licenses remain in
+the packaged application.
+
+AndroidX, JourneyApps ZXing Android Embedded, and ZXing Core: Apache License 2.0;
+the Android build retains the complete license in its license assets.
+
+Borderlands game data, artwork and SHiFT resources belong to Gearbox / 2K and
+other respective owners. They are not original MSBT code or relicensed as MIT.
+The AFK SHiFT package's source hash remains in its manifest. This project is
+unofficial and claims no endorsement by these owners or credited contributors.
+
+FLiNG trainer research lead
+The supplied Borderlands 4 v1.0-v1.9.1 Plus 45 Trainer was inspected to identify
+the 100% Drop Rate zero-roll behavior. Credit for this research lead belongs
+to FLiNG. MSBT independently implements a guarded four-byte replacement; no
+trainer runtime, UI, or injection script is bundled. Evidence and limitations:
+docs/changes/2026-10-08-trainer-drop-rate.md
+
+
+Dialog Skipper — Yeti
+https://github.com/RedxYeti/yeti-bl4-sdk
+User-supplied Dialog Skipper v1 package declares GPL3. Its source informed the native GbxDialogProvider.NetMulticast_StopDialog call used by progress_dialogue.py. MSBT uses a separate bounded game-thread scheduler; see docs/changes/2026-10-11-progress-dialogue.md for provenance and verification.

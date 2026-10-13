@@ -1,4 +1,13 @@
+# v2.38.1 — Mission controls and experimental replay
+
+- Repair shared objective completion, NPC/map handling and movement cleanup.
+- Rename Practice to Mission selection and clarify the four mission views.
+- Mark unfinished mission behavior and later checkpoints in amber with explicit Experimental labels.
+- Refresh stale job controls and retain recovery records when a connection fails.
+- Disclose scene/dependency failures, unavailable content and incomplete 100%/guest verification.
+
 # v2.37.2
+
 
 Progress-run speed, shared scoped processing, recovery and bridge queue coexistence repairs. See docs/releases/RELEASE_NOTES_v2.37.2.md.
 

@@ -1,0 +1,81 @@
+{
+  "source": "external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-Resident4.json",
+  "sha256": "35591b9795a7d6d5d9cc3fd0f5d99a2b26a61a540cbd3cd2f4d6f2bfaf48a46e",
+  "entries": [
+    {
+      "unlock": "Unlockable_Vehicles.CityOrder",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/1/entries/12/__dep_entries/0/cityorder"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Mountain",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/1/entries/12/__dep_entries/58/mountain"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.ShatterlandV1",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/1/entries/12/__dep_entries/59/shatterlandv1"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.ShatterlandV2",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/1/entries/12/__dep_entries/60/shatterlandv2"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Stingray",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/1/entries/12/__dep_entries/61/stingray"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Borg",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/0/borg"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.DarkSiren",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/1/darksiren"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.DarkSiren_Proto",
+      "prototype": true,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/2/darksiren_proto"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.ExoSoldier",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/3/exosoldier"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.ExoSoldier_Proto",
+      "prototype": true,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/4/exosoldier_proto"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Gravitar",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/5/gravitar"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Gravitar_Proto",
+      "prototype": true,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/6/gravitar_proto"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Grazer",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/7/grazer"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Paladin",
+      "prototype": false,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/8/paladin"
+    },
+    {
+      "unlock": "Unlockable_Vehicles.Paladin_Proto",
+      "prototype": true,
+      "source_pointer": "/unlockable/records/3/entries/7/__dep_entries/9/paladin_proto"
+    }
+  ]
+}

@@ -183,8 +183,19 @@ def using(session):
 
 
 def notify_network(session):
-    actors=[session['pc'],session['pawn']]
-    try:actors.extend(weapons(session['pawn']))
+    # Invalid-session cleanup must never dereference cached native wrappers.
+    # Resolve current ownership first, as status() does for readback.
+    from . import farming_targets
+    current=None
+    try:
+        for target in farming_targets.party():
+            pc=target['pc'];pawn=pc.Pawn if pc is not None else None
+            if pawn is not None and identity(pc,pawn)==session['key'][:-1]:
+                current=(pc,pawn);break
+    except Exception:return
+    if current is None:return
+    actors=list(current)
+    try:actors.extend(weapons(current[1]))
     except Exception:pass
     for actor in actors:
         try:
@@ -264,6 +275,7 @@ def status():
                      enabled=name in session['enabled'],error=session['errors'].get(name,''),
                      owned_fields=sum(k[0]==name and s.get('owner')==session['key'] for k,s in _snapshots.items()),
                      readback=session['reads'].get(name))
+            row['cleanup_pending']=bool(row['owned_fields'] and not row['enabled'])
             try:
                 current = live.get(session['key'][:-1])
                 row['live'] = current is not None
@@ -281,6 +293,7 @@ def status():
                  enabled=any(t['enabled'] for t in targets),targets=targets,
                  error='; '.join(t['label']+': '+t['error'] for t in targets if t['error']),
                  owned_fields=sum(t['owned_fields'] for t in targets))
+        row['cleanup_pending']=any(t['cleanup_pending'] for t in targets)
         if name=='legendary_roll':
             from .farming_native import hook
             row['native']=hook(name).status()

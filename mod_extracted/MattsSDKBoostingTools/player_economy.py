@@ -625,7 +625,7 @@ def _set_max_sdu_points_on_pc(target_pc: Any) -> bool:
     except Exception:
         old_value = 0
     try:
-        pools[_SDU_POINTS_POOL_INDEX] = _MAX_SDU_POINTS
+        pools[_SDU_POINTS_POOL_INDEX] = max(old_value, _MAX_SDU_POINTS)
     except Exception as e:
         _log_err("msbt_maxsdu: direct PointsAcquiredPerPool write failed: %s", e)
         return False
@@ -640,6 +640,47 @@ def _set_max_sdu_points_on_pc(target_pc: Any) -> bool:
         _MAX_SDU_POINTS,
     )
     return True
+
+
+class VaultCardRestoreError(RuntimeError):
+    """The original card selection could not be confirmed after a level request."""
+
+    def __init__(self, original_name: str):
+        self.original_name = original_name
+        super().__init__(f'Could not restore {original_name}; inspect the selected card before continuing')
+
+
+def _set_owned_vault_card_level(pc: Any, card: int, level: int) -> bool:
+    """Level a caller-confirmed owned card through its normal active XP track.
+
+    The full-progress caller checks this player's entitlement before calling.
+    Native activation and level readback were verified on BL4 on 2026-10-13.
+    """
+    manager = pc.VaultCardsManager
+    target_name = f"VaultCard{int(card):02d}"
+    # Copy the name before activation; a property-backed pointer may change.
+    original_name = str(manager.ActivatedVaultCardDef._name)
+    available = {str(row.VaultCardDef._name) for row in manager.VaultCards}
+    if target_name not in available or original_name not in available:
+        raise RuntimeError('Vault card or original selection unavailable; no card changed')
+    definition_type = find_object('ScriptStruct', '/Script/OakGame.VaultCardDef')
+    original = FGbxDefPtr(original_name, definition_type)
+    target = FGbxDefPtr(target_name, definition_type)
+    changed = target_name != original_name
+    try:
+        if changed:
+            manager.Server_ActivateVaultCard(target)
+            if str(manager.ActivatedVaultCardDef._name) != target_name:
+                raise RuntimeError('Vault card activation not confirmed; no level request sent')
+        return _set_experience_level_via_bp(pc.PlayerState, int(card) + 1, level)
+    finally:
+        if changed:
+            try:
+                manager.Server_ActivateVaultCard(original)
+                if str(manager.ActivatedVaultCardDef._name) != original_name:
+                    raise RuntimeError('selection readback differs')
+            except Exception as exc:
+                raise VaultCardRestoreError(original_name) from exc
 
 
 def _set_experience_level_via_bp(ps: Any, track_index: int, level: int) -> bool:

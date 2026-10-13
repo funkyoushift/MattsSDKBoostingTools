@@ -43,6 +43,26 @@ def test_only_postfinished_confirms(objective, monkeypatch):
     assert result['ok']
 
 
+def test_terminal_objective_can_be_released_after_mission_finishes(objective, monkeypatch):
+    objective._progress()._row = lambda *args: dict(token='mission-token', state='completed')
+    monkeypatch.setattr(objective, 'read', lambda *args: [])
+    result = objective.status()
+    assert result['ok'] and result['state'] == 'completed'
+    assert not result['replay_supported'] and result['restart_supported']
+
+
+def test_missing_objective_in_active_mission_is_not_completion(objective, monkeypatch):
+    monkeypatch.setattr(objective, 'read', lambda *args: [])
+    assert not objective.status()['ok']
+
+
+def test_terminal_without_native_return_is_not_certified(objective, monkeypatch):
+    objective._last.pop('returned')
+    objective._progress()._row = lambda *args: dict(token='mission-token', state='completed')
+    monkeypatch.setattr(objective, 'read', lambda *args: [])
+    assert not objective.status()['ok']
+
+
 def test_replaced_instance_does_not_confirm_old_objective(objective, monkeypatch):
     progress = objective._progress()
     progress._row = lambda snapshot, name: dict(token='replacement')
