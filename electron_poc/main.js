@@ -825,7 +825,8 @@ function localSaveReplay() {
   return saveReplayService;
 }
 registerDesktopHandler('app:saveReplay',async(event,action,payload={})=>{
-  if(event.mobile)return {ok:false,message:'Save-backed replay is available on this PC only.'};
+  // The paired companion controls this same PC-owned transaction. Saves and
+  // backups stay on the PC; native solo-host and identity guards still apply.
   if(!['status','start','advance','stop','restore','backup','picker','bookmark_list','bookmark_save','bookmark_start'].includes(action))return {ok:false,message:'Unsupported replay action'};
   if(action==='backup'){
     const folder=path.join(app.getPath('userData'),'mission-replay');await fs.mkdir(folder,{recursive:true});await shell.openPath(folder);return {ok:true};

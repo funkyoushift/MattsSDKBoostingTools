@@ -24,3 +24,12 @@ Martin reported that FL4K replay stayed on the original map and that later missi
 - Existing failed replay retains its backup and lease until Stop setup closes it. Do not repeat its character or save actions outside the service. Retest solo: close the failed run with Stop setup, choose one FL4K mission/objective and start again. The new live DLC map transition remains unverified until that retry succeeds.
 
 No release published. These are desktop-only local repairs.
+
+## Authorized combined patch release
+
+Martin subsequently confirmed the placement was correct and retracted the missing-objective report. No new waypoint or objective-data change was made. He explicitly requested publication of the Windows fixes and a newly updated APK.
+
+- Preparing Windows2.39.1 and Android1.6.3/build36. Previous release included unchanged Android1.6.2/build35, explaining the absent phone update.
+- Generated desktop method contract now includes saveReplay. Paired mobile requests use the same PC-owned replay service instead of being rejected; native solo-host, current identity, acknowledgement and transaction guards remain. No save is copied to the phone.
+- New actual-handler/mobile-transport regression verifies start/bookmark routing, acknowledgement forwarding, unknown-action rejection and duplicate-call deduplication. Existing mobile API regression passes. Android build, device installation and publication checks are in progress; do not claim completion yet.
+- Initial Android build selected Android Studio's Java25, which this Gradle version rejects. Switched to the existing JDK17; no application code change was needed. USB phone was initially unauthorized; asked Martin to approve its debugging prompt while independent builds continue.
