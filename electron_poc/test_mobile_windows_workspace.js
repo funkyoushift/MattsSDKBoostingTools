@@ -80,7 +80,7 @@ app.whenReady().then(async()=>{
     check($('desktopToolsFrame').contentWindow.phoneReopenMarker==='retained','returning to phone controls discarded the loaded workspace');
     return {methods:methods.length,tabs:tabs.length,routes,editor:editor.src,preview,committed};
   })()`);
-  assert.equal(result.methods,76);assert.ok(result.tabs>=15);
+  assert.equal(result.methods,Object.keys(require('./desktop_contract').methods).length);assert.ok(result.tabs>=15);
   // These use only a temporary desktop profile and the fake game transport.
   assert.ok(bridgeCalls.every(call=>['/status','/quick_menu','/action'].includes(call.path)));
   assert.ok(phoneStatusCalls.some(call=>call.mobileStatusHashes?.length),'phone did not reuse previously downloaded lists');

@@ -1,0 +1,21 @@
+v2.39.1 / Android1.6.3 build36 verification
+
+38 focused Python release/import/save-boundary/bookmark checks;28 Node replay checks; paired mobile replay actual-handler/transport and mobile API suites passed. Shared mobile Windows workspace passed77 methods/17 tabs including persistence/import flows. Replay mission view and save panel suites passed. Android assembleRelease/lintRelease succeeded with JDK17. Windows build passed31 installer checks, standard desktop suite including600 responsive measurements,48 packaged dependencies and3312 resource comparisons, packaged startup smoke and updater checks. SDK differs from2.39.0 only in version metadata.
+
+Pixel10 Pro XL: previous1.6.2/build35 upgraded in place via adb; same signer SHA25666898cf450284f6626edae3c8f2f63ae05dedb9381117ac320cdaa2fd69e9baa. Package manager reports1.6.3/build36; MainActivity foreground, process running, no AndroidRuntime/chromium error in bounded post-install log. Pulled installed APK exactly matches release SHA25620e9c31822a6463b58e2d167a61f93bb9d4901b311216539a8557c5cadfb3588. Four mission/contract JS files byte-match source in actual APK. Martin confirmed retained pairing and that Missions & Replay opens. No live phone-triggered save mutation was performed.
+
+Windows unpacked2.39.1 opened locally; active game and installed SDK were preserved. User corrected the placement/missing-objective reports; no coordinate or catalog change was made. Prior live mixed-DLC evidence remains from2.39.0. New phone end-to-end gameplay and guest persistence are not claimed.
+
+Artifacts:
+MSBT-Installer-v2.39.1.exe  320408068 bytes  SHA256 d2aa93a2d68a2c1e96493961e860049af61e8978d5f815feafc4cdd7d82383c7
+MSBT-Installer-v2.39.1.exe.blockmap  320952 bytes  SHA256 ea82872fe1506ff88a742d8d65497dae4f63e4c6acf49288b2263aae3d8e3cb6
+latest.yml  350 bytes  SHA256 1ec1a4a1ef001e8ad2a97c5b98553713aa93cca26bbb50923923e5df565e3ab6
+latest.json  1548 bytes  SHA256 647f6e4127477c736fb6b97ee80c39d5cbd5f4055a8546e7ed54a9d153861086
+MSBT-Portable-v2.39.1-win-x64.zip  380897270 bytes  SHA256 2cb13194441c5fe7f39040b4577a2caafad1204c65d7ed23fad86cf041692d17
+MSBT-Setup.exe  71599907 bytes  SHA256 9e4ef48114f6a8f333c3c4a0a493700655c27d22221e0d0b66f70bd33f78c0a4
+MattsSDKBoostingTools.sdkmod  1796166 bytes  SHA256 06700564ea8c43cc7d5e5a1d4077d4779999717d8fbf97443fe082520ec9664f
+mobile-version.json  494 bytes  SHA256 1cf994f5fe1c2c141d00767e6ac6411deb03191ae1070475b1bc749ef50591ab
+MSBT-Mobile-Controller.apk  28891868 bytes  SHA256 20e9c31822a6463b58e2d167a61f93bb9d4901b311216539a8557c5cadfb3588
+MSBT-Mobile-Controller-1.6.3.apk  28891868 bytes  SHA256 20e9c31822a6463b58e2d167a61f93bb9d4901b311216539a8557c5cadfb3588
+
+Publication checks pending.
