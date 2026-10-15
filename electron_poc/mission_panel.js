@@ -121,6 +121,10 @@
       if(single && el("missionScope").value!=="named"){
         el("missionScope").value="named";changed=true;
       }
+      if(single){
+        const before=[...selectedNames].join('|');renderNames();
+        if(before!==[...selectedNames].join('|'))changed=true;
+      }
       el('missionNamesLabel').hidden=el('missionScope').value!=='named';
       el('missionScope').closest('label').hidden=single;
       if(changed)void refresh();
@@ -141,6 +145,10 @@
       rows.sort((a,b) => (sort === "status" ? stateLabel(a).localeCompare(stateLabel(b)) :
         sort === "type" ? a.category.localeCompare(b.category) :
         sort === "playthrough" ? (playthrough[a.name]?.rank??100000)-(playthrough[b.name]?.rank??100000) : 0) || a.title.localeCompare(b.title));
+      if(!el('missionNames').multiple){
+        const visible=new Set(rows.map(row=>row.name));
+        for(const name of selectedNames)if(!visible.has(name))selectedNames.delete(name);
+      }
       el("missionNames").replaceChildren();
       for (const row of rows) {
         const option = doc.createElement("option");
@@ -398,15 +406,20 @@
     });
     function selectionChanged() { preview=null; objectivePreview=null; el("missionObjectiveSelect").replaceChildren(); renderNames(); update(); void refresh(); }
     el("missionNames").addEventListener("change", () => {
+      if(!el('missionNames').multiple)selectedNames.clear();
       for (const option of el("missionNames").options) {
         if(option.selected) selectedNames.add(option.value); else selectedNames.delete(option.value);
       }
       selectionChanged();
     });
     el("missionClearSelectionBtn").addEventListener("click",()=>{selectedNames.clear();selectionChanged();});
-    el("missionNameSearch").addEventListener("input",renderNames);
-    for(const id of ["missionStateFilter","missionTypeFilter","missionSort"]) el(id).addEventListener("change",renderNames);
-    campaignFilter?.addEventListener('change',renderNames);
+    function filterChanged(){
+      const before=[...selectedNames].join('|');renderNames();
+      if(before!==[...selectedNames].join('|'))selectionChanged();
+    }
+    el("missionNameSearch").addEventListener("input",filterChanged);
+    for(const id of ["missionStateFilter","missionTypeFilter","missionSort"]) el(id).addEventListener("change",filterChanged);
+    campaignFilter?.addEventListener('change',filterChanged);
     for (const id of ["missionSharedAck", "missionResetCompleted"]) el(id).addEventListener("change", update);
     el("missionStatusBtn").addEventListener("click", async () => {
       try { const result = await call("mission_status", {}); if (!busy && result?.id) job = result; report(result); update(); }

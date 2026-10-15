@@ -164,7 +164,15 @@ function createSaveReplayService({request,helper,codec,saveRoot,storage}) {
     job.pending=null;await jump('open_original');
   }
   async function checkDisk(){
-    const source=await decode(job.file);const r=await python('inspect',source.yaml);
+    let source;
+    try{source=await decode(job.file);}catch(error){
+      // Windows may deny reads while the native character reload/autosave owns
+      // the file. Only this read-only verification can wait; never resend edits
+      // or game actions because of a filesystem lock.
+      if(['EBUSY','EACCES','EPERM'].includes(error.code))error.code='SAVE_READ_BUSY';
+      throw error;
+    }
+    const r=await python('inspect',source.yaml);
     if(r.guid!==job.guid||r.cursor!==job.checkpoint||r.mission_status!=='Active')throw Error('The game restored different save progress; replay was not marked ready');
     delete job.readWaitSince;
     return r;
@@ -254,7 +262,7 @@ function createSaveReplayService({request,helper,codec,saveRoot,storage}) {
       if(limit&&Date.now()-job.since>limit)throw Error('Replay preparation did not settle; no action was repeated. Your backup is retained.');
       return view();
     }catch(error){
-      if(error.code==='SAVE_CHANGED'&&!job.pending&&['await_original','boundary_wait','await_original_refresh','encounter_wait'].includes(job.phase)){
+      if(['SAVE_CHANGED','SAVE_READ_BUSY'].includes(error.code)&&!job.pending&&['await_original','boundary_wait','await_original_refresh','encounter_wait'].includes(job.phase)){
         job.readWaitSince ||= Date.now();
         if(Date.now()-job.readWaitSince<10000){job.error='Waiting for the game autosave to settle…';await persist();return view();}
       }

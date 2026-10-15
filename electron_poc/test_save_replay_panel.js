@@ -44,8 +44,11 @@ app.whenReady().then(async()=>{
     const previous=el('missionSaveReplayOutput').textContent;
     el('missionBookmarkReplay').click();await new Promise(r=>setTimeout(r,20));
     const bookmarkStarted=el('missionBookmarkReplay').disabled&&el('missionBookmarkSave').disabled&&el('missionSaveReplayOutput').textContent==='Choose another existing character.';
+    status={ok:false,state:'failed',active:true,backupAvailable:true,message:'Save is temporarily locked'};
+    el('missionSaveReplayCheck').click();await new Promise(r=>setTimeout(r,20));
+    const failureVisible=el('missionPracticeNote').textContent.includes('Save is temporarily locked')&&el('missionPracticeNote').textContent.includes('Stop setup');
     return {count,values:[...el('missionPracticeSelect').options].map(o=>o.value),noAck,enabled,active,stopped,calls,
-      final,previous,bookmarksLoaded,bookmarkEnabled,bookmarkStarted,unavailable:el('missionPracticeUnavailableList').textContent};
+      final,previous,bookmarksLoaded,bookmarkEnabled,bookmarkStarted,failureVisible,unavailable:el('missionPracticeUnavailableList').textContent};
   })()`);
   assert.equal(result.count,2);assert.deepEqual(result.values,['28','32']);assert(result.noAck&&result.enabled);
   assert.deepEqual(result.active,{startDisabled:true,stopEnabled:true,methodLocked:true,note:'Choose another existing character.'});
@@ -54,6 +57,7 @@ app.whenReady().then(async()=>{
   assert.match(result.unavailable,/No reviewed save-backed setup/);assert.match(result.final,/restored/);
   assert.match(result.previous,/Previous replay setup/);
   assert(result.bookmarksLoaded&&result.bookmarkEnabled&&result.bookmarkStarted);
+  assert(result.failureVisible);
   const dir=path.join(__dirname,'../output/testing/save-replay-ui');fs.mkdirSync(dir,{recursive:true});
   for(const width of [360,800,1280]){
     win.setContentSize(width,1000);

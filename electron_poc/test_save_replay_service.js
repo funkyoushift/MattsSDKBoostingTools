@@ -53,6 +53,7 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,a
     if(op==='placement_status')return {ok:true,placement_verified:true};
     if(op==='placement_ready')return {ok:true,placement_ready:r.placementReady!==false};
     if(op==='track'){r.trackRequests=(r.trackRequests||0)+1;return {ok:true,tracked:true};}
+    if(op==='travel'){r.travelRequests=(r.travelRequests||0)+1;r.world=section.world.toLowerCase();}
     const key=op==='picker'?`picker_${payload.role}_${payload.cycle}`:op==='place'?`place_${payload.cycle}`:op;
     if(op==='place'){
       r.placements++;
@@ -90,6 +91,46 @@ async function reach(f,state){
   assert.fail('Did not reach '+state+': '+JSON.stringify(result));
 }
 async function install(f){await start(f);f.r.guid=f.other;await reach(f,'await_original');}
+
+for(const code of ['EBUSY','EACCES','EPERM'])test(`save read ${code} waits before cross-map travel without another save edit`,async t=>{
+  const f=await fixture(t);await install(f);f.r.guid=f.guid;f.r.world='different_map_p';
+  const candidate=await fs.readFile(f.file),readFile=fs.readFile;let locked=true;
+  t.mock.method(fs,'readFile',async(file,...args)=>{
+    if(locked&&file===f.file)throw Object.assign(Error('Native reload owns the save'),{code});
+    return readFile(file,...args);
+  });
+  const waiting=await f.service.dispatch('advance');
+  assert.equal(waiting.state,'await_original');assert.match(waiting.message,/autosave/);
+  assert.equal(f.r.travelRequests,undefined);assert.equal(f.r.placements,0);
+  locked=false;await reach(f,'ready');
+  assert.equal(f.r.world,'world_p');assert.equal(f.r.travelRequests,1);assert.equal(f.r.placements,1);
+  assert.deepEqual(await fs.readFile(f.file),candidate);
+});
+
+test('persistent reload save lock stops after a bounded read wait without travel',async t=>{
+  const f=await fixture(t);await install(f);f.r.guid=f.guid;
+  const readFile=fs.readFile,now=Date.now;let clock=now();t.mock.method(Date,'now',()=>clock);
+  t.mock.method(fs,'readFile',async(file,...args)=>{
+    if(file===f.file)throw Object.assign(Error('Save still locked'),{code:'EBUSY'});
+    return readFile(file,...args);
+  });
+  assert.equal((await f.service.dispatch('advance')).state,'await_original');
+  clock+=10001;const failed=await f.service.dispatch('advance');
+  assert.equal(failed.state,'failed');assert.equal(failed.backupAvailable,true);
+  assert.equal(f.r.travelRequests,undefined);assert.equal(f.r.placements,0);
+});
+
+for(const phase of ['boundary_wait','encounter_wait'])test(`save lock during ${phase} preserves the verified travel receipt`,async t=>{
+  const f=await fixture(t);await install(f);f.r.guid=f.guid;await reach(f,phase);
+  const readFile=fs.readFile;let locked=true;
+  t.mock.method(fs,'readFile',async(file,...args)=>{
+    if(locked&&file===f.file)throw Object.assign(Error('Autosave owns the save'),{code:'EBUSY'});
+    return readFile(file,...args);
+  });
+  const waiting=await f.service.dispatch('advance');assert.equal(waiting.state,phase);
+  assert.match(waiting.message,/autosave/);assert.equal(f.r.travelRequests,1);
+  locked=false;await reach(f,'ready');assert.equal(f.r.travelRequests,1);assert.equal(f.r.placements,1);
+});
 
 test('never edits the loaded character; backs up and preserves data when inactive',async t=>{
   const f=await fixture(t);const initial=await start(f);assert.equal(initial.state,'await_other');

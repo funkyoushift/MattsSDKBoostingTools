@@ -15,8 +15,11 @@
         el('missionPracticeStop').hidden=true;
         el('missionPracticeStatus').hidden=true;
         el('missionPracticeNote').textContent=selected.supported?
-          'Reloads the selected mission state and places you at its starting waypoint when resolved. Otherwise uses the native spawn station. Requires a second existing character. Generated story/DLC encounters remain experimental.':
+          'Solo lobby only; visitors must leave before replay. Requires a second existing character. Reloads the selected mission and map, then uses its starting waypoint or native spawn station. Generated encounters remain experimental.':
+          !selected.mission?'Choose one mission above, then its beginning or a main objective. Replay requires a solo lobby and a second existing character.':
           'This starting point has no resolved native map/station or requires DLC access. You can also save a mission-state bookmark while playing a readable mission.';
+        if(status.active&&['failed','uncertain','interrupted'].includes(status.state))el('missionPracticeNote').textContent=
+          (status.message||'Replay needs attention.')+' Use Stop setup below to release this run before starting another. Your backup is retained.';
       }else{el('missionPracticeStop').hidden=false;el('missionPracticeStatus').hidden=false;}
       const previous=status.state==='ready'&&(status.checkpoint!==selected.checkpoint||status.mission!==selected.mission);
       el('missionSaveReplayOutput').textContent=(previous?'Previous replay setup: ':'')+(status.message||'No save-backed replay is running.');

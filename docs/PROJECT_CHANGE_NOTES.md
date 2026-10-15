@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [2026-10-15: Replay save-read lock and hidden selection](changes/2026-10-15-replay-save-lock-selection.md): FL4K replay stopped on a Windows save-read lock before issuing travel; replay campaign filters retained a hidden second selection. Bounded read-only waits and single-selection repairs pass28 service checks, two Electron UI suites and five startup checks. Local desktop repair; live DLC retry pending, public2.39.0 unchanged.
+
 - [v2.39.0 published](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.0): automatic mission replay/bookmarks, native dialogue skip, Epic repairs and mixed-DLC full progress. The three-player test passed with a bounty-only visitor; both visitors confirmed story completion and UVHM7.591 focused Python checks and packaged release checks passed; all11 asset hashes and public README/update metadata verified. Active release source: C:/Users/mwenn/.codex/worktrees/mission-replay-release/product; preserve the older primary checkout's dirty work. [Detailed evidence and limits](changes/2026-10-14-mission-repair-plan.md#v2390-published-and-verified-2026-10-15).
 
 - Automatic replay starts:326 source-authored preceding-waypoint candidates now use guarded automatic grounded placement;180 missing points keep native station fallback.137 Python checks,23 Node checks (including a real encrypted Epic-account transaction), responsive UI and package audits passed. Installed locally; live automatic Crystal Brawl waypoint placement and native fallback passed. See [waypoint and Epic status](changes/2026-10-14-mission-repair-plan.md#automatic-starting-waypoints-and-epic-checks) for live verification and limits.

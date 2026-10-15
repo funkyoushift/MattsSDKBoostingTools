@@ -232,6 +232,41 @@ app.whenReady().then(async()=>{
   assert.deepEqual(dialogue.calls,['dialogue_skip_toggle','dialogue_skip_status','dialogue_skip_toggle']);
   assert.equal(dialogue.label,'Dialogue skip: off');assert.match(dialogue.note,/off/);
   result.dialogue=dialogue;
+  const replaySelection=await win.webContents.executeJavaScript(`(async()=>{
+    const doc=document.implementation.createHTMLDocument('Replay campaign selection');doc.body.innerHTML=document.body.innerHTML;
+    const el=id=>doc.getElementById(id),requests=[];
+    const story=Object.keys(MsbtMissionPlaythrough).filter(n=>MsbtMissionPlaythrough[n].campaign==='story').slice(0,2);
+    const dlc=Object.keys(MsbtMissionPlaythrough).find(n=>MsbtMissionPlaythrough[n].campaign!=='story');
+    const rows=[...story,dlc].map((name,i)=>({name,title:'Mission '+i,state:'completed',category:i===2?'dlc':'story'}));
+    const call=async(action,payload)=>{
+      if(action.endsWith('_status'))return {ok:true,state:'idle'};
+      if(action==='mission_preview')return {ok:true,selection_scope:payload.scope,max_batch:10,missions:payload.scope==='all'?rows:rows.filter(r=>payload.missions?.includes(r.name))};
+      if(action==='mission_practice_preview'){requests.push(payload.missions);return {ok:true,mission:payload.missions[0],choices:[{index:2,title:'Replay section',save_backed_supported:true}]};}
+      return {ok:true};
+    };
+    const until=async(test)=>{for(let i=0;i<200&&!test();i++)await new Promise(r=>setTimeout(r,5));if(!test())throw Error('Selection refresh timed out');};
+    MsbtMissionPanel.bind(doc,call,()=>null);MsbtMissionPanel.showView(doc,'practice');
+    await until(()=>el('missionNames').options.length===2);
+    const choose=async name=>{const before=requests.length;el('missionNames').value=name;el('missionNames').dispatchEvent(new Event('change'));await until(()=>requests.length>before);await until(()=>el('missionPracticeSelect').value==='2');};
+    await choose(story[0]);await choose(story[1]);
+    const replaced=el('missionSelectionCount').textContent;
+    el('missionCampaignFilter').value=MsbtMissionPlaythrough[dlc].campaign;el('missionCampaignFilter').dispatchEvent(new Event('change'));
+    await until(()=>el('missionPracticeSelect').value==='');
+    const cleared=el('missionSelectionCount').textContent;
+    await choose(dlc);
+    const resumed={count:el('missionSelectionCount').textContent,request:requests.at(-1),objective:el('missionPracticeSelect').value};
+    MsbtMissionPanel.showView(doc,'complete');
+    el('missionCampaignFilter').value='story';el('missionCampaignFilter').dispatchEvent(new Event('change'));
+    el('missionNames').value=story[0];el('missionNames').dispatchEvent(new Event('change'));
+    await until(()=>el('missionSelectionCount').textContent.includes('2 selected'));
+    const bulk=el('missionSelectionCount').textContent;
+    return {replaced,cleared,resumed,bulk,dlc};
+  })()`);
+  assert.match(replaySelection.replaced,/1 selected/);assert.doesNotMatch(replaySelection.replaced,/hidden/);
+  assert.match(replaySelection.cleared,/0 selected/);
+  assert.deepEqual(replaySelection.resumed.request,[replaySelection.dlc]);assert.equal(replaySelection.resumed.objective,'2');
+  assert.match(replaySelection.bulk,/2 selected.*1 hidden/);
+  result.replaySelection=replaySelection;
   const dir=path.join(__dirname,'../output/testing/mission-views');fs.mkdirSync(dir,{recursive:true});
   for(const width of [360,800,1280]){
     win.setContentSize(width,1000);
