@@ -4,6 +4,8 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- [v2.39.1 published](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.1): replay save-lock/hidden-selection repairs and updated Android1.6.3/build36 with paired-PC replay/bookmarks. All11 public asset digests and rolling update downloads verified; README updated; CI38689361010 succeeded. Phone installed-APK hash matches release; Martin confirmed retained pairing and Missions & Replay opens. [Evidence and limits](changes/2026-10-15-replay-save-lock-selection.md#published-and-verified).
+
 - Windows2.39.1 / Android1.6.3 patch prepared with explicit release authorization: save-read lock/hidden-selection repairs, paired-phone replay/bookmarks, refreshed APK and coordinated update metadata. Phone upgrade/hash/signature verified; Martin confirmed pairing retained and Missions & Replay opens. [Checks and publication status](changes/2026-10-15-replay-save-lock-selection.md#combined-artifacts-checked).
 
 - [2026-10-15: Replay save-read lock and hidden selection](changes/2026-10-15-replay-save-lock-selection.md): FL4K replay stopped on a Windows save-read lock before issuing travel; replay campaign filters retained a hidden second selection. Bounded read-only waits and single-selection repairs pass28 service checks, two Electron UI suites and five startup checks. Local desktop repair; live DLC retry pending, public2.39.0 unchanged.

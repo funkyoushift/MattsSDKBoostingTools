@@ -18,4 +18,5 @@ mobile-version.json  494 bytes  SHA256 1cf994f5fe1c2c141d00767e6ac6411deb03191ae
 MSBT-Mobile-Controller.apk  28891868 bytes  SHA256 20e9c31822a6463b58e2d167a61f93bb9d4901b311216539a8557c5cadfb3588
 MSBT-Mobile-Controller-1.6.3.apk  28891868 bytes  SHA256 20e9c31822a6463b58e2d167a61f93bb9d4901b311216539a8557c5cadfb3588
 
-Publication checks pending.
+Published/latest verified: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.1
+Immutable tag79c5f59477eb8634bc4ee48ee273b54e20c24aff; packaged identity68a04ffc3b01296914cde2d9bec95637edd5d6dc. CI38689361010 succeeded. All11 uploaded asset names/sizes/digests match local. Public rolling mobile-version.json/latest.json/latest.yml/APK downloaded and byte-matched. Public main README text verified with normalized line endings. Martin confirmed pairing retained and Missions & Replay opens. No new phone-triggered save mutation or guest persistence proof claimed.
