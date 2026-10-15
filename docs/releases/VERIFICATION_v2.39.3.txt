@@ -23,3 +23,6 @@ MSBT-Mobile-Controller.apk  28892320 bytes  SHA256 f6a2a35fcfac914611bd972f03ef5
 MSBT-Mobile-Controller-1.6.5.apk  28892320 bytes  SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5
 BL4MissionSelector.sdkmod  40463685 bytes  SHA256 b594aee79d3c81b8370224f907d211be29766815ab9e97b48d39eab7455bd8de
 BL4MissionSelector-README.md  4848 bytes  SHA256 e00d5e9d424ce5419d99c4332664f3d54af30d7e20cfbe5e7a7db5d3738e7da6
+
+Publication: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.3
+Stable/latest, non-draft; immutable tagb5a88b5a8606402a268ebf3eb80a4b454bd70d8e. All13 uploaded asset names/sizes/SHA256 digests match local. Public rolling latest.json/latest.yml/mobile-version.json and the actual AndroidAPK downloaded and byte-matched; public main README matches. Release-policyCI38825067050 and Pages38825066211 succeeded. No game close, restart or SDK installation was issued in this release turn.
