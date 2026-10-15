@@ -102,3 +102,13 @@ worktree, with the full SDK also copied to the primary workspace's
 Versions remain 2.39.1. No tag, GitHub release, upload, APK update or version bump
 was performed. Ready for release preparation within the stated experimental
 coverage; DLC encounters still have not each been played end to end.
+
+## Published update
+
+Martin requested publication. Released v2.39.2 with Windows/full SDK, standalone
+SDK and Android1.6.4/build37. All13 published assets match local SHA256/size;
+public rolling updater downloads and main README verified. See
+[release verification](../releases/VERIFICATION_v2.39.2.txt) for source/package,
+phone, CI and rollback evidence. Native replay behavior remains bounded by the
+live checks above. The installed standalone and primary shareable copy now match
+the released cc3d4856 archive; full SDK f6bca3d0 stays outside active sdk_mods.

@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-10-15: v2.39.2 release preparation](releases/RELEASE_NOTES_v2.39.2.md): Martin explicitly requested publication. Coordinated Windows/full and standalone SDK 2.39.2, Android 1.6.4/build37; build and publication verification pending. The live replay evidence below is retained separately from package checks.
+- [2026-10-15: v2.39.2 published](releases/RELEASE_NOTES_v2.39.2.md): Martin explicitly requested publication. Coordinated Windows/full and standalone SDK 2.39.2, Android 1.6.4/build37; published stable/latest with 13 assets and matching hashes; release-policy/Pages CI passed. Android installed/opened, but live reconnect was not confirmed with BL4 closed and full SDK inactive. See [verification](releases/VERIFICATION_v2.39.2.txt). The live replay evidence below is retained separately from package checks.
 
 - [2026-10-15: DLC main sections and live exact bookmarks](changes/2026-10-15-dlc-main-sections-and-bookmark-verification.md): 18 supported DLC missions now use 61 full route sections; 126 total across 39 missions. Both standalone and real app bookmark save/move/automatic reload checks passed live, with matching objective state, exact position and protected gear. Fixed a false teleport failure using precise readback plus grounding. 140 source, 49 worker and 22 package/import checks pass. Standalone 064d52c8 installed; matching Windows build packaged. Temporary controls removed; game closed. No publish.
 
