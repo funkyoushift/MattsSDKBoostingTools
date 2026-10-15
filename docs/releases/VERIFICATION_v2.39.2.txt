@@ -1,0 +1,25 @@
+v2.39.2 / Android 1.6.4 build37 verification
+
+Approved by Martin's explicit "update the release" request. Built from the isolated codex/mission-repair-dialogue-uvhm worktree, preserving the dirty primary checkout.
+Packaged source identity: 7b260e08f83df6e4a2377f136c2118a671959cbc. Published metadata must retain this identity; verification-only commits do not require rebuilding it.
+
+153 focused Python mission/save/spawn/fog/startup checks; 49 Node worker checks; 22 standalone/package/import checks passed. All 122 shipped Python sources compile. Save replay panel, paired mobile replay transport, mobile API and shared mobile workspace checks passed (77 methods, 17 tabs). Source settings exit/reopen checks passed.
+Windows release build passed 31 persistent installer checks, the standard Electron identity/UI/600 responsive measurement suite, 48 packaged dependency and 3313 packaged resource comparisons, packaged startup smoke and updater tests. A separate three-start check used the actual packaged executable, a private profile and real renderer/preload/IPC to verify settings persisted, including unchecked state. No game action was performed by that package check.
+Both SDK archives pass integrity and Python compile checks; Windows embedded full SDK byte-matches the downloadable full SDK. Standalone includes its console menu and bundled worker, with no private probe scripts.
+Android assembleRelease/lintRelease passed using JDK17. APK build37 reports version1.6.4 and retains signer SHA25666898cf450284f6626edae3c8f2f63ae05dedb9381117ac320cdaa2fd69e9baa. Installed in place on the connected phone; MainActivity launched, process running, no fatal runtime error in bounded post-install logs. Pulled installed APK byte-matches the release. Four mission/contract assets match the generated source. Phone reconnect/user confirmation is recorded separately below when available; no phone-triggered save mutation is claimed.
+
+Earlier live implementation proof: both standalone and the real Windows production app captured a bookmark, moved 5 metres and automatically reloaded the character/map to restore the exact recorded position and matching objective state, preserving protected gear/progression. The precise placement readback repair was exercised in both. Refer to docs/changes/2026-10-15-dlc-main-sections-and-bookmark-verification.md. Not all126 main sections were played end to end; generated encounters remain experimental. Earlier mixed-DLC guest confirmations remain historical, not new guest persistence proof. No new Epic live test is claimed.
+
+Artifacts (the same APK is offered under rolling and versioned names):
+MSBT-Installer-v2.39.2.exe  320515161 bytes  SHA256 e0c1f07a6b2b1fb214e343d803a178f46adb1ce8c800ad4c16f7607e8ab299b6
+MSBT-Installer-v2.39.2.exe.blockmap  320939 bytes  SHA256 9954ca950301d27859c6f0f2ab41d642a374d2ccebb09f781695a63e7da6aa76
+latest.yml  350 bytes  SHA256 ae136c5771394ab6926f02cb913a2cbdca52bfc8f5b3724882ef22f98cd8d5ac
+latest.json  1548 bytes  SHA256 dc8fd0d36dc29c8a13db9e4e2512667469d61a69dbcc706cca817b7931b6d78f
+MSBT-Portable-v2.39.2-win-x64.zip  381004517 bytes  SHA256 b9477c952719ba2de48729bdd2b702365884731bbd565a11f82ce06bffda8162
+MSBT-Setup.exe  71599909 bytes  SHA256 f53127adbb49f2f27e86e2f917f59cec3207d607140df5bd403b1ecc34f969f4
+MattsSDKBoostingTools.sdkmod  1900135 bytes  SHA256 f6bca3d0bd8c8df7bcf4207ca19e4b2048cdde61bdfffd94defd858f0e85671f
+mobile-version.json  494 bytes  SHA256 a967ea92c8a6b0c24d3cff134edf069ffd8a9ae0e503d9c7e6a4902f4aca2628
+MSBT-Mobile-Controller.apk  28892108 bytes  SHA256 e81e7dac47654f15199b5a1662d784012fa9a4b8ac32330308b6b3219b3b43af
+MSBT-Mobile-Controller-1.6.4.apk  28892108 bytes  SHA256 e81e7dac47654f15199b5a1662d784012fa9a4b8ac32330308b6b3219b3b43af
+BL4MissionSelector.sdkmod  40463685 bytes  SHA256 cc3d48567098af0fb81326ef1897a5f4969f09334a3e0fc7b42f465c10ee8282
+BL4MissionSelector-README.md  4848 bytes  SHA256 e00d5e9d424ce5419d99c4332664f3d54af30d7e20cfbe5e7a7db5d3738e7da6
