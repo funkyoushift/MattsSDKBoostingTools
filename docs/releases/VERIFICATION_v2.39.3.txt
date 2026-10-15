@@ -1,0 +1,25 @@
+v2.39.3 / Android1.6.5 build38 verification
+
+Martin explicitly requested inclusion of the local phone pairing repair after confirming "Connected now" following a fresh Remote AFK QR scan. Isolated release worktree: codex/mission-repair-dialogue-uvhm. Build identity242959fe9de5bf4a6ea096c5404bac77ab219289.
+
+Source checks: actual mobile page AFK/remote/pairing suite, phone reconnect suite, paired mobile save-replay transport suite and JavaScript syntax passed. New coverage saves and reloads remote credentials, verifies the remote transport choice, and rejects the damaged old Remote AFK placeholder with specific recovery guidance. Five Python startup/no-BLImGui guards passed; 22 standalone/package/import checks are run against the rebuilt SDK. Earlier full mission/native test evidence is retained in v2.39.2 verification; it is not described as newly rerun for this Android-only behavior repair. Full game SDK differs from the published2.39.2 archive only in version metadata.
+
+Android assembleRelease/lintRelease passed with JDK17. ReleaseAPK reports version1.6.5/build38 and keeps signer SHA25666898cf450284f6626edae3c8f2f63ae05dedb9381117ac320cdaa2fd69e9baa. Archive integrity passes; assets/app.js byte-matches the local7437dca9 candidate installed on Martin's phone, whose fresh QR reconnection he confirmed. The phone is no longer attached to adb during this release build; installation/launch of the final version-only1.6.5 rebuild is not claimed. Existing damaged pairing still needs a fresh scan; the repair prevents future Save Setup credential loss.
+
+Windows build, packaged restart, artifact inventory and publication results are appended after their checks finish. Active installed Windows/game/AFK processes are preserved. Public2.39.2 remains available for rollback; no published tag or old versioned asset is overwritten.
+
+Final build checks:22 standalone/package/import checks passed. Windows standard build suite,31 installer tests,48 packaged dependency/3313 packaged resource comparisons, packaged startup smoke and updater checks passed. Three separate starts of the actual packaged executable verified persisted private-profile settings including a boolean toggle; automatic game application remained disabled throughout to preserve the running AFK lobby. Embedded full SDK matches the downloadable archive.
+
+Artifacts:
+MSBT-Installer-v2.39.3.exe  320515490 bytes  SHA256 98810cc75ed51f0d12de61dd5d152013095253d96f7f95b07a4db89230d9f7bc
+MSBT-Installer-v2.39.3.exe.blockmap  320924 bytes  SHA256 2261b7a6aeeccc1596e685b216518335d019673306eac13951229561ae29a072
+latest.yml  350 bytes  SHA256 ee042badd6800d193b722dd87b08c15c5cc9af498c3621c18c6b8931a9386c45
+latest.json  1548 bytes  SHA256 2c4b6878ef7cf6c8dc9ccbeb91e4a084de7c0722f266b0174d8f4849ee29afe3
+MSBT-Portable-v2.39.3-win-x64.zip  381004484 bytes  SHA256 0dd6881a0e601721b54d7ea0201040515cb43f200d611a3f25150e9d89d70e27
+MSBT-Setup.exe  71599907 bytes  SHA256 6daf0ef934c5e7c4879a3a1b93264befcbfac21c4db0069acab2da400efb5d3d
+MattsSDKBoostingTools.sdkmod  1900135 bytes  SHA256 2327fa6d8ee828a8cbcd73df5a41d1af64f05cfe9863afc8fefe107ed2416a21
+mobile-version.json  494 bytes  SHA256 f6d85beeff83de72f8a98314a6fd007d85ba27c097ce83004e3bbaa54425b2e2
+MSBT-Mobile-Controller.apk  28892320 bytes  SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5
+MSBT-Mobile-Controller-1.6.5.apk  28892320 bytes  SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5
+BL4MissionSelector.sdkmod  40463685 bytes  SHA256 b594aee79d3c81b8370224f907d211be29766815ab9e97b48d39eab7455bd8de
+BL4MissionSelector-README.md  4848 bytes  SHA256 e00d5e9d424ce5419d99c4332664f3d54af30d7e20cfbe5e7a7db5d3738e7da6
