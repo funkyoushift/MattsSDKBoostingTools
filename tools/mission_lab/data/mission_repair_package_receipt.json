@@ -1,0 +1,10 @@
+{
+  "base": "2.38.1",
+  "archive": "C:\\Users\\mwenn\\.codex\\worktrees\\mission-replay-release\\product\\MattsSDKBoostingTools.sdkmod",
+  "sha256": "b7a9081371f2cc2e0794b3a37481ab1d80ce98bf521e2f8b4cf961ecf667175a",
+  "checked_resources": 139,
+  "installed": true,
+  "live_dialogue_smoke": true,
+  "live_replay_verified": false,
+  "install_receipt": "C:/src/MSBT-Workspace/local/mission-repair-2026-10-14/install-receipt.json"
+}

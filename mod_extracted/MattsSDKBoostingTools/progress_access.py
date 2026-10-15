@@ -4,6 +4,7 @@ RVA 8d09f1a resolves a DLC reference via 156a95a and checks actor access via
 125f73e. This uses the player's entitlement store, not shared world facts.
 No entitlement flags or ownership records are assigned.
 """
+from .mission_native import native_address, native_fingerprint
 import ctypes as C
 import json
 from importlib.resources import files
@@ -14,10 +15,10 @@ def inspect(engine, rows):
     import unrealsdk
     engine.ensure_world()
     for rva,expected in DATA['fingerprints'].items():
-        if engine.read(engine.base+int(rva,16),32).hex()!=expected:
+        if engine.read(native_address(engine, int(rva,16)),32).hex()!=native_fingerprint(engine, int(rva,16), expected):
             raise RuntimeError('DLC access query differs from the reviewed game build')
-    resolve=C.WINFUNCTYPE(C.c_void_p,C.c_void_p)(engine.base+0x156a95a)
-    query=C.WINFUNCTYPE(C.c_bool,C.c_void_p,C.c_void_p)(engine.base+0x125f73e)
+    resolve=C.WINFUNCTYPE(C.c_void_p,C.c_void_p)(native_address(engine, 0x156a95a))
+    query=C.WINFUNCTYPE(C.c_bool,C.c_void_p,C.c_void_p)(native_address(engine, 0x125f73e))
     result={}
     for key,definition in DATA['packs'].items():
         token=unrealsdk.make_struct('/Script/CoreUObject.SToken',Name=definition['definition'])

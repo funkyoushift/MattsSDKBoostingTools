@@ -266,10 +266,15 @@ def test_unknown_unloaded_second_switch_prevents_loaded_first_write(monkeypatch)
 
 
 def test_campaign_checks_all_interactions_before_any_native_reset(monkeypatch):
+    import importlib.resources
+    monkeypatch.setattr(importlib.resources,'files',lambda _:PATH.parent)
+    from types import ModuleType
+    package=ModuleType('reset_preflight');package.__path__=[str(PATH.parent)]
+    monkeypatch.setitem(sys.modules,'reset_preflight',package)
     spec=importlib.util.spec_from_file_location('reset_preflight.mission_reset',PATH.parent/'mission_reset.py')
     reset=importlib.util.module_from_spec(spec);spec.loader.exec_module(reset)
     calls=[];checked=[];memory={}
-    engine=NS(base=0x100000000,ensure_world=lambda:None,check_build=lambda:None,u64=lambda p:memory[p])
+    engine=NS(profile='steam-25372571',base=0x100000000,ensure_world=lambda:None,check_build=lambda:None,u64=lambda p:memory[p])
     rows=[]
     for i,name in enumerate(['first','unsupported']):
         record=0x1000+i*0x1000;storage=record+0x300;fields=record+0x400;group=record+0x500

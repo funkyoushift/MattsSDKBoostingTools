@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__version__: str = "2.38.1"
+__version__: str = "2.39.0"
 __version_info__: tuple[int, int, int] = (2, 38, 1)
 
 from mods_base import CoopSupport, Game, build_mod
@@ -67,6 +67,10 @@ if challenge_api_probe_enabled():
     _extra_commands.append(_cmd_msbt_probe_challenge_apis)
 
 def _disable_runtime_controls():
+    from .mission_character_loader import clear_runtime_state as clear_character_loader
+    clear_character_loader()
+    from .dialogue_controls import clear_runtime_state as clear_dialogue
+    clear_dialogue()
     _clear_farming()
     _clear_drop_rate()
     from .mission_progression import clear_runtime_state

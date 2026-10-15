@@ -29,7 +29,7 @@ def rig(monkeypatch):
             dict(name='hidden', token='two', pointer='0x2000', state=3, hidden=True),
             dict(name='next', token='three', pointer='0x3000', state=3, hidden=False)]
     groups = {0x1080: 0, 0x2080: 0, 0x3080: 1}
-    engine = NS(base=0, u64=lambda address: address,
+    engine = NS(profile='steam-25372571', base=0, u64=lambda address: address,
                 read=lambda address, size: bytes.fromhex(m.OUTCOME_BYTES) if size == 32 else struct.pack('<i', groups[address]))
     monkeypatch.setitem(sys.modules, 'execution_test.mission_objectives', NS(read=lambda *args: copy.deepcopy(rows)))
     calls, events = [], []
@@ -74,6 +74,26 @@ def test_selected_objective_does_not_advance_other_active_steps(rig):
     assert [c[1] for c in r.calls]==[0x3000] and r.rows[0]['state']==4
 
 
+def test_composite_can_load_its_inactive_child_map_without_completing_anything(rig):
+    r=rig;r.data['groups'][0]['objectives'][0]['wait_for_objectives']=['hidden']
+    r.data['groups'][0]['objectives'][1]['completion_maps']=['cowbell_p']
+    visited=[]
+    result=r.m.advance(r.engine,dict(token='mission'),'test',r.receipt,r.events.append,
+        definition=r.data,selected_token='one',current_map='world_p',
+        before_outcome=lambda o:visited.append(o['token']) or False)
+    assert not result['ready'] and visited==['two'] and not r.calls
+    assert not r.receipt['issued'] and r.rows[0]['state']==4 and r.rows[1]['state']==3
+
+
+def test_composite_does_not_load_unrelated_future_objective_map(rig):
+    r=rig;r.data['groups'][0]['objectives'][0]['wait_for_objectives']=['hidden']
+    r.data['groups'][1]['objectives'][0]['completion_maps']=['cowbell_p']
+    result=r.m.advance(r.engine,dict(token='mission'),'test',r.receipt,r.events.append,
+        definition=r.data,selected_token='one',current_map='world_p',
+        before_outcome=lambda o:pytest.fail('Unrelated future step must not cause travel'))
+    assert not result['ready'] and not r.calls and not r.receipt['issued']
+
+
 def test_selected_composite_only_advances_its_authored_children(rig):
     r=rig
     r.data['groups'][0]['objectives'][0]['wait_for_objectives']=['hidden']
@@ -109,7 +129,8 @@ def test_finish_wait_still_has_a_bounded_stop_without_reissue(rig,monkeypatch):
     r=rig;clock=[10.]
     monkeypatch.setattr(r.m.time,'monotonic',lambda:clock[0])
     r.advance();clock[0]+=r.m.FINISH_TIMEOUT+1
-    with pytest.raises(RuntimeError,match='needs inspection'):r.advance()
+    with pytest.raises(RuntimeError,match='needs inspection') as error:r.advance()
+    assert not getattr(error.value,'activation_pending',False)
     assert len(r.calls)==1
 
 
@@ -419,6 +440,67 @@ def progression_rig(rig, monkeypatch):
     return m, mission, party
 
 
+@pytest.mark.parametrize('blocked',[False,True])
+def test_bulk_normal_completion_retains_dlc_gate_without_replaying_objectives(rig,monkeypatch,tmp_path,blocked):
+    r=rig;m,mission,party=progression_rig(r,monkeypatch);name=mission['source_identity']['name']
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setitem(sys.modules,'execution_test.mission_discovery',NS(SCOPES=()))
+    monkeypatch.setitem(sys.modules,'execution_test.farming_targets',NS(resolve=lambda payload:party))
+    monkeypatch.setattr(m,'select',lambda *args:[name])
+    monkeypatch.setattr(m,'_schedule_category',lambda snapshot:True)
+    monkeypatch.setattr(r.m,'coverage_error',lambda *args:pytest.fail('Bulk completion must not require replay graph coverage'))
+    monkeypatch.setattr(r.m,'advance',lambda *args,**kwargs:pytest.fail('Bulk completion must not replay objective scenes'))
+    r.engine.u64=lambda address:{0x100000:0x300000,0x1000a8:0x200000,0x3000f8:0xd80660,0x300110:0x419fefa}[address]
+    r.engine.read=lambda *args:b'\1'
+    native=[]
+    def factory(*signature):
+        def bind(address):
+            def invoke(*values):
+                native.append((address,values));mission['status_fact']['known_status']='completed'
+            return invoke
+        return bind
+    monkeypatch.setattr(m.C,'WINFUNCTYPE',factory)
+    started=m.start(dict(scope='all',reset_completed=True,acknowledge_shared_progress=True),use_objective_graph=False)
+    assert m._job['completion_path']=='normal_acceptance'
+    if blocked:
+        monkeypatch.setattr(m,'_dlc_requirement',lambda *args:dict(allowed=False,title='Unavailable DLC',reason='Guest has no access',blocking_players=['Guest']))
+    result=m.step(started['id'])
+    if blocked:
+        assert not native and result['state']=='stopped' and m._job['deferred'][0]['blocking_players']==['Guest']
+    else:
+        assert result['state']=='completed' and native==[(0xf19ee4,(0x100000,6,False))]
+        m.step(started['id']);assert len(native)==1
+
+
+@pytest.mark.parametrize('immediate',[False,True])
+def test_poll_batches_synchronously_finished_graphs_but_yields_for_pending_actions(rig,monkeypatch,immediate):
+    r=rig;m,mission,_=progression_rig(r,monkeypatch)
+    name=mission['source_identity']['name'];r.m.DATA[name]=r.data
+    mission['status_fact']['known_status']='active'
+    monkeypatch.setattr(m,'_journal',r.events.append)
+    monkeypatch.setattr(m.time,'monotonic',lambda:1.)
+    def factory(*signature):
+        def bind(address):
+            def invoke(pointer,outcome):
+                assert r.events[-1]['event']=='issued'
+                r.calls.append((address,pointer,outcome))
+                next(o for o in r.rows if int(o['pointer'],16)==pointer)['state']=13 if immediate else 10
+                if immediate:
+                    if pointer==0x1000:r.rows[2]['state']=4
+                    else:mission['status_fact']['known_status']='completed'
+            return invoke
+        return bind
+    monkeypatch.setattr(r.m.C,'WINFUNCTYPE',factory)
+    m._job=dict(id='job',state='running',phase='complete',index=0,completed=[],names=[name],
+                binding=['same'],target='host',completion_path='objective_graph')
+    result=m.poll('job')
+    assert [c[1] for c in r.calls]==([0x1000,0x3000] if immediate else [0x1000])
+    assert result['state']==('completed' if immediate else 'running')
+    if not immediate:
+        assert m._job['await_tick']
+        m.poll('job');assert len(r.calls)==1
+
+
 @pytest.mark.parametrize('scope', ['current','named', 'all'])
 def test_public_start_waits_for_activation_then_uses_shared_graph(rig, monkeypatch, tmp_path, scope):
     r = rig; m, mission, party = progression_rig(r, monkeypatch)
@@ -490,3 +572,44 @@ def test_graph_resume_preserves_uncertain_call_block(rig, monkeypatch, tmp_path)
         m.resume('job')
     assert receipt['pending'] == 'one' and receipt['progress_at'] == 1.0
     assert not r.calls
+
+
+@pytest.mark.parametrize('reused',[False,True])
+def test_selected_composite_includes_same_section_hidden_arrival_initializer(rig,reused):
+    r=rig;r.data['groups'][0]['objectives'][0]['wait_for_objectives']=['next']
+    if reused:
+        r.data['groups'][1]['objectives'].append(copy.deepcopy(r.data['groups'][0]['objectives'][0]))
+        r.groups[0x1080]=1
+    r.data['groups'][0]['objectives'][1]['activation_by_arrival']=True
+    r.rows[1]['state']=4;r.rows[2]['state']=None
+    def selected():
+        return r.m.advance(r.engine,dict(token='mission'),'test',r.receipt,r.events.append,
+                           definition=r.data,selected_token='one',current_map='world_p')
+    selected();assert [c[1] for c in r.calls]==[0x2000]
+    r.rows[1]['state']=13;r.rows[2]['state']=4
+    selected();assert [c[1] for c in r.calls]==[0x2000,0x3000]
+    r.rows[2]['state']=13;r.rows[0]['state']=13
+    assert selected()['ready'] and len(r.calls)==2
+
+
+@pytest.mark.parametrize('field,value',[('hidden',False),('optional',True),('activation_by_arrival',False)])
+def test_selected_composite_does_not_take_unrelated_or_optional_sibling(rig,field,value):
+    r=rig;r.data['groups'][0]['objectives'][0]['wait_for_objectives']=['next']
+    r.data['groups'][0]['objectives'][1]['activation_by_arrival']=True;r.rows[1]['state']=4
+    if field=='hidden':r.rows[1][field]=value
+    else:r.data['groups'][0]['objectives'][1][field]=value
+    result=r.m.advance(r.engine,dict(token='mission'),'test',r.receipt,r.events.append,
+                       definition=r.data,selected_token='one',current_map='world_p')
+    assert not r.calls and not result['ready']
+
+
+def test_selected_reused_composite_excludes_other_section_arrival(rig):
+    r=rig;parent=r.data['groups'][0]['objectives'][0]
+    parent['wait_for_objectives']=['next']
+    r.data['groups'][1]['objectives'].append(copy.deepcopy(parent));r.groups[0x1080]=1
+    r.data['groups'].append(dict(index=2,objectives=[dict(name='unrelated',activation_by_arrival=True)]))
+    r.rows.append(dict(name='unrelated',token='four',pointer='0x4000',state=4,hidden=True))
+    r.groups[0x4080]=2
+    result=r.m.advance(r.engine,dict(token='mission'),'test',r.receipt,r.events.append,
+                       definition=r.data,selected_token='one',current_map='world_p')
+    assert not r.calls and not result['ready']

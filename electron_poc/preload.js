@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("msbt", {
   communityFolders: (operation, payload) => ipcRenderer.invoke('app:communityFolders', operation, payload),
   openDeveloperPortal: () => ipcRenderer.invoke('app:openDeveloperPortal'),
   bridgeRequest: (args) => ipcRenderer.invoke("bridge:request", args),
+  saveReplay: (action, payload) => ipcRenderer.invoke('app:saveReplay', action, payload || {}),
   browseSdkMods: () => ipcRenderer.invoke("app:browseSdkMods"),
   detectSdkMods: () => ipcRenderer.invoke("app:detectSdkMods"),
   detectOak2: (sdkModsPath) => ipcRenderer.invoke("app:detectOak2", sdkModsPath),

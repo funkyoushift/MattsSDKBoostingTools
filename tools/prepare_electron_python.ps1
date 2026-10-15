@@ -65,16 +65,36 @@ function Update-EmbeddedPythonPath {
     }
 }
 
+function Install-ReplayYaml {
+    $YamlVersion = "6.0.3"
+    $Installed = & $PythonExe -c "import importlib.util; s=importlib.util.find_spec('yaml'); print(__import__('yaml').__version__ if s else 'missing')"
+    if ($LASTEXITCODE -eq 0 -and $Installed -eq $YamlVersion) { return }
+    # Tagged native saves require the same parser used in the replay pilots.
+    # Resolve a wheel for the embedded interpreter, regardless of host Python.
+    & python -m pip install --disable-pip-version-check --only-binary=:all: --no-deps --upgrade --implementation cp --python-version 3.13 --abi cp313 --platform win_amd64 --target $PythonDir "PyYAML==$YamlVersion"
+    if ($LASTEXITCODE -ne 0) { throw "Could not prepare the replay YAML dependency" }
+    & $PythonExe -c "import yaml; assert yaml.__version__ == '6.0.3'; assert yaml.compose('x: !native []')"
+    if ($LASTEXITCODE -ne 0) { throw "Embedded replay YAML parser smoke check failed" }
+}
+
 New-Item -ItemType Directory -Force -Path $VendorRoot | Out-Null
 
 $ExistingVersion = Get-PythonVersionText $PythonExe
 if ($ExistingVersion -like "Python $PythonVersion*") {
     Update-EmbeddedPythonPath
+    Install-ReplayYaml
     Write-Host "Portable Python already prepared: $ExistingVersion"
     Write-Host "Path: $PythonExe"
     exit 0
 }
 
+$TaskVendorPrefix = [System.IO.Path]::GetFullPath($VendorRoot) + [System.IO.Path]::DirectorySeparatorChar
+foreach ($TaskCleanupPath in @($PythonDir, $ExtractDir)) {
+    $TaskResolvedCleanup = [System.IO.Path]::GetFullPath($TaskCleanupPath)
+    if (-not $TaskResolvedCleanup.StartsWith($TaskVendorPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        throw "Runtime cleanup target is outside the vendor directory"
+    }
+}
 if (Test-Path $PythonDir) {
     Remove-Item -LiteralPath $PythonDir -Recurse -Force
 }
@@ -100,6 +120,7 @@ Expand-Archive -LiteralPath $ZipPath -DestinationPath $ExtractDir -Force
 Move-Item -LiteralPath $ExtractDir -Destination $PythonDir
 
 Update-EmbeddedPythonPath
+Install-ReplayYaml
 
 $PreparedVersion = Get-PythonVersionText $PythonExe
 if (-not ($PreparedVersion -like "Python $PythonVersion*")) {

@@ -570,7 +570,11 @@ def _target_character_for_pc(target_pc: Any) -> Optional[Any]:
         except Exception:
             obj = None
         if obj is not None:
-            return obj
+            try:
+                if getattr(obj, "GbxProgressionManager", None) is not None:
+                    return obj
+            except Exception:
+                pass
     try:
         ps = getattr(target_pc, "PlayerState", None)
     except Exception:
@@ -582,7 +586,11 @@ def _target_character_for_pc(target_pc: Any) -> Optional[Any]:
             except Exception:
                 obj = None
             if obj is not None:
-                return obj
+                try:
+                    if getattr(obj, "GbxProgressionManager", None) is not None:
+                        return obj
+                except Exception:
+                    pass
     return None
 
 

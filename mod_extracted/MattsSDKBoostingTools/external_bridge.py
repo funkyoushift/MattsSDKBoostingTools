@@ -263,7 +263,7 @@ _QUICK_MENU_LAYOUT_MUTATIONS = frozenset({
 
 # Initial Give_Serial bridge actions. After they run, multi-chunk delivery continues
 # on the serial-rewards tick (outside this HTTP queue). Only a newer Give_Serial
-# should replace that in-flight chunk work — see serial_rewards.py.
+# should replace that in-flight chunk work â€” see serial_rewards.py.
 _SERIAL_DELIVERY_ACTIONS = frozenset({
     "give_serial_local",
     "give_serial_selected",
@@ -340,6 +340,10 @@ _PROGRESS_JOB_ACTIONS = frozenset({
     "mission_step", "mission_resume", "mission_cancel", "mission_recover",
     "mission_dlc_status", "mission_objective_preview", "mission_objective_complete", "mission_objective_status", "mission_objective_replay", "mission_objective_step", "mission_objective_cancel", "mission_objective_recover",
     "mission_practice_preview", "mission_practice_start", "mission_practice_step", "mission_practice_status", "mission_practice_cancel",
+    "mission_save_replay_status", "mission_save_replay_begin", "mission_save_replay_picker", "mission_save_replay_capture", "mission_save_replay_loader_inspect", "mission_save_replay_loader_pulse",
+        "mission_save_replay_loader_bind", "mission_save_replay_loader_refresh", "mission_save_replay_loader_select",
+    "mission_save_replay_travel", "mission_save_replay_check", "mission_save_replay_place", "mission_save_replay_placement_status", "mission_save_replay_placement_ready",
+    "mission_save_replay_refresh", "mission_save_replay_track", "mission_save_replay_close", "mission_save_replay_restore_guard",
 })
 
 
@@ -408,7 +412,7 @@ UI_LAYOUT: dict[str, Any] = {
                 {"id":"max_player_level","label":"MAX PLAYER 70","accent":"cyan"},
                 {"id":"max_spec_level","label":"MAX SPEC 701","accent":"purple"}
             ]},
-            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1–P4). Host can read a guest's equipped gear. Items are added directly to target backpacks with paced delivery. Ground/dropped serials are not supported.","fields":[
+            {"id":"serial_rewards","label":"SERIAL REWARDS","accent":"purple","text":"Paste one or more serials below, or Read Equipped / Backpack from the selected party target (P1â€“P4). Host can read a guest's equipped gear. Items are added directly to target backpacks with paced delivery. Ground/dropped serials are not supported.","fields":[
                 {"id":"serial_text","label":"Serial Input","type":"multiline","default":""},
                 {"id":"serial_override_level","label":"Override delivery level?","type":"choice","choices":["false","true"],"default":"false"},
                 {"id":"serial_level","label":"Level","type":"int","default":70}
@@ -431,7 +435,7 @@ UI_LAYOUT: dict[str, Any] = {
             ]},
             {"id":"mayhem","label":"MAYHEM","accent":"gold",
              "text":"Selected player's saved rank; enables Takedown access in the lobby. Active difficulty stays unchanged. Hardcore requires rank 5.",
-             "fields":[{"id":"mayhem_rank","label":"Mayhem rank (1–20)","type":"int","default":20}],
+             "fields":[{"id":"mayhem_rank","label":"Mayhem rank (1â€“20)","type":"int","default":20}],
              "actions":[{"id":"mayhem_boost","label":"Unlock Mayhem","accent":"gold","uses_fields":["mayhem_rank"]}]},
             {"id":"currency","label":"CURRENCY","accent":"green","fields":[
                 {"id":"currency_kind","label":"Currency Kind","type":"choice","choices":list(CURRENCY_KINDS),"default":"cash"},
@@ -667,7 +671,7 @@ def _v4_patch_layout() -> None:
                     {"id":"travel_station_search","label":"Search Travel Stations","type":"text","default":""},
                 ]
             elif tid == "legit_builder" and cid == "legit_builder_main":
-                card["text"] = "External resource-backed Legit Builder. Pick Type → Manufacturer → Root → Parts outside the game; only final build/give is sent through the SDK bridge."
+                card["text"] = "External resource-backed Legit Builder. Pick Type â†’ Manufacturer â†’ Root â†’ Parts outside the game; only final build/give is sent through the SDK bridge."
                 card["fields"] = [
                     {"id":"legit_unlock_modded","label":"Unlock rules for modded gear","type":"choice","choices":["false","true"],"default":"false"},
                     {"id":"legit_type","label":"Type","type":"legit_type","default":"pistol"},
@@ -762,6 +766,8 @@ def _normalize_quick_menu_bridge_payload(action: str, payload: dict[str, Any]) -
 
 def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
     payload = payload or {}
+    if action.startswith('mission_save_replay_'):
+        return backend_actions.run_quick_menu_action(action, payload, record=False)
     if action in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume"):
         return backend_actions.run_quick_menu_action(action, payload, record=False)
     if backend_actions.full_progress_conflict(action):
@@ -832,11 +838,11 @@ def _handle_action(action: str, payload: dict[str, Any] | None = None) -> dict[s
     if action == "drop_all_shinies":
         return backend_actions.drop_all_shinies_selected()
     if action == "shiny_selected":
-        return backend_actions.deliver_shinies("selected")
+        return backend_actions.deliver_shinies("selected", payload.get("bulk_loot_password"))
     if action == "shiny_all":
-        return backend_actions.deliver_shinies("all")
+        return backend_actions.deliver_shinies("all", payload.get("bulk_loot_password"))
     if action == "shiny_nonhost":
-        return backend_actions.deliver_shinies("nonhost")
+        return backend_actions.deliver_shinies("nonhost", payload.get("bulk_loot_password"))
     if action == "set_backpack_bank_selected":
         return backend_actions.set_inventory_sizes_selected(
             payload.get("backpack_size") or 1000,

@@ -1,0 +1,2267 @@
+{
+  "profiles": {
+    "steam-25372571": {
+      "rva": "0x31838e",
+      "fingerprint": "41574156415541545657534883ec400f297424300f28f34d89c789d34889ce4c"
+    },
+    "epic-4845623": {
+      "rva": "0x31838e",
+      "fingerprint": "41574156415541545657534883ec400f297424300f28f34d89c789d34889ce4c"
+    }
+  },
+  "evidence": {
+    "schema": 1,
+    "process_access": "none",
+    "game_files_modified": false,
+    "live_epic": false,
+    "normalization": "relative branches and RIP displacements only",
+    "files": [
+      {
+        "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+        "sha256": "9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0"
+      },
+      {
+        "path": "C:\\Program Files\\Epic Games\\Venus\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+        "sha256": "764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719"
+      }
+    ],
+    "addresses": {
+      "0x31838e": "0x31838e",
+      "0x3189a6": "0x3189a6",
+      "0x3d6033a": "0x3d559d2",
+      "0x8877c80": "0x887df48"
+    },
+    "fingerprints": {
+      "0x31838e": {
+        "steam": "41574156415541545657534883ec400f297424300f28f34d89c789d34889ce4c",
+        "epic": "41574156415541545657534883ec400f297424300f28f34d89c789d34889ce4c"
+      },
+      "0x3189a6": {
+        "steam": "56574883ec680f297c24500f297424400f28f14889ce488b057d6f3e0c4831e0",
+        "epic": "56574883ec680f297c24500f297424400f28f14889ce488b057d9f3c0c4831e0"
+      },
+      "0x8877c80": {
+        "steam": "5657534883ec404889ce488bbc2480000000488b05a77ce8034831e048894424",
+        "epic": "5657534883ec404889ce488bbc2480000000488b05df49e6034831e048894424"
+      },
+      "0x3d6033a": {
+        "steam": "41565657534883ec38660f297424204889d64889cf8b81600100003b818c0100",
+        "epic": "41565657534883ec38660f297424204889d64889cf8b81600100003b818c0100"
+      }
+    },
+    "spans": [
+      {
+        "steam_rva": 3244942,
+        "epic_rva": 3244942,
+        "size": 1092,
+        "steam_sha256": "354698fd9f4ea2b6f33366140861981e03029a9e3d6b8a46538682f719387828",
+        "epic_sha256": "33e81ffc908fdd9c01887643a2d245c6af497bf96d7180e63860eaca66903609"
+      },
+      {
+        "steam_rva": 3246502,
+        "epic_rva": 3246502,
+        "size": 1091,
+        "steam_sha256": "9556364d979dbad7c99e71f2359da7dd3f83595ec6f0085b6100f470307dd2b8",
+        "epic_sha256": "a4dc430aa97d5d12100a68402ec697ab3bab074e5c510fc432b2f6695a8ef196"
+      },
+      {
+        "steam_rva": 143096960,
+        "epic_rva": 143122248,
+        "size": 339,
+        "steam_sha256": "b2c81e128ae4326dfcb15da1d721499fcdcc3c1e5d409ac23e9f37fafd65d828",
+        "epic_sha256": "8a1d2ec1c9eae4181d7e8571c1578a3cc11ee5dddcccbd765958d685429623db"
+      },
+      {
+        "steam_rva": 64357178,
+        "epic_rva": 64313810,
+        "size": 323,
+        "steam_sha256": "560037bd5db384a524f909b0752ea155364d6843cb171ebb703d2795bfe667fd",
+        "epic_sha256": "a33567a91f943162718c842021b61c3bd08eafe438e51abd2cd78392770a12cb"
+      }
+    ],
+    "missing": [],
+    "conflicts": {},
+    "matches": [
+      {
+        "steam_rva": 3244942,
+        "size": 1092,
+        "steam_sha256": "354698fd9f4ea2b6f33366140861981e03029a9e3d6b8a46538682f719387828",
+        "instructions": 269,
+        "references": [
+          {
+            "offset": 41,
+            "kind": "branch",
+            "target": 76824846
+          },
+          {
+            "offset": 49,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 59,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 82,
+            "kind": "branch",
+            "target": 3245105
+          },
+          {
+            "offset": 92,
+            "kind": "branch",
+            "target": 3245105
+          },
+          {
+            "offset": 102,
+            "kind": "branch",
+            "target": 3245107
+          },
+          {
+            "offset": 104,
+            "kind": "rip",
+            "target": 211142620
+          },
+          {
+            "offset": 111,
+            "kind": "branch",
+            "target": 3245107
+          },
+          {
+            "offset": 117,
+            "kind": "rip",
+            "target": 211142600
+          },
+          {
+            "offset": 139,
+            "kind": "branch",
+            "target": 3245105
+          },
+          {
+            "offset": 144,
+            "kind": "branch",
+            "target": 3245105
+          },
+          {
+            "offset": 161,
+            "kind": "branch",
+            "target": 3245107
+          },
+          {
+            "offset": 169,
+            "kind": "branch",
+            "target": 14980788
+          },
+          {
+            "offset": 177,
+            "kind": "branch",
+            "target": 3245153
+          },
+          {
+            "offset": 186,
+            "kind": "branch",
+            "target": 3245153
+          },
+          {
+            "offset": 206,
+            "kind": "branch",
+            "target": 64357178
+          },
+          {
+            "offset": 214,
+            "kind": "branch",
+            "target": 25758446
+          },
+          {
+            "offset": 222,
+            "kind": "branch",
+            "target": 3245641
+          },
+          {
+            "offset": 250,
+            "kind": "branch",
+            "target": 3245250
+          },
+          {
+            "offset": 255,
+            "kind": "branch",
+            "target": 1011876
+          },
+          {
+            "offset": 263,
+            "kind": "branch",
+            "target": 3245240
+          },
+          {
+            "offset": 280,
+            "kind": "branch",
+            "target": 3245240
+          },
+          {
+            "offset": 311,
+            "kind": "branch",
+            "target": 12602422
+          },
+          {
+            "offset": 318,
+            "kind": "branch",
+            "target": 3245604
+          },
+          {
+            "offset": 331,
+            "kind": "branch",
+            "target": 3245604
+          },
+          {
+            "offset": 344,
+            "kind": "branch",
+            "target": 3245604
+          },
+          {
+            "offset": 357,
+            "kind": "branch",
+            "target": 76517750
+          },
+          {
+            "offset": 375,
+            "kind": "branch",
+            "target": 3245330
+          },
+          {
+            "offset": 383,
+            "kind": "branch",
+            "target": 7534142
+          },
+          {
+            "offset": 449,
+            "kind": "branch",
+            "target": 3245403
+          },
+          {
+            "offset": 459,
+            "kind": "branch",
+            "target": 3245406
+          },
+          {
+            "offset": 476,
+            "kind": "branch",
+            "target": 3245431
+          },
+          {
+            "offset": 484,
+            "kind": "branch",
+            "target": 75240658
+          },
+          {
+            "offset": 499,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 509,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 515,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 517,
+            "kind": "rip",
+            "target": 211142620
+          },
+          {
+            "offset": 523,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 529,
+            "kind": "rip",
+            "target": 211142600
+          },
+          {
+            "offset": 551,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 557,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 568,
+            "kind": "branch",
+            "target": 3245533
+          },
+          {
+            "offset": 600,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 609,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 660,
+            "kind": "branch",
+            "target": 3245512
+          },
+          {
+            "offset": 665,
+            "kind": "branch",
+            "target": 106201702
+          },
+          {
+            "offset": 673,
+            "kind": "branch",
+            "target": 3245292
+          },
+          {
+            "offset": 694,
+            "kind": "branch",
+            "target": 3245292
+          },
+          {
+            "offset": 705,
+            "kind": "branch",
+            "target": 76824846
+          },
+          {
+            "offset": 713,
+            "kind": "branch",
+            "target": 3245722
+          },
+          {
+            "offset": 722,
+            "kind": "branch",
+            "target": 3245956
+          },
+          {
+            "offset": 756,
+            "kind": "branch",
+            "target": 3246009
+          },
+          {
+            "offset": 790,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 804,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 814,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 820,
+            "kind": "rip",
+            "target": 211142620
+          },
+          {
+            "offset": 826,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 836,
+            "kind": "rip",
+            "target": 211142600
+          },
+          {
+            "offset": 858,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 868,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 883,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 898,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 907,
+            "kind": "branch",
+            "target": 21094744
+          },
+          {
+            "offset": 932,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 941,
+            "kind": "branch",
+            "target": 21094744
+          },
+          {
+            "offset": 952,
+            "kind": "branch",
+            "target": 74500912
+          },
+          {
+            "offset": 974,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 983,
+            "kind": "branch",
+            "target": 63055760
+          },
+          {
+            "offset": 992,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 1004,
+            "kind": "branch",
+            "target": 93626660
+          },
+          {
+            "offset": 1009,
+            "kind": "branch",
+            "target": 3245170
+          },
+          {
+            "offset": 1022,
+            "kind": "branch",
+            "target": 3245983
+          },
+          {
+            "offset": 1062,
+            "kind": "branch",
+            "target": 3245670
+          },
+          {
+            "offset": 1087,
+            "kind": "branch",
+            "target": 3245704
+          }
+        ],
+        "candidates": [
+          {
+            "rva": 3244942,
+            "references": [
+              {
+                "offset": 41,
+                "kind": "branch",
+                "target": 76896382
+              },
+              {
+                "offset": 49,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 59,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 82,
+                "kind": "branch",
+                "target": 3245105
+              },
+              {
+                "offset": 92,
+                "kind": "branch",
+                "target": 3245105
+              },
+              {
+                "offset": 102,
+                "kind": "branch",
+                "target": 3245107
+              },
+              {
+                "offset": 104,
+                "kind": "rip",
+                "target": 211024348
+              },
+              {
+                "offset": 111,
+                "kind": "branch",
+                "target": 3245107
+              },
+              {
+                "offset": 117,
+                "kind": "rip",
+                "target": 211024328
+              },
+              {
+                "offset": 139,
+                "kind": "branch",
+                "target": 3245105
+              },
+              {
+                "offset": 144,
+                "kind": "branch",
+                "target": 3245105
+              },
+              {
+                "offset": 161,
+                "kind": "branch",
+                "target": 3245107
+              },
+              {
+                "offset": 169,
+                "kind": "branch",
+                "target": 14973956
+              },
+              {
+                "offset": 177,
+                "kind": "branch",
+                "target": 3245153
+              },
+              {
+                "offset": 186,
+                "kind": "branch",
+                "target": 3245153
+              },
+              {
+                "offset": 206,
+                "kind": "branch",
+                "target": 64313810
+              },
+              {
+                "offset": 214,
+                "kind": "branch",
+                "target": 25716280
+              },
+              {
+                "offset": 222,
+                "kind": "branch",
+                "target": 3245641
+              },
+              {
+                "offset": 250,
+                "kind": "branch",
+                "target": 3245250
+              },
+              {
+                "offset": 255,
+                "kind": "branch",
+                "target": 1011876
+              },
+              {
+                "offset": 263,
+                "kind": "branch",
+                "target": 3245240
+              },
+              {
+                "offset": 280,
+                "kind": "branch",
+                "target": 3245240
+              },
+              {
+                "offset": 311,
+                "kind": "branch",
+                "target": 12612258
+              },
+              {
+                "offset": 318,
+                "kind": "branch",
+                "target": 3245604
+              },
+              {
+                "offset": 331,
+                "kind": "branch",
+                "target": 3245604
+              },
+              {
+                "offset": 344,
+                "kind": "branch",
+                "target": 3245604
+              },
+              {
+                "offset": 357,
+                "kind": "branch",
+                "target": 76589286
+              },
+              {
+                "offset": 375,
+                "kind": "branch",
+                "target": 3245330
+              },
+              {
+                "offset": 383,
+                "kind": "branch",
+                "target": 7534142
+              },
+              {
+                "offset": 449,
+                "kind": "branch",
+                "target": 3245403
+              },
+              {
+                "offset": 459,
+                "kind": "branch",
+                "target": 3245406
+              },
+              {
+                "offset": 476,
+                "kind": "branch",
+                "target": 3245431
+              },
+              {
+                "offset": 484,
+                "kind": "branch",
+                "target": 75312194
+              },
+              {
+                "offset": 499,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 509,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 515,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 517,
+                "kind": "rip",
+                "target": 211024348
+              },
+              {
+                "offset": 523,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 529,
+                "kind": "rip",
+                "target": 211024328
+              },
+              {
+                "offset": 551,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 557,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 568,
+                "kind": "branch",
+                "target": 3245533
+              },
+              {
+                "offset": 600,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 609,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 660,
+                "kind": "branch",
+                "target": 3245512
+              },
+              {
+                "offset": 665,
+                "kind": "branch",
+                "target": 106235150
+              },
+              {
+                "offset": 673,
+                "kind": "branch",
+                "target": 3245292
+              },
+              {
+                "offset": 694,
+                "kind": "branch",
+                "target": 3245292
+              },
+              {
+                "offset": 705,
+                "kind": "branch",
+                "target": 76896382
+              },
+              {
+                "offset": 713,
+                "kind": "branch",
+                "target": 3245722
+              },
+              {
+                "offset": 722,
+                "kind": "branch",
+                "target": 3245956
+              },
+              {
+                "offset": 756,
+                "kind": "branch",
+                "target": 3246009
+              },
+              {
+                "offset": 790,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 804,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 814,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 820,
+                "kind": "rip",
+                "target": 211024348
+              },
+              {
+                "offset": 826,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 836,
+                "kind": "rip",
+                "target": 211024328
+              },
+              {
+                "offset": 858,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 868,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 883,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 898,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 907,
+                "kind": "branch",
+                "target": 21082940
+              },
+              {
+                "offset": 932,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 941,
+                "kind": "branch",
+                "target": 21082940
+              },
+              {
+                "offset": 952,
+                "kind": "branch",
+                "target": 74572448
+              },
+              {
+                "offset": 974,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 983,
+                "kind": "branch",
+                "target": 63012392
+              },
+              {
+                "offset": 992,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 1004,
+                "kind": "branch",
+                "target": 93692502
+              },
+              {
+                "offset": 1009,
+                "kind": "branch",
+                "target": 3245170
+              },
+              {
+                "offset": 1022,
+                "kind": "branch",
+                "target": 3245983
+              },
+              {
+                "offset": 1062,
+                "kind": "branch",
+                "target": 3245670
+              },
+              {
+                "offset": 1087,
+                "kind": "branch",
+                "target": 3245704
+              }
+            ],
+            "sha256": "33e81ffc908fdd9c01887643a2d245c6af497bf96d7180e63860eaca66903609"
+          }
+        ]
+      },
+      {
+        "steam_rva": 3246502,
+        "size": 1091,
+        "steam_sha256": "9556364d979dbad7c99e71f2359da7dd3f83595ec6f0085b6100f470307dd2b8",
+        "instructions": 249,
+        "references": [
+          {
+            "offset": 22,
+            "kind": "rip",
+            "target": 208664896
+          },
+          {
+            "offset": 44,
+            "kind": "branch",
+            "target": 3246568
+          },
+          {
+            "offset": 49,
+            "kind": "branch",
+            "target": 64381850
+          },
+          {
+            "offset": 56,
+            "kind": "branch",
+            "target": 3246568
+          },
+          {
+            "offset": 61,
+            "kind": "branch",
+            "target": 12600960
+          },
+          {
+            "offset": 81,
+            "kind": "branch",
+            "target": 3246794
+          },
+          {
+            "offset": 97,
+            "kind": "branch",
+            "target": 3246641
+          },
+          {
+            "offset": 109,
+            "kind": "branch",
+            "target": 3246641
+          },
+          {
+            "offset": 119,
+            "kind": "branch",
+            "target": 3246641
+          },
+          {
+            "offset": 137,
+            "kind": "branch",
+            "target": 3246767
+          },
+          {
+            "offset": 146,
+            "kind": "branch",
+            "target": 3246754
+          },
+          {
+            "offset": 148,
+            "kind": "rip",
+            "target": 212882032
+          },
+          {
+            "offset": 165,
+            "kind": "branch",
+            "target": 3246771
+          },
+          {
+            "offset": 191,
+            "kind": "branch",
+            "target": 3246706
+          },
+          {
+            "offset": 200,
+            "kind": "branch",
+            "target": 3246682
+          },
+          {
+            "offset": 202,
+            "kind": "branch",
+            "target": 3246771
+          },
+          {
+            "offset": 207,
+            "kind": "branch",
+            "target": 3246771
+          },
+          {
+            "offset": 219,
+            "kind": "branch",
+            "target": 3246771
+          },
+          {
+            "offset": 228,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 236,
+            "kind": "branch",
+            "target": 3246807
+          },
+          {
+            "offset": 245,
+            "kind": "branch",
+            "target": 3246807
+          },
+          {
+            "offset": 247,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 255,
+            "kind": "branch",
+            "target": 76554962
+          },
+          {
+            "offset": 263,
+            "kind": "branch",
+            "target": 3246650
+          },
+          {
+            "offset": 267,
+            "kind": "branch",
+            "target": 3246723
+          },
+          {
+            "offset": 272,
+            "kind": "branch",
+            "target": 78080964
+          },
+          {
+            "offset": 279,
+            "kind": "branch",
+            "target": 3246794
+          },
+          {
+            "offset": 290,
+            "kind": "branch",
+            "target": 3246723
+          },
+          {
+            "offset": 299,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 324,
+            "kind": "branch",
+            "target": 25758446
+          },
+          {
+            "offset": 332,
+            "kind": "rip",
+            "target": 160604704
+          },
+          {
+            "offset": 344,
+            "kind": "branch",
+            "target": 3246894
+          },
+          {
+            "offset": 353,
+            "kind": "branch",
+            "target": 76824846
+          },
+          {
+            "offset": 361,
+            "kind": "branch",
+            "target": 3246894
+          },
+          {
+            "offset": 366,
+            "kind": "branch",
+            "target": 12602352
+          },
+          {
+            "offset": 371,
+            "kind": "rip",
+            "target": 160604712
+          },
+          {
+            "offset": 378,
+            "kind": "branch",
+            "target": 3246894
+          },
+          {
+            "offset": 395,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 412,
+            "kind": "branch",
+            "target": 3247486
+          },
+          {
+            "offset": 431,
+            "kind": "branch",
+            "target": 3246987
+          },
+          {
+            "offset": 435,
+            "kind": "branch",
+            "target": 3247388
+          },
+          {
+            "offset": 451,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 460,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 487,
+            "kind": "branch",
+            "target": 3247388
+          },
+          {
+            "offset": 500,
+            "kind": "branch",
+            "target": 76824846
+          },
+          {
+            "offset": 508,
+            "kind": "branch",
+            "target": 25741818
+          },
+          {
+            "offset": 515,
+            "kind": "branch",
+            "target": 3247167
+          },
+          {
+            "offset": 525,
+            "kind": "branch",
+            "target": 76517750
+          },
+          {
+            "offset": 532,
+            "kind": "branch",
+            "target": 3247077
+          },
+          {
+            "offset": 537,
+            "kind": "branch",
+            "target": 12602352
+          },
+          {
+            "offset": 545,
+            "kind": "branch",
+            "target": 3244470
+          },
+          {
+            "offset": 569,
+            "kind": "branch",
+            "target": 3247208
+          },
+          {
+            "offset": 575,
+            "kind": "rip",
+            "target": 188741462
+          },
+          {
+            "offset": 590,
+            "kind": "branch",
+            "target": 354650
+          },
+          {
+            "offset": 598,
+            "kind": "branch",
+            "target": 12602352
+          },
+          {
+            "offset": 615,
+            "kind": "rip",
+            "target": 160606624
+          },
+          {
+            "offset": 622,
+            "kind": "rip",
+            "target": 160604704
+          },
+          {
+            "offset": 645,
+            "kind": "branch",
+            "target": 3244942
+          },
+          {
+            "offset": 656,
+            "kind": "branch",
+            "target": 3247216
+          },
+          {
+            "offset": 658,
+            "kind": "branch",
+            "target": 8360
+          },
+          {
+            "offset": 663,
+            "kind": "branch",
+            "target": 3247216
+          },
+          {
+            "offset": 676,
+            "kind": "branch",
+            "target": 12602352
+          },
+          {
+            "offset": 684,
+            "kind": "branch",
+            "target": 3247216
+          },
+          {
+            "offset": 699,
+            "kind": "branch",
+            "target": 3244942
+          },
+          {
+            "offset": 704,
+            "kind": "branch",
+            "target": 3247216
+          },
+          {
+            "offset": 709,
+            "kind": "branch",
+            "target": 2552978
+          },
+          {
+            "offset": 724,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 734,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 744,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 746,
+            "kind": "rip",
+            "target": 211142620
+          },
+          {
+            "offset": 752,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 758,
+            "kind": "rip",
+            "target": 211142600
+          },
+          {
+            "offset": 780,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 786,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 797,
+            "kind": "branch",
+            "target": 3247341
+          },
+          {
+            "offset": 807,
+            "kind": "rip",
+            "target": 208664896
+          },
+          {
+            "offset": 814,
+            "kind": "branch",
+            "target": 3247335
+          },
+          {
+            "offset": 833,
+            "kind": "branch",
+            "target": 81278912
+          },
+          {
+            "offset": 848,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 857,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 866,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 884,
+            "kind": "branch",
+            "target": 3247301
+          },
+          {
+            "offset": 889,
+            "kind": "branch",
+            "target": 23286222
+          },
+          {
+            "offset": 896,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 910,
+            "kind": "branch",
+            "target": 3247434
+          },
+          {
+            "offset": 979,
+            "kind": "branch",
+            "target": 3246995
+          },
+          {
+            "offset": 992,
+            "kind": "rip",
+            "target": 160604704
+          },
+          {
+            "offset": 1003,
+            "kind": "branch",
+            "target": 3246920
+          },
+          {
+            "offset": 1012,
+            "kind": "branch",
+            "target": 3246920
+          },
+          {
+            "offset": 1026,
+            "kind": "branch",
+            "target": 3247547
+          },
+          {
+            "offset": 1086,
+            "kind": "branch",
+            "target": 3246920
+          }
+        ],
+        "candidates": [
+          {
+            "rva": 3246502,
+            "references": [
+              {
+                "offset": 22,
+                "kind": "rip",
+                "target": 208546112
+              },
+              {
+                "offset": 44,
+                "kind": "branch",
+                "target": 3246568
+              },
+              {
+                "offset": 49,
+                "kind": "branch",
+                "target": 64338482
+              },
+              {
+                "offset": 56,
+                "kind": "branch",
+                "target": 3246568
+              },
+              {
+                "offset": 61,
+                "kind": "branch",
+                "target": 12610796
+              },
+              {
+                "offset": 81,
+                "kind": "branch",
+                "target": 3246794
+              },
+              {
+                "offset": 97,
+                "kind": "branch",
+                "target": 3246641
+              },
+              {
+                "offset": 109,
+                "kind": "branch",
+                "target": 3246641
+              },
+              {
+                "offset": 119,
+                "kind": "branch",
+                "target": 3246641
+              },
+              {
+                "offset": 137,
+                "kind": "branch",
+                "target": 3246767
+              },
+              {
+                "offset": 146,
+                "kind": "branch",
+                "target": 3246754
+              },
+              {
+                "offset": 148,
+                "kind": "rip",
+                "target": 212763760
+              },
+              {
+                "offset": 165,
+                "kind": "branch",
+                "target": 3246771
+              },
+              {
+                "offset": 191,
+                "kind": "branch",
+                "target": 3246706
+              },
+              {
+                "offset": 200,
+                "kind": "branch",
+                "target": 3246682
+              },
+              {
+                "offset": 202,
+                "kind": "branch",
+                "target": 3246771
+              },
+              {
+                "offset": 207,
+                "kind": "branch",
+                "target": 3246771
+              },
+              {
+                "offset": 219,
+                "kind": "branch",
+                "target": 3246771
+              },
+              {
+                "offset": 228,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 236,
+                "kind": "branch",
+                "target": 3246807
+              },
+              {
+                "offset": 245,
+                "kind": "branch",
+                "target": 3246807
+              },
+              {
+                "offset": 247,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 255,
+                "kind": "branch",
+                "target": 76626498
+              },
+              {
+                "offset": 263,
+                "kind": "branch",
+                "target": 3246650
+              },
+              {
+                "offset": 267,
+                "kind": "branch",
+                "target": 3246723
+              },
+              {
+                "offset": 272,
+                "kind": "branch",
+                "target": 78152500
+              },
+              {
+                "offset": 279,
+                "kind": "branch",
+                "target": 3246794
+              },
+              {
+                "offset": 290,
+                "kind": "branch",
+                "target": 3246723
+              },
+              {
+                "offset": 299,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 324,
+                "kind": "branch",
+                "target": 25716280
+              },
+              {
+                "offset": 332,
+                "kind": "rip",
+                "target": 160522784
+              },
+              {
+                "offset": 344,
+                "kind": "branch",
+                "target": 3246894
+              },
+              {
+                "offset": 353,
+                "kind": "branch",
+                "target": 76896382
+              },
+              {
+                "offset": 361,
+                "kind": "branch",
+                "target": 3246894
+              },
+              {
+                "offset": 366,
+                "kind": "branch",
+                "target": 12612188
+              },
+              {
+                "offset": 371,
+                "kind": "rip",
+                "target": 160522792
+              },
+              {
+                "offset": 378,
+                "kind": "branch",
+                "target": 3246894
+              },
+              {
+                "offset": 395,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 412,
+                "kind": "branch",
+                "target": 3247486
+              },
+              {
+                "offset": 431,
+                "kind": "branch",
+                "target": 3246987
+              },
+              {
+                "offset": 435,
+                "kind": "branch",
+                "target": 3247388
+              },
+              {
+                "offset": 451,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 460,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 487,
+                "kind": "branch",
+                "target": 3247388
+              },
+              {
+                "offset": 500,
+                "kind": "branch",
+                "target": 76896382
+              },
+              {
+                "offset": 508,
+                "kind": "branch",
+                "target": 25699652
+              },
+              {
+                "offset": 515,
+                "kind": "branch",
+                "target": 3247167
+              },
+              {
+                "offset": 525,
+                "kind": "branch",
+                "target": 76589286
+              },
+              {
+                "offset": 532,
+                "kind": "branch",
+                "target": 3247077
+              },
+              {
+                "offset": 537,
+                "kind": "branch",
+                "target": 12612188
+              },
+              {
+                "offset": 545,
+                "kind": "branch",
+                "target": 3244470
+              },
+              {
+                "offset": 569,
+                "kind": "branch",
+                "target": 3247208
+              },
+              {
+                "offset": 575,
+                "kind": "rip",
+                "target": 188659606
+              },
+              {
+                "offset": 590,
+                "kind": "branch",
+                "target": 354650
+              },
+              {
+                "offset": 598,
+                "kind": "branch",
+                "target": 12612188
+              },
+              {
+                "offset": 615,
+                "kind": "rip",
+                "target": 160524704
+              },
+              {
+                "offset": 622,
+                "kind": "rip",
+                "target": 160522784
+              },
+              {
+                "offset": 645,
+                "kind": "branch",
+                "target": 3244942
+              },
+              {
+                "offset": 656,
+                "kind": "branch",
+                "target": 3247216
+              },
+              {
+                "offset": 658,
+                "kind": "branch",
+                "target": 8360
+              },
+              {
+                "offset": 663,
+                "kind": "branch",
+                "target": 3247216
+              },
+              {
+                "offset": 676,
+                "kind": "branch",
+                "target": 12612188
+              },
+              {
+                "offset": 684,
+                "kind": "branch",
+                "target": 3247216
+              },
+              {
+                "offset": 699,
+                "kind": "branch",
+                "target": 3244942
+              },
+              {
+                "offset": 704,
+                "kind": "branch",
+                "target": 3247216
+              },
+              {
+                "offset": 709,
+                "kind": "branch",
+                "target": 2552978
+              },
+              {
+                "offset": 724,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 734,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 744,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 746,
+                "kind": "rip",
+                "target": 211024348
+              },
+              {
+                "offset": 752,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 758,
+                "kind": "rip",
+                "target": 211024328
+              },
+              {
+                "offset": 780,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 786,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 797,
+                "kind": "branch",
+                "target": 3247341
+              },
+              {
+                "offset": 807,
+                "kind": "rip",
+                "target": 208546112
+              },
+              {
+                "offset": 814,
+                "kind": "branch",
+                "target": 3247335
+              },
+              {
+                "offset": 833,
+                "kind": "branch",
+                "target": 81350464
+              },
+              {
+                "offset": 848,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 857,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 866,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 884,
+                "kind": "branch",
+                "target": 3247301
+              },
+              {
+                "offset": 889,
+                "kind": "branch",
+                "target": 23265086
+              },
+              {
+                "offset": 896,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 910,
+                "kind": "branch",
+                "target": 3247434
+              },
+              {
+                "offset": 979,
+                "kind": "branch",
+                "target": 3246995
+              },
+              {
+                "offset": 992,
+                "kind": "rip",
+                "target": 160522784
+              },
+              {
+                "offset": 1003,
+                "kind": "branch",
+                "target": 3246920
+              },
+              {
+                "offset": 1012,
+                "kind": "branch",
+                "target": 3246920
+              },
+              {
+                "offset": 1026,
+                "kind": "branch",
+                "target": 3247547
+              },
+              {
+                "offset": 1086,
+                "kind": "branch",
+                "target": 3246920
+              }
+            ],
+            "sha256": "a4dc430aa97d5d12100a68402ec697ab3bab074e5c510fc432b2f6695a8ef196"
+          }
+        ]
+      },
+      {
+        "steam_rva": 143096960,
+        "size": 339,
+        "steam_sha256": "b2c81e128ae4326dfcb15da1d721499fcdcc3c1e5d409ac23e9f37fafd65d828",
+        "instructions": 93,
+        "references": [
+          {
+            "offset": 18,
+            "kind": "rip",
+            "target": 208664896
+          },
+          {
+            "offset": 33,
+            "kind": "branch",
+            "target": 3244470
+          },
+          {
+            "offset": 49,
+            "kind": "branch",
+            "target": 143097102
+          },
+          {
+            "offset": 54,
+            "kind": "branch",
+            "target": 143097109
+          },
+          {
+            "offset": 68,
+            "kind": "rip",
+            "target": 165670304
+          },
+          {
+            "offset": 89,
+            "kind": "branch",
+            "target": 143097062
+          },
+          {
+            "offset": 94,
+            "kind": "branch",
+            "target": 143097109
+          },
+          {
+            "offset": 100,
+            "kind": "branch",
+            "target": 143097035
+          },
+          {
+            "offset": 112,
+            "kind": "branch",
+            "target": 143097092
+          },
+          {
+            "offset": 130,
+            "kind": "branch",
+            "target": 143097056
+          },
+          {
+            "offset": 138,
+            "kind": "branch",
+            "target": 143097179
+          },
+          {
+            "offset": 140,
+            "kind": "branch",
+            "target": 143097109
+          },
+          {
+            "offset": 147,
+            "kind": "branch",
+            "target": 143097179
+          },
+          {
+            "offset": 156,
+            "kind": "branch",
+            "target": 143097210
+          },
+          {
+            "offset": 172,
+            "kind": "branch",
+            "target": 77952348
+          },
+          {
+            "offset": 214,
+            "kind": "branch",
+            "target": 3244942
+          },
+          {
+            "offset": 227,
+            "kind": "rip",
+            "target": 208664896
+          },
+          {
+            "offset": 234,
+            "kind": "branch",
+            "target": 143097204
+          },
+          {
+            "offset": 244,
+            "kind": "branch",
+            "target": 81278912
+          },
+          {
+            "offset": 261,
+            "kind": "branch",
+            "target": 143097118
+          },
+          {
+            "offset": 266,
+            "kind": "branch",
+            "target": 143097118
+          },
+          {
+            "offset": 283,
+            "kind": "branch",
+            "target": 143097127
+          },
+          {
+            "offset": 295,
+            "kind": "branch",
+            "target": 143097127
+          },
+          {
+            "offset": 322,
+            "kind": "branch",
+            "target": 74333538
+          },
+          {
+            "offset": 334,
+            "kind": "branch",
+            "target": 143097127
+          }
+        ],
+        "candidates": [
+          {
+            "rva": 143122248,
+            "references": [
+              {
+                "offset": 18,
+                "kind": "rip",
+                "target": 208546112
+              },
+              {
+                "offset": 33,
+                "kind": "branch",
+                "target": 3244470
+              },
+              {
+                "offset": 49,
+                "kind": "branch",
+                "target": 143122390
+              },
+              {
+                "offset": 54,
+                "kind": "branch",
+                "target": 143122397
+              },
+              {
+                "offset": 68,
+                "kind": "rip",
+                "target": 165588368
+              },
+              {
+                "offset": 89,
+                "kind": "branch",
+                "target": 143122350
+              },
+              {
+                "offset": 94,
+                "kind": "branch",
+                "target": 143122397
+              },
+              {
+                "offset": 100,
+                "kind": "branch",
+                "target": 143122323
+              },
+              {
+                "offset": 112,
+                "kind": "branch",
+                "target": 143122380
+              },
+              {
+                "offset": 130,
+                "kind": "branch",
+                "target": 143122344
+              },
+              {
+                "offset": 138,
+                "kind": "branch",
+                "target": 143122467
+              },
+              {
+                "offset": 140,
+                "kind": "branch",
+                "target": 143122397
+              },
+              {
+                "offset": 147,
+                "kind": "branch",
+                "target": 143122467
+              },
+              {
+                "offset": 156,
+                "kind": "branch",
+                "target": 143122498
+              },
+              {
+                "offset": 172,
+                "kind": "branch",
+                "target": 78023884
+              },
+              {
+                "offset": 214,
+                "kind": "branch",
+                "target": 3244942
+              },
+              {
+                "offset": 227,
+                "kind": "rip",
+                "target": 208546112
+              },
+              {
+                "offset": 234,
+                "kind": "branch",
+                "target": 143122492
+              },
+              {
+                "offset": 244,
+                "kind": "branch",
+                "target": 81350464
+              },
+              {
+                "offset": 261,
+                "kind": "branch",
+                "target": 143122406
+              },
+              {
+                "offset": 266,
+                "kind": "branch",
+                "target": 143122406
+              },
+              {
+                "offset": 283,
+                "kind": "branch",
+                "target": 143122415
+              },
+              {
+                "offset": 295,
+                "kind": "branch",
+                "target": 143122415
+              },
+              {
+                "offset": 322,
+                "kind": "branch",
+                "target": 74405074
+              },
+              {
+                "offset": 334,
+                "kind": "branch",
+                "target": 143122415
+              }
+            ],
+            "sha256": "8a1d2ec1c9eae4181d7e8571c1578a3cc11ee5dddcccbd765958d685429623db"
+          }
+        ]
+      },
+      {
+        "steam_rva": 64357178,
+        "size": 323,
+        "steam_sha256": "560037bd5db384a524f909b0752ea155364d6843cb171ebb703d2795bfe667fd",
+        "instructions": 94,
+        "references": [
+          {
+            "offset": 33,
+            "kind": "branch",
+            "target": 64357290
+          },
+          {
+            "offset": 74,
+            "kind": "branch",
+            "target": 64357290
+          },
+          {
+            "offset": 102,
+            "kind": "branch",
+            "target": 64357292
+          },
+          {
+            "offset": 110,
+            "kind": "branch",
+            "target": 64357261
+          },
+          {
+            "offset": 133,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 147,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 153,
+            "kind": "rip",
+            "target": 211142620
+          },
+          {
+            "offset": 159,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 164,
+            "kind": "rip",
+            "target": 211142600
+          },
+          {
+            "offset": 185,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 190,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 200,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 205,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 213,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 222,
+            "kind": "branch",
+            "target": 64357430
+          },
+          {
+            "offset": 232,
+            "kind": "branch",
+            "target": 3244470
+          },
+          {
+            "offset": 262,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 267,
+            "kind": "branch",
+            "target": 76554962
+          },
+          {
+            "offset": 275,
+            "kind": "branch",
+            "target": 64357461
+          },
+          {
+            "offset": 281,
+            "kind": "branch",
+            "target": 64357476
+          },
+          {
+            "offset": 318,
+            "kind": "branch",
+            "target": 13134224
+          }
+        ],
+        "candidates": [
+          {
+            "rva": 64313810,
+            "references": [
+              {
+                "offset": 33,
+                "kind": "branch",
+                "target": 64313922
+              },
+              {
+                "offset": 74,
+                "kind": "branch",
+                "target": 64313922
+              },
+              {
+                "offset": 102,
+                "kind": "branch",
+                "target": 64313924
+              },
+              {
+                "offset": 110,
+                "kind": "branch",
+                "target": 64313893
+              },
+              {
+                "offset": 133,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 147,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 153,
+                "kind": "rip",
+                "target": 211024348
+              },
+              {
+                "offset": 159,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 164,
+                "kind": "rip",
+                "target": 211024328
+              },
+              {
+                "offset": 185,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 190,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 200,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 205,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 213,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 222,
+                "kind": "branch",
+                "target": 64314062
+              },
+              {
+                "offset": 232,
+                "kind": "branch",
+                "target": 3244470
+              },
+              {
+                "offset": 262,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 267,
+                "kind": "branch",
+                "target": 76626498
+              },
+              {
+                "offset": 275,
+                "kind": "branch",
+                "target": 64314093
+              },
+              {
+                "offset": 281,
+                "kind": "branch",
+                "target": 64314108
+              },
+              {
+                "offset": 318,
+                "kind": "branch",
+                "target": 13144060
+              }
+            ],
+            "sha256": "a33567a91f943162718c842021b61c3bd08eafe438e51abd2cd78392770a12cb"
+          }
+        ]
+      }
+    ]
+  },
+  "callers": {
+    "timer": "318c61 passes completed=true",
+    "audio": "8877d56 passes completed=true",
+    "rpc": "5a3cef0 passes completed=false",
+    "manager": "31844a-31845c passes interrupted=!completed to 3d6033a"
+  }
+}

@@ -255,13 +255,12 @@ def test_each_join_runs_once_and_rejoining_runs_again():
     assert len(game.calls) == 4
 
 
-def test_shared_runs_once_but_other_boosts_and_loot_run_for_every_guest():
+def test_challenges_share_credit_but_private_uvhm_and_loot_run_for_every_guest():
     game=FakeGame(); lobby=module.Lobby(game)
     lobby.start({'level':True,'challenges':True,'uvhm':True,'loot':True})
     game.rows=[row('a'),row('b',2),row('c',3)];ticks(lobby,40)
-    for step in ('challenges','uvhm'):
-        assert len([c for c in game.calls if c[0]==step])==1
-    for step in ('level','loot'):
+    assert len([c for c in game.calls if c[0]=='challenges'])==1
+    for step in ('level','loot','uvhm'):
         assert {c[1] for c in game.calls if c[0]==step}=={'a','b','c'}
 
 
@@ -271,7 +270,7 @@ def test_late_join_does_not_get_partial_challenge_credit_but_gets_full_uvhm_cred
     game.rows=[row('a')];game.wait=True;ticks(lobby,1)
     game.rows.append(row('late',2));game.wait=False;ticks(lobby,20)
     assert [c for c in game.calls if c[0]=='challenges']==[('challenges','a',1),('challenges','late',2)]
-    assert len([c for c in game.calls if c[0]=='uvhm'])==1
+    assert {c[1] for c in game.calls if c[0]=='uvhm'}=={'a','late'}
 
 
 def test_shared_member_disconnect_and_rejoin_during_run_is_not_credited():
@@ -308,7 +307,7 @@ def test_shared_rewards_wait_for_every_ready_backpack_capture():
     game.rows=[row('a'),row('b',2)];ticks(lobby,30)
     assert game.calls[:3]==[('inventory_capture','a',1),('inventory_capture','b',2),('challenges','a',1)]
     assert {c[1] for c in game.calls if c[0]=='inventory_recovery'}=={'a','b'}
-    assert len([c for c in game.calls if c[0]=='uvhm'])==1
+    assert {c[1] for c in game.calls if c[0]=='uvhm'}=={'a','b'}
 
 
 def test_shared_capture_failure_preserves_fallback_loot_for_that_guest():
@@ -675,6 +674,7 @@ def test_uvhm_guest_plan_pacing_final_settle_and_manual_queue(monkeypatch):
     pc = SimpleNamespace(ServerIncrementChallengeForPlayer=lambda *args: calls.append(args))
     game.backend = lambda: SimpleNamespace(
         uvh_boost_status=lambda: {"active": manual[0]}, UVH_RANKS=list(range(7)),
+        _uvh_native_step=lambda pc,name,receipt,now,delay: calls.append((name,1)) or True,
         _uvh_build_plan=lambda indices: indices_seen.append(indices) or [("1", "first", .3), ("7", "final", .3)])
     job = {"pc": pc, "token": "guest"}
     assert game.step("uvhm", job, {}) is None and not calls
@@ -693,6 +693,7 @@ def test_uvhm_failure_keeps_guest_and_continues_other_boosts():
     game = FakeGame(); adapter = module.Game()
     def fail(*_): raise RuntimeError("RPC failed")
     adapter.backend = lambda: SimpleNamespace(uvh_boost_status=lambda: {"active": False},
+        _uvh_native_step=fail,
         UVH_RANKS=[1], _uvh_build_plan=lambda _: [("1", "first", .3)])
     original_step = game.step
     game.step = lambda step, job, config: adapter.step(step, job, config) if step == "uvhm" else original_step(step, job, config)
@@ -710,6 +711,27 @@ def test_cancel_discards_private_uvhm_without_touching_manual_work():
     job = {"uvhm_plan": deque([1]), "uvhm_next_at": 200}
     game.cancel(job)
     assert job == {}
+
+
+def test_every_ready_guest_receives_complete_private_native_uvhm_sequence(monkeypatch):
+    import json
+    ranks=json.loads((FILE.parents[2]/'tools/mission_lab/data/uvhm_catalog_audit.json').read_bytes())['ranks']
+    plan=[(label,token,.3) for label,tokens in ranks for token in tokens]
+    clock=[100.];monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
+    game=FakeGame();adapter=module.Game();sent={'a':[],'b':[]}
+    adapter.backend=lambda:SimpleNamespace(uvh_boost_status=lambda:{'active':False},
+        UVH_RANKS=ranks,_uvh_build_plan=lambda indices:list(plan),
+        _uvh_native_step=lambda pc,token,receipt,now,delay:pc.ServerIncrementChallengeForPlayer(token,1) or True)
+    original=game.step
+    game.step=lambda step,job,config:adapter.step(step,job,config) if step=='uvhm' else original(step,job,config)
+    game.rows=[dict(row(name,index),pc=SimpleNamespace(ServerIncrementChallengeForPlayer=lambda token,amount,name=name:sent[name].append((token,amount))))
+               for index,name in enumerate(['a','b'],1)]
+    lobby=module.Lobby(game);lobby.start({'uvhm':True})
+    for _ in range(100):
+        clock[0]+=1.;ticks(lobby,1)
+    expected=[(token,1) for _label,token,_delay in plan]
+    assert sent=={'a':expected,'b':expected}
+    assert not any(entry['step']=='uvhm' for entry in lobby.shared_completed)
 
 
 def test_customs_and_hovers_matches_boosting_button_and_targets_guest():

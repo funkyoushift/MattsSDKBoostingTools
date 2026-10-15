@@ -15,9 +15,10 @@ STAGES = (
     ('travel_stations', 'Fast-travel discoveries'),
     ('travel_requirements', 'Travel station requirements'),
     ('character', 'Levels, currencies, SDUs, vault cards and unlocks'),
+    # The campaign-completion challenge unlocks UVHM's first challenge.
+    ('challenges', 'All applicable challenges'),
     ('uvh', 'Ultimate Vault Hunter progression'),
     ('mayhem', 'Mayhem progression'),
-    ('challenges', 'All applicable challenges'),
     ('final_recheck', 'Newly unlocked missions and travel requirements'),
 )
 
@@ -26,13 +27,10 @@ def eligibility(players, packs):
     if not players:
         return dict(allowed=False, reason='Load a character into the world', skipped=[])
     unavailable = [p for p in packs.values() if not p['allowed']]
-    blocked = [p for p in unavailable if p.get('required',True)]
     solo = len(players) <= 2
-    return dict(allowed=solo or not blocked, solo=solo,
-                reason='Host with at most one guest: unavailable content will be skipped' if solo else
-                'Everyone has required DLC access' if not blocked else
-                '; '.join(p['title'] + ': ' + p['reason'] for p in blocked),
-                skipped=unavailable if solo or not blocked else [], blockers=[] if solo else blocked)
+    return dict(allowed=True, solo=solo,
+                reason='Only content with confirmed access for every lobby member will be completed; unavailable DLC will be skipped.',
+                skipped=unavailable, blockers=[])
 
 
 def compact_status(value):
@@ -73,6 +71,7 @@ class Run:
         snapshot=self.driver.preflight()
         gate=eligibility(snapshot['players'], snapshot['packs'])
         return dict(ok=True, **gate, players=snapshot['players'], stages=STAGES,
+                    available_content=[p['title'] for p in snapshot['packs'].values() if p['allowed']],
                     limits=snapshot.get('limits', []), coverage=self.driver.describe(snapshot) if hasattr(self.driver,'describe') else [])
 
     def start(self, payload):
@@ -112,6 +111,7 @@ class Run:
             if snapshot['binding']!=self.job['binding']: raise RuntimeError('Lobby changed; run stopped')
             gate=eligibility(snapshot['players'],snapshot['packs'])
             if not gate['allowed']: raise RuntimeError(gate['reason'])
+            self.job['skipped']=gate['skipped']
             name,title=STAGES[self.job['index']]
             if self.job['phase']=='ready':
                 self.record('issued',stage=name)

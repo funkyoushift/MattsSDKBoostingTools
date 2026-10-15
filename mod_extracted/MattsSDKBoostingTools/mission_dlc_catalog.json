@@ -35,6 +35,11 @@
     "viola": {
       "title": "Amara and the Vile Shadows",
       "attribute": "Entitlement_Viola"
+    },
+    "tuba": {
+      "title": "*TEMP* TUBA TAKEDOWN SHORTNAME",
+      "native_definition": "dlcdef_tuba",
+      "source": "Nexus-Data-Resident4.json/DLCDef/records/3/entries/0/dlcdef_tuba"
     }
   },
   "missions": {
@@ -347,6 +352,34 @@
       "pack": "cowbell",
       "mission_set": "missionset'MissionSet_ZoneActivity_DLC1_FuelSiphon'",
       "source": "Nexus-Data-Mission4.json"
+    },
+    "Mission_DLC_Tuba": {
+      "pack": "tuba",
+      "mission_set": "missionset'MissionSet_DLC_Tuba'",
+      "source": "Nexus-Data-Mission4.json",
+      "pointer": "/mission/records/0/entries/62/mission_dlc_tuba",
+      "availability_source": "Tuba_P native content entitlement; MissionSet_DLC_Tuba"
+    },
+    "Mission_DLC_Tuba_Base": {
+      "pack": "tuba",
+      "mission_set": "missionset'MissionSet_DLC_Tuba'",
+      "source": "Nexus-Data-Mission4.json",
+      "pointer": "/mission/records/0/entries/63/mission_dlc_tuba_base",
+      "availability_source": "Tuba_P native content entitlement; MissionSet_DLC_Tuba"
+    },
+    "Mission_DLC_Tuba_Hardcore": {
+      "pack": "tuba",
+      "mission_set": "missionset'MissionSet_DLC_Tuba'",
+      "source": "Nexus-Data-Mission6.json",
+      "pointer": "/mission/records/3/entries/43/mission_dlc_tuba_hardcore",
+      "availability_source": "Tuba_P native content entitlement; MissionSet_DLC_Tuba"
+    },
+    "Mission_DLC_Tuba_TimerBase": {
+      "pack": "tuba",
+      "mission_set": "missionset'MissionSet_DLC_Tuba'",
+      "source": "Nexus-Data-Mission6.json",
+      "pointer": "/mission/records/3/entries/44/mission_dlc_tuba_timerbase",
+      "availability_source": "Tuba_P native content entitlement; MissionSet_DLC_Tuba"
     }
   },
   "source_sha256": {

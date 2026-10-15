@@ -286,7 +286,7 @@ class Lobby:
         label = (RECOVERY_LABELS.get(recovery.record['phase'], 'Checking backpack')
                  if step == 'inventory_recovery' and recovery else STEP_LABELS.get(step, step))
         self.message = f"{job['name']}: {label}"
-        if step in ('challenges', 'uvhm'):
+        if step == 'challenges':
             if any(entry['token'] == job['token'] and entry['pc'] == job['pc']
                    and entry['step'] == step for entry in self.shared_completed):
                 job['results'].append({'ok': True, 'step': step, 'shared_run': True,
@@ -643,6 +643,7 @@ class Game:
         a = self.backend()
         job.pop("uvhm_plan", None)
         job.pop("uvhm_next_at", None)
+        job.pop("uvhm_native_step", None)
         seq = job.pop("serial_job", None)
         if seq is not None:
             cancel_direct = getattr(a.serial_rewards, '_cancel_direct_sequence', None)
@@ -775,10 +776,13 @@ class Game:
             if not plan:
                 job.pop("uvhm_plan", None)
                 job.pop("uvhm_next_at", None)
-                return {"ok": True, "message": "UVHM 1â€“7 steps sent; guest save not confirmed."}
+                return {"ok": True, "native_completion_verified": True, "saved_progress_verified": False, "message": "UVHM 1-7 native challenge completion confirmed; saved guest rank still requires save/rejoin verification."}
             _label, challenge, delay = plan[0]
-            pc.ServerIncrementChallengeForPlayer(challenge, 1)
+            if not a._uvh_native_step(pc, challenge, job.setdefault("uvhm_native_step", {}), now, delay):
+                job['uvhm_next_at'] = now + delay
+                return None
             plan.popleft()
+            job.pop("uvhm_native_step", None)
             # Also wait after the last tier before allowing auto-kick.
             job["uvhm_next_at"] = now + delay
             return None

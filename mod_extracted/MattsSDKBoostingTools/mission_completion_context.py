@@ -75,9 +75,12 @@ def observe(owner):
     if ctx['pid']!=os.getpid():raise RuntimeError('Game process changed during mission completion')
     w=world()
     pending=ctx.get('travel')
+    if job.get('placement_policy')=='map_only' and ctx.get('placement'):
+        raise RuntimeError('Completion runs cannot retain objective placement; inspect the previous run')
     if ctx.get('placement') and (w is None or w._get_address()!=ctx['world']):
         raise RuntimeError('World changed during objective placement; no outcome issued')
     if w is not None and w._get_address()==ctx['world'] and not pending:
+        if job.get('placement_policy')=='map_only':return True
         from .mission_completion_placement import observe as observe_placement
         return observe_placement(owner)
     if w is None:return _waiting(owner,'Waiting for the mission map to load; no calls repeated.')
@@ -142,7 +145,8 @@ def prepare(owner,name,row,definition):
     """Move to the mission's authored map before resetting/accepting it."""
     # An active cross-map mission is positioned by its selected objective.
     # Returning to the opening map here would undo every verified stage travel.
-    if owner._state(row)=='active' and len(definition.get('execution_maps',[]))>1:return True
+    if owner._state(row)=='active' and (owner._job.get('placement_policy')=='map_only' or
+                                       len(definition.get('execution_maps',[]))>1):return True
     return travel_to(owner,name,row,definition['title'],definition.get('execution_map'))
 
 
@@ -163,6 +167,9 @@ def objective_ready(owner,name,row,definition,objective):
     current=map_name(world())
     if not destinations or current in destinations:
         owner._job['completion_context'].pop('travel_recovery',None)
+        # Completion still runs native finish actions on their authored maps.
+        # Only explicit replay selection may relocate/hold individual pawns.
+        if owner._job.get('placement_policy')=='map_only':return True
         from .mission_completion_placement import ready
         return ready(owner,name,objective)
     if len(destinations)!=1:
@@ -170,9 +177,11 @@ def objective_ready(owner,name,row,definition,objective):
     return travel_to(owner,name,row,definition['title'],destinations[0],objective)
 
 
-def travel_to(owner,name,row,title,destination,objective=None):
+def travel_to(owner,name,row,title,destination,objective=None,station=None):
     ctx=owner._job['completion_context']
     if not destination:raise RuntimeError('The authored mission map is unresolved: '+name)
+    if station and station.split('.',1)[0].casefold()!=destination:
+        raise RuntimeError('Recorded spawn station does not belong to the selected map')
     w=world()
     if map_name(w)==destination:
         ctx.pop('travel_recovery',None)
@@ -187,7 +196,8 @@ def travel_to(owner,name,row,title,destination,objective=None):
         owner._job.update(state='uncertain',ok=False,await_tick=True)
         owner._journal(dict(event='completion_map_issued',mission=name,token=row['token'],destination=destination,
                             objective=objective))
-    travel.travel_to_map(destination,before_issue=issued)
+    if station:travel.travel_to_station(station,before_issue=issued)
+    else:travel.travel_to_map(destination,before_issue=issued)
     owner._journal(dict(event='completion_map_returned',mission=name,destination=destination))
     owner._job.update(state='running',ok=True,message='Loading the authored map for '+title+'.')
     return False

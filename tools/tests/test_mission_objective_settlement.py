@@ -1,3 +1,4 @@
+from mission_profile_fixture import exec_with_profiles
 """Finishing is not finished: don't certify native callbacks before they settle."""
 import importlib.util
 import importlib.resources
@@ -14,7 +15,7 @@ def objective(monkeypatch):
     monkeypatch.setattr(importlib.resources, 'files', lambda package: ROOT)
     spec = importlib.util.spec_from_file_location('objective_settlement_test', ROOT / 'mission_objectives.py')
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    exec_with_profiles(spec, module, monkeypatch)
     engine = NS(world_address=101, snapshot=lambda: {})
     mission = dict(token='mission-token', state='active')
     progress = NS(_engine=lambda: engine, _party=lambda: [], _binding=lambda rows: [],

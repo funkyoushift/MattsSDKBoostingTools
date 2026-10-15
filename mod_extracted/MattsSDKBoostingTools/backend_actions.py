@@ -260,6 +260,11 @@ _uvh_next_at = 0.0
 _uvh_running = False
 _uvh_paused_queue: deque[tuple[str, str, float]] = deque()
 _uvh_paused_targets: list[Any] = []
+_uvh_failed_count = 0
+_uvh_sent_count = 0
+_uvh_uncertain = False
+_uvh_step_receipts: list[dict[str, Any]] = []
+_uvh_native_verified = False
 # UVHM discovery credit: PyrexBLJ; workflow: Azalea Asvail with FunkYouSHiFT assistance.
 # Challenge-path discovery credit: Matt. See contributor credits in README.md.
 _uvh_last_status = "Ready. UVH tier boosts are based on Azzy UVH Booster by Azalea Asvail."
@@ -1334,7 +1339,11 @@ def clear_uobject_caches() -> None:
     lobby.queue.clear()
     lobby.seen.clear()
     lobby.world = None
+    if _uvh_running or _uvh_queue or _uvh_paused_queue:
+        _uvh_stop_uncertain('UVHM stopped because the map or session changed. Start a fresh run after loading; old targets will not be reused.')
     _uvh_targets.clear()
+    _uvh_paused_targets.clear()
+    _uvh_step_receipts.clear()
     _challenge_targets.clear()
 
 
@@ -1782,6 +1791,16 @@ def run_quick_menu_action(
     payload = dict(payload or {})
     key = str(action or "").strip()
     import sys
+    save_replay = sys.modules.get(__package__ + '.mission_save_replay')
+    if save_replay and save_replay.conflict(key):
+        return dict(ok=False, message='Save replay owns these controls. Stop or close it before another progress action.')
+    if key in ('dialogue_skip_toggle', 'dialogue_skip_set', 'dialogue_skip_status'):
+        from . import dialogue_controls
+        if key == 'dialogue_skip_status':
+            return dialogue_controls.status()
+        enabled = payload.get('enabled') if key == 'dialogue_skip_set' else not dialogue_controls.status()['enabled']
+        return dialogue_controls.set_enabled(enabled)
+    import sys
     practice = sys.modules.get(__package__ + '.mission_practice')
     if practice and practice.conflict(key):
         return dict(ok=False, message='Replay setup is running. Stop it before another mission action.')
@@ -1793,6 +1812,9 @@ def run_quick_menu_action(
         return full_progress_runtime.dispatch(key, payload)
     if full_progress_conflict(key):
         return dict(ok=False,message='Full-progress run owns these controls. Stop or inspect it before another progress action.')
+    if key.startswith('mission_save_replay_'):
+        from . import mission_save_replay
+        return mission_save_replay.dispatch(key, payload)
     if key in ('mission_practice_preview','mission_practice_start','mission_practice_step','mission_practice_status','mission_practice_cancel'):
         from . import mission_practice
         return mission_practice.dispatch(key,payload)
@@ -1887,14 +1909,14 @@ def run_quick_menu_action(
         is_drop = True
         needs_player = False
     elif key in ("shiny_selected", "deliver_shinies_selected"):
-        result = deliver_shinies("selected")
+        result = deliver_shinies("selected", payload.get("bulk_loot_password"))
         is_drop = True
         needs_player = True
     elif key in ("shiny_all", "deliver_shinies_all"):
-        result = deliver_shinies("all")
+        result = deliver_shinies("all", payload.get("bulk_loot_password"))
         is_drop = True
     elif key in ("shiny_nonhost", "deliver_shinies_nonhost"):
-        result = deliver_shinies("nonhost")
+        result = deliver_shinies("nonhost", payload.get("bulk_loot_password"))
         is_drop = True
     elif key == "spawn_itempool":
         result = spawn_itempool(
@@ -2993,11 +3015,14 @@ def _load_shiny_serials() -> list[str]:
     return serials
 
 
-def deliver_shinies(mode: str = "selected") -> dict[str, Any]:
+def deliver_shinies(mode: str = "selected", bulk_loot_password: object = None) -> dict[str, Any]:
     try:
         raw_serials = _load_shiny_serials()
+        authorized = _installation_authorized(bulk_loot_password)
+        if len(raw_serials) > 70 and not authorized:
+            return {"ok": False, "password_required": True, "password_kind": "bulk_loot", "message": "Sending more than 70 items requires the password."}
         serials = serial_rewards._resolve_give_serial_strings(raw_serials)
-        result = _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials))
+        result = _deliver_serials_with_target(serials, mode, parsed_count=len(raw_serials), bulk_authorized=authorized)
         if result.get("ok"):
             mode_key = str(mode or "selected").lower().strip()
             action = {
@@ -4128,6 +4153,12 @@ def _uvh_discover_controllers() -> list[Any]:
         _unrealsdk = None
 
     local = get_pc()
+    if local is None:
+        return []
+    try:
+        world_path = local.GetLevel().OwningWorld._path_name() + ':'
+    except Exception:
+        return []
     found: list[Any] = []
     if _uvh_live(local):
         found.append(local)
@@ -4150,6 +4181,8 @@ def _uvh_discover_controllers() -> list[Any]:
     unique: list[Any] = []
     seen: set[str] = set()
     for obj in found:
+        if not _uvh_obj_path(obj).startswith(world_path):
+            continue
         addr = _uvh_obj_addr(obj)
         key = f"a:{addr}" if addr else f"p:{_uvh_obj_path(obj)}"
         if key in seen:
@@ -4194,9 +4227,15 @@ def _uvh_set_status(message: str) -> None:
 
 def _uvh_start(indices: list[int]) -> dict[str, Any]:
     global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
+    global _uvh_failed_count, _uvh_sent_count, _uvh_uncertain
+    global _uvh_step_receipts, _uvh_native_verified
+    if _uvh_running or _uvh_queue:
+        return dict(ok=False,message='A UVHM run is active. Stop it before starting another.')
     if get_pc() is None:
         _uvh_set_status("Cannot start UVH boost: load into a character first.")
         return {"ok": False, "message": _uvh_last_status}
+    if not get_pc().HasAuthority():
+        return dict(ok=False,message='UVHM boosting requires the host or a solo game.')
     targets = _uvh_discover_controllers()
     if not targets:
         _uvh_set_status("Cannot start UVH boost: no live players found.")
@@ -4211,6 +4250,10 @@ def _uvh_start(indices: list[int]) -> dict[str, Any]:
     _uvh_paused_targets = []
     _uvh_next_at = time.monotonic()
     _uvh_running = True
+    _uvh_failed_count = _uvh_sent_count = 0
+    _uvh_uncertain = False
+    _uvh_step_receipts = []
+    _uvh_native_verified = False
     names = ", ".join(UVH_RANKS[i][0] for i in indices)
     _uvh_set_status(f"UVH boost queued for {len(targets)} player(s): {names}; {len(plan)} challenge step(s).")
     return {"ok": True, "message": _uvh_last_status, "steps": len(plan), "players": len(targets)}
@@ -4219,20 +4262,30 @@ def _uvh_start(indices: list[int]) -> dict[str, Any]:
 def _uvh_queue_for_pc(pc: Any, indices: list[int]) -> tuple[bool, str]:
     """Queue UVH steps for one controller; accumulate targets across Max All scope runs."""
     global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running
+    global _uvh_failed_count, _uvh_sent_count, _uvh_uncertain
+    global _uvh_step_receipts, _uvh_native_verified
     if pc is None or not _uvh_live(pc):
         return False, "no live controller"
     plan = _uvh_build_plan(indices)
     if not plan:
         return False, "empty UVH plan"
+    if _uvh_paused_queue or _uvh_uncertain:
+        return False, 'Inspect the paused or uncertain UVHM run before starting another'
     addr = _uvh_obj_addr(pc)
     if not _uvh_running or not _uvh_queue:
         _uvh_queue = deque(plan)
         _uvh_targets = [pc]
         _uvh_next_at = time.monotonic()
         _uvh_running = True
+        _uvh_failed_count = _uvh_sent_count = 0
+        _uvh_uncertain = False
+        _uvh_step_receipts = []
+        _uvh_native_verified = False
         return True, f"queued {len(plan)} step(s)"
     # Already running â€” ensure this PC receives remaining steps.
     if not any(_uvh_obj_addr(t) == addr for t in _uvh_targets if t is not None):
+        if _uvh_sent_count or list(_uvh_queue) != plan:
+            return False, 'Cannot add a player after UVHM steps began or to a different rank plan'
         _uvh_targets.append(pc)
         return True, f"added to active UVH run ({len(_uvh_queue)} step(s) left)"
     return True, f"already in active UVH run ({len(_uvh_queue)} step(s) left)"
@@ -4255,6 +4308,8 @@ def uvh_boost_all() -> dict[str, Any]:
 def uvh_boost_cancel() -> dict[str, Any]:
     global _uvh_queue, _uvh_targets, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
     active = _uvh_running or bool(_uvh_queue)
+    if not active and _uvh_paused_queue:
+        return dict(ok=True,message='UVHM is already paused; remaining steps retained.',paused_steps=len(_uvh_paused_queue))
     _uvh_paused_queue = deque(_uvh_queue)
     _uvh_paused_targets = list(_uvh_targets)
     remaining = len(_uvh_paused_queue)
@@ -4270,15 +4325,19 @@ def uvh_boost_cancel() -> dict[str, Any]:
 
 def uvh_boost_resume() -> dict[str, Any]:
     global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
+    if _uvh_uncertain:
+        return dict(ok=False,message='UVHM result is uncertain. Inspect progress and start a fresh run; no automatic retry is available.')
     if _uvh_running or _uvh_queue:
         return {"ok": True, "message": f"UVH boost already running ({len(_uvh_queue)} step(s) left)."}
     if not _uvh_paused_queue:
         _uvh_set_status("Nothing to resume. Start UVH 1â€“7 (or Up to rank N) first.")
         return {"ok": False, "message": _uvh_last_status}
+    local = get_pc()
+    if local is None or not local.HasAuthority():
+        return dict(ok=False, message='Load the original host character before resuming UVHM.')
+    world_path = local.GetLevel().OwningWorld._path_name() + ':'
     live = [controller for controller in _uvh_paused_targets if _uvh_live(controller)]
-    if not live:
-        live = _uvh_discover_controllers()
-    if not live:
+    if not live or len(live) != len(_uvh_paused_targets) or any(not _uvh_obj_path(c).startswith(world_path) for c in live):
         _uvh_set_status("Cannot resume UVH boost: no live players found.")
         return {"ok": False, "message": _uvh_last_status}
     _uvh_queue = deque(_uvh_paused_queue)
@@ -4293,45 +4352,83 @@ def uvh_boost_resume() -> dict[str, Any]:
 
 def uvh_boost_status() -> dict[str, Any]:
     return {
-        "ok": True,
+        "ok": not _uvh_uncertain,
         "message": _uvh_last_status,
         "active": _uvh_running,
         "steps_remaining": len(_uvh_queue),
         "paused_steps": len(_uvh_paused_queue),
         "players": len(_uvh_targets) or len(_uvh_paused_targets),
+        "uncertain": _uvh_uncertain,
+        "failed_count": _uvh_failed_count,
+        "requests_sent": _uvh_sent_count,
+        "completion_verified": False,
+        "native_completion_verified": _uvh_native_verified,
+        "saved_progress_verified": False,
     }
 
 
+def _uvh_stop_uncertain(message):
+    global _uvh_uncertain, _uvh_failed_count, _full_progress_uvh_failed
+    uvh_boost_cancel()
+    _uvh_uncertain = True
+    _uvh_failed_count += 1
+    if _full_progress_queue_guard is not None:
+        _full_progress_uvh_failed += 1
+    _uvh_set_status(message)
+
+
+def _uvh_native_step(controller, challenge, receipt, now, delay):
+    from .uvhm_progression import advance
+    return advance(controller, challenge, receipt, now, delay)
+
+
 def uvh_boost_tick() -> None:
-    global _uvh_next_at, _uvh_running, _full_progress_uvh_failed
-    if not _full_progress_queue_is_current():
-        uvh_boost_cancel()
-        return
+    global _uvh_next_at, _uvh_running, _uvh_sent_count, _uvh_step_receipts, _uvh_native_verified
     if not _uvh_queue or time.monotonic() < _uvh_next_at:
+        return
+    if not _full_progress_queue_is_current():
+        _uvh_stop_uncertain('UVHM stopped: full-progress lobby changed. No next step sent.')
         return
     if get_pc() is None:
         return
-    label, challenge, delay = _uvh_queue.popleft()
     live_targets = [controller for controller in _uvh_targets if _uvh_live(controller)]
-    sent = 0
-    for controller in live_targets:
+    if not live_targets or len(live_targets) != len(_uvh_targets):
+        _uvh_stop_uncertain('UVHM stopped: a target player is unavailable. No next step sent and no player substituted.')
+        return
+    label, challenge, delay = _uvh_queue[0]
+    if not _uvh_step_receipts:
+        _uvh_step_receipts = [dict() for _ in live_targets]
+    if len(_uvh_step_receipts) != len(live_targets):
+        _uvh_stop_uncertain('UVHM target list changed during verification; no next step sent.')
+        return
+    settled = True
+    now = time.monotonic()
+    for controller, receipt in zip(live_targets, _uvh_step_receipts):
         try:
-            controller.ServerIncrementChallengeForPlayer(challenge, 1)
-            sent += 1
+            already_sent = receipt.get('sent', False)
+            verified = _uvh_native_step(controller, challenge, receipt, now, delay)
+            if not already_sent and receipt.get('sent'):
+                _uvh_sent_count += 1
+            settled = settled and verified
         except Exception as exc:
-            if _full_progress_queue_guard is not None:
-                _full_progress_uvh_failed += 1
-                uvh_boost_cancel()
-                _uvh_set_status(f"Full-progress UVH result uncertain: {exc!r}; no retry issued")
-                return
-            _uvh_set_status(f"{challenge} failed for one player: {exc!r}")
-    _uvh_next_at = time.monotonic() + delay
+            _uvh_stop_uncertain(f'{challenge}: result uncertain for one player: {exc!r}; no retry issued')
+            return
+    if not settled:
+        _uvh_next_at = now + delay
+        _uvh_set_status(f'{label}: waiting for native completion of {challenge}; no later step sent.')
+        return
+    _uvh_queue.popleft()
+    _uvh_step_receipts = []
+    # The issued step already waited for native confirmation. Let the next
+    # tick read the next challenge without imposing that delay a second time.
+    _uvh_next_at = time.monotonic()
     if _uvh_queue:
-        _uvh_set_status(f"{label}: sent {challenge} to {sent}/{len(live_targets)} player(s); {len(_uvh_queue)} step(s) left.")
+        _uvh_set_status(f"{label}: native challenge completion confirmed for {len(live_targets)} player(s); {len(_uvh_queue)} step(s) left.")
     else:
         _uvh_running = False
+        _uvh_native_verified = True
         _uvh_targets.clear()
-        _uvh_set_status(f"UVH boost complete. Final step sent to {sent}/{len(live_targets)} player(s).")
+        _uvh_set_status('UVHM native challenge completion confirmed. Rank unlocks and saved guest progress are not verified; save/rejoin confirmation is still required.')
 
 
 # Drain catalog grants on the UMG tick. Large amounts are sent in one RPC;

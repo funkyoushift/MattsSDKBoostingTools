@@ -191,7 +191,7 @@ body.msbt-workspace {
   .msbt-workspace .tab-shell { padding-block: 12px; }
 }
 
-.mission-experimental-note {
+.mission-experimental-note, .dialogue-experimental-note {
   border: 1px solid #d6a349;
   border-left: 4px solid #f4bc5c;
   border-radius: 8px;

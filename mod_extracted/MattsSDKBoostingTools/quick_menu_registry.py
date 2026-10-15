@@ -238,6 +238,8 @@ ACTION_CATALOG: dict[str, dict[str, Any]] = {
     "uvh_boost_cancel": {"basic": "Cancel UVH", "aliases": ["UVH Cancel"]},
     "uvh_boost_resume": {"basic": "Resume UVH", "aliases": ["UVH Resume"]},
     "uvh_boost_status": {"basic": "UVH Status", "aliases": ["UVH Status"]},
+    "dialogue_skip_toggle": {"basic": "Toggle Dialogue Skip", "aliases": ["Dialogue Skip"]},
+    "dialogue_skip_status": {"basic": "Dialogue Skip Status", "aliases": []},
     "toggle_debug_cam": {"basic": "Toggle Debug Cam", "aliases": ["Debug Cam"]},
     "disable_debug_cam": {"basic": "Disable Debug Cam", "aliases": ["Cam Off", "Freecam Off"]},
     "teleport_debug_cam": {"basic": "Teleport to Debug Cam", "aliases": ["Cam Teleport"]},

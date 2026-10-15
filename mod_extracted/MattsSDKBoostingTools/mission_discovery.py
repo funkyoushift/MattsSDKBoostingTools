@@ -3,6 +3,7 @@
 Called only inside mission_progression's pinned, journaled game-thread jobs.
 Discovery does not imply every station is usable or every map tile revealed.
 """
+from .mission_native import native_address, native_fingerprint
 import ctypes as C
 import json
 from importlib.resources import files
@@ -81,7 +82,7 @@ def operation(engine, scope, name, snapshot, target):
     if not manager:
         raise RuntimeError('Local discovery manager absent')
     key = unrealsdk.make_struct('/Script/GbxGame.GbxDiscoveryDiscoveredKey', AsMetaLocation=unrealsdk.unreal.FGbxDefPtr(name, cls))
-    query = C.WINFUNCTYPE(C.c_int, C.c_void_p, C.c_void_p, C.c_int)(engine.base + 0x6bbfa4)
+    query = C.WINFUNCTYPE(C.c_int, C.c_void_p, C.c_void_p, C.c_int)(native_address(engine, 0x6bbfa4))
     before = query(manager, key._get_address(), 0)
     if before not in (0, 1, 2):
         raise RuntimeError('Unexpected discovery state')

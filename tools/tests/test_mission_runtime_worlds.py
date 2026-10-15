@@ -1,3 +1,4 @@
+from mission_profile_fixture import exec_with_profiles
 """World admission must include authored DLC while rejecting menus and stale bindings."""
 import importlib.util
 import importlib.resources
@@ -14,7 +15,7 @@ def runtime(monkeypatch):
     monkeypatch.setitem(sys.modules,'unrealsdk',NS())
     monkeypatch.setitem(sys.modules,'mods_base',NS(ENGINE=NS(),get_pc=lambda:None))
     spec=importlib.util.spec_from_file_location('mission_world_test',ROOT/'mission_runtime.py')
-    m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+    m=importlib.util.module_from_spec(spec);exec_with_profiles(spec, m, monkeypatch)
     obj=m.MissionRuntime.__new__(m.MissionRuntime);obj.world_address=None
     return m,obj
 

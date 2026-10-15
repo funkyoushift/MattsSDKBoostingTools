@@ -1,0 +1,297 @@
+missions:
+  local_sets:
+    missionset_main_prisonprologue:
+      status: completed
+      missions:
+        mission_main_prisonprologue:
+          ui_flags: 1
+          status: completed
+          final:
+            possessionscene_endstate: completed
+            obj_followarjay_walkntalk_endstate: completed
+            obj_firstswim_endstate: completed
+            inv_gettocrouch_endstate: deactivated
+            inv_afterprisonexit_endstate: completed
+            inv_beforeprisonexit_endstate: completed
+            inv_firstdropdown_endstate: completed
+    missionset_main_shatteredlands3:
+      missions:
+        mission_main_shatteredlands3:
+          ui_flags: 1
+          status: Active
+          cursorposition: 33
+          final:
+            killrip_fortfrontbadass_endstate: completed
+            enterfortress_endstate: completed
+            killboss_endstate: completed
+            gotoramp_endstate: completed
+            shootbomb_endstate: completed
+            rampillar_endstate: completed
+            turnonramp_endstate: completed
+            gotocrater_endstate: completed
+          objectives:
+            _killrip_fortfrontbadass_sub0:
+              status: Completed_PostFinished
+            _killrip_fortfrontbadass_sub1:
+              status: Completed_PostFinished
+            enterfortress:
+              status: Completed_PostFinished
+            killboss:
+              status: Completed_PostFinished
+            pickupbolt:
+              status: Completed_PostFinished
+            talkfaend:
+              status: Active
+            talkfastart:
+              status: Completed_PostFinished
+            inv_beckvo:
+              status: Completed_PostFinished
+            inv_lootredchests_1:
+              status: Active
+            invisrift:
+              status: Completed_PostFinished
+            invistalktolevaine:
+              status: Active
+            invistraveltoworldp:
+              status: Completed_PostFinished
+            invistraveltoworldp2:
+              status: Completed_PostFinished
+            killrip_fortfrontbadass:
+              status: Completed_PostFinished
+              updatecount: 2
+            attemptjump:
+              status: Completed_PostFinished
+            climbcrawler:
+              status: Completed_PostFinished
+            closevents:
+              status: Completed_PostFinished
+            findboss:
+              status: Completed_PostFinished
+            getoncrawler:
+              status: Completed_PostFinished
+            getondrill:
+              status: Completed_PostFinished
+            gomegadrill:
+              status: Completed_PostFinished
+            gotocrater:
+              status: Completed_PostFinished
+            gotoengine:
+              status: Completed_PostFinished
+            gotofortdoor:
+              status: Completed_PostFinished
+            gotoramp:
+              status: Completed_PostFinished
+            gotoview:
+              status: Completed_PostFinished
+            hackdoor:
+              status: Completed_PostFinished
+            installboosterramp:
+              status: Completed_PostFinished
+            killholey:
+              status: Completed_PostFinished
+            killrip_drillcamp:
+              status: Completed_PostFinished
+            killripcrawler:
+              status: Completed_PostFinished
+            killripfortfront:
+              status: Completed_PostFinished
+            newobjective:
+              status: Completed_PostFinished
+            newobjective_1:
+              status: Completed_PostFinished
+            openbatterybox:
+              status: Completed_PostFinished
+            pickupbombramp:
+              status: Completed_PostFinished
+            plantbomb1:
+              status: Completed_PostFinished
+            rampillar:
+              status: Completed_PostFinished
+            reachbase:
+              status: Completed_PostFinished
+            returnramp:
+              status: Completed_PostFinished
+            searchgarage:
+              status: Completed_PostFinished
+            shootbomb:
+              status: Completed_PostFinished
+            takeboosters:
+              status: Completed_PostFinished
+            takedrillkey:
+              status: Completed_PostFinished
+            talkzanejumpfail:
+              status: Completed_PostFinished
+            talkzanerampchoice:
+              status: Completed_PostFinished
+            turnonramp:
+              status: Completed_PostFinished
+            unlock_maintenance_access:
+              status: Completed_PostFinished
+            unlockdrilldoor:
+              status: Completed_PostFinished
+            inv_travelrampvo:
+              status: Deactivated_PostFinished
+            inv_findskuntvo:
+              status: Completed_PostFinished
+            _closevents_sub0:
+              status: Completed_PostFinished
+            _closevents_sub1:
+              status: Completed_PostFinished
+            inv_returnramp_chat:
+              status: Completed_PostFinished
+            _turnonramp_sub0:
+              status: Completed_PostFinished
+            _turnonramp_sub1:
+              status: Completed_PostFinished
+            inv_jumpvo:
+              status: Completed_PostFinished
+            gofortress:
+              status: Deactivated_PostFinished
+            gofortress2:
+              status: Deactivated_PostFinished
+            gofortress3:
+              status: Deactivated_PostFinished
+            encounterarea1:
+              status: Deactivated_PostFinished
+            breadcrumb1:
+              status: Completed_PostFinished
+            breadcrumb2:
+              status: Completed_PostFinished
+            breadcrumb3:
+              status: Completed_PostFinished
+            breadcrumb4:
+              status: Completed_PostFinished
+            inv_hackroomvo:
+              status: Completed_PostFinished
+            inv_gotohackdoor:
+              status: Completed_PostFinished
+            inv_hackdefensevo:
+              status: Completed_PostFinished
+            breadcrumb6:
+              status: Completed_PostFinished
+            breadcrumb7:
+              status: Completed_PostFinished
+            breadcrumb8:
+              status: Completed_PostFinished
+            breadcrumb9:
+              status: Completed_PostFinished
+    missionset_main_grasslands3:
+      status: completed
+      missions:
+        mission_main_grasslands3:
+          ui_flags: 1
+          status: completed
+          final:
+            gettosaftey_endstate: completed
+            salvagelocusts_endstate: completed
+            enterfortress_endstate: completed
+            opengate_endstate: completed
+            advancetofortress_endstate: completed
+            kill_commander_endstate: completed
+            findairshiphangar_endstate: completed
+            bosswaypoint03_endstate: completed
+            enter_commander_arena_endstate: completed
+    missionset_main_grasslands2a:
+      status: completed
+      missions:
+        mission_main_grasslands2:
+          ui_flags: 1
+          status: completed
+          final:
+            find_zadra_1_endstate: completed
+            find_zadra_0_endstate: completed
+            invis_fast_complete_generator_endstate: completed
+            enter_slide_quick_complete_endstate: deactivated
+            wait_for_zadra_endstate: completed
+            find_zadra_endstate: completed
+            holder_for_timekeeper_vo_finish_endstate: completed
+            kill_roof_intro_guys_endstate: deactivated
+            kill_synth_reinforcements_invis_tracker_endstate: deactivated
+            combat_composit_obj_endstate: deactivated
+            kill_the_gunship_endstate: completed
+    missionset_main_beach:
+      status: completed
+      missions:
+        mission_main_beach:
+          ui_flags: 1
+          status: completed
+          final:
+            activate__cl4ptps_safehouse_endstate: completed
+            melee_the_door_0_endstate: completed
+            reach_village_endstate: completed
+            use_glide_to_reach_exit_endstate: completed
+            destroy_bolt_1_endstate: completed
+            destroy_bolt_3_endstate: deactivated
+            destroy_bolt_2_endstate: deactivated
+    missionset_main_shatteredlands1:
+      status: completed
+      cursorposition: 1
+      missions:
+        mission_main_shatteredlands1:
+          ui_flags: 1
+          status: completed
+          final:
+            head_to_the_shatteredlands_0_endstate: completed
+            head_to_the_shatteredlands_endstate: completed
+            head_to_the_shatteredlands_grasslands_endstate: completed
+            head_to_the_shatteredlands_mountains_endstate: completed
+        mission_main_shatteredlands1b:
+          ui_flags: 1
+          status: completed
+          final:
+            meet_zane_endstate: completed
+            zane_open_hatch_check_if_player_is_near_endstate: completed
+            reach_the_pit_endstate: completed
+            follow_zane_0_endstate: completed
+            head_to_the_electi_council_chamber_0_endstate: completed
+    missionset_main_grasslands1:
+      status: completed
+      missions:
+        mission_main_grasslands1:
+          ui_flags: 1
+          status: completed
+          final:
+            meet_nudge_endstate: completed
+            kill_order_soldiers_endstate: completed
+            commander_holo_tracker_endstate: completed
+            talk_with_conway_endstate: completed
+            scan_vehicle_endstate: completed
+            get_close_to_contra_2_endstate: deactivated
+            get_close_to_contra_1_endstate: deactivated
+            get_close_to_contra_4_endstate: deactivated
+            get_close_to_contra_3_endstate: deactivated
+            reach_the_lieutenant_endstate: completed
+            return_to_outbounder_hq_endstate: completed
+    missionset_main_grasslands2b:
+      status: completed
+      missions:
+        mission_main_grasslands2b:
+          ui_flags: 1
+          status: completed
+          final:
+            invisunderairship_endstate: completed
+            removedebris_endstate: completed
+            kill_factory_boss_endstate: completed
+            evacuateship_endstate: completed
+            gettohq_endstate: completed
+    missionset_main_shatteredlands2:
+      status: completed
+      missions:
+        mission_main_shatteredlands2:
+          ui_flags: 1
+          status: completed
+          final:
+            melee_generator_endstate: completed
+            activate_core_chamber_systems_endstate: completed
+            find_a_power_core_endstate: completed
+            repair_leaders_chamber_critical_systems_endstate: completed
+            restore_flowing_water_to_carcadia_endstate: completed
+            findquent_endstate: completed
+            ppppoutpost2_echo_endstate: completed
+            ppppoutpost1_echo_endstate: completed
+            invisechocollection_endstate: completed
+            kill_badass_security_jones_endstate: completed
+            kill_reinforcements_endstate: completed
+            pull_the_device_endstate: completed
+            destroy_the_fuel_endstate: completed
+            save_quent_endstate: deactivated

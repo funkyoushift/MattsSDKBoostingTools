@@ -4,6 +4,21 @@ Before re-researching a feature, read its entry below and any linked component n
 
 ## Changes
 
+- Co-op completion and mixed-DLC filtering: The100% flow now explicitly retains the original bulk completion callbacks; objective-by-objective scene traversal is excluded from that flow. pack-level disagreement no longer aborts base-game work; multi-guest lobbies can skip unavailable content; selected objectives now check DLC access; Takedown mappings added.591 Python checks and23 earlier Node checks passed. Campaign credit and UVHM passed live; automatic visitor access refresh is staged. Release held pending mixed-DLC full-run proof. See [current release preparation](changes/2026-10-14-mission-repair-plan.md#co-op-completion-and-mixed-dlc-release-preparation) for install status and live visitor verification.
+
+- Automatic replay starts:326 source-authored preceding-waypoint candidates now use guarded automatic grounded placement;180 missing points keep native station fallback.137 Python checks,23 Node checks (including a real encrypted Epic-account transaction), responsive UI and package audits passed. Installed locally; live automatic Crystal Brawl waypoint placement and native fallback passed. See [waypoint and Epic status](changes/2026-10-14-mission-repair-plan.md#automatic-starting-waypoints-and-epic-checks) for live verification and limits.
+
+- Forward mission selection and unified replay UI: source-derived39 story/DLC missions /506 main sections, numbered dependency order and campaign filter.114 Python checks,19 Node checks, both responsive UI suites and18 read-only real-save staging cases passed. Matching expanded SDK and final desktop installed/opened; Dark Subject automatic forward load and native-station bookmark replay passed; wider gameplay remains experimental. See [latest expansion status](changes/2026-10-14-mission-repair-plan.md#forward-mission-selection-playthrough-order-and-unified-replay-ui).
+
+- Latest mission replay result: automatic native character swap passed two full Queen save-edit/reload/map-refresh setups; normal dialogue completion ended two live threads and the Queen mission advanced. 92 Python + 19 Node checks and responsive replay UI passed. Epic live and broader coverage remain unverified. See [the current repair note](changes/2026-10-14-mission-repair-plan.md).
+
+
+- Combined update: Epic/password/UVHM integrated; 87 Python + 16 Node checks passed. Automatic character selection and dialogue wait skip remain unverified. See latest pilot and packaging status in the [mission repair note](changes/2026-10-14-mission-repair-plan.md).
+
+- Combined source update: Epic/password/UVHM repairs integrated; 87 Python and 16 Node checks passed. Native automatic character selection and dialogue wait skipping remain unverified. Latest pilot/packaging status and next steps are recorded in the [mission repair note](changes/2026-10-14-mission-repair-plan.md).
+
+- [2026-10-14: Mission repairs, dialogue skip and UVHM plan](changes/2026-10-14-mission-repair-plan.md) — Installed v2.38.1-based repair candidate. Save-backed original Queen replay progressed and saved twice; complete Mudmouth/friend waves progressed after scoped reset, character reload and placement. Automatic map travel/placement verified. Desktop save-backed transaction, recovery and two-section UI implemented; installed Mudmouth and Queen setup/readiness passed. Background swap, normal weapon/guest proof and full coverage remain unfinished. Mission-state bookmarks now use native respawn without custom coordinates; locally packaged with automated checks, not installed/live-verified. Background swap remains manual.
+
 - [2026-10-13: Experimental mission tools release](changes/2026-10-13-mission-tools-experimental-release.md) — Tested installed behavior, amber experimental controls, explicit remaining limitations.
 
 - [2026-10-12: Playable progress effects and replay scope](changes/2026-10-12-playable-progress-effects.md) - NG+-style retention clarified; source audit identifies the Beach/safehouse dependency gap. Native objective checkpoint replay implemented and saved across reload; bridge completion/replay verified. Safehouse interaction reset persisted; 251 completion entries, 63 activity resets and DLC map replay installed. Full 285-record campaign reset retained character progression and restored Arjay; broader world-effect and guest-save coverage remain unfinished.
@@ -102,3 +117,5 @@ Before re-researching a feature, read its entry below and any linked component n
 ## Required entry for every meaningful change
 
 Record issue/symptoms; root cause with evidence (separate unknowns); checkout and relevant version; files/components; exact behavior before/after; validation commands and outcomes; failed/rejected approaches worth preserving; deployment state and rollback; unresolved follow-ups. Link the entry here. Never include passwords, tokens or full user inventories. Keep measured evidence separate from assumptions and offline tests separate from live proof.
+
+- Replay-method scope clarification (source only): [mission repair notes](changes/2026-10-14-mission-repair-plan.md#replay-method-clarification-during-user-testing). User resolved dropdown selection; corrected stale manual-picker and coverage wording.

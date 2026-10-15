@@ -4,6 +4,7 @@ The native successful-outcome handler executes success/finish graphs. A mission
 status shortcut cannot stand in for those graphs. Calls are recorded before
 issue and never repeated, including while finish actions wait on game ticks.
 """
+from .mission_native import native_address, native_fingerprint
 import ctypes as C
 import json
 import struct
@@ -141,7 +142,19 @@ def advance(engine, row, name, receipt, journal, checkpoint=None, definition=Non
         # work to that dependency tree, never to unrelated siblings/later steps.
         required = {selected_token} | set(issued)
         by_name = {o['name'].casefold():o for o in rows if 'group' in o}
-        pending = [selected_objective]
+        # A composite definition can span authored sections while its native
+        # group field names only the last one (Crystal Brawl's wildcat).
+        # Include arrival setup from every section declaring this composite.
+        # Retain these initializer outcomes; exclude optional and visible
+        # siblings so selecting one objective never completes another section.
+        memberships = {group['index'] for group in definition['groups']
+                       if any(obj['name'].casefold() == selected_objective['name'].casefold()
+                              for obj in group['objectives'])}
+        initializers = [o for o in rows if selected_objective.get('wait_for_objectives')
+                        and o.get('group') in memberships
+                        and o['hidden'] and not o['optional'] and o.get('activation_by_arrival')]
+        required.update(o['token'] for o in initializers)
+        pending = [selected_objective] + initializers
         visited = set()
         while pending:
             parent = pending.pop()
@@ -182,6 +195,20 @@ def advance(engine, row, name, receipt, journal, checkpoint=None, definition=Non
         limit = min((o['group'] for o in unsettled), default=-1)
         candidates = [o for o in candidates if not missing_issued and not o['optional'] and o['group'] <= limit and
                       (not o.get('completion_maps') or current_map in o['completion_maps'])]
+    if not candidates and not waiting and before_outcome:
+        # A visible composite can stay active while its interaction child waits
+        # for another map to load. It has no leaf outcome to reach the ordinary
+        # before_outcome travel guard yet. Load only a source-declared child map;
+        # never force its activation or complete the composite itself.
+        child_names={n.casefold() for parent in active for n in parent.get('wait_for_objectives',[])}
+        map_children=[o for o in rows if o['token'] in required and o['name'].casefold() in child_names and
+                      o['state'] in (None,3,4) and o.get('completion_maps') and current_map and
+                      current_map not in o['completion_maps'] and
+                      (checkpoint is None or o['group']<checkpoint)]
+        if map_children:
+            child=min(map_children,key=lambda o:(o['group'],o['order']))
+            before_outcome(child)
+            return dict(ready=False,message='Loading the area needed by this objective.')
     if candidates:
         # An overarching map-arrival objective can coexist with work on the
         # current map. Settle that work before departing, within the same group.
@@ -202,7 +229,7 @@ def advance(engine, row, name, receipt, journal, checkpoint=None, definition=Non
                 if time.monotonic()-since>120:
                     raise RuntimeError('The required NPC interaction did not become available; no outcome forced')
                 return dict(ready=False,message='Waiting for the required NPC interaction to load; no outcome forced.')
-        if interaction is None and engine.read(engine.base + OUTCOME_RVA, 32).hex() != OUTCOME_BYTES:
+        if interaction is None and engine.read(native_address(engine, OUTCOME_RVA), 32).hex() != native_fingerprint(engine, OUTCOME_RVA, OUTCOME_BYTES):
             raise RuntimeError('Objective handler differs from the reviewed build')
         issued.append(selected['token'])
         receipt['pending'] = selected['token']
@@ -210,7 +237,7 @@ def advance(engine, row, name, receipt, journal, checkpoint=None, definition=Non
                      before=row, objective=dict(selected),via='npc_use' if interaction else 'outcome'))
         try:
             if interaction:interaction()
-            else:C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8)(engine.base + OUTCOME_RVA)(int(selected['pointer'], 16), 1)
+            else:C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8)(native_address(engine, OUTCOME_RVA))(int(selected['pointer'], 16), 1)
             journal(dict(event='returned', operation='objective_complete', mission=name,
                          token=row['token'], objective=dict(selected),via='npc_use' if interaction else 'outcome'))
         except Exception as exc:

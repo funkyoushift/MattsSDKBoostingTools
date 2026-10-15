@@ -1,3 +1,17 @@
+# v2.39.0 — Mission selection and co-op progress
+
+- Repair solo save-backed replay with a unified, numbered selector for39 story/DLC missions and 506 main objective sections, including later points in a playthrough. Native character swaps are automatic; a second existing character in the same profile is required.
+- Preserve current gear and levels while backing up/editing inactive mission state, reloading the character/map and placing the host using326 authored preceding-waypoint candidates or native-station fallback. Individual encounters remain experimental.
+- Add mission-state bookmarks that restore the captured mission/world timeline and native respawn station without coordinate setup.
+- Use native dialogue completion for the dialogue-skip toggle. Live conversation completion and map-reload retention passed; authored timed scenes may still wait.
+- Preserve the original bulk100% mission callbacks. Do not run individual mission scenes or the broken fog-reveal teleport tour during full completion.
+- Refresh visitors' actual entitlement snapshots before full completion; continue native-accessible content and report blocked packs without changing ownership. Automatic refresh and a complete mixed-DLC run passed live testing.
+- Repair per-visitor campaign completion credit through the existing build-pinned once-only mission callback. Campaign unlock and all 25 UVHM challenge steps passed native checks for a three-player lobby; guest own-save verification remains separate.
+- Put ordinary challenges before UVHM, remove a redundant wait after verified UVHM steps, retain no-retry uncertainty guards and check progression-bearing characters instead of vehicle pawns for upgrades.
+- Include Epic compatibility/account-codec repairs, Shinies credential forwarding and the reviewed desktop layout/control repairs.
+- Keep mission/replay/full-progress tools visibly experimental. Both visitors confirmed story completion and UVHM 7 after the mixed-DLC run; no guaranteed saved 100% claim.
+- See [implementation and validation](docs/changes/2026-10-14-mission-repair-plan.md).
+
 # v2.38.1 — Mission controls and experimental replay
 
 - Repair shared objective completion, NPC/map handling and movement cleanup.

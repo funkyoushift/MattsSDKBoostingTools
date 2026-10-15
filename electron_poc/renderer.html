@@ -411,20 +411,24 @@
         <section class="panel gold" data-msbt-panel="boost-missions" data-msbt-span="12" data-msbt-title="Missions">
           <h2>Missions</h2>
           <p>Finish missions, select a mission or objective for replay, or restart the campaign with your current character.</p>
-          <aside class="mission-experimental-note" role="note">
-            <strong>Experimental mission tools</strong>
+          <div class="inline-fields">
+            <button id="dialogueSkipToggle" type="button" aria-pressed="false">Dialogue skip: off</button>
+            <button id="dialogueSkipStatus" type="button">Check dialogue skip</button>
+          </div>
+          <p id="dialogueSkipNote" class="dialogue-experimental-note">Experimental: completes current dialogue lines through the game’s normal completion path. Timed scenes may still wait. Host or solo only. Resets to off when the game restarts.</p>
+          <details class="mission-experimental-note">
+            <summary>Experimental mission tools — limitations</summary>
             <p>Mission resets and objective controls are available for testing. Some NPCs, doors, encounters or later checkpoints may not progress. Stop a stalled run and check its status; changes already applied remain.</p>
-          </aside>
+          </details>
           <div id="missionToolViews" class="mission-tool-views" role="group" aria-label="Mission tools">
             <button type="button" data-mission-view-button="complete" aria-pressed="true">Complete</button>
-            <button type="button" data-mission-view-button="practice" aria-pressed="false">Mission selection</button>
-            <button type="button" data-mission-view-button="replay" aria-pressed="false">Replay</button>
+            <button type="button" data-mission-view-button="practice" aria-pressed="false">Mission replay</button>
             <button type="button" data-mission-view-button="full" aria-pressed="false">Full game</button>
           </div>
           <div data-mission-views="complete practice replay">
-          <p class="muted-line">Changes apply to the shared lobby. The selected player is used to accept missions.</p>
+          <p class="muted-line" data-mission-views="complete replay">Changes apply to the shared lobby. The selected player is used to accept missions.</p>
           <div class="inline-fields">
-            <label>Work on <select id="missionScope"><option value="current">Current tracked mission</option><option value="bounty">Current tracked bounty</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="challenge_credit">Repair Grassroots mission credit</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
+            <label>Work on <select id="missionScope"><option value="current">Current tracked mission</option><option value="bounty">Current tracked bounty</option><option value="named">Choose missions</option><option value="story">Story</option><option value="sides">Side missions</option><option value="dlc">DLC missions</option><option value="all">All missions</option><option value="challenge_credit">Repair campaign / Grassroots credit</option><option value="map_locations">Discover all map locations</option><option value="travel_stations">Discover fast-travel stations</option><option value="travel_requirements">Repair known travel requirements</option></select></label>
             <button id="missionPreviewBtn" type="button">Refresh from game</button>
           </div>
           <div id="missionNamesLabel" hidden>
@@ -432,7 +436,8 @@
               <label>Search <input id="missionNameSearch" type="search" placeholder="Mission name"></label>
               <label>Status <select id="missionStateFilter"><option value="all">All statuses</option><option value="completed">Completed</option><option value="progress">In progress / accepted</option><option value="not_started">Not started</option><option value="available">Available</option><option value="locked">Locked</option><option value="unavailable">Unavailable / unknown</option><option value="failed">Failed</option></select></label>
               <label>Type <select id="missionTypeFilter"><option value="all">All types</option></select></label>
-              <label>Sort <select id="missionSort"><option value="name">Name A–Z</option><option value="status">Status, then name</option><option value="type">Type, then name</option></select></label>
+              <label id="missionCampaignLabel" hidden>Campaign <select id="missionCampaignFilter"><option value="all">All campaigns and missions</option></select></label>
+              <label>Sort <select id="missionSort"><option value="playthrough">Playthrough order</option><option value="name">Name A–Z</option><option value="status">Status, then name</option><option value="type">Type, then name</option></select></label>
             </div>
             <label>Choose missions <select id="missionNames" multiple size="7" style="width:100%"></select></label>
             <p id="missionSelectionCount" aria-live="polite"></p>
@@ -459,8 +464,9 @@
             <button id="missionCancelBtn" type="button" disabled>Stop run</button>
           </div>
           <fieldset data-mission-views="practice" class="mission-experimental-field" hidden>
-            <legend>Select a mission or objective for replay</legend>
-            <p class="muted-line">Choose one mission above, then a starting objective. Everyone moves together; earlier steps in this mission run their finish actions to prepare the checkpoint. Your equipment and character progress stay.</p>
+            <legend>2. Choose the beginning or a main objective</legend>
+            <p class="mission-experimental-note">Choose a campaign and numbered mission above, then its beginning or a main objective below. Save-backed replay can move progress forward or back while preserving equipment and levels. Later dependent missions are cleared. Generated states and encounter initialization are experimental. A pre-replay backup is kept.</p>
+            <details><summary>Advanced loading options</summary><label>Replay method <select id="missionReplayMethod"><option value="save">Save and reload — experimental</option><option value="live">Live reset — advanced</option></select></label></details>
             <label>Replay from <select id="missionPracticeSelect" style="width:100%"></select></label>
             <p id="missionPracticeNote" class="muted-line">Choose the mission beginning or an objective. Replay prepares its area and uses a verified jump location when available.</p>
             <details id="missionPracticeUnavailable" hidden><summary id="missionPracticeUnavailableSummary">Unavailable starting points</summary><ul id="missionPracticeUnavailableList" class="mission-unavailable-points"></ul></details>
@@ -469,6 +475,29 @@
               <button id="missionPracticeStop" type="button" disabled>Stop replay setup</button>
               <button id="missionPracticeStatus" type="button">Replay status</button>
             </div>
+            <section id="missionSaveReplayControls" aria-label="Save replay progress">
+              <fieldset>
+                <legend>Mission-state bookmarks — experimental</legend>
+                <p class="muted-line">While playing a readable mission, save its current state for replay. This does not create starting points for missions you have not bookmarked. Loading restores the captured mission/world timeline, keeping your current equipment and levels. Later mission progress is rewound. New bookmarks use the game’s saved respawn station with no custom location or teleport. Characters reload automatically using a second existing character in the same profile. Mission-state capture and automatic reload have limited live checks; broader encounter behavior remains experimental.</p>
+                <label>Bookmark name <input id="missionBookmarkName" maxlength="80" placeholder="Before the boss or a favorite mission section"></label>
+                <div class="button-row"><button id="missionBookmarkSave" type="button">Save current mission state</button><button id="missionBookmarkRefresh" type="button">Refresh bookmarks</button></div>
+                <label>Saved mission state <select id="missionBookmarkSelect" style="width:100%"><option value="">No bookmarks yet</option></select></label>
+                <button id="missionBookmarkReplay" type="button" disabled>Load selected state</button>
+                <p id="missionBookmarkOutput" role="status" class="muted-line">Let the game autosave your playable objective before bookmarking. Replay requires a second existing character in the same profile.</p>
+              </fieldset>
+              <p class="mission-experimental-note">Solo host only. Mudmouth and Ripper Queen have live setup checks. Other generated states and bookmarks remain experimental. The save edit preserves gear and character progression. Character loading is automatic; the picker button below is a manual fallback.</p>
+              <p id="missionSaveReplayOutput" role="status" aria-live="polite">No save-backed replay is running.</p>
+              <div class="button-row">
+                <button id="missionSaveReplayCheck" type="button">Check progress</button>
+                <button id="missionSaveReplayStop" type="button" disabled>Stop setup</button>
+                <button id="missionSaveReplayPicker" type="button">Open character picker</button>
+                <button id="missionSaveReplayBackup" type="button" disabled>Open backups</button>
+              </div>
+              <details><summary>Restore the pre-replay save</summary>
+                <p class="muted-line">First select another character in the game. Restore replaces the original with its complete pre-replay backup, including the gear and progress it had then. A copy of the current save is kept too.</p>
+                <button id="missionSaveReplayRestore" type="button" disabled>Restore pre-replay backup</button>
+              </details>
+            </section>
           </fieldset>
           <details data-mission-views="complete practice replay"><summary>Run details and recovery</summary>
             <div class="button-row">
@@ -478,18 +507,19 @@
               <button id="missionDlcBtn" type="button">Check lobby DLC access</button>
             </div>
           </details>
-          <fieldset data-mission-views="replay" hidden><legend>Replay with your current character</legend>
+          <details data-mission-views="practice" hidden><summary>Advanced live replay tools</summary><fieldset><legend>Live mission controls</legend>
             <p>Reopen restarts one mission, refreshing its area with a short trip away and back so its characters and interactions can load again. The whole lobby travels together. Reset all resets the loaded named missions and activities, reloads the opening map, and starts Guns Blazing. Equipment, levels, discoveries and other non-mission progress stay, so the character's overall campaign percentage may remain above zero. Generated bounties are not included. Any missions still completed are listed in the result.</p>
             <p class="muted-line">Replay last objective returns an active mission to that step's checkpoint, including linked objectives and later steps. Earned items, levels and ranks stay. If the mission has finished, use Reopen mission.</p>
             <div class="button-row"><button id="missionReopenBtn" type="button" disabled>Reopen selected mission</button><button id="missionReplayObjectiveBtn" disabled>Replay last objective</button><button id="missionRestartLastBtn" disabled>Reopen last advanced mission</button></div>
             <details><summary>Start the campaign again</summary><p>Reset every supported mission for this lobby while keeping your character and equipment.</p><button id="missionResetAllBtn" disabled>Reset all missions for replay</button></details>
-          </fieldset>
+          </fieldset></details>
           <pre id="missionOutput" class="output" data-mission-views="complete practice replay">Waiting for preview.</pre>
           <section id="missionFullProgressSection" data-mission-views="full" hidden aria-label="Full game progress">
           <fieldset id="fullProgressPanel">
             <legend>Full game progress <span class="mission-experimental-badge">Experimental</span></legend>
             <p>Runs supported progress for everyone in this lobby: missions, discoveries, travel, levels, currencies, SDU points, vault cards, unlocks and challenges.</p>
-            <p class="muted-line">Host plus one guest: available content only. Two or more guests: everyone must have required DLC access. Skipped content and unverified results remain visible.</p>
+            <p class="muted-line">Players stay in place during objective completion. Required map changes and area reloads may still move the whole lobby to initialize missions and travel unlocks.</p>
+            <p class="muted-line">Completes content available to everyone currently in the lobby. DLC missing from any player's account, or whose access cannot be confirmed, is skipped. Other eligible work continues.</p>
             <label><input type="checkbox" id="fullProgressAck"> Apply progress to everyone, including resetting completed host missions for normal guest completion.</label>
             <p class="mission-experimental-note">This run can finish with skipped or unverified content. A finished run does not guarantee a saved 100% character.</p>
             <div class="button-row"><button id="fullProgressPreview">Check lobby</button><button id="fullProgressStart" class="mission-experimental-action" disabled>Run full game progress</button><button id="fullProgressStop" disabled>Stop remaining work</button><button id="fullProgressStatus">Status</button><button id="fullProgressContinue" disabled>Continue run</button><button id="fullProgressClose" disabled>Close stopped run</button></div>
@@ -511,7 +541,7 @@
             <button id="mayhemBoostBtn" type="button" data-host-only="1">Unlock Mayhem</button>
           </div>
           <h3>UVH 1–7</h3>
-          <p class="muted-line">UVH N runs tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume continues them.</p>
+          <p class="muted-line">UVH N sends tiers 1 through N for the live lobby. Cancel pauses remaining steps; Resume keeps the original players. A player leaving, map change, or failed call stops the run for inspection. Sent requests do not confirm saved rank unlocks.</p>
           <div class="button-grid compact-buttons">
             <button data-action="uvh_boost_tier_1">UVH 1</button>
             <button data-action="uvh_boost_tier_2">UVH 2</button>
@@ -3133,6 +3163,8 @@ unofficial and claims no endorsement by these owners or credited contributors.
   <script src="gzo_codes_form.js"></script>
   <script src="workspace.js"></script>
   <script src="workspace_walkthroughs.js"></script>
+  <script src="save_replay_panel.js"></script>
+  <script src="mission_playthrough.js"></script>
   <script src="mission_panel.js"></script>
   <script src="full_progress_panel.js"></script>
   <script src="renderer.js"></script>

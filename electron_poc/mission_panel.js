@@ -16,13 +16,15 @@
     const details = doc.getElementById("missionPracticeUnavailable");
     const list = doc.getElementById("missionPracticeUnavailableList");
     const choices = preview?.ok ? preview.choices || [] : [];
-    const available = choices.filter(row => !row.blocked_reason);
-    const blocked = choices.filter(row => row.blocked_reason);
+    const saveMode=doc.getElementById('missionReplayMethod')?.value==='save';
+    const reason=row=>saveMode?(row.save_backed_reason||(!row.save_backed_supported?'No reviewed save-backed setup for this section':null)):row.blocked_reason;
+    const available = choices.filter(row => !reason(row));
+    const blocked = choices.filter(row => reason(row));
     select.replaceChildren();
     for (const row of available) {
       const option = doc.createElement("option");
-      option.value = String(row.index); option.textContent = `${row.index + 1}. ${row.title}${row.index>0 ? " — Experimental" : ""}`;
-      if(row.index>0)option.className="mission-experimental-option";
+      option.value = String(row.index); option.textContent = `${available.indexOf(row) + 1}. ${row.title}${row.index>0 || row.anchor?.recorded ? " — Experimental" : ""}`;
+      if(row.index>0 || row.anchor?.recorded)option.className="mission-experimental-option";
       select.append(option);
     }
     if (!available.length) {
@@ -35,12 +37,13 @@
     list.replaceChildren();
     for (const row of blocked) {
       const item = doc.createElement("li");
-      item.textContent = `${row.index + 1}. ${row.title}: ${row.blocked_reason || "Completion location is not resolved"}`;
+      item.textContent = `${row.index + 1}. ${row.title}: ${reason(row) || "Completion location is not resolved"}`;
       list.append(item);
     }
     return available.length;
   }
   function showView(doc, name) {
+    if(name==='replay')name='practice';
     if (!["complete", "practice", "replay", "full"].includes(name)) return;
     doc.querySelectorAll("[data-mission-views]").forEach(node => {
       node.hidden = !node.dataset.missionViews.split(" ").includes(name);
@@ -60,6 +63,23 @@
     });
     root.MsbtFullProgressPanel?.bind(doc, call);
     const el = id => doc.getElementById(id);
+    async function dialogueSkip(action) {
+      const button = el("dialogueSkipToggle");
+      if (!button) return;
+      button.disabled = true;
+      try {
+        const result = await call("quick_menu_action", {action});
+        if (typeof result?.enabled === "boolean") {
+          button.setAttribute("aria-pressed", String(result.enabled));
+          button.textContent = `Dialogue skip: ${result.enabled ? "on" : "off"}`;
+        }
+        el("dialogueSkipNote").textContent = result?.message || "Dialogue skip status unavailable. Check again before toggling.";
+      } catch (error) {
+        el("dialogueSkipNote").textContent = `Dialogue skip result unknown: ${error.message}. Check status before toggling again.`;
+      } finally { button.disabled = false; }
+    }
+    el("dialogueSkipToggle")?.addEventListener("click", () => dialogueSkip("dialogue_skip_toggle"));
+    el("dialogueSkipStatus")?.addEventListener("click", () => dialogueSkip("dialogue_skip_status"));
     const output = el("missionOutput");
     let job = null, busy = false, stopped = false, preview = null, activeOperation = null;
     let missionPump = null, cancelling = false;
@@ -72,21 +92,37 @@
     }
     let objectivePreview = null;
     let practicePreview = null, practiceJob = null, practiceStopped = false;
+    let saveReplayPanel=null;
     let lastObjective = null, objectiveStopped = false;
     let refreshing = false, refreshVersion = 0;
     let catalogRows = [];
     const selectedNames = new Set();
+    let replayFiltersInitialized=false;
+    const playthrough=root.MsbtMissionPlaythrough||{};
+    const campaignFilter=el('missionCampaignFilter');
+    if(campaignFilter){
+      const labels=new Map();
+      for(const info of Object.values(playthrough))labels.set(info.campaign,info.label.replace(/ \d+$/,''));
+      for(const [key,label] of labels){const option=doc.createElement('option');option.value=key;option.textContent=label;campaignFilter.append(option);}
+    }
     doc.addEventListener("msbt-mission-view",event=>{
       const single=["practice","replay"].includes(event.detail);
+      if(single&&!replayFiltersInitialized&&campaignFilter){
+        campaignFilter.value='story';el('missionTypeFilter').value='all';el('missionStateFilter').value='all';
+        replayFiltersInitialized=true;
+      }
+      if(el('missionCampaignLabel'))el('missionCampaignLabel').hidden=!single;
       el("missionNames").multiple=!single;
       for(const option of el("missionScope").options)option.hidden=single && !["current","named"].includes(option.value);
       let changed=false;
       if(single && selectedNames.size>1){
         const retained=[...selectedNames][0];selectedNames.clear();selectedNames.add(retained);renderNames();changed=true;
       }
-      if(single && !["current","named"].includes(el("missionScope").value)){
+      if(single && el("missionScope").value!=="named"){
         el("missionScope").value="named";changed=true;
       }
+      el('missionNamesLabel').hidden=el('missionScope').value!=='named';
+      el('missionScope').closest('label').hidden=single;
       if(changed)void refresh();
     });
     const stateLabel = row => ({completed:"Completed", active:"In progress", accepted:"Accepted",
@@ -96,17 +132,20 @@
       const search = el("missionNameSearch").value.trim().toLocaleLowerCase();
       const state = el("missionStateFilter").value, type = el("missionTypeFilter").value;
       const rows = catalogRows.filter(row => (!search || row.title.toLocaleLowerCase().includes(search)) &&
+        (!campaignFilter||campaignFilter.value==='all'||playthrough[row.name]?.campaign===campaignFilter.value) &&
         (type === "all" || row.category === type) && (state === "all" ||
           (state === "progress" ? ["active","accepted"].includes(row.state) :
           state === "not_started" ? ["available","locked","None",null].includes(row.state) :
           state === "unavailable" ? !["active","accepted","available","locked","completed","failed","None",null].includes(row.state) : row.state === state)));
       const sort = el("missionSort").value;
       rows.sort((a,b) => (sort === "status" ? stateLabel(a).localeCompare(stateLabel(b)) :
-        sort === "type" ? a.category.localeCompare(b.category) : 0) || a.title.localeCompare(b.title));
+        sort === "type" ? a.category.localeCompare(b.category) :
+        sort === "playthrough" ? (playthrough[a.name]?.rank??100000)-(playthrough[b.name]?.rank??100000) : 0) || a.title.localeCompare(b.title));
       el("missionNames").replaceChildren();
       for (const row of rows) {
         const option = doc.createElement("option");
-        option.value=row.name; option.textContent=`${row.title} — ${stateLabel(row)} (${row.category})`;
+        const sequence=playthrough[row.name];
+        option.value=row.name; option.textContent=`${sequence?sequence.label+' · ':''}${row.title} — ${stateLabel(row)}${sequence?.parallel?' · parallel route':''} (${row.category})`;
         option.selected=selectedNames.has(row.name); el("missionNames").append(option);
       }
       const hidden = [...selectedNames].filter(name => !rows.some(row => row.name === name)).length;
@@ -136,7 +175,7 @@
       const objectiveActive = lastObjective?.coordinated && lastObjective?.id && ["running","uncertain","stopped","interrupted"].includes(lastObjective.state);
       const eligible = preview?.ok && runnable().length > 0 && runnable().length <= preview.max_batch;
       const resetting = runnable().some(m => m.resets_host_completion);
-      el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : el("missionScope").value === "bounty" ? "Complete bounty" : el("missionScope").value === "challenge_credit" ? "Repair Grassroots credit" : "Complete missions";
+      el("missionRunBtn").textContent = ["map_locations", "travel_stations", "travel_requirements"].includes(el("missionScope").value) ? "Apply map / travel changes" : el("missionScope").value === "bounty" ? "Complete bounty" : el("missionScope").value === "challenge_credit" ? "Repair mission credit" : "Complete missions";
       el("missionRunBtn").disabled = busy || !eligible || !el("missionSharedAck").checked || (resetting && !el("missionResetCompleted").checked);
       el("missionResumeBtn").disabled = busy || !job?.id || !(job.state === "running" || (job.state === "stopped" && !(job?.pending?.length > 0 && splitCoverage(job.pending).remaining.length === 0) && (["accept", "complete"].includes(job?.phase) || (job?.dynamic && job?.phase === "prepare")) && (job?.operation_scope || "missions") === "missions"));
       const practiceActive = activeOperation === "practice" || (!busy && practiceJob?.id && ["running","uncertain","stopped"].includes(practiceJob.state));
@@ -172,7 +211,8 @@
         (practiceJob?.state!=="running" && (!practicePreview?.ok || !choice || choice.blocked_reason));
       el("missionPracticeStop").disabled=!practiceJob?.id || !["running","uncertain","stopped"].includes(practiceJob.state);
       el("missionPracticeSelect").disabled=busy || refreshing || !practicePreview?.choices?.some(row=>!row.blocked_reason);
-      el("missionPracticeNote").textContent=choice?.blocked_reason || (choice?.beginning ?
+      el("missionPracticeNote").textContent=choice?.blocked_reason || (choice?.anchor?.recorded ?
+        `Recorded beginning: ${choice.anchor.map}. Resets progress and reloads the area. Replay gameplay is still experimental; placement requires a loaded, walkable surface.` : choice?.beginning ?
         "Restart this mission at its normal opening. The whole lobby travels together; character rewards are retained." : choice?.anchor ?
         `Start: ${choice.anchor.map}, where ${choice.anchor.objective.replaceAll("_"," ")} finishes. Moves everyone together.` :
         choice ? "Replay activates this objective and prepares its mission area. Follow the mission waypoint when no precise jump location is available." :
@@ -180,6 +220,7 @@
         "No starting point is ready. Open unavailable starting points below for the reason." :
         practicePreview?.message || "Choose one mission to see its available starting points.");
       el("missionResetOption").hidden = !resetting;
+      saveReplayPanel?.update();
       if (refreshing) for (const id of ["missionRunBtn","missionReopenBtn","missionObjectiveBtn"]) el(id).disabled=true;
       if (objectiveActive) for (const id of ["missionRunBtn","missionReopenBtn","missionObjectiveBtn","missionReplayObjectiveBtn","missionRestartLastBtn","missionResetAllBtn","missionPracticeBtn"]) el(id).disabled=true;
       if (practiceActive || (!busy && job?.state==="running")) {
@@ -271,6 +312,7 @@
     void refreshPracticeStatus();
     el("missionPracticeBtn").addEventListener("click",async()=>{
       if(el("missionPracticeBtn").disabled)return;
+      if(saveReplayPanel?.saveMode()){await saveReplayPanel.start();return;}
       busy=true;activeOperation="practice";practiceStopped=false;update();
       try {
         const retained=await call("mission_practice_status",{});
@@ -364,6 +406,7 @@
     el("missionClearSelectionBtn").addEventListener("click",()=>{selectedNames.clear();selectionChanged();});
     el("missionNameSearch").addEventListener("input",renderNames);
     for(const id of ["missionStateFilter","missionTypeFilter","missionSort"]) el(id).addEventListener("change",renderNames);
+    campaignFilter?.addEventListener('change',renderNames);
     for (const id of ["missionSharedAck", "missionResetCompleted"]) el(id).addEventListener("change", update);
     el("missionStatusBtn").addEventListener("click", async () => {
       try { const result = await call("mission_status", {}); if (!busy && result?.id) job = result; report(result); update(); }
@@ -496,6 +539,13 @@
     update();
     void call("mission_objective_status",{}).then(result=>{if(!busy){lastObjective=result;update();}}).catch(()=>{});
     void call("mission_status", {}).then(result=>{if(!busy){job=result;report(result);update();}}).catch(()=>{}).finally(()=>{if(!busy)void refresh();});
+    saveReplayPanel=root.MsbtSaveReplayPanel?.bind(doc,{
+      api:root.msbt?.saveReplay,
+      selection:()=>({mission:practicePreview?.mission,checkpoint:Number(el('missionPracticeSelect').value),
+        supported:practicePreview?.choices?.some(c=>String(c.index)===el('missionPracticeSelect').value&&c.save_backed_supported&&!c.save_backed_reason),
+        ack:el('missionSharedAck').checked,busy,refreshing}),
+      legacyUpdate:()=>{renderPracticeChoices(doc,practicePreview,el('missionPracticeSelect').value);update();}
+    });
     let syncing=false;
     const statusTimer=root.setInterval(async()=>{
       if(syncing || busy || refreshing || doc.hidden || !el("missionToolViews").getClientRects().length ||

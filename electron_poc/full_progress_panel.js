@@ -39,7 +39,7 @@
     el("fullProgressPanel").dataset.bound="true";
     let preview=null,job=null,busy=false;
     function update(){
-      el("fullProgressStart").disabled=busy || job?.state === "running" || !preview?.allowed || !el("fullProgressAck").checked;
+      el("fullProgressStart").disabled=busy || ["running","stopped","uncertain","interrupted"].includes(job?.state) || !preview?.allowed || !el("fullProgressAck").checked;
       el("fullProgressClose").disabled=busy || !job?.id || !["stopped","uncertain","interrupted"].includes(job.state) || !el("fullProgressAck").checked;
       el("fullProgressContinue").textContent=["stopped","uncertain"].includes(job?.state)?"Repair and continue":"Continue run";
       el("fullProgressPreview").disabled=busy;
@@ -49,13 +49,14 @@
     function report(value){
       const lines=[value.message || value.reason || "No confirmed result."];
       if(value.players)lines.push("Players: "+value.players.join(", "));
+      if(value.available_content)lines.push("Available content for this lobby: "+(value.available_content.join(", ") || "Base game; no additional content confirmed"));
       if(value.total)lines.push(`${value.index} / ${value.total} stages finished`);
-      for(const row of value.skipped || [])lines.push("Unavailable: "+(row.title || row)+ (row.reason?" â€” "+row.reason:""));
-      for(const row of value.blockers || [])lines.push("Blocked: "+row.title+" â€” "+row.reason);
+      for(const row of value.skipped || [])lines.push("Unavailable: "+(row.title || row)+ (row.reason?" — "+row.reason:""));
+      for(const row of value.blockers || [])lines.push("Blocked: "+row.title+" — "+row.reason);
       for(const row of value.results || []){
-        lines.push(`${row.stage}: ${row.state} â€” ${row.message || ""}`);
+        lines.push(`${row.stage}: ${row.state} — ${row.message || ""}`);
         if(Array.isArray(row.details))for(const player of row.details)for(const skip of player.skipped || [])lines.push(`${player.player}: ${skip}`);
-        if(Array.isArray(row.skipped))for(const skip of row.skipped)lines.push(`Remaining: ${skip.title || skip} â€” ${skip.reason || "Unavailable"}`);
+        if(Array.isArray(row.skipped))for(const skip of row.skipped)lines.push(`Remaining: ${skip.title || skip} — ${skip.reason || "Unavailable"}`);
         else if(row.skipped)lines.push(`${row.skipped} entries skipped`);
       }
       for(const line of value.coverage || [])lines.push(line);
@@ -69,18 +70,27 @@
       catch(e){report({message:e.message});}
     });
     el("fullProgressStatus").addEventListener("click",async()=>{
-      try{const value=await call("full_progress_status",{});if(!busy && value?.id)job=value;report(value);}
+      try{const value=await call("full_progress_status",{});if(!busy && value?.state)job=value;report(value);}
       catch(e){report({message:e.message});}
     });
     el("fullProgressClose").addEventListener("click",async()=>{
-      try{job=await call("full_progress_close",{job_id:job.id,acknowledge_shared_progress:el("fullProgressAck").checked});report(job);}
+      try{const result=await call("full_progress_close",{job_id:job.id,acknowledge_shared_progress:el("fullProgressAck").checked});if(result?.id && result?.state){job=result;preview=null;}report(result);}
       catch(e){report({message:e.message});}
     });
     el("fullProgressStart").addEventListener("click",async()=>{
       if(el("fullProgressStart").disabled)return;
       busy=true;update();
       try{
-        job=await call("full_progress_start",{acknowledge_shared_progress:true});report(job);
+        const started=await call("full_progress_start",{acknowledge_shared_progress:true});
+        if(!started?.id || !started?.state){
+          // A rejected start must not replace a recoverable run with an error
+          // object that has no identifier. Read status; never resend start.
+          const current=await call("full_progress_status",{});
+          if(current?.state)job=current;
+          report({...current,message:[started?.message,current?.message].filter(Boolean).join(". ")});
+          return;
+        }
+        job=started;report(job);
         job=await advance(call,job,value=>{job=value;report(value);});
       }catch(e){report({message:"Result unknown: "+e.message+". Check status before retrying."});}
       finally{busy=false;preview=null;update();}

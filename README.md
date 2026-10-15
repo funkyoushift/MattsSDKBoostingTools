@@ -1,6 +1,14 @@
 <!-- v2.38.0 progress update -->
 
-> **Mission tools are experimental in v2.38.1.** Amber labels identify mission selection and bulk progress that may stop or leave NPCs, doors or encounters unready. Mission opening, selected-objective completion and native objective rewind have host test evidence; all-mission playability and guest save persistence are not verified. A finished full-game run does not guarantee saved 100% completion.
+> **v2.39.0: Mission replay, bookmarks and mixed-DLC completion.** Select a mission or main objective, load a saved mission-state bookmark, or use the repaired full-game run with visitors who have different DLC access. Mission tools remain experimental; limitations and test results are listed below and in the [release notes](docs/releases/RELEASE_NOTES_v2.39.0.md).
+
+The candidate combines selection and replay under **Mission replay**: choose a campaign, a numbered mission in dependency order, and its beginning or a main objective. Experimental generated progress edits now cover 39 story/DLC missions and 506 main sections, including missions not yet reached by the current character. They create prerequisite records, clear dependent future mission records and reload the selected state. Parallel branches are retained; numbering gives a stable playable order, not a unique chronology for those branches. Mudmouth and Ripper Queen retain their narrower live-tested setup path. Other generated states are progress overrides, not captured gameplay snapshots; completing earlier objectives does not reproduce every authored branch outcome, and world facts/encounters may need further fixes. These wider states have offline checks and still need live gameplay tests.
+
+Save-backed replay is solo-host only. It backs up and edits the inactive original save, preserving equipment, levels and unrelated save data, then automatically reloads the character and mission map using a second existing loadable character in the same profile. DLC ownership is checked before setup. Generated states automatically place the host below the preceding main objective’s completion waypoint when its source coordinates and loaded collision are usable (326 coordinate candidates across 506 sections). Missing or unsafe points retain the native respawn/fast-travel station, which may be farther from the selected objective. Coordinates retain their authored map and source pointer; individual gameplay starts remain experimental. Stop retains the backup; restoring it requires the original character to be unloaded and replaces its entire save with that earlier backup. Older live replay controls are under **Advanced live replay tools**.
+
+**Mission-state bookmarks — experimental** captures other readable active missions without a custom starting location. Let the game autosave a playable objective, name it, and choose **Save current mission state**. **Load selected state** uses that same character's current equipment and levels, restores the captured mission/world timeline and native respawn station, and requests a fresh map load. New bookmarks use the game's saved respawn point: no coordinate setup, floor probe or custom teleport. It rewinds all captured mission progress, including later progress in other missions. Bookmarks stay on this PC and require matching game/catalog data. Character swaps now run through the native save-slot selector without manual picker selections; a second existing character in the same profile is required. Arbitrary encounters, scripted events and DLC coverage need live verification; a loaded state is not proof that every encounter will replay. A Dark Subject bookmark was captured and automatically replayed through save/map reload in the installed game; broader encounter and changed-timeline gameplay remain unverified. Previously captured exact-position bookmarks retain their original placement behavior.
+
+> **Mission tools remain experimental in v2.39.0.** Amber labels identify mission selection and bulk progress that may stop or leave NPCs, doors or encounters unready. Mission opening, selected-objective completion and native objective rewind have host test evidence; all-mission playability and guest save persistence are not verified. A finished full-game run does not guarantee saved 100% completion.
 
 Mission tools now support one-objective advancement, authored checkpoint replay, mission reopening and campaign reset that retains character equipment and progression. Host save retention and opening NPC behavior were verified; guest-save and exhaustive world-effect coverage remain limited. See [v2.38.0 release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
@@ -14,17 +22,25 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.38.1.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.38.1.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.38.1-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.38.1-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.39.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.39.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.39.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.39.0-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
+
+## Full-game completion with different DLC access
+
+The run refreshes visitors’ real game access before starting. It retains the original bulk mission callbacks, completes available work, and reports blocked content without stopping the rest of the run. It does not grant DLC ownership. The three-player test included a visitor with only bounty packs: all stages finished or reported their specific limits, all three had59/59 SDU upgrades verified, and both visitors confirmed story completion and UVHM 7. Native challenge readback found2,574 complete, zero incomplete and 261 unavailable definitions; 60 current vault-card challenges were verified. Own-game save/rejoin verification remains separate.
+
+Blocked DLC, absent definitions and unsupported cosmetic/vehicle unlocks remain visible. The broken teleporting fog-reveal tour is excluded. “Run finished” does not guarantee every collectible, achievement or saved 100% character. Android remains1.6.2 and its APK is included.
+
+Earlier v2.36.0 testing confirmed saved completion for both visitors after a 200-mission run; see its [release notes](docs/releases/RELEASE_NOTES_v2.36.0.md). That historical result does not replace verification for the new replay workflow.
 
 ## v2.38.0 progress repairs
 
 Scoped mission and discovery controls now share the 100% Game processing loop and connection recovery. Mission runs use the same dialogue skipping and guest challenge-credit checks. Other app or companion requests no longer cancel queued progress steps. Repair and continue keeps applied work; inactive vault cards and failed vehicle unlocks remain visible without blocking later stages.
 
-The full preset retains its final pass for later unlocks. Scope selection, acceptance player and reset options still apply to individual runs. The reported **The Chase** guest-save issue remains unresolved; verify saved progress in each player's own game. Generic objective completion, undo and reset-all remain unavailable.
+The full preset retains its final pass for later unlocks. Scope selection, acceptance player and reset options still apply to individual runs. The reported **The Chase** guest-save issue remains unresolved; verify saved progress in each player's own game. Objective completion and mission/campaign replay controls are available for experimental testing; exhaustive playability and saved guest progress remain unverified.
 
 Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
@@ -103,7 +119,7 @@ Cr4nkSt4r’s **NcsParser** work and previously supplied Nexus tables contribute
 
 **Ynot / GZO** supplies community item-code resources, catalogs, part maps, and linked images used by our browsing workflows. **Levin / Lootlemon** supplies item information, code references, and links used in the catalog. Their research and ongoing curation make those workflows useful. Displaying their information inside this app does not make it our data.
 
-**Visit the original resources:** [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Lootlemon](https://www.lootlemon.com/)
+**Visit the original resources:** [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands 4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Lootlemon](https://www.lootlemon.com/)
 
 ### juso and smugg — BLImGui / Borderlands ImGui
 
@@ -160,7 +176,7 @@ Give Items by Serial now honors the copies setting for readable numeric codes an
 ## 100% game preset — v2.37.0
 Open **Missions → 100% game** in the desktop app. Check lobby access, review the shared-progress acknowledgement, then run supported missions, discoveries/travel requirements, character levels, currencies, SDU points, applicable unlocks, UVH/Mayhem and challenges. Host plus one guest can use available content; larger lobbies require everyone to have the required DLC access.
 
-The final prerequisite pass picks up newly available missions and travel requirements without resetting verified work. Missing DLC, unavailable definitions and inactive vault cards are reported separately. This preset does not promise every item/statistic/achievement or automatically purchase SDU upgrades. Save and quit normally and verify guests in their own games. See [v2.37.0 release notes](docs/releases/RELEASE_NOTES_v2.37.0.md) for limitations and recovery controls.
+The final prerequisite pass picks up newly available missions and travel requirements without resetting verified work. Missing DLC, unavailable definitions and inactive vault cards are reported separately. This preset purchases authored SDU ranks and verifies their native readback. It does not promise every item/statistic/achievement. Save and quit normally and verify guests in their own games. See [v2.37.0 release notes](docs/releases/RELEASE_NOTES_v2.37.0.md) for limitations and recovery controls.
 
 ### v2.37.0 guest mission persistence limitation
 

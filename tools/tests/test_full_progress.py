@@ -18,15 +18,15 @@ class Driver:
     def poll(self,*args):return dict(state='finished')
     def cancel(self,child):return True
 
-@pytest.mark.parametrize('n,owned,allowed',[(0,True,False),(1,False,True),(2,False,True),(3,False,False),(4,False,False),(4,True,True)])
+@pytest.mark.parametrize('n,owned,allowed',[(0,True,False),(1,False,True),(2,False,True),(3,False,True),(4,False,True),(4,True,True)])
 def test_lobby_gate(n,owned,allowed):
     d=Driver(n,owned);s=d.preflight()
     assert m.eligibility(s['players'],s['packs'])['allowed']==allowed
 
 def test_no_write_before_gate_or_ack(tmp_path):
-    d=Driver(3);r=m.Run(d,tmp_path)
+    d=Driver(0);r=m.Run(d,tmp_path)
     with pytest.raises(ValueError):r.start({'acknowledge_shared_progress':True})
-    d.owned=True
+    d.owned=True;d.n=3
     with pytest.raises(ValueError):r.start({})
     assert not d.calls
 
@@ -121,6 +121,8 @@ def character_driver():
     from types import SimpleNamespace as NS
     source=(P.parent/'full_progress_runtime.py').read_text().replace('            from . import vehicle_tuning','            vehicle_tuning = vehicle_stub').replace('        from . import mission_discovery','        mission_discovery = discovery_stub')
     source=source.replace('from . import sdu_progress', 'sdu_progress = sdu_stub')
+    source=source.replace('from . import challenge_objective_complete', 'challenge_objective_complete = challenge_stub')
+    source=source.replace('from . import dlc_refresh', 'dlc_refresh = refresh_stub')
     tree=ast.parse(source)
     cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Driver')
     class RestoreError(RuntimeError):
@@ -141,6 +143,51 @@ def character_driver():
     return env['Driver'](),calls
 
 
+def test_campaign_challenges_precede_uvhm_unlocks():
+    stages=[name for name,title in m.STAGES]
+    assert stages.index('missions') < stages.index('challenges') < stages.index('uvh')
+    import json
+    policy=json.loads((P.parent/'full_progress_policy.json').read_text(encoding='utf-8'))
+    assert policy['challenges']['Challenge_Misc_World_CompleteCityEpilogue']['packs']==[]
+
+
+def test_character_resolution_skips_possessed_vehicle_and_checks_state():
+    import ast
+    from types import SimpleNamespace as NS
+    source=(P.parent/'player_economy.py').read_text(encoding='utf-8')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name=='_target_character_for_pc')
+    env=dict(Any=object,Optional=__import__('typing').Optional)
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<character>','exec'),env)
+    character=NS(GbxProgressionManager=object())
+    vehicle=NS()
+    resolve=env['_target_character_for_pc']
+    assert resolve(NS(Pawn=vehicle,Character=character)) is character
+    assert resolve(NS(Pawn=vehicle,PlayerState=NS(PawnPrivate=character))) is character
+    assert resolve(NS(Pawn=vehicle)) is None
+
+
+def test_locked_guest_campaign_skips_uvhm_without_requests_or_timeout():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.begin.__globals__;calls=[]
+    env['challenge_stub']=NS(is_complete=lambda pc,name: pc=='host')
+    env['backend']=NS(_uvh_queue_for_pc=lambda *a: calls.append(a))
+    result=d.begin('uvh',dict(rows=[dict(pc='host',label='Host'),dict(pc='guest',label='Guest')]))
+    assert result['state']=='partial' and result['skipped']==['Guest'] and not calls
+    assert 'Continuing remaining work' in result['message']
+
+
+def test_unlocked_party_queues_uvhm_only_after_all_campaign_checks():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.begin.__globals__;events=[]
+    def complete(pc,name):events.append(('check',pc));return True
+    def queue(pc,ranks):events.append(('queue',pc));return True,'Ready'
+    env['challenge_stub']=NS(is_complete=complete)
+    env['backend']=NS(_uvh_queue_for_pc=queue,UVH_RANKS=['rank1'])
+    result=d.begin('uvh',dict(binding='lobby',rows=[dict(pc='host',label='Host'),dict(pc='guest',label='Guest')]))
+    assert result['state']=='running'
+    assert events==[('check','host'),('check','guest'),('queue','host'),('queue','guest')]
+
+
 def test_character_tops_up_delta_and_never_reduces_existing_progress():
     d,calls=character_driver()
     row=dict(pc='guest',state='guest_state',label='Guest')
@@ -157,6 +204,52 @@ def test_full_progress_preserves_solo_completion_without_assuming_guest_credit()
     assert d.acceptance(dict(rows=[host]))['preserve_completed'] is True
     payload=d.acceptance(dict(rows=[host,guest]))
     assert payload['preserve_completed'] is False and payload['target_player']=='1|Guest'
+
+
+def test_full_progress_initial_missions_use_original_bulk_completion():
+    d,_=character_driver();calls=[];missions=d.begin.__globals__['missions']
+    def start(payload,*,use_objective_graph=True):
+        calls.append((payload,use_objective_graph));return dict(id='bulk',state='completed',message='Done')
+    missions.start=start
+    result=d.begin('missions',dict(access_refreshed=True,rows=[dict(host=True,index=0,label='Host')]))
+    assert result['state']=='finished' and len(calls)==1
+    assert calls[0][0]['scope']=='all' and calls[0][1] is False
+
+
+def test_full_progress_refreshes_access_before_any_mission_start():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.begin.__globals__
+    env['refresh_stub']=NS(begin=lambda rows:dict(kind='access_refresh',id='refresh'))
+    env['missions'].start=lambda *a,**k:pytest.fail('Must wait for refreshed access')
+    result=d.begin('missions',dict(rows=['guest']))
+    assert result['state']=='running' and result['child']['kind']=='access_refresh'
+
+
+def test_refresh_ack_rechecks_native_access_before_bulk_start():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.poll.__globals__;events=[]
+    env['refresh_stub']=NS(ready=lambda token,rows:events.append('ack') or True)
+    fresh=dict(binding='same',rows=[dict(host=True,index=0,label='Host')],packs={'paid':{'allowed':False}})
+    d.preflight=lambda **kwargs:events.append('fresh access') or dict(fresh)
+    d.begin=lambda stage,snapshot:events.append(('start',snapshot['packs']['paid']['allowed'],snapshot['access_refreshed'])) or dict(state='finished')
+    assert d.poll('missions',dict(kind='access_refresh',id='r'),dict(binding='same',rows=[]))['state']=='finished'
+    assert events==['ack','fresh access',('start',False,True)]
+
+
+def test_pending_refresh_never_starts_missions():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.poll.__globals__
+    env['refresh_stub']=NS(ready=lambda *a:False)
+    d.begin=lambda *a:pytest.fail('No mission work before guest acknowledgement')
+    assert d.poll('missions',dict(kind='access_refresh',id='r'),dict(rows=[]))['state']=='running'
+
+
+def test_reported_skips_follow_refreshed_access(tmp_path):
+    d=Driver(owned=True);d.step_snapshot=lambda stage:d.preflight()
+    runner=m.Run(d,tmp_path);job=runner.start({'acknowledge_shared_progress':True})
+    assert runner.status()['skipped']==[]
+    d.owned=False
+    assert runner.step(job['id'])['skipped'][0]['title']=='DLC'
 
 
 def test_missing_currency_readback_blocks_grant():
@@ -179,8 +272,9 @@ def test_native_access_fingerprint_mismatch_prevents_native_call(monkeypatch):
     monkeypatch.setattr(importlib.resources,'files',lambda package:P.parent)
     monkeypatch.setitem(sys.modules,'unrealsdk',NS())
     spec=importlib.util.spec_from_file_location('access_test',P.parent/'progress_access.py')
-    access=importlib.util.module_from_spec(spec);spec.loader.exec_module(access)
-    engine=NS(base=0,ensure_world=lambda:None,read=lambda addr,n:b'\0'*n)
+    from tools.tests.mission_profile_fixture import exec_with_profiles
+    access=importlib.util.module_from_spec(spec);exec_with_profiles(spec,access,monkeypatch)
+    engine=NS(profile='steam-25372571',base=0,ensure_world=lambda:None,read=lambda addr,n:b'\0'*n)
     with pytest.raises(RuntimeError,match='reviewed game build'):access.inspect(engine,[])
 
 
@@ -319,7 +413,8 @@ def test_resume_requires_original_card_restored_and_does_not_repeat_grants():
 def final_driver(states,done=()):
     from types import SimpleNamespace as NS
     d,_=character_driver();env=d.final_recheck.__globals__;starts=[]
-    def start(payload):
+    def start(payload,*,use_objective_graph=True):
+        assert use_objective_graph is False
         starts.append(payload.copy());return dict(id='child',state='running')
     env['missions']=NS(CATALOG={n:dict(title=n) for n in states},NONPERSISTENT=set(),
         _engine=lambda:NS(snapshot=lambda:states),_row=lambda s,n:s[n],_state=lambda r:r,
@@ -436,3 +531,12 @@ def test_activation_wait_automatically_resumes_without_begin():
     env['missions']._state=lambda row:'active'
     assert d.mission_result({'state':'stopped'},child)['state']=='running'
     assert resumed==['child']
+
+
+def test_four_player_mixed_dlc_lobby_continues_all_eligible_stages_and_lists_skips(tmp_path):
+    d=Driver(4,owned=False);r=m.Run(d,tmp_path)
+    job=r.start(dict(acknowledge_shared_progress=True))
+    assert job['skipped'] and job['state']=='running'
+    for _ in m.STAGES:r.step(job['id'])
+    assert r.status()['state']=='finished' and d.calls==[name for name,title in m.STAGES]
+    assert r.status()['skipped'] and not r.status()['completion_verified']

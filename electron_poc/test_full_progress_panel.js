@@ -50,5 +50,32 @@ const {advance,bind,pollDelay}=require('./full_progress_panel');
   assert.deepEqual(recoveryCalls.map(c=>c[0]),['full_progress_status','full_progress_status','full_progress_status','full_progress_resume','full_progress_step']);
   assert.equal(recoveryCalls[3][1].job_id,'saved');
   assert.equal(recoveryCalls[3][1].acknowledge_shared_progress,true);
+  const stuckNodes=new Map();
+  const stuckDoc={getElementById(id){if(!stuckNodes.has(id))stuckNodes.set(id,{dataset:{},disabled:false,checked:true,textContent:'',events:{},addEventListener(e,fn){this.events[e]=fn;}});return stuckNodes.get(id);}};
+  const stuckCalls=[];let statusCount=0,closeCount=0,closed=false;
+  bind(stuckDoc,async(a,p)=>{
+    stuckCalls.push([a,p]);
+    if(a==='full_progress_status')return ++statusCount===1 || closed ? {ok:true,state:'idle'} : {ok:false,id:'interrupted-run',state:'interrupted',message:'Inspect old run'};
+    if(a==='full_progress_preview')return {ok:true,allowed:true};
+    if(a==='full_progress_start')return {ok:false,message:'A prior full-progress run needs inspection'};
+    if(a==='full_progress_close'){
+      assert.equal(p.job_id,'interrupted-run');
+      if(++closeCount===1)return {ok:false,message:'Child cleanup needs inspection'};
+      closed=true;return {ok:true,id:p.job_id,state:'cancelled'};
+    }
+    throw Error(a);
+  });
+  await stuckDoc.getElementById('fullProgressPreview').events.click();
+  await stuckDoc.getElementById('fullProgressStart').events.click();
+  assert.equal(stuckCalls.filter(([a])=>a==='full_progress_start').length,1);
+  assert.equal(stuckDoc.getElementById('fullProgressStart').disabled,true);
+  assert.equal(stuckDoc.getElementById('fullProgressClose').disabled,false);
+  await stuckDoc.getElementById('fullProgressClose').events.click();
+  assert.equal(stuckDoc.getElementById('fullProgressClose').disabled,false);
+  await stuckDoc.getElementById('fullProgressClose').events.click();
+  assert.equal(stuckDoc.getElementById('fullProgressClose').disabled,true);
+  await stuckDoc.getElementById('fullProgressStatus').events.click();
+  await stuckDoc.getElementById('fullProgressPreview').events.click();
+  assert.equal(stuckDoc.getElementById('fullProgressStart').disabled,false);
   console.log('PASS full-progress lobby preview, acknowledgement, sequenced run and uncertain-stop controls');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -12,16 +12,21 @@ app.whenReady().then(async()=>{
     const actions=[];runAction=async(...args)=>{actions.push(args);return {ok:true};};
     MsbtWorkspace.open('boosting','missions');
     const byId=id=>document.getElementById(id),visible=id=>byId(id).getBoundingClientRect().height>0;
-    const views={complete:'missionRunBtn',practice:'missionPracticeSelect',replay:'missionReopenBtn',full:'fullProgressStart'};
+    const views={complete:'missionRunBtn',practice:'missionPracticeSelect',full:'fullProgressStart'};
+    if(document.querySelector('[data-mission-view-button="replay"]'))throw Error('Duplicate replay navigation');
+    if(byId('missionSort').value!=='playthrough')throw Error('Playthrough order must be the default');
+    if(!MsbtMissionPlaythrough.Mission_Main_Cowbell4)throw Error('Missing DLC ordering');
     const notice=document.querySelector('.mission-experimental-note');
     const experimental={notice:notice.textContent,accent:getComputedStyle(notice).borderLeftColor,
       runLabel:byId('fullProgressStart').textContent};
     const navigation=[];
     for(const [name,id] of Object.entries(views)){
       document.querySelector('[data-mission-view-button="'+name+'"]').click();
+      if(name==='practice'&&byId('missionNamesLabel').hidden)throw Error('Mission list must be visible on entering replay');
       navigation.push({name,visible:visible(id),othersHidden:Object.entries(views).filter(([v])=>v!==name).every(([,n])=>!visible(n))});
     }
     const anchor={map:'Harmonica_P',objective:'GoToMiningCamp',location:{x:1,y:2,z:3}};
+    byId('missionReplayMethod').value='live';
     const choices=[{index:0,title:'Mission beginning',blocked_reason:'Preceding completion location is not resolved'},
       {index:2,title:'Kill Tediore forces',anchor},{index:3,title:'Find the big score',anchor}];
     MsbtMissionPanel.showView(document,'practice');
@@ -55,7 +60,7 @@ app.whenReady().then(async()=>{
     const doc=document.implementation.createHTMLDocument('Bound mission regression');
     doc.body.innerHTML=document.body.innerHTML;
     const el=id=>doc.getElementById(id),calls=[];
-    el('missionScope').value='current';el('missionSharedAck').checked=true;
+    el('missionScope').value='current';el('missionSharedAck').checked=true;el('missionReplayMethod').value='live';
     let practice={ok:true,state:'idle'},releaseStep,stepStarted=false;
     const call=async(action,payload)=>{
       calls.push({action,payload});
@@ -71,7 +76,12 @@ app.whenReady().then(async()=>{
     MsbtMissionPanel.bind(doc,call,()=>null);
     const until=async(test)=>{for(let i=0;i<200&&!test();i++)await new Promise(r=>setTimeout(r,5));if(!test())throw new Error('Timed out waiting for bound panel');};
     await until(()=>!el('missionPracticeBtn').disabled);
-    MsbtMissionPanel.showView(doc,'practice');el('missionPracticeBtn').click();
+    MsbtMissionPanel.showView(doc,'practice');
+    el('missionCampaignFilter').value='all';el('missionCampaignFilter').dispatchEvent(new Event('change'));
+    await until(()=>el('missionNames').options.length>0);
+    el('missionNames').value='test';el('missionNames').dispatchEvent(new Event('change'));
+    await until(()=>!el('missionPracticeBtn').disabled);
+    el('missionPracticeBtn').click();
     await until(()=>stepStarted);
     MsbtMissionPanel.showView(doc,'complete');
     const during={disabled:el('missionCancelBtn').disabled,text:el('missionCancelBtn').textContent,
@@ -199,6 +209,29 @@ app.whenReady().then(async()=>{
   })()`);
   assert.deepEqual(statusRefresh,{retained:true,stopDisabled:true,continueDisabled:true,mutations:[]});
   result.statusRefresh=statusRefresh;
+  const dialogue=await win.webContents.executeJavaScript(`(async()=>{
+    const doc=document.implementation.createHTMLDocument('Dialogue toggle');doc.body.innerHTML=document.body.innerHTML;
+    const el=id=>doc.getElementById(id),calls=[];let enabled=false;
+    const call=async(action,payload)=>{
+      if(action==='quick_menu_action'){
+        calls.push(payload.action);
+        if(payload.action==='dialogue_skip_toggle')enabled=!enabled;
+        return {ok:true,enabled,message:enabled?'Dialogue skip is on.':'Dialogue skip is off.'};
+      }
+      if(action.endsWith('_status'))return {ok:true,state:'idle'};
+      if(action==='mission_preview')return {ok:true,missions:[]};
+      return {ok:false};
+    };
+    MsbtMissionPanel.bind(doc,call,()=>null);
+    const until=async(test)=>{for(let i=0;i<100&&!test();i++)await new Promise(r=>setTimeout(r,5));if(!test())throw Error('Dialogue UI timed out');};
+    el('dialogueSkipToggle').click();await until(()=>el('dialogueSkipToggle').getAttribute('aria-pressed')==='true');
+    el('dialogueSkipStatus').click();await until(()=>calls.length===2&&!el('dialogueSkipToggle').disabled);
+    el('dialogueSkipToggle').click();await until(()=>el('dialogueSkipToggle').getAttribute('aria-pressed')==='false');
+    return {calls,label:el('dialogueSkipToggle').textContent,note:el('dialogueSkipNote').textContent};
+  })()`);
+  assert.deepEqual(dialogue.calls,['dialogue_skip_toggle','dialogue_skip_status','dialogue_skip_toggle']);
+  assert.equal(dialogue.label,'Dialogue skip: off');assert.match(dialogue.note,/off/);
+  result.dialogue=dialogue;
   const dir=path.join(__dirname,'../output/testing/mission-views');fs.mkdirSync(dir,{recursive:true});
   for(const width of [360,800,1280]){
     win.setContentSize(width,1000);

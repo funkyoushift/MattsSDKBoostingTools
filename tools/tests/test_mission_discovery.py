@@ -1,3 +1,4 @@
+from mission_profile_fixture import exec_with_profiles
 """Offline source catalog and prerequisite checks, not guest-save proof."""
 import importlib.util
 import importlib.resources
@@ -12,7 +13,7 @@ def mod(monkeypatch):
     monkeypatch.setattr(importlib.resources, 'files', lambda package: ROOT)
     spec = importlib.util.spec_from_file_location('discovery_test', ROOT / 'mission_discovery.py')
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    exec_with_profiles(spec, module, monkeypatch)
     return module
 
 @pytest.mark.parametrize('scope', ['map_locations', 'travel_stations'])

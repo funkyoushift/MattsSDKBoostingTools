@@ -5,6 +5,7 @@ hash and the native GetProgressGraphNodeTotalPoints code fingerprint. The native
 reader matches FName at node+0x48 or its definition at node+0x50. Node order is
 never inferred from the extracted JSON. See the completion/UI verification note.
 """
+from .mission_native import native_address, native_fingerprint
 import json
 import struct
 import threading
@@ -21,7 +22,7 @@ def snapshot(pc, runtime):
         raise RuntimeError('SDU work must run on the game thread')
     runtime.ensure_world()
     expected = bytes.fromhex(CATALOG['native_reader_fingerprint'])
-    if runtime.read(runtime.base + int(CATALOG['native_reader_rva'], 16), len(expected)) != expected:
+    if runtime.read(native_address(runtime, int(CATALOG['native_reader_rva'], 16)), len(expected)) != native_fingerprint(runtime, int(CATALOG['native_reader_rva'], 16), expected):
         raise RuntimeError('Unsupported SDU native reader')
     from . import player_economy
     character = player_economy._target_character_for_pc(pc)

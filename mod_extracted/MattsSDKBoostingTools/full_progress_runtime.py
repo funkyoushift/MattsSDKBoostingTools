@@ -52,19 +52,13 @@ class Driver:
 
     def preflight(self, *, character=True):
         rows=farming_targets.resolve({'target_scope':'all'})
-        from . import progress_access
-        packs=progress_access.inspect(missions._engine(),rows)
-        # Compare the recovered getter against the established actor/session attributes.
-        established=mission_dlc.inspect(rows)
-        for key,value in established.items():
-            if key not in packs:continue
-            if [p['access'] for p in value['players']] != [p['access'] for p in packs[key]['players']]:
-                raise RuntimeError('DLC access checks disagree: '+value['title'])
-            if not value['allowed']:packs[key].update(allowed=False,reason=value['reason'])
+        packs=mission_dlc.inspect(rows,engine=missions._engine())
         samples=[read(r) for r in rows] if character else []
         return dict(rows=rows,players=[r['label'] for r in rows],samples=samples,
                     binding=missions._binding(rows),packs=packs,
                     limits=['Shared missions affect everyone. Two legacy split definitions are excluded only when absent from the live game.',
+                            'Mission completion uses the existing bulk callbacks, without replaying each objective or moving players to waypoints.',
+                            'Party Reveal Map and its fog-reveal teleports are excluded from this run.',
                             'Unmapped content is skipped when DLC access is incomplete.',
                             'Successful requests are reported separately from saved-character verification.'])
 
@@ -115,6 +109,9 @@ class Driver:
         return dict(state='uncertain',child=child,message=result.get('message','Unconfirmed mission result'),details=result)
 
     def recover(self,child,snapshot):
+        if child and child.get('kind')=='access_refresh':
+            # Poll the original acknowledgement; never repeat client requests.
+            return
         if child and child.get('kind') == 'challenges' and 'readback' in child:
             vault=child.get('vault')
             if vault and (vault.get('original') or vault.get('restore_required') or vault['phase']=='uncertain' or vault['phase'].endswith('_issued')):
@@ -159,6 +156,10 @@ class Driver:
             raise RuntimeError(result.get('message','Mission recovery is still waiting; no calls repeated'))
 
     def begin(self,name,snapshot):
+        if name=='missions' and not snapshot.get('access_refreshed'):
+            from . import dlc_refresh
+            return dict(state='running',child=dlc_refresh.begin(snapshot['rows']),
+                        message='Refreshing visitor DLC access before completing missions')
         if name=='final_recheck':
             done=[];mayhem_done=False
             for result in snapshot.get('prior_results',[]):
@@ -189,10 +190,17 @@ class Driver:
                     planned=[r for r in planned if r['name'] in allowed]
                 if not planned:return dict(state='skipped',message='No applicable discoveries or travel requirements')
                 payload['missions']=[r['name'] for r in planned]
-            result=missions.start(payload)
+            result=missions.start(payload,use_objective_graph=False)
             return self.mission_result(result,dict(kind='mission',id=result['id']))
         if name=='character':return dict(state='running',child=dict(kind=name,index=0,results=[]),message='Preparing character progress')
         if name=='uvh':
+            from . import challenge_objective_complete
+            missing=[row['label'] for row in snapshot['rows'] if not challenge_objective_complete.is_complete(
+                row['pc'],'Challenge_Misc_World_CompleteCityEpilogue')]
+            if missing:
+                return dict(state='partial',skipped=missing,completion_verified=False,
+                    message='Campaign completion is not confirmed for '+', '.join(missing)+
+                    '; UVHM was not sent. Continuing remaining work.')
             backend._full_progress_uvh_failed=0
             backend._full_progress_queue_guard=lambda: missions._binding(farming_targets.resolve({'target_scope':'all'})) == snapshot['binding']
             for row in snapshot['rows']:
@@ -268,6 +276,14 @@ class Driver:
                     completion_verified=False)
 
     def poll(self,name,child,snapshot):
+        if child['kind']=='access_refresh':
+            from . import dlc_refresh
+            if not dlc_refresh.ready(child['id'],snapshot['rows']):
+                return dict(state='running',child=child,message='Waiting for visitor DLC access refresh')
+            current=self.preflight(character=False)
+            if current['binding']!=snapshot['binding']:raise RuntimeError('Lobby changed after DLC refresh')
+            current['access_refreshed']=True
+            return self.begin(name,current)
         if name=='final_recheck':return self.final_recheck(child,snapshot)
         if child['kind']=='mission':
             result=missions.poll(child['id'])
@@ -301,7 +317,7 @@ class Driver:
         if name=='uvh':
             result=backend.uvh_boost_status()
             if not result['active']:backend._full_progress_queue_guard=None
-            return dict(state='running' if result['active'] else 'uncertain' if backend._full_progress_uvh_failed else 'partial' if result['paused_steps'] else 'finished',child=child,details=result,
+            return dict(state='running' if result['active'] else 'uncertain' if backend._full_progress_uvh_failed or result.get('uncertain') else 'partial' if result['paused_steps'] else 'finished',child=child,details=result,
                         message=result['message'],completion_verified=False)
         if name=='challenges':
             result=backend.complete_challenges_status()
@@ -375,7 +391,7 @@ class Driver:
             payload=self.acceptance(snapshot)
             payload.update(scope='named',missions=[mission],reset_completed=False)
             child['attempted'].append(mission)
-            result=missions.start(payload)
+            result=missions.start(payload,use_objective_graph=False)
             child['active']=dict(stage='missions',child=dict(kind='mission',id=result['id']))
             return dict(state='running',child=child,message='Completing newly available mission: '+missions.CATALOG[mission]['title'])
         from . import mission_discovery
@@ -389,7 +405,7 @@ class Driver:
             payload=self.acceptance(snapshot)
             payload.update(scope='travel_requirements',missions=[key],reset_completed=False)
             child['attempted'].append(key)
-            result=missions.start(payload)
+            result=missions.start(payload,use_objective_graph=False)
             child['active']=dict(stage='travel_requirements',child=dict(kind='mission',id=result['id']))
             return dict(state='running',child=child,message='Applying newly available travel requirement: '+key)
         if not child['mayhem_done']:
@@ -408,6 +424,9 @@ class Driver:
                     skipped=remaining,message='Final recheck finished; completed work was not reset',completion_verified=False)
 
     def cancel(self,child):
+        if child and child['kind']=='access_refresh':
+            from . import dlc_refresh
+            dlc_refresh.cancel(child['id'])
         if child and child['kind']=='final_recheck':return self.cancel(child['active']['child'] if child['active'] else None)
         if child and child['kind']=='mission':return missions.cancel(child['id'])['state']!='running'
         if child and child['kind']=='challenges':
@@ -424,6 +443,9 @@ class Driver:
         return True
 
     def stop(self,child):
+        if child and child.get('kind')=='access_refresh':
+            from . import dlc_refresh
+            dlc_refresh.cancel(child['id'])
         if child and child.get('kind')=='challenges' and child.get('vault'):
             from . import vault_card_challenges
             vault_card_challenges.restore(child['vault'],farming_targets.resolve({'target_scope':'all'}),

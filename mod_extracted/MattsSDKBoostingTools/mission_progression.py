@@ -5,6 +5,7 @@ acceptance context; every participant and the host campaign can be affected.
 Objective rollback and full progress erasure are deliberately not approximated.
 """
 from __future__ import annotations
+from .mission_native import native_address, native_fingerprint
 
 import ctypes as C
 import json
@@ -116,8 +117,8 @@ def _campaign_names(snapshot):
 
 def select(snapshot, scope, names=None):
     if scope == 'challenge_credit':
-        from .mission_challenges import MISSIONS
-        return [n for n in MISSIONS if any((r.get('source_identity') or {}).get('name')==n
+        from .mission_challenges import CREDIT_MISSIONS
+        return [n for n in CREDIT_MISSIONS if any((r.get('source_identity') or {}).get('name')==n
                 and _state(r)=='completed' and not r.get('generated') and r.get('replication_type')==0
                 for r in snapshot['missions'])]
     if scope in UNVERIFIED:
@@ -195,14 +196,14 @@ def status():
 
 def dlc_status():
     from . import mission_dlc
-    return dict(ok=True, packs=list(mission_dlc.inspect(_party()).values()))
+    return dict(ok=True, packs=list(mission_dlc.inspect(_party(),engine=_engine()).values()))
 
 
 def _dlc_requirement(name):
     from . import mission_dlc
-    if name not in mission_dlc.DATA['missions']:
+    if not any(n.casefold()==name.casefold() for n in mission_dlc.DATA['missions']):
         return None
-    return mission_dlc.requirement(name, mission_dlc.inspect(_party()))
+    return mission_dlc.requirement(name, mission_dlc.inspect(_party(),engine=_engine()))
 
 
 def _defer(name, reason, access=None):
@@ -237,7 +238,7 @@ def require_clear_journals():
             raise RuntimeError('An earlier job was interrupted or uncertain; reconcile its receipt before another run: ' + previous.name)
 
 
-def start(payload, *, manage_replay_travel=True):
+def start(payload, *, manage_replay_travel=True, use_objective_graph=True):
     # Practice owns the same unload/return sequence around its child reset.
     # This internal argument is deliberately not accepted from bridge payloads.
     global _job
@@ -275,7 +276,7 @@ def start(payload, *, manage_replay_travel=True):
                          if dynamic and (reason := _automatic_exclusion(snapshot, n))}
     excluded = list(exclusion_reasons)
     names = [n for n in names if n not in excluded]
-    graph = mode == 'complete' and not discovery_job and scope not in ('bounty','challenge_credit')
+    graph = use_objective_graph and mode == 'complete' and not discovery_job and scope not in ('bounty','challenge_credit')
     replay_travel = mode == 'reopen' and manage_replay_travel
     if replay_travel:
         from .mission_execution import DATA
@@ -343,6 +344,7 @@ def start(payload, *, manage_replay_travel=True):
                 dynamic=dynamic, selection_scope=scope, initial_completed=initial_completed,
                 mode=mode, preserve_completed=preserve_completed,
                 completion_path='objective_graph' if graph else 'mission_replay' if replay_travel else 'normal_acceptance', objective_runs={},
+                placement_policy='map_only' if graph else 'replay',
                 coverage_issues=coverage_issues,
                 campaign_replay=mode == 'reset_completed',
                 catalog_total=len(names) + len(excluded), excluded=excluded, pending=[], stall_since=None,
@@ -385,6 +387,7 @@ def _pending_repairs(snapshot):
     allowed = {'electi', 'heist', 'vending', 'clapgen', 'cowbell_ellie', 'cowbell_hatchery'}
     return [r['name'] for r in discovery.plan('travel_requirements', snapshot)
             if r['name'] in allowed and not r['blocked_reason']
+            and not ((access := _dlc_requirement(r['parent'])) and not access['allowed'])
             and r['name'] not in _job.get('checked_prerequisites', [])]
 
 
@@ -590,7 +593,7 @@ def step(job_id):
             _job['phase'] = 'prepare'
             if _job['index'] == len(_job['names']):
                 _job['state'] = 'stopped' if _job.get('deferred') else 'completed'
-            _job['message'] = f'{_metadata(name)["title"]}: completion and applicable Grassroots credit verified'
+            _job['message'] = f'{_metadata(name)["title"]}: completion and applicable mission credit verified'
             _journal(dict(event='observed_completed', mission=name, after=row))
             _journal(dict(event='state', state=_job['state'], index=_job['index']))
             return status()
@@ -643,11 +646,14 @@ def step(job_id):
                 current_map=mission_completion_context.map_name(mission_completion_context.world()),
                 before_outcome=lambda objective: mission_completion_context.objective_ready(
                     sys.modules[__name__],name,row,definition,objective))
-            _job.update(phase='complete', await_tick=True, message=result['message'])
+            # The bounded poll loop may observe a synchronously finished graph
+            # immediately. Its next fresh read will yield if actions still own
+            # the objective; do not force a network roundtrip after every call.
+            _job.update(phase='complete', await_tick=not result.get('issued',False), message=result['message'])
             return status()
         record, storage = int(row['record'], 16), int(row['storage'], 16)
         vt = engine.u64(record)
-        if engine.u64(vt + 0xf8) != engine.base + 0xd80660 or engine.u64(vt + 0x110) != engine.base + 0x419fefa:
+        if engine.u64(vt + 0xf8) != native_address(engine, 0xd80660) or engine.u64(vt + 0x110) != native_address(engine, 0x419fefa):
             raise RuntimeError('Mission callbacks differ from the reviewed build')
         if engine.u64(record + 0xa8) != storage or engine.read(storage, 1) == b'\0':
             raise RuntimeError('Mission storage is no longer valid')
@@ -661,7 +667,7 @@ def step(job_id):
                 _job.pop('activation_since', None)
                 expected = ('locked', None, 'available', 'accepted', 'active')
             else:
-                C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(engine.base + 0x3d32a5c)(storage, 2, False)
+                C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(native_address(engine, 0x3d32a5c))(storage, 2, False)
                 expected = ('available',)
             next_phase = 'accept'
         elif operation == 'accept':
@@ -673,7 +679,7 @@ def step(job_id):
             target.ServerActivateMission(token, 1, True, int(target.PlayerState.StableIndex))
             expected, next_phase = ('accepted', 'active', 'completed'), 'complete'
         else:
-            C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(engine.base + 0xf19ee4)(record, 6, False)
+            C.WINFUNCTYPE(None, C.c_void_p, C.c_uint8, C.c_bool)(native_address(engine, 0xf19ee4))(record, 6, False)
             expected, next_phase = ('completed',), 'prepare'
         after = _row(engine.snapshot(), name)
         _journal(dict(event='returned', mission=name, operation=operation, after=after))

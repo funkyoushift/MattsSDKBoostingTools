@@ -109,5 +109,17 @@
     50,
     75,
     98
-  ]
+  ],
+  "campaign_unlock": {
+    "challenge": "Challenge_Misc_World_CompleteCityEpilogue",
+    "missions": [
+      "mission_main_cityepilogue"
+    ],
+    "source": "Nexus-Data-challenge0.json",
+    "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+    "pointer": "/challenge/records/0/entries/147/challenge_misc_world_completecityepilogue",
+    "goals": [
+      1
+    ]
+  }
 }

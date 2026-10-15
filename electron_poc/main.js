@@ -781,6 +781,63 @@ registerDesktopHandler("bridge:request", async (event, args) => {
   return requestBridge(args || {});
 });
 
+let saveReplayService;
+let saveReplayTimer;
+async function requestSaveReplay(action,payload={}) {
+  const response=await requestBridge({method:'POST',path:'/action',payload:{action,payload,timeout:15},timeoutMs:20000});
+  const data=response.data;
+  if(!data?.queued)return data;
+  const resultPath=data.result_url;
+  if(typeof resultPath!=='string'||!/^\/action_result\?id=[a-f0-9]{32}$/.test(resultPath))throw Error('Unexpected replay result reference; inspect status before continuing');
+  const deadline=Date.now()+20000;
+  while(Date.now()<deadline){
+    const polled=await requestBridge({method:'GET',path:resultPath,timeoutMs:8000});
+    if(polled.data?.state==='completed')return polled.data.result;
+    await new Promise(resolve=>setTimeout(resolve,250));
+  }
+  throw Error('Replay action is still unconfirmed; it will not be resent.');
+}
+function localSaveReplay() {
+  if(!saveReplayService)saveReplayService=require('./save_replay_service').createSaveReplayService({
+    storage:path.join(app.getPath('userData'),'mission-replay'),
+    saveRoot:path.join(app.getPath('documents'),'My Games','Borderlands 4','Saved','SaveGames'),
+    helper:payload=>runExternalPythonJson('import json,sys\nfrom mission_save_replay import dispatch\nprint(json.dumps(dispatch(json.loads(sys.stdin.read()))))',JSON.stringify(payload),30000),
+    codec:(command,value,account)=>new Promise((resolve,reject)=>{
+      const child=execFile(process.execPath,[path.join(EXTERNAL_APP_DIR,'matt_editor_blcrypt.js')],
+        {env:{...process.env,ELECTRON_RUN_AS_NODE:'1'},windowsHide:true,timeout:90000,maxBuffer:80*1024*1024},(error,stdout)=>{
+          if(error)return reject(Error('The local save codec failed; the backup is retained.'));
+          try{const result=JSON.parse(stdout);if(!result.success)throw Error(result.error||'Save codec rejected this file');
+            resolve(command==='decrypt'?result.yaml_content:Buffer.from(result.sav_data||result.encrypted,'base64'));
+          }catch(error){reject(error);}
+        });
+      child.stdin.on('error',()=>{});
+      child.stdin.end(JSON.stringify(command==='decrypt'?{command,steamid:account,sav_data:Buffer.from(value).toString('base64')}:{command,steamid:account,yaml_content:value}));
+    }),
+    request:requestSaveReplay
+  });
+  if(!saveReplayTimer){
+    saveReplayTimer=setInterval(async()=>{
+      try{const state=await saveReplayService.dispatch('status');if(state.active)await saveReplayService.dispatch('advance');}catch{}
+    },1500);
+    saveReplayTimer.unref();
+    app.once('before-quit',()=>clearInterval(saveReplayTimer));
+  }
+  return saveReplayService;
+}
+registerDesktopHandler('app:saveReplay',async(event,action,payload={})=>{
+  if(event.mobile)return {ok:false,message:'Save-backed replay is available on this PC only.'};
+  if(!['status','start','advance','stop','restore','backup','picker','bookmark_list','bookmark_save','bookmark_start'].includes(action))return {ok:false,message:'Unsupported replay action'};
+  if(action==='backup'){
+    const folder=path.join(app.getPath('userData'),'mission-replay');await fs.mkdir(folder,{recursive:true});await shell.openPath(folder);return {ok:true};
+  }
+  if(action==='picker'){
+    const status=await requestSaveReplay('mission_save_replay_status');
+    if(!status?.ok||!status.loaded)return {ok:false,message:status?.message||'Load a solo host character first.'};
+    return requestSaveReplay('load_character_late_join',{target_player:0});
+  }
+  return localSaveReplay().dispatch(action,payload);
+});
+
 const catalogCardImages=require('./catalog_card_images').createCatalogCardImages({
   load:async()=>{
     const catalog=await loadBl4Catalog(RESOURCE_DIR,await bl4CatalogLoadOptions());

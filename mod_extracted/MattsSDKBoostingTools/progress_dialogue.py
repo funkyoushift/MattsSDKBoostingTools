@@ -13,8 +13,11 @@ class DialogueSkipper:
         self.disabled = False
         self.skipped = 0
         self.error = ''
+        self.pending_threads = {}
+        self.completed_threads = 0
+        self.completion_requests = 0
 
-    def poll(self, scope, world_path, providers, now):
+    def poll(self, scope, world_path, providers, now, *, stop_playback=None, thread_playing=None, finish_performance=None):
         if scope != self.scope:
             self.__init__()
             self.scope = scope
@@ -41,10 +44,28 @@ class DialogueSkipper:
                 current = provider.CurrentPerformance
                 if (int(current.DialogThreadID), str(current.Performance), str(current.DialogLineRef.LineName)) != key[1:]:
                     continue
-                provider.NetMulticast_StopDialog(thread, .1)
+                if finish_performance is not None:
+                    if not finish_performance(provider,thread):
+                        continue
+                    self.pending_threads.setdefault(thread, now)
+                    self.completion_requests += 1
+                elif stop_playback is None:
+                    provider.NetMulticast_StopDialog(thread, .1)
+                else:
+                    # Stop the native playback instance so its normal end callback
+                    # can release dialogue waits; the provider multicast is audio-only.
+                    self.pending_threads.setdefault(thread, now)
+                    stop_playback(current.PlayingAudioInstance)
                 issued += 1
                 self.skipped += 1
             self.lines = {k: v for k, v in self.lines.items() if k in present}
+            if thread_playing is not None:
+                for thread, requested in list(self.pending_threads.items())[:8]:
+                    if not thread_playing(thread):
+                        self.completed_threads += 1
+                        del self.pending_threads[thread]
+                    elif now-requested > 2.:
+                        del self.pending_threads[thread]
         except Exception as exc:
             # Dialogue acceleration is optional; normal mission checks continue.
             self.disabled = True
@@ -52,4 +73,8 @@ class DialogueSkipper:
         return self.status()
 
     def status(self):
-        return dict(skipped=self.skipped, disabled=self.disabled, error=self.error)
+        # Keep the legacy key for clients; this counts requests, not proof that
+        # the conversation or its authored script waits actually ended.
+        return dict(skipped=self.skipped, audio_stop_requests=self.skipped,
+                    native_thread_ends=self.completed_threads, completion_requests=self.completion_requests,
+                    skip_verified=self.completed_threads>0, disabled=self.disabled, error=self.error)

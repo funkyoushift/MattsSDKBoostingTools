@@ -13,6 +13,7 @@ from pathlib import Path
 from importlib.resources import files
 import unrealsdk
 from mods_base import ENGINE, get_pc
+from .mission_native import PROFILES, select_profile, native_address
 
 # Authored discovery maps, including DLC and instanced campaign destinations.
 GAMEPLAY_MAPS = frozenset(row["worldmapname"] for row in json.loads(
@@ -39,8 +40,8 @@ class MissionRuntime:
             raise RuntimeError("Could not resolve the running executable")
         with Path(path.value).open("rb") as stream:
             digest = hashlib.file_digest(stream, "sha256").hexdigest()
-        if digest != self.manifest["sha256"]:
-            raise RuntimeError("Unsupported executable; no snapshot taken")
+        self.profile = select_profile(digest)
+        self.manifest = PROFILES[self.profile]
         self.check_build()
         self.names = {}
         for item in json.loads(files(__package__).joinpath("mission_names.json").read_text()):
@@ -50,7 +51,7 @@ class MissionRuntime:
         for name in ("None", "locked", "available", "active", "completed", "failed"):
             token = unrealsdk.make_struct("/Script/CoreUObject.SToken", Name=name)
             self.status_names[self.read(token._get_address() + 4, 8).hex()] = name
-        self.status_names[self.read(self.base + 0xcb80808, 8).hex()] = "accepted"
+        self.status_names[self.read(native_address(self, 0xcb80808), 8).hex()] = "accepted"
 
     def read(self, address, size):
         if not 0x10000 < address < 0x800000000000 or not 0 < size <= 16384:
@@ -74,7 +75,7 @@ class MissionRuntime:
     def check_build(self):
         for rva, expected in self.manifest["fingerprints"].items():
             expected = bytes.fromhex(expected)
-            if self.read(self.base + int(rva, 16), len(expected)) != expected:
+            if self.read(native_address(self, int(rva, 16)), len(expected)) != expected:
                 raise RuntimeError("Native code fingerprint mismatch: " + rva)
 
     def variant(self, address):
@@ -123,18 +124,18 @@ class MissionRuntime:
         instances = list(unrealsdk.find_all("OakGameInstance"))
         instances = [x for x in instances
                      if "Default__" not in x._path_name()
-                     and self.u64(x._get_address()) == self.base + 0xb752920
+                     and self.u64(x._get_address()) == native_address(self, 0xb752920)
                      and self.u64(x._get_address() + 0x518)]
         if len(instances) != 1:
             raise RuntimeError("Expected exactly one live OakGameInstance")
         gi = instances[0]._get_address()
         singletons = self.u64(gi + 0x518)
         shard = self.u64(singletons + 0x38)
-        if self.u64(shard) != self.base + 0xb7dc120:
+        if self.u64(shard) != native_address(self, 0xb7dc120):
             raise RuntimeError("Unexpected shared shard")
         context = self.u64(shard + 0x180)
         interface = self.u64(context + 0xe0)
-        if self.u64(interface) != self.base + 0xb975980:
+        if self.u64(interface) != native_address(self, 0xb975980):
             raise RuntimeError("Unexpected mission interface")
         data, count = self.array(interface + 0x60, 2000)
         from .mission_challenges import sparse_entries
@@ -146,7 +147,7 @@ class MissionRuntime:
             record = struct.unpack_from("<Q", entry, 16)[0]
             if not record:
                 continue
-            if self.u64(record) != self.base + 0xb973820:
+            if self.u64(record) != native_address(self, 0xb973820):
                 unsupported.append({"token": entry[:12].hex(), "record": hex(record),
                                     "vtable_rva": hex(self.u64(record) - self.base)})
                 continue
@@ -171,6 +172,7 @@ class MissionRuntime:
                        for pc in unrealsdk.find_all("OakPlayerController")
                        if "Default__" not in pc._path_name()]
         result = {"time": time.time(), "pid": os.getpid(), "base": hex(self.base),
+                  "build_profile": self.profile,
                   "sha256": self.manifest["sha256"], "thread": self.thread,
                   "scope": "shared shard only; guest ownership is not established",
                   "controllers": controllers, "tracked": tracked, "missions": rows,

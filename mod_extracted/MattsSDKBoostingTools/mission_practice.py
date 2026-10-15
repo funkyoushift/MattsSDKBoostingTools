@@ -7,7 +7,9 @@ import uuid
 from importlib.resources import files
 from pathlib import Path
 
-DATA = json.loads(files(__package__).joinpath('mission_practice_catalog.json').read_text(encoding='utf-8'))['missions']
+CATALOG = json.loads(files(__package__).joinpath('mission_practice_catalog.json').read_text(encoding='utf-8'))
+DATA = CATALOG['missions']
+RECORDED = json.loads(files(__package__).joinpath('mission_recorded_starts.json').read_text(encoding='utf-8'))
 _preview = None
 _job = None
 STALL_TIMEOUT = 420.  # Longer than the shared native finish-action guard.
@@ -38,6 +40,23 @@ def _roster(rows):
     from .campaign_replay import roster
     return roster(rows)
 
+
+def _return_map(definition,selected,checkpoint,anchor):
+    """Keep an unplayed map-arrival step on its source-authored approach map."""
+    destination=selected.get('travel_map')
+    if destination:
+        if anchor and anchor['map'].casefold()!=destination:return anchor['map'].casefold()
+        for group in sorted(definition['groups'],key=lambda g:g['index'],reverse=True):
+            if group['index']>=checkpoint:continue
+            maps={m for o in group['objectives'] for m in o.get('completion_maps',[]) if m!=destination}
+            if len(maps)>1:raise RuntimeError('Replay approach map is ambiguous; no travel or reset issued')
+            if maps:return next(iter(maps))
+        raise RuntimeError('Replay approach map is unresolved; the selected arrival will not be consumed')
+    if anchor:return anchor['map'].casefold()
+    maps=selected.get('completion_maps') or [definition.get('execution_map')]
+    if len(maps)!=1 or not maps[0]:raise RuntimeError('Selected replay map is unresolved or ambiguous')
+    return maps[0]
+
 def conflict(action):
     return bool(_job and _job['state'] in ('running','uncertain') and
                 not action.startswith('mission_practice_') and
@@ -58,29 +77,45 @@ def preview(payload):
     m=_progress();engine=m._engine();snapshot=engine.snapshot()
     names=m.select(snapshot,payload.get('scope','current'),payload.get('missions'))
     if len(names)!=1 or names[0] not in DATA:raise ValueError('Choose one mission for replay')
-    name=names[0];row=m._row(snapshot,name);state=m._state(row)
+    name=names[0]
+    try:
+        row=m._row(snapshot,name);state=m._state(row)
+    except ValueError:
+        row=None;state=None
     from .mission_dlc import inspect,requirement
     rows=m._party();access=requirement(name,inspect(rows))
     reason=(access['reason'] if access and not access['allowed'] else
             'Mission prerequisites are not available' if state not in ('active','accepted','completed','available') else None)
     choices=[]
+    from .mission_selection_specs import catalog as selection_catalog
+    selection_row=selection_catalog()['missions'].get(name,{})
     from .mission_execution import coverage_error
-    for g in DATA[name]['groups']:
-        visible=[o for o in g['objectives'] if not o['hidden'] and not o.get('optional')]
-        if not visible:continue
+    from .mission_selection import main_groups
+    for g,primary in main_groups(name,DATA[name]):
+        visible=[primary]
         anchor=g['start_anchor']
+        recorded=RECORDED.get(name,{}).get(str(g['index']))
+        if (recorded and recorded['source_hashes']==CATALOG['source_hashes'] and
+                recorded['objective'].casefold()==primary['name'].casefold()):
+            anchor=dict(mission=name,map=recorded['world'].rsplit('.',1)[-1],location=recorded['location'],
+                        objective=primary['name'],recorded=True,replay_verified=False,
+                        checkpoint=recorded['checkpoint']['name'])
         beginning=g['index']==0
+        save_supported = ((name == 'Mission_Main_Shatteredlands3' and g['index'] in (28, 32))
+                          or str(g['index']) in selection_row.get('sections',{}))
         choices.append(dict(index=g['index'],title='Mission beginning' if beginning else ' / '.join(o['title'] for o in visible),
                             objectives=[o['name'] for o in visible],anchor=anchor,
+                            save_backed_supported=save_supported,
+                            save_backed_reason=access['reason'] if access and not access['allowed'] else None,
                             beginning=beginning,
                             blocked_reason=reason or coverage_error(name,g['index']) or
                             (None if DATA[name].get('execution_map') else 'Mission opening map is not resolved'),
-                            placement='mission_opening' if beginning else 'preceding_completion' if anchor else 'objective_scene'))
+                            placement='recorded_start' if anchor and anchor.get('recorded') else 'mission_opening' if beginning else 'preceding_completion' if anchor else 'objective_scene'))
     ident=uuid.uuid4().hex
-    _preview=dict(id=ident,name=name,token=row['token'],world=engine.world_address,
+    _preview=dict(id=ident,name=name,token=row['token'] if row else None,world=engine.world_address,
                   binding=m._binding(rows),choices=choices,pid=os.getpid())
     return dict(ok=True,preview_id=ident,mission=name,title=DATA[name]['title'],choices=choices,
-                message='Moves everyone together. Start points use preceding completion locations. Character rewards are retained.')
+                message='Main objectives only; internal steps initialize their section. Recorded starts are experimental. Moves everyone together; character rewards are retained.')
 
 def start(payload):
     global _job,_preview
@@ -107,9 +142,9 @@ def start(payload):
     for name in {_preview['name'], *([choice['anchor']['mission']] if choice['anchor'] else [])}:
         access=requirement(name,report)
         if access and not access['allowed']:raise ValueError(access['reason'])
-    _job=dict(id=uuid.uuid4().hex,state='running',ok=True,phase='prepare',name=_preview['name'],
-              checkpoint=choice['index'],anchor=choice['anchor'],roster=_roster(rows),binding=m._binding(rows),
-              world=engine.world_address,pid=os.getpid(),started=time.time(),progress_at=time.monotonic(),issued=[],teleported=[],events=[],
+    _job=dict(id=uuid.uuid4().hex,state='running',ok=True,phase='checkpoint_unload' if choice['index']>0 else 'prepare',name=_preview['name'],
+              checkpoint=choice['index'],anchor=choice['anchor'],selected_objective=choice['objectives'][0],roster=_roster(rows),binding=m._binding(rows),
+              token=row['token'],world=engine.world_address,pid=os.getpid(),started=time.time(),progress_at=time.monotonic(),issued=[],teleported=[],events=[],
               message='Preparing the selected replay checkpoint; everyone moves together.')
     from .mission_completion_context import begin
     host=next(r['pc'] for r in rows if r['host'])
@@ -123,8 +158,32 @@ def status():
     return {k:v for k,v in _job.items() if k not in ('events','binding','roster','issued')}
 
 def _teleport(rows):
+    if _job['anchor'].get('recorded'):
+        from .mission_recorded_placement import start
+        start(_job,rows,_save)
+        return
     from .mission_practice_placement import start
     start(_job,rows,_save)
+
+
+def _track(rows,engine,row):
+    """Request the chosen mission on the host HUD once; verify shared tracking."""
+    if not _job.get('tracking_issued'):
+        import unrealsdk
+        token=unrealsdk.make_struct('/Script/CoreUObject.SToken',
+            Hash=struct.unpack('<i',bytes.fromhex(row['token'])[:4])[0],Name=_job['name'])
+        if engine.read(token._get_address(),12).hex()!=row['token']:
+            raise RuntimeError('Replay tracking token differs; no tracking request issued')
+        host=next(r['pc'] for r in rows if r['host'])
+        _job.update(tracking_issued=True,tracking_since=time.monotonic(),state='uncertain',ok=False)
+        _save(dict(event='replay_tracking_issued'))
+        host.ServerRequestTrackMission(token,int(host.PlayerState.StableIndex))
+        _job.update(state='running',ok=True);_save(dict(event='replay_tracking_returned'))
+    if row['token'] not in engine.snapshot()['tracked']:
+        if time.monotonic()-_job['tracking_since']>10:
+            raise RuntimeError('Replay tracking was not confirmed; no request repeated')
+        _job['message']='Waiting for the selected mission to appear in tracking.';return False
+    return True
 
 def _step():
     m=_progress()
@@ -140,6 +199,61 @@ def _step():
         from .mission_practice_placement import tick
         tick()
         return
+    if _job['phase'].startswith('checkpoint_'):
+        definition=DATA[_job['name']];row=m._row(engine.snapshot(),_job['name'])
+        if row['token']!=_job['token']:raise RuntimeError('Mission identity changed during direct replay setup')
+        if _job['phase']=='checkpoint_unload':
+            selected=next((o for g in definition['groups'] if g['index']==_job['checkpoint'] for o in g['objectives'] if
+                           o['name'].casefold()==_job['selected_objective'].casefold()),None)
+            if selected is None:raise RuntimeError('Selected main objective is unavailable; no replay reset issued')
+            _job['return_map']=_return_map(definition,selected,_job['checkpoint'],_job['anchor'])
+            if not context.prepare_reset(owner,_job['name'],row,definition):return
+            _job['phase']='checkpoint_stage';_save(dict(event='checkpoint_area_unloaded'));return
+        if _job['phase']=='checkpoint_reopen_wait':
+            result=m.poll(_job['mission_job'])
+            if result['state']=='running':return
+            if result['state']!='completed':raise RuntimeError(result['message'])
+            _job.update(phase='checkpoint_stage',checkpoint_runtime_since=time.monotonic())
+            _save(dict(event='checkpoint_runtime_initialized'));return
+        from .mission_execution import objectives
+        selected=next((o for o in objectives(engine,row,definition) if
+                       o['name'].casefold()==_job['selected_objective'].casefold()),None)
+        if selected is None and _job['phase']=='checkpoint_stage' and not _job.get('mission_job'):
+            if m._state(row) not in ('completed','accepted','active'):
+                raise RuntimeError('Selected main objective is unavailable; mission initialization requires a started mission')
+            _job.update(phase='checkpoint_reopen_wait',state='uncertain',ok=False)
+            _save(dict(event='checkpoint_initialize_pending'))
+            result=m.start(dict(scope='named',missions=[_job['name']],mode='reopen',reset_completed=True,
+                                target_scope='local',acknowledge_shared_progress=True),manage_replay_travel=False)
+            if not result.get('id'):raise RuntimeError(result.get('message','Mission initialization failed'))
+            _job.update(mission_job=result['id'],state='running',ok=True)
+            _save(dict(event='checkpoint_initialize_started'));return
+        if selected is None:
+            if _job['phase']=='checkpoint_stage' and time.monotonic()-_job.get('checkpoint_runtime_since',0)<10:
+                _job['message']='Waiting for normal mission initialization to create the selected objective.';return
+            raise RuntimeError('Selected main objective is unavailable; earlier objectives will not be replayed')
+        if selected.get('optional'):raise RuntimeError('Selected replay checkpoint must be a required main objective')
+        if _job['phase']=='checkpoint_stage':
+            _job.update(phase='checkpoint_return',state='uncertain',ok=False)
+            _save(dict(event='direct_checkpoint_pending'))
+            from .mission_reset import stage_checkpoint
+            earlier=[o for o in objectives(engine,row,definition) if o.get('group',_job['checkpoint'])<_job['checkpoint']]
+            stage_checkpoint(engine,row,selected,_job['checkpoint'],_save,earlier=earlier)
+            _job.update(state='running',ok=True);_save(dict(event='direct_checkpoint_returned'));return
+        if _job['phase']=='checkpoint_return':
+            destination=_job['return_map']
+            station=(_job['anchor'].get('checkpoint') if _job['anchor'] and _job['anchor'].get('recorded') else None)
+            if not context.travel_to(owner,_job['name'],row,definition['title'],destination,**({'station':station} if station else {})):return
+            _job.update(phase='checkpoint_settle',checkpoint_settle_since=time.monotonic());return
+        if m._state(row)!='active' or selected['state']!=4:
+            if time.monotonic()-_job['checkpoint_settle_since']>120:
+                raise RuntimeError('Selected section did not initialize after reload; no earlier mission progression issued')
+            _job['message']='Waiting for the selected main objective to initialize after map reload.';return
+        active_before=[o for o in objectives(engine,row,definition) if o['state'] in (4,10,11,12) and o.get('group',_job['checkpoint'])<_job['checkpoint']]
+        if active_before:raise RuntimeError('An earlier objective remained active; direct replay stopped instead of progressing the mission')
+        if not _track(rows,engine,row):return
+        _job['phase']='teleport' if _job['anchor'] else 'replay_scene'
+        _save(dict(event='direct_checkpoint_ready'));return
     if _job['phase']=='prepare':
         row=m._row(engine.snapshot(),_job['name']);state=m._state(row)
         definition=DATA[_job['name']]
@@ -176,7 +290,12 @@ def _step():
     if m._state(row)=='accepted':
         _job['message']='Waiting for the mission opening actions to activate.';return
     if m._state(row)!='active':raise RuntimeError('Mission is not active at its replay checkpoint')
-    if _job['checkpoint']==0:
+    if _job['checkpoint']==0 and not _track(rows,engine,row):return
+    if _job['phase']=='recorded_verify':
+        from .mission_recorded_placement import verify
+        if verify(_job,rows):_job['phase']='world_ready'
+        return
+    if _job['checkpoint']==0 and not (_job['anchor'] and _job['anchor'].get('recorded')):
         _job.update(state='completed',ok=True,message=DATA[_job['name']]['title']+
                     ': mission opening is active. Play the mission again; character rewards are retained.')
         _save(dict(event='completed'))
@@ -185,7 +304,8 @@ def _step():
         from .mission_practice_world import ready
         if ready(_job,_save):
             _job.update(state='completed',ok=True,message=DATA[_job['name']]['title']+
-                        (': selected objective is ready; everyone moved to the preceding completion location.' if _job['anchor'] else
+                        (': selected objective is active at its recorded beginning. Experimental: verify normal gameplay.' if _job['anchor'] and _job['anchor'].get('recorded') else
+                         ': selected objective is ready; everyone moved to the preceding completion location.' if _job['anchor'] else
                          ': selected objective is ready. Follow its mission waypoint to play it again.'))
             _save(dict(event='completed'))
         return
@@ -204,26 +324,18 @@ def _step():
         return
     if _job['phase']=='teleport':
         if not context.travel_to(owner,_job['name'],row,DATA[_job['name']]['title'],_job['anchor']['map'].casefold()):return
+        if _job['anchor'].get('recorded'):
+            from .mission_execution import objectives
+            selected=[o for o in objectives(engine,row,DATA[_job['name']]) if
+                      o['name'].casefold()==_job['selected_objective'].casefold() and o['state']==4]
+            if len(selected)!=1:raise RuntimeError('Selected main objective is not active after map reload; no placement issued')
         _teleport(rows);return
-    from .mission_execution import advance
-    receipt=_job.setdefault('objective_run',dict(issued=_job['issued']))
-    _job.setdefault('objective_runs',{})[_job['name']]=receipt
-    def journal(event):
-        _job.update(state='uncertain' if event['event']=='issued' else 'running',
-                    ok=event['event']!='issued')
-        _save(event)
-    result=advance(engine,row,_job['name'],receipt,journal,
-                   checkpoint=_job['checkpoint'],definition=DATA[_job['name']],current_map=_map(w),
-                   before_outcome=lambda objective:context.objective_ready(owner,_job['name'],row,DATA[_job['name']],objective))
-    if result['ready']:
-        if _job['anchor'] is None:
-            _job['phase']='replay_scene'
-            _job['message']='Selected objective is active; preparing its authored scene for gameplay.'
-            return
-        _job['phase']='teleport'
-        if context.travel_to(owner,_job['name'],row,DATA[_job['name']]['title'],_job['anchor']['map'].casefold()):_teleport(rows)
-        return
-    _job['message']=result['message']
+    if _job['checkpoint']>0:
+        raise RuntimeError('Direct checkpoint state is invalid; earlier objectives will not be replayed')
+    # The mission opening already used the unload/reset/return protocol above.
+    # Its recorded start needs placement only, never prefix outcome traversal.
+    _job['phase']='teleport'
+    if context.travel_to(owner,_job['name'],row,DATA[_job['name']]['title'],_job['anchor']['map'].casefold()):_teleport(rows)
 
 def _progress_signature():
     ctx=_job.get('completion_context',{})

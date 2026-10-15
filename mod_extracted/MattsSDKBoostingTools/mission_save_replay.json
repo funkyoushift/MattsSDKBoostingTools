@@ -1,0 +1,251 @@
+{
+  "schema": 1,
+  "mission": "Mission_Main_Shatteredlands3",
+  "saved_mission": "mission_main_shatteredlands3",
+  "mission_set": "missionset_main_shatteredlands3",
+  "template_sha256": "9a54a77c9eb70ea3b9445a505c7a2238b1d798dfee8f58b5c26c4f500346a24e",
+  "template_provenance": {
+    "kind": "observed mission-only outcomes; no character/profile fields",
+    "source_sha256": "f873d7c7296fbd947333d7fc16fa65b8b175e13fb3948607634079fa347b2265",
+    "game_executable_sha256": "9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0"
+  },
+  "catalog_sha256": "0af8298d8427b8802ead1de0e3638ebf50e303586c6388a2919f0dc3dcc61945",
+  "source_hashes": {
+    "Nexus-Data-Mission6.json": "37117f83314dc20d4056eff6383c5f1906e4f7f5c69ad9c512788b775af7bf69",
+    "Nexus-Data-Mission4.json": "f91f1e9cba2163933aec2f88d11ba9acc6f7a451056fd86c2439b8ab53759c75",
+    "Nexus-Data-Mission0.json": "16f049b1528376741c981c05232b68a394c7b982f790a4b534e521890adaa02c",
+    "Nexus-Data-missionset0.json": "646f2c2da3525c8f8d413c10390c5cd5a0e292476e42bb971fa1006a0469d8e0",
+    "Nexus-Data-missionset4.json": "1be0e50bec96306f5f9f4d53fa7bd082503dd43c27478115c17562969a036e0f",
+    "Nexus-Data-missionset6.json": "db933eeb178305d51de1b1055c9fe26f29cbcb66f4b6a5646eb961fd3cca4d1a"
+  },
+  "past_missions": [
+    [
+      "missionset_main_prisonprologue",
+      "mission_main_prisonprologue"
+    ],
+    [
+      "missionset_main_grasslands3",
+      "mission_main_grasslands3"
+    ],
+    [
+      "missionset_main_grasslands2a",
+      "mission_main_grasslands2"
+    ],
+    [
+      "missionset_main_beach",
+      "mission_main_beach"
+    ],
+    [
+      "missionset_main_shatteredlands1",
+      "mission_main_shatteredlands1"
+    ],
+    [
+      "missionset_main_shatteredlands1",
+      "mission_main_shatteredlands1b"
+    ],
+    [
+      "missionset_main_grasslands1",
+      "mission_main_grasslands1"
+    ],
+    [
+      "missionset_main_grasslands2b",
+      "mission_main_grasslands2b"
+    ],
+    [
+      "missionset_main_shatteredlands2",
+      "mission_main_shatteredlands2"
+    ]
+  ],
+  "parallel_mission_sets": [
+    "missionset_main_mountains1"
+  ],
+  "future_missions": [],
+  "sections": {
+    "28": {
+      "checkpoint": 28,
+      "world": "World_P",
+      "station": "World_P.RS_SHA_Crater_Ext",
+      "location": {
+        "x": -314845.6247146605,
+        "y": -408270.51368122525,
+        "z": 22005.315908676588
+      },
+      "past_objectives": [
+        "AttemptJump",
+        "ClimbCrawler",
+        "CloseVents",
+        "EncounterArea1",
+        "GetOnCrawler",
+        "GetOnDrill",
+        "GoFortress",
+        "GoFortress2",
+        "GoFortress3",
+        "GoMegaDrill",
+        "GoToCrater",
+        "GoToEngine",
+        "GoToFortDoor",
+        "GoToRamp",
+        "GoToView",
+        "INV_BeckVO",
+        "INV_FindSkuntVO",
+        "INV_JumpVO",
+        "INV_ReturnRamp_Chat",
+        "INV_TravelRampVO",
+        "InstallBoosterRamp",
+        "KillHoley",
+        "KillRipCrawler",
+        "KillRipFortFront",
+        "KillRip_DrillCamp",
+        "NewObjective",
+        "NewObjective_1",
+        "OpenBatteryBox",
+        "PickUpBombRamp",
+        "PlantBomb1",
+        "RamPillar",
+        "ReachBase",
+        "ReturnRamp",
+        "SearchGarage",
+        "ShootBomb",
+        "TakeBoosters",
+        "TakeDrillKey",
+        "TalkFAStart",
+        "TalkZaneJumpFail",
+        "TalkZaneRampChoice",
+        "TurnOnRamp",
+        "UnlockDrillDoor",
+        "Unlock_maintenance_access",
+        "_CloseVents_Sub0",
+        "_CloseVents_Sub1",
+        "_TurnOnRamp_Sub0",
+        "_TurnOnRamp_Sub1"
+      ],
+      "future_objectives": [
+        "BreadCrumb1",
+        "BreadCrumb2",
+        "BreadCrumb3",
+        "BreadCrumb4",
+        "BreadCrumb6",
+        "BreadCrumb7",
+        "BreadCrumb8",
+        "BreadCrumb9",
+        "EnterFortress",
+        "FindBoss",
+        "HackDoor",
+        "INVISRift",
+        "INVISTalkToLevaine",
+        "INVISTravelToWorldP",
+        "INVISTravelToWorldP2",
+        "INV_GoToHackDoor",
+        "INV_HackDefenseVO",
+        "INV_HackRoomVO",
+        "INV_LootRedChests_1",
+        "KillBoss",
+        "KillRip_FortFrontBadAss",
+        "PickUpBolt",
+        "TalkFAEnd",
+        "_KillRip_FortFrontBadAss_Sub0",
+        "_KillRip_FortFrontBadAss_Sub1"
+      ],
+      "initial_objectives": [
+        "KillRip_FortFrontBadAss",
+        "_KillRip_FortFrontBadAss_Sub0",
+        "_KillRip_FortFrontBadAss_Sub1"
+      ],
+      "refresh_after_load": true,
+      "evidence": "enemy-death progression and native save readback; weapon combat and guests unverified"
+    },
+    "32": {
+      "checkpoint": 32,
+      "world": "Fortress_Shatteredlands_P",
+      "station": "Fortress_Shatteredlands_P.FT_Fortress_SHA_SendOnly_PreBossRoom",
+      "location": {
+        "x": -8200.37787742179,
+        "y": -56824.39076333761,
+        "z": 3597.57511627473
+      },
+      "past_objectives": [
+        "AttemptJump",
+        "BreadCrumb1",
+        "BreadCrumb2",
+        "BreadCrumb3",
+        "BreadCrumb4",
+        "BreadCrumb6",
+        "BreadCrumb7",
+        "BreadCrumb8",
+        "BreadCrumb9",
+        "ClimbCrawler",
+        "CloseVents",
+        "EncounterArea1",
+        "EnterFortress",
+        "FindBoss",
+        "GetOnCrawler",
+        "GetOnDrill",
+        "GoFortress",
+        "GoFortress2",
+        "GoFortress3",
+        "GoMegaDrill",
+        "GoToCrater",
+        "GoToEngine",
+        "GoToFortDoor",
+        "GoToRamp",
+        "GoToView",
+        "HackDoor",
+        "INV_BeckVO",
+        "INV_FindSkuntVO",
+        "INV_GoToHackDoor",
+        "INV_HackDefenseVO",
+        "INV_HackRoomVO",
+        "INV_JumpVO",
+        "INV_ReturnRamp_Chat",
+        "INV_TravelRampVO",
+        "InstallBoosterRamp",
+        "KillHoley",
+        "KillRipCrawler",
+        "KillRipFortFront",
+        "KillRip_DrillCamp",
+        "KillRip_FortFrontBadAss",
+        "NewObjective",
+        "NewObjective_1",
+        "OpenBatteryBox",
+        "PickUpBombRamp",
+        "PlantBomb1",
+        "RamPillar",
+        "ReachBase",
+        "ReturnRamp",
+        "SearchGarage",
+        "ShootBomb",
+        "TakeBoosters",
+        "TakeDrillKey",
+        "TalkFAStart",
+        "TalkZaneJumpFail",
+        "TalkZaneRampChoice",
+        "TurnOnRamp",
+        "UnlockDrillDoor",
+        "Unlock_maintenance_access",
+        "_CloseVents_Sub0",
+        "_CloseVents_Sub1",
+        "_KillRip_FortFrontBadAss_Sub0",
+        "_KillRip_FortFrontBadAss_Sub1",
+        "_TurnOnRamp_Sub0",
+        "_TurnOnRamp_Sub1"
+      ],
+      "future_objectives": [
+        "INVISRift",
+        "INVISTalkToLevaine",
+        "INVISTravelToWorldP",
+        "INVISTravelToWorldP2",
+        "INV_LootRedChests_1",
+        "KillBoss",
+        "PickUpBolt",
+        "TalkFAEnd"
+      ],
+      "initial_objectives": [
+        "KillBoss",
+        "PickUpBolt"
+      ],
+      "refresh_after_load": false,
+      "evidence": "enemy-death progression and native save readback; weapon combat and guests unverified"
+    }
+  },
+  "spawner_source_pointer": "/mission/records/2/entries/35/__dep_entries/49/killrip_fortfrontbadass"
+}

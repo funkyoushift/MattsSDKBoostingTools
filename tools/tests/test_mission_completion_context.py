@@ -264,3 +264,40 @@ def test_reset_with_no_reviewed_holding_map_never_guesses(scene):
     with pytest.raises(RuntimeError,match='holding map'):
         s.m.prepare_reset(s.owner,'Mission',s.mission,s.definition)
     assert not s.calls
+
+
+@pytest.mark.parametrize('objective',[
+    dict(name='Boss',completion_maps=['world_p'],scene_anchor=dict(map='World_P',position=[1,2,3])),
+    dict(name='Talk',completion_maps=[]),
+])
+def test_completion_in_place_never_imports_or_runs_pawn_placement(scene,monkeypatch,objective):
+    s=scene;s.owner._job['placement_policy']='map_only'
+    monkeypatch.setitem(sys.modules,'completion_context_test.mission_completion_placement',None)
+    assert s.m.observe(s.owner)
+    assert s.m.objective_ready(s.owner,'Mission',s.mission,s.definition,objective)
+    assert s.calls==[] and 'placement' not in s.owner._job['completion_context']
+
+
+def test_completion_still_loads_required_other_map_then_runs_in_place(scene,monkeypatch):
+    s=scene;s.owner._job['placement_policy']='map_only'
+    monkeypatch.setitem(sys.modules,'completion_context_test.mission_completion_placement',None)
+    objective=dict(name='Enter',completion_maps=['harmonica_p'])
+    assert not s.m.objective_ready(s.owner,'Mission',s.mission,s.definition,objective)
+    assert s.calls==['harmonica_p']
+    s.arrive();assert not s.m.observe(s.owner)
+    s.clock.now+=.6;assert s.m.observe(s.owner)
+    assert s.m.objective_ready(s.owner,'Mission',s.mission,s.definition,objective)
+    assert s.receipt['issued']==['settled'] and s.calls==['harmonica_p']
+
+
+def test_active_completion_checks_selected_objective_map_without_opening_detour(scene):
+    s=scene;s.owner._job['placement_policy']='map_only'
+    assert s.m.prepare(s.owner,'Mission',s.mission,s.definition)
+    assert not s.calls
+
+
+def test_completion_rejects_retained_placement_before_any_native_work(scene):
+    s=scene;s.owner._job['placement_policy']='map_only'
+    s.owner._job['completion_context']['placement']={'state':'running'}
+    with pytest.raises(RuntimeError,match='cannot retain objective placement'):s.m.observe(s.owner)
+    assert not s.calls and not s.reads

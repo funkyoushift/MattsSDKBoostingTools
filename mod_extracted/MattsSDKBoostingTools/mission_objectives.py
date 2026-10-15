@@ -1,4 +1,5 @@
 """One explicitly selected active objective through its native outcome handler."""
+from .mission_native import native_address, native_fingerprint
 import ctypes as C
 import json
 import os
@@ -62,6 +63,7 @@ def _begin_context(rows):
     from .mission_completion_context import begin
     host=next(r['pc'] for r in rows if r['host'])
     _last.update(coordinated=True,ok=True,state='running',completion_path='objective_graph',
+                 placement_policy='replay' if _last.get('operation')=='replay' else 'map_only',
                  target=host._path_name(),completion_context=begin(rows,host._path_name()),
                  name=_last['mission'],events=[],objective_runs={})
 
@@ -80,6 +82,12 @@ def _progress():
     return mission_progression
 
 
+def _require_access(name):
+    access = _progress()._dlc_requirement(name)
+    if access and not access['allowed']:
+        raise ValueError(access['reason'] + '; no objective outcome issued')
+
+
 def read(engine, row):
     import unrealsdk
     from .mission_challenges import sparse_entries
@@ -87,7 +95,7 @@ def read(engine, row):
     # A private SDK-owned struct is used only to decode the runtime token. No
     # game-owned memory is written by this read operation.
     token = unrealsdk.make_struct('/Script/CoreUObject.SToken', Name='None')
-    states = {engine.read(engine.base+rva, 8).hex(): value for value, rva in
+    states = {engine.read(native_address(engine, rva), 8).hex(): value for value, rva in
               ((3,0xcb80830),(4,0xcb80870),(10,0xcb80898),(11,0xcb808a8),
                (12,0xcb808a0),(13,0xcb808b0))}
     rows = []
@@ -96,7 +104,7 @@ def read(engine, row):
         ptr = struct.unpack_from('<Q', entry, 16)[0]
         if not ptr:
             continue
-        if engine.u64(ptr) != engine.base+0xb973940 or engine.u64(ptr+0x28) != record:
+        if engine.u64(ptr) != native_address(engine, 0xb973940) or engine.u64(ptr+0x28) != record:
             raise RuntimeError('Objective runtime identity changed')
         definition, storage = engine.u64(ptr+0x40), engine.u64(ptr+0x48)
         fact = engine.fact(storage, 0x20) if storage else None
@@ -146,7 +154,16 @@ def _save():
         json.dump(_last,stream,ensure_ascii=False,indent=2)
         stream.flush()
         os.fsync(stream.fileno())
-    os.replace(temporary,path)
+    # Windows readers/AV can briefly deny replacement. Retry only this durable
+    # file operation; never repeat an objective outcome or its native call.
+    for attempt in range(4):
+        try:
+            os.replace(temporary,path)
+            break
+        except PermissionError:
+            if attempt == 3:
+                raise
+            time.sleep(.01)
 
 
 def complete(payload):
@@ -176,12 +193,13 @@ def complete(payload):
     if len(candidates)!=1:
         raise ValueError('Choose one currently active visible objective')
     selected = candidates[0]
+    _require_access(_preview['name'])
     from .mission_execution import DATA, require_coverage
     definition=DATA.get(_preview['name'])
     if definition is not None:require_coverage(_preview['name'],definition=definition)
     m.require_clear_journals()
     expected='4157415641545657534883ec3889d3488b054ae090084831e04889442430488b'
-    if engine.read(engine.base+0x3df18e0,32).hex()!=expected:
+    if engine.read(native_address(engine, 0x3df18e0),32).hex()!=native_fingerprint(engine, 0x3df18e0, expected):
         raise RuntimeError('Objective outcome handler differs from the tested build')
     _preview['consumed']=True
     _last=dict(id=uuid.uuid4().hex, time=time.time(), state='uncertain',
@@ -194,7 +212,7 @@ def complete(payload):
         _save()
         return step(dict(job_id=_last['id']))
     _save()
-    C.WINFUNCTYPE(None,C.c_void_p,C.c_uint8)(engine.base+0x3df18e0)(int(selected['pointer'],16),1)
+    C.WINFUNCTYPE(None,C.c_void_p,C.c_uint8)(native_address(engine, 0x3df18e0))(int(selected['pointer'],16),1)
     _last['returned']=True
     _save()
     return status()
@@ -286,6 +304,7 @@ def step(payload):
         if engine.world_address!=_last['world'] or m._binding(m._party())!=_last['binding']:
             raise RuntimeError('World or players changed during objective preparation')
         if row['token']!=_last['token']:raise RuntimeError('Mission instance changed; no objective call repeated')
+        _require_access(_last['mission'])
         from .mission_execution import DATA,advance
         definition=DATA[_last['mission']]
         if _last.get('operation')=='replay':
@@ -295,8 +314,8 @@ def step(payload):
                 if selected is None or selected['state']!=13:raise RuntimeError('Selected objective changed before replay')
                 record,objective=int(row['record'],16),int(selected['pointer'],16)
                 expected='5657534883ec404889d74889ce488b053a90df034831e04889442438e8212a64'
-                if (engine.u64(record)!=engine.base+0xb973820 or engine.u64(objective+0x28)!=record or
-                        engine.read(engine.base+0x89068f2,32).hex()!=expected):
+                if (engine.u64(record)!=native_address(engine, 0xb973820) or engine.u64(objective+0x28)!=record or
+                        engine.read(native_address(engine, 0x89068f2),32).hex()!=native_fingerprint(engine, 0x89068f2, expected)):
                     raise RuntimeError('Objective replay differs from the reviewed game build')
                 from .mission_effects import reset_interactions
                 reset_interactions(_last['mission'],owner._journal,selected['name'])
@@ -304,7 +323,7 @@ def step(payload):
                 # can never cause another rewind on the next step.
                 _last.update(phase='return',state='uncertain',ok=False)
                 owner._journal(dict(event='issued',operation='objective_replay',objective=selected))
-                C.WINFUNCTYPE(None,C.c_void_p,C.c_void_p)(engine.base+0x89068f2)(record,objective)
+                C.WINFUNCTYPE(None,C.c_void_p,C.c_void_p)(native_address(engine, 0x89068f2))(record,objective)
                 owner._journal(dict(event='returned',operation='objective_replay'))
                 return _result()
             if _last['phase']=='return':
@@ -436,9 +455,9 @@ def replay_last(payload):
     m.require_clear_journals()
     record, objective = int(row['record'], 16), int(selected['pointer'], 16)
     expected = '5657534883ec404889d74889ce488b053a90df034831e04889442438e8212a64'
-    if (engine.u64(record) != engine.base + 0xb973820 or
+    if (engine.u64(record) != native_address(engine, 0xb973820) or
             engine.u64(objective + 0x28) != record or
-            engine.read(engine.base + 0x89068f2, 32).hex() != expected):
+            engine.read(native_address(engine, 0x89068f2), 32).hex() != native_fingerprint(engine, 0x89068f2, expected)):
         raise RuntimeError('Objective replay differs from the reviewed game build')
     previous = _last
     _preview = None

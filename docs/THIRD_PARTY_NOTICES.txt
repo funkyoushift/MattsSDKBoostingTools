@@ -1,5 +1,9 @@
 THIRD-PARTY NOTICES
 
+PyYAML 6.0.3: tagged native-save parsing and syntax-preserving replay validation.
+MIT license; the complete license is included with the bundled Python package.
+This dependency is used by the desktop save helper, not by the in-game SDK.
+
 MSBT's project license does not replace the licenses or permissions of the
 components below. Original copyright and license files remain with the software.
 Contributor acknowledgments and public project links are in the root README.

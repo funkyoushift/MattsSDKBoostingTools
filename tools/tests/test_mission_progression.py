@@ -1,3 +1,4 @@
+from mission_profile_fixture import exec_with_profiles
 """Offline job safety and selection tests; no guest persistence claims."""
 import importlib.util
 import importlib.resources
@@ -17,7 +18,7 @@ def mod(monkeypatch):
     monkeypatch.setattr(importlib.resources, 'files', lambda package: ROOT)
     spec = importlib.util.spec_from_file_location('mission_test', ROOT / 'mission_progression.py')
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    exec_with_profiles(spec, module, monkeypatch)
     monkeypatch.setattr(module, '_dlc_requirement', lambda name: None)
     monkeypatch.setattr(module, '_credit_completed', lambda engine, party, name: None)
     return module
@@ -173,7 +174,7 @@ def test_reset_accept_complete_is_one_call_per_step_and_never_retries_uncertain(
     def u64(address):
         return {0x100000: 0x300000, 0x1000a8: 0x200000,
                 0x3000f8: base + 0xd80660, 0x300110: base + 0x419fefa}[address]
-    engine = NS(base=base, read=read, u64=u64,
+    engine = NS(profile='steam-25372571', base=base, read=read, u64=u64,
                 snapshot=lambda: {'missions': [copy.deepcopy(r)]})
     def factory(*signature):
         def bind(address):
@@ -313,7 +314,7 @@ def test_auto_activation_after_reset_skips_duplicate_accept(mod, monkeypatch, tm
     base = 0x140000000
     calls = []
     pc = NS(_path_name=lambda: 'pc')  # No acceptance method: calling it fails the test.
-    engine = NS(base=base, snapshot=lambda: {'missions': [copy.deepcopy(r)]}, read=lambda *args: b'\1',
+    engine = NS(profile='steam-25372571', base=base, snapshot=lambda: {'missions': [copy.deepcopy(r)]}, read=lambda *args: b'\1',
                 u64=lambda address: {0x100000: 0x300000, 0x1000a8: 0x200000,
                 0x3000f8: base + 0xd80660, 0x300110: base + 0x419fefa}[address])
     def factory(*signature):
@@ -340,13 +341,14 @@ def test_automatic_prerequisites_are_bounded_and_not_repeated(mod, monkeypatch):
     import types
     pkg = types.ModuleType('repair_test')
     pkg.mission_discovery = NS(plan=lambda *args: [
-        {'name': 'electi', 'blocked_reason': None},
-        {'name': 'heist', 'blocked_reason': None},
-        {'name': 'vending', 'blocked_reason': 'parent unfinished'},
+        {'name': 'electi', 'parent': 'base', 'blocked_reason': None},
+        {'name': 'heist', 'parent': 'base', 'blocked_reason': None},
+        {'name': 'vending', 'parent': 'base', 'blocked_reason': 'parent unfinished'},
         {'name': 'travel_0', 'blocked_reason': None}])
     monkeypatch.setitem(sys.modules, 'repair_test', pkg)
     monkeypatch.setattr(mod, '__package__', 'repair_test')
     mod._job = {'checked_prerequisites': ['electi']}
+    monkeypatch.setattr(mod, '_dlc_requirement', lambda name:None)
     assert mod._pending_repairs({}) == ['heist']
 
 
@@ -385,7 +387,7 @@ def test_review_console_stops_on_uncertain_step(monkeypatch):
     monkeypatch.setitem(sys.modules, 'unrealsdk', NS(logging=NS(info=lambda text: None)))
     monkeypatch.setitem(sys.modules, 'mission_console_test.backend_actions', NS(run_quick_menu_action=action))
     spec = importlib.util.spec_from_file_location('mission_console_test.mission_commands', ROOT / 'mission_commands.py')
-    module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+    module = importlib.util.module_from_spec(spec); exec_with_profiles(spec, module, monkeypatch)
     args = parser.parse_args(['run', '--player', 'Guest', '--reset-completed'])
     module.mission_command(args)
     assert [x[0] for x in calls] == ['mission_start', 'mission_step']
@@ -772,3 +774,32 @@ def test_campaign_recovery_rejects_unknown_outcome_or_changed_identity(mod, monk
     with pytest.raises(ValueError, match='return receipt|identity differs'):
         mod.recover(dict(job_id=ident, mode='close', acknowledge_shared_progress=True))
     assert len(path.read_text().splitlines()) == len(events)
+
+
+@pytest.mark.parametrize('size',[2,4])
+def test_shared_full_mission_uses_objective_graph_and_preserves_guest_binding(mod,monkeypatch,tmp_path,size):
+    import types
+    monkeypatch.setitem(sys.modules,mod.__name__,mod)
+    name='Mission_Main_Beach';r=row();calls=[];credits=[]
+    party=[dict(pc=NS(_path_name=lambda i=i:'PC'+str(i)),host=i==0) for i in range(size)]
+    monkeypatch.setattr(mod,'_party',lambda:party)
+    monkeypatch.setattr(mod,'_binding',lambda rows:[x['pc']._path_name() for x in rows])
+    engine=NS(snapshot=lambda:dict(missions=[r]))
+    monkeypatch.setattr(mod,'_engine',lambda:engine);monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    monkeypatch.setattr(mod,'_credit_completed',lambda e,rows,n:credits.append((len(rows),n)))
+    pkg=types.ModuleType('coop_graph_test');pkg.__path__=[str(ROOT)]
+    monkeypatch.setitem(sys.modules,pkg.__name__,pkg);monkeypatch.setattr(mod,'__package__',pkg.__name__)
+    def advance(*args,**kwargs):
+        calls.append(kwargs);r['status_fact']['known_status']='completed'
+        return dict(message='Native graph settled')
+    definition=dict(title='Test',execution_map='world_p')
+    context=NS(observe=lambda owner:True,prepare=lambda *a:True,expect_finish=lambda *a:None,
+               world=lambda:None,map_name=lambda w:'world_p',objective_ready=lambda *a:True)
+    monkeypatch.setitem(sys.modules,pkg.__name__+'.mission_completion_context',context)
+    monkeypatch.setitem(sys.modules,pkg.__name__+'.mission_execution',NS(DATA={name:definition},require_coverage=lambda *a:None,advance=advance))
+    mod._job=dict(id='job',ok=True,state='running',binding=['PC'+str(i) for i in range(size)],target='PC1',
+        names=[name],index=0,completed=[],phase='prepare',journal=str(tmp_path/'job.jsonl'),
+        completion_path='objective_graph',completion_context={},placement_policy='map_only')
+    assert mod.step('job')['state']=='running' and len(calls)==1, mod._job.get('message')
+    assert mod.step('job')['state']=='completed'
+    assert credits==[(size,name)] and len(calls)==1 and mod._job['target']=='PC1'

@@ -1,3 +1,4 @@
+from mission_profile_fixture import exec_with_profiles
 import importlib.util
 import importlib.resources
 import json
@@ -16,7 +17,7 @@ def mod(monkeypatch):
     monkeypatch.setattr(importlib.resources, 'files', lambda package: ROOT)
     spec=importlib.util.spec_from_file_location('credit_test',ROOT/'mission_challenges.py')
     module=importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    exec_with_profiles(spec, module, monkeypatch)
     return module
 
 
@@ -25,6 +26,62 @@ def test_source_list_is_fully_covered(mod):
     assert len(mod.MISSIONS)==len(set(mod.MISSIONS))==98
     assert set(mod.MISSIONS)<=catalog
     assert mod.DATA['goals']==[10,25,50,75,98]
+
+
+def test_campaign_unlock_matches_exact_authored_definition(mod):
+    import hashlib
+    source=ROOT.parents[1]/'external_app/v22_parts_codes_fixed/matt_editor/LegitItems'/mod.CAMPAIGN['source']
+    raw=source.read_bytes();row=json.loads(raw)
+    for key in mod.CAMPAIGN['pointer'].strip('/').split('/'):
+        row=row[int(key)] if isinstance(row,list) else row[key]
+    assert hashlib.sha256(raw).hexdigest()==mod.CAMPAIGN['sha256']
+    assert row['challenge']==mod.CAMPAIGN['challenge']
+    assert row['busecustommissionlist']==row['bcompleteeachmissiononce']=='true'
+    assert row['missiondefs']==["mission'"+n+"'" for n in mod.CAMPAIGN['missions']]
+    assert mod.CAMPAIGN['goals']==[1] and len(mod.CREDIT_MISSIONS)==99
+
+
+def test_campaign_callback_credits_only_missing_guest_and_reconciles_without_reissue(mod,monkeypatch):
+    host,guest=object(),object();calls=[];events=[];credited=set()
+    def read(engine,pc,data):
+        assert data is mod.CAMPAIGN
+        return dict(pid=1 if pc is host else 2,path='host' if pc is host else 'guest',
+                    player='Host' if pc is host else 'Guest',count=int(pc is host or bool(credited)),
+                    credited={0} if pc is host or credited else set(),manager=100,entry=200,progress=300)
+    monkeypatch.setattr(mod,'read_player',read)
+    monkeypatch.setattr(mod,'native_address',lambda e,r:r)
+    monkeypatch.setattr(mod,'native_fingerprint',lambda e,r,f:f)
+    monkeypatch.setattr(mod,'_name',lambda e,n:b'12345678')
+    def factory(*signature):
+        def bind(address):
+            def invoke(manager,pid,entry,progress,event):
+                assert events[-1]['event']=='issued' and events[-1]['challenge']==mod.CAMPAIGN['challenge']
+                calls.append(pid);credited.add(0)
+            return invoke
+        return bind
+    monkeypatch.setattr(mod.C,'WINFUNCTYPE',factory)
+    engine=NS(read=lambda a,n:bytes.fromhex(mod.FINGERPRINT))
+    rows=[dict(pc=host),dict(pc=guest)]
+    with pytest.raises(mod.CreditPending) as pending:
+        mod.credit_completed(engine,rows,mod.CAMPAIGN['missions'][0],events.append)
+    assert calls==[2] and [e['event'] for e in events]==['issued','returned']
+    receipt=pending.value.receipt
+    loaded=NS(_path_name=lambda:'guest')
+    monkeypatch.setattr(mod,'read_player',lambda e,p,d:read(e,guest,d))
+    assert mod.reconcile(engine,[dict(pc=loaded,state=NS(PlayerId=2))],receipt,events.append)['count']==1
+    assert calls==[2] and events[-1]['event']=='challenge_verified'
+
+
+def test_campaign_recovery_never_falls_back_to_grassroots(mod,monkeypatch):
+    pc=NS(_path_name=lambda:'guest');seen=[]
+    receipt=dict(challenge=mod.CAMPAIGN['challenge'],player_path='guest',player_id=2,
+                 before_count=0,before_credit=[],index=0,issued_at=time.time())
+    def read(e,p,data):
+        seen.append(data['challenge']);return dict(pid=2,path='guest',count=0,credited=set())
+    monkeypatch.setattr(mod,'read_player',read)
+    with pytest.raises(mod.CreditPending):
+        mod.reconcile(None,[dict(pc=pc,state=NS(PlayerId=2))],receipt,lambda e:None)
+    assert seen==[mod.CAMPAIGN['challenge']]
 
 
 def test_duplicate_credit_is_skipped(mod):
