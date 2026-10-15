@@ -28,6 +28,8 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 These counters track the installer, portable ZIP, and Android APK on the latest release, excluding updater metadata.
 
+Steam and Epic support are included, including Epic account save handling. Replay requires a supported game build, solo hosting and a second existing loadable character in the same profile. Close the game before updating SDK components.
+
 ## Full-game completion with different DLC access
 
 The run refreshes visitors’ real game access before starting. It retains the original bulk mission callbacks, completes available work, and reports blocked content without stopping the rest of the run. It does not grant DLC ownership. The three-player test included a visitor with only bounty packs: all stages finished or reported their specific limits, all three had 59/59 SDU upgrades verified, and both visitors confirmed story completion and UVHM 7. Native challenge readback found 2,574 complete, zero incomplete and 261 unavailable definitions; 60 current vault-card challenges were verified. Own-game save/rejoin verification remains separate.
