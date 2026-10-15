@@ -44,6 +44,12 @@ The full preset retains its final pass for later unlocks. Scope selection, accep
 
 Dialogue native-call research credit: [Yeti's Dialog Skipper](https://github.com/RedxYeti/yeti-bl4-sdk). [Release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
+### Earlier repairs and saved guest progress
+
+The v2.37.1 serial repair honors the copies setting for readable numeric codes and Quick Menu shortcuts, including repeated pasted codes. Reconfigure older pinned serial shortcuts to capture the corrected quantity.
+
+The reported **The Chase** guest-save issue remains unresolved: a guest still had it active in their own save after targeted retests, including a fresh host. Save corruption was not established. Other guest batches passed own-game checks. Save and quit normally, check progress in each guest’s own game, and include the mission, objective and any fast-forward prompt when reporting an issue.
+
 ## Credits
 
 ### Community Discords
@@ -119,7 +125,7 @@ Cr4nkSt4r’s **NcsParser** work and previously supplied Nexus tables contribute
 
 **Ynot / GZO** supplies community item-code resources, catalogs, part maps, and linked images used by our browsing workflows. **Levin / Lootlemon** supplies item information, code references, and links used in the catalog. Their research and ongoing curation make those workflows useful. Displaying their information inside this app does not make it our data.
 
-**Visit the original resources:** [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands 4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Lootlemon](https://www.lootlemon.com/)
+**Visit the original resources:** [GZO Borderlands 4 Codes](https://save-editor.be/GZO/Borderlands4/Codes.html) · [GZO hub](https://save-editor.be/GZO/) · [Lootlemon](https://www.lootlemon.com/)
 
 ### juso and smugg — BLImGui / Borderlands ImGui
 
