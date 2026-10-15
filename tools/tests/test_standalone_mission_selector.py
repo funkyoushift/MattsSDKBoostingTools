@@ -183,7 +183,7 @@ def test_hud_arm_failure_preserves_successful_native_tracking(packaged,monkeypat
 def test_catalogue_and_display_numbers_match_all_supported_main_sections(packaged):
     # The installed SDK's version parser accepts dotted integers only.
     entry=importlib.import_module('BL4MissionSelector')
-    assert tuple(int(part) for part in entry.mod.version.split('.'))==(2,39,2)
+    assert tuple(int(part) for part in entry.mod.version.split('.'))==(2,39,3)
     c=packaged;total=0
     for campaign,expected in [('story',21),('fl4k',11),('ellie',6),('moxxi',1)]:
         rows=c.campaign_rows(campaign);assert len(rows)==expected
