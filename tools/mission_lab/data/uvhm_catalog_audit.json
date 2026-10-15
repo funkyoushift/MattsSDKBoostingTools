@@ -1,0 +1,923 @@
+{
+  "ranks": [
+    [
+      "UVH 1",
+      [
+        "Challenge_UVH_Rankup_1_Firmware",
+        "Challenge_UVH_Rankup_1_BMVM",
+        "Challenge_UVH_Rankup_1_TrueBoss",
+        "UVH_Rankup_1_FinalChallenge"
+      ]
+    ],
+    [
+      "UVH 2",
+      [
+        "Challenge_UVH_Rankup_2_Kratch",
+        "Challenge_UVH_Rankup_2_Creep",
+        "Challenge_UVH_Rankup_2_Order",
+        "Challenge_UVH_Rankup_2_Ripper",
+        "UVH_Rankup_2_FinalChallenge"
+      ]
+    ],
+    [
+      "UVH 3",
+      [
+        "Challenge_UVH_Rankup_3_Cat",
+        "Challenge_UVH_Rankup_3_Pangolin",
+        "Challenge_UVH_Rankup_3_Order",
+        "Challenge_UVH_Rankup_3_Ripper",
+        "UVH_Rankup_3_FinalChallenge"
+      ]
+    ],
+    [
+      "UVH 4",
+      [
+        "Challenge_UVH_Rankup_4_Beast",
+        "Challenge_UVH_Rankup_4_Order",
+        "Challenge_UVH_Rankup_4_Ripper",
+        "Challenge_UVH_Rankup_4_Thresher",
+        "UVH_Rankup_4_FinalChallenge"
+      ]
+    ],
+    [
+      "UVH 5",
+      [
+        "Challenge_UVH_Rankup_5_GL",
+        "Challenge_UVH_Rankup_5_MOU",
+        "Challenge_UVH_Rankup_5_SL",
+        "UVH_Rankup_5_FinalChallenge"
+      ]
+    ],
+    [
+      "UVH 6",
+      [
+        "Challenge_UVH_Rankup_6_Bloomreaper"
+      ]
+    ],
+    [
+      "UVH 7",
+      [
+        "Challenge_UVH_Rankup_7_Parent"
+      ]
+    ]
+  ],
+  "matches": {
+    "Challenge_UVH_Rankup_4_Thresher": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/309/challenge_uvh_rankup_4_thresher",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_4_Thresher",
+          "displayname": "UVH_Rankup_4_Challenges, 13C65C3F4664FAB24BFF4EA34C7D2ADB, Bloom Boom",
+          "description": "UVH_Rankup_4_Challenges, 908238F74360B7CB921E1FB86A52E860, Kill Skull Orchid in UVH 3 (Abandoned Auger Mine, Grindstone of the Worthy, Carcadia Burn).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_3_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_4b",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "3",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Creep_Mine_Boss_SkullOrchid'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_3_Ripper": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/305/challenge_uvh_rankup_3_ripper",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_3_Ripper",
+          "displayname": "UVH_Rankup_2_Challenges, 9087AD3B4234348EBEE9309EDACCADA9, Blasted Furnace",
+          "description": "UVH_Rankup_2_Challenges, FBF628AD4FCB58DC52A845A81F131770, Kill Frank the Furnace in UVH 2 (Ripper Drill Site, Idolator's Noose, Fadefields).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_2_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_3d",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "2",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_MeatHeadFrackingBoss'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_4_Beast": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/306/challenge_uvh_rankup_4_beast",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_4_Beast",
+          "displayname": "UVH_Rankup_4_Challenges, DC54ADAC433812E1213F20A0A0E0F8F3, Draggin' Wagon",
+          "description": "UVH_Rankup_4_Challenges, CAC13FE74FCA5A420B25728FEA9DA9BD, Kill Battle Wagon in UVH 3 (Ripper Drill Site, Stoneblood Forest, Terminus Range).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_3_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_4a",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "3",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Beast_Drill_Boss_Battlewagon'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "UVH_Rankup_2_FinalChallenge": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/327/uvh_rankup_2_finalchallenge",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "UVH_Rankup_2_FinalChallenge",
+          "displayname": "UVH_Rankup_2_Challenges, 8ECB711449C39E2A92885E80916392E7, Ultimater Vault Hunter",
+          "description": "UVH_Rankup_2_Challenges, 9DDA041C48E2BF8881AF179F368CF522, Complete Lilith's \"Rush The Gate\" Wildcard mission in UVH 1 to unlock UVH 2.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_UVH_Rankup_2_Creep'",
+            "challenge'Challenge_UVH_Rankup_2_Kratch'",
+            "challenge'Challenge_UVH_Rankup_2_Order'",
+            "challenge'Challenge_UVH_Rankup_2_Ripper'"
+          ],
+          "associatedstat": "stats.challenge.uvh_2_finalchallenge",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "2",
+          "requireduvhleveltocomplete": "1",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_2'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_3'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_1_TrueBoss": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/297/challenge_uvh_rankup_1_trueboss",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_1_TrueBoss",
+          "displayname": "UVH_Rankup_1_Challenges, F245729E49677962443D2BA69FD76CA2, You're Welcome, Streamers",
+          "description": "UVH_Rankup_1_Challenges, BC505E8447548C002EBFFFBBE55A691F, Complete Moxxi's Big Encore mission.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_Misc_World_CompleteCityEpilogue'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_1c",
+          "bispartychallenge": "true",
+          "challengetype": "Mission",
+          "missiontype": "MicroMission",
+          "busecustommissionlist": "true",
+          "missiondefs": [
+            "mission'Micro_UVH_TrueBoss'"
+          ],
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_3_Pangolin": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/304/challenge_uvh_rankup_3_pangolin",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_3_Pangolin",
+          "displayname": "UVH_Rankup_2_Challenges, 2BD23D2C44291C232814EFA6C2259B38, So I Felt Like",
+          "description": "UVH_Rankup_2_Challenges, D7C56E8C42D38D5AECE05EB8F45D4ADD, Kill Rocken Roller in UVH 2 (Abandoned Auger Mine, Ruined Sumplands, Carcadia Burn).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_2_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_3b",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "2",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Pangolin_Mine_Boss_RockAndRoll'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_4_Ripper": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/308/challenge_uvh_rankup_4_ripper",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_4_Ripper",
+          "displayname": "UVH_Rankup_4_Challenges, 323048F542A44BAC9D4B41AFE631AB74, Who Named This Guy",
+          "description": "UVH_Rankup_4_Challenges, 75A655AC4400B2714FAB519218BD29F6, Kill The Immortal Boneface in UVH 3 (Ripper Drill Site, Cuspid Climb, Terminus Range).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_3_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_4d",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "3",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Guntoter_MeatheadJockeyBoss'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_7_Parent": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/1/entries/10/challenge_uvh_rankup_7_parent",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_7_Parent",
+          "displayname": "UVH_Rankup_Challenge, F75771CA4ACBE918EE7A1FBFBDE483EB, Extreme Vault Hunter",
+          "description": "UVH_Rankup_Challenge, 382648DA4FFBF92E10E775960124EE44, Defeat Subjugator the Invincible or Thol the Invincible in UVH 6 to unlock UVH 7.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_UVH_Rankup_6_Bloomreaper'"
+          ],
+          "associatedstat": "stats.dlc_challenge.uvh_7",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "7",
+          "requireduvhleveltocomplete": "6",
+          "challengetype": "FactTrigger",
+          "busecustommissionlist": "true",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_1_Firmware": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/296/challenge_uvh_rankup_1_firmware",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_1_Firmware",
+          "displayname": "UVH_Rankup_1_Challenges, 7D78EFBB4961C2500E11ECA1742175BE, Sets Appeal",
+          "description": "UVH_Rankup_1_Challenges, CF17805443678E8CCCEB7380061543EE, Complete Zane's Firmware mission.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_Misc_World_CompleteCityEpilogue'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_1a",
+          "bispartychallenge": "true",
+          "challengetype": "Mission",
+          "missiontype": "MicroMission",
+          "busecustommissionlist": "true",
+          "missiondefs": [
+            "mission'Micro_UVH_FirmwareTransferTutorial'"
+          ],
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_1_BMVM": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/295/challenge_uvh_rankup_1_bmvm",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_1_BMVM",
+          "displayname": "UVH_Rankup_1_Challenges, F54DA9F749EE5D5FDA0E53A4DA3D235C, With Raptor Attention",
+          "description": "UVH_Rankup_1_Challenges, 4223D50C4F62C5286A50BCA8856EB4A1, Complete Maurice's Black Market Vending Machine mission.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_Misc_World_CompleteCityEpilogue'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_1b",
+          "bispartychallenge": "true",
+          "challengetype": "Mission",
+          "missiontype": "MicroMission",
+          "busecustommissionlist": "true",
+          "missiondefs": [
+            "mission'Micro_UVH_BlackMarketTutorial'"
+          ],
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_4_Order": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/307/challenge_uvh_rankup_4_order",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_4_Order",
+          "displayname": "UVH_Rankup_4_Challenges, 5372DEF24FCA7275186F069CD14AED69, But What If... You Were the Fake?",
+          "description": "UVH_Rankup_4_Challenges, 9EDFFD064433EECDD9A752BF31FD7F62, Kill Mimicron in UVH 3 (Order Bunker, Idolator's Noose, Fadefields).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_3_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_4c",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "3",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Striker_Bunker_Boss_Splitter'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_3_Cat": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/302/challenge_uvh_rankup_3_cat",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_3_Cat",
+          "displayname": "UVH_Rankup_2_Challenges, 5FFA2C784C7FCA0CD44AD9A3DD15F317, Pelted",
+          "description": "UVH_Rankup_2_Challenges, 0D6B12674CBC8DB3FE5A8EB0C1B9C8B6, Kill Shadowpelt in UVH 2 (Abandoned Auger Mine, Cuspid Climb, Terminus Range).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_2_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_3a",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "2",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Cat_Mine_Boss_StealthPredator'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_2_Ripper": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/301/challenge_uvh_rankup_2_ripper",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_2_Ripper",
+          "displayname": "UVH_Rankup_2_Challenges, B905F24B4E12AB38D6276EA976D11867, No Points Awarded",
+          "description": "UVH_Rankup_2_Challenges, 7BB9C4934C5C539ACE21F9A163E3BA3F, Kill Sydney Pointylegs in UVH 1 (Ripper Drill Site, Hungering Plain, Fadefields).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_1_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_2d",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "1",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Splice_Drill_Boss_SpiderJumbo'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_5_SL": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/312/challenge_uvh_rankup_5_sl",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_5_SL",
+          "displayname": "UVH_Rankup_5_Challenges, 3894E93D47B4F55D446C4EB5540218C0, The Base",
+          "description": "UVH_Rankup_5_Challenges, 5A56F4CB4C50A168CBBF2F8B44A1C191, Complete Lilith's \"Primordial Vault: Carcadia Burn\" Wildcard mission in UVH 4 to unlock UVH 5 (Requires previously completing \"Primordial Vault: Carcadia Burn\").",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_4_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_5b",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "4",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_5_SL'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_3_Order": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/303/challenge_uvh_rankup_3_order",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_3_Order",
+          "displayname": "UVH_Rankup_2_Challenges, BC4DC22C41C3FBED4F2871AC0F78D5C3, Now Who's Gonna Watch This Core",
+          "description": "UVH_Rankup_2_Challenges, D641E3844BBA95ED286BB695DE9946E0, Kill Core Observer in UVH 2 (Order Bunker, The Howl, Fadefields).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_2_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_3c",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "2",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Drone_Bunker_Boss_Keeper'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_5_MOU": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/311/challenge_uvh_rankup_5_mou",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_5_MOU",
+          "displayname": "UVH_Rankup_5_Challenges, E9F6D2C749904F72A5FA118A7E52B596, The Origin",
+          "description": "UVH_Rankup_5_Challenges, 029F14F9423B611B0162588EBCE0E00F, Complete Lilith's \"Primordial Vault: Terminus Range\" Wildcard mission in UVH 4 to unlock UVH 5 (Requires previously completing \"Primordial Vault: Terminus Range\").",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_4_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_5c",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "4",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_5_MOU'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "UVH_Rankup_5_FinalChallenge": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/330/uvh_rankup_5_finalchallenge",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "UVH_Rankup_5_FinalChallenge",
+          "displayname": "UVH_Rankup_5_Challenges, 1EEB192F454D76C9922DAF9A84DDF770, Super Ultimater Vault Hunter",
+          "description": "UVH_Rankup_5_Challenges, 91A5D3C74BC50667701A04839BB09010, Complete Lilith's \"The Timekeeper's Order\" Wildcard mission in UVH 4 to unlock UVH 5.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_UVH_Rankup_5_GL'",
+            "challenge'Challenge_UVH_Rankup_5_MOU'",
+            "challenge'Challenge_UVH_Rankup_5_SL'"
+          ],
+          "associatedstat": "stats.challenge.uvh_5_finalchallenge",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "5",
+          "requireduvhleveltocomplete": "4",
+          "achievementdef": "achievement'ID_Achievement_03_uvh_5'",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_5_TimeKeeper'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'ChallengeReward_Cosmetic_40_Veil'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_2_Order": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/300/challenge_uvh_rankup_2_order",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_2_Order",
+          "displayname": "UVH_Rankup_2_Challenges, F17A747F46CAA5C309B0FCAA9A9BE054, Bio Break",
+          "description": "UVH_Rankup_2_Challenges, F20D484E4D099FF7897BECACFA131BB4, Kill Bio-Bulkhead in UVH 1 (Synthetic Nave, Dissected Plateau, Fadefields).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_1_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_2c",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "1",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Brute_PlotGrass2b_Boss_Motherbase'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_2_Kratch": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/299/challenge_uvh_rankup_2_kratch",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_2_Kratch",
+          "displayname": "UVH_Rankup_2_Challenges, 28BF38B24F56F84C4571E5AC5BE6D883, Song's Over",
+          "description": "UVH_Rankup_2_Challenges, E80D29A74BC1F0E5EC4549BC20DCBB33, Kill Bramblesong in UVH 1 (Abandoned Auger Mine, Stoneblood Forest, Terminus Range).",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_1_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_2a",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "1",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Bat_Mine_Boss_Destroyer'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_2_Creep": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/298/challenge_uvh_rankup_2_creep",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_2_Creep",
+          "displayname": "UVH_Rankup_2_Challenges, 0853F4644013837DF200E4844094DCC2, Omega 86'd",
+          "description": "UVH_Rankup_2_Challenges, 344FCED943092BBFA9BB5DB2B64C4517, Kill Bio-Thresher Omega in UVH 1 (Fades District, Dominion - Requires previously completing Side Missions \"One Gassy Issue\" / \"One Slimy Issue\").",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_1_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_2b",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "1",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_Thresher_BioArmoredBig'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "UVH_Rankup_4_FinalChallenge": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/329/uvh_rankup_4_finalchallenge",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "UVH_Rankup_4_FinalChallenge",
+          "displayname": "UVH_Rankup_4_Challenges, 9799BA2B40AA21A6F421788339678747, Even More Ultimater Vault Hunter",
+          "description": "UVH_Rankup_4_Challenges, 26854A814A22855FEA1475A81F3DB025, Complete Lilith's \"Her Flaming Vision\" Wildcard mission in UVH 3 to unlock UVH 4.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_UVH_Rankup_4_Beast'",
+            "challenge'Challenge_UVH_Rankup_4_Order'",
+            "challenge'Challenge_UVH_Rankup_4_Ripper'",
+            "challenge'Challenge_UVH_Rankup_4_Thresher'"
+          ],
+          "associatedstat": "stats.challenge.uvh_4_finalchallenge",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "4",
+          "requireduvhleveltocomplete": "3",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_4'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_3'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "UVH_Rankup_1_FinalChallenge": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/326/uvh_rankup_1_finalchallenge",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "UVH_Rankup_1_FinalChallenge",
+          "displayname": "UVH_Rankup_1_Challenges, 9BDF61D74D9666D75184A9B80CAAD62D, Into the Wilds",
+          "description": "UVH_Rankup_1_Challenges, 448937F3427C5C0FBB6EB1BFA502B862, Complete Lilith's Wildcard mission to unlock UVH 1.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_Misc_World_CompleteCityEpilogue'"
+          ],
+          "associatedstat": "stats.challenge.uvh_1_finalchallenge",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "challengetype": "TraitMission",
+          "missiontype": "MainStory",
+          "missionworldregion": "game_region'shatteredlands'",
+          "busecustommissionlist": "true",
+          "missiondefs": [
+            "mission'micro_uvh_trait'"
+          ],
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_1'",
+          "discoveryregion": "game_region'shatteredlands'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_3'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_5_GL": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/310/challenge_uvh_rankup_5_gl",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_5_GL",
+          "displayname": "UVH_Rankup_5_Challenges, EC4C6BFD4DB56B7C927B9FB87148F253, The Inception",
+          "description": "UVH_Rankup_5_Challenges, 7703B2F14FB2A9C336879E8E518B3827, Complete Lilith's \"Primordial Vault: Fadefields\" Wildcard mission in UVH 4 to unlock UVH 5 (Requires previously completing \"Primordial Vault: Fadefields\").",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_4_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_5a",
+          "bispartychallenge": "true",
+          "requireduvhleveltocomplete": "4",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_5_GL'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Challenge_UVH_Rankup_6_Bloomreaper": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/1/entries/9/challenge_uvh_rankup_6_bloomreaper",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "Challenge_UVH_Rankup_6_Bloomreaper",
+          "displayname": "UVH_Rankup_6_Challenges, A7CDDD75498FA64FEF35AF91D853AC07, Even Superer Ultimater Vault Hunter",
+          "description": "UVH_Rankup_6_Challenges, CB2220EC4F36407E9081228DBB35450B, Defeat Bloomreaper the Invincible in UVH 5 to unlock UVH 6.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'UVH_Rankup_5_FinalChallenge'"
+          ],
+          "associatedstat": "stats.challenge.mission_uvh_6a",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "6",
+          "requireduvhleveltocomplete": "5",
+          "challengetype": "Enemy_Kill",
+          "damagetargetcharacterdef": "gbxactor'Char_CreepRaid1'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "notificationthreshold": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_1'"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "UVH_Rankup_3_FinalChallenge": [
+      {
+        "source": "Nexus-Data-challenge0.json",
+        "pointer": "/challenge/records/0/entries/328/uvh_rankup_3_finalchallenge",
+        "field": "challenge",
+        "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+        "definition": {
+          "challenge": "UVH_Rankup_3_FinalChallenge",
+          "displayname": "UVH_Rankup_3_Challenges, A1F3F6D6406C0BD828052D87FD9F2D11, More Ultimater Vault Hunter",
+          "description": "UVH_Rankup_3_Challenges, 7C6059A144D87A02DD7545B0525F6E10, Complete Lilith's \"His Vile Sanctum\" Wildcard mission in UVH 2 to unlock UVH 3.",
+          "uichallengeicontype": "ultimate_vh_icon",
+          "bunlockedfromstart": "false",
+          "prerequisitechallenges": [
+            "challenge'Challenge_UVH_Rankup_3_Cat'",
+            "challenge'Challenge_UVH_Rankup_3_Order'",
+            "challenge'Challenge_UVH_Rankup_3_Pangolin'",
+            "challenge'Challenge_UVH_Rankup_3_Ripper'"
+          ],
+          "associatedstat": "stats.challenge.uvh_3_finalchallenge",
+          "bispartychallenge": "true",
+          "bisuvhrankupchallenge": "true",
+          "uvhcompletionlevel": "3",
+          "requireduvhleveltocomplete": "2",
+          "challengetype": "TraitMission",
+          "traitmissiondef": "trait_mission'TraitMission_UVH_Rankup_3'",
+          "challengetiers": [
+            {
+              "goalvalue": "1",
+              "reward": {
+                "type": "RewardDef",
+                "value": "rewards'Challenge_Reward_GenericTier_3'"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
