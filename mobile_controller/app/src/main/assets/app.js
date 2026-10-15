@@ -95,6 +95,7 @@ function ensureDeviceToken(){
 }
 function hasSavedPairing(){
   if(state.connection.remote)return true;
+  if(text(state.connection.address).toLowerCase()==='remote afk')return false;
   return Boolean(text(state.connection.address)&&(text(state.connection.deviceToken)||text(state.connection.pairingCode)||text(state.connection.enrollNonce)));
 }
 function updateConnectionChrome(){
@@ -104,6 +105,7 @@ function updateConnectionChrome(){
   badge.textContent=state.online?'ONLINE':(paired?'SAVED':'OFFLINE');
   badge.className=`badge ${state.online?'online':'offline'}`;
   $('pcSummary').textContent=state.connection.name||state.connection.address||'Not paired';
+  ['pcName','pcAddress','pcPort','pairingCode'].forEach(id=>{if($(id))$(id).disabled=Boolean(state.connection.remote)});
   $('desktopStatus').textContent=state.online?(state.connection.viaGateway?'Desktop gateway':'Optional'):'Optional';
   $('bridgeStatus').textContent=state.bridgeOnline?'Online':(state.online?'Waiting for game':'Offline');
   $('homeStatusTitle').textContent=state.online?(state.bridgeOnline?'Connected to game':(state.connection.viaGateway?'Gateway online — start Borderlands 4':'Game reachable — waiting for live status')):(paired?'Saved — tap Connect':'Game not paired');
@@ -1027,6 +1029,13 @@ function applyStatus(data){
 
 async function connectGateway({quiet=false, hostCandidates=null}={}){
   if(state.connection.remote)return window.mobileRemote.connect();
+  if(text(state.connection.address).toLowerCase()==='remote afk'){
+    state.online=false;state.bridgeOnline=false;updateConnectionChrome();
+    const message='Remote pairing is missing. Scan the Remote AFK QR in the Windows app again.';
+    if($('connectionStatus'))$('connectionStatus').textContent=message;
+    if(!quiet)alert(message);
+    return false;
+  }
   ensureDeviceToken();
   state.connection={
     name:text($('pcName')&&$('pcName').value)||state.connection.name||'',
@@ -1172,6 +1181,8 @@ function loadConnection(){
   updateConnectionChrome();
 }
 function saveConnectionFields(extra={}){
+  // Manual setup must not replace the credentials captured by a remote QR.
+  if(state.connection.remote){write(STORE.connection,state.connection);updateConnectionChrome();return;}
   ensureDeviceToken();
   state.connection={
     name:text($('pcName')&&$('pcName').value),
@@ -1189,6 +1200,10 @@ function saveConnectionFields(extra={}){
 }
 $('saveConnection').addEventListener('click',()=>{
   saveConnectionFields();
+  if(state.connection.remote){
+    $('connectionStatus').textContent='Remote pairing kept. Tap Connect / Test to reconnect. To use a local connection, scan its pairing QR.';
+    return;
+  }
   $('connectionStatus').textContent=state.connection.address?`Setup saved for ${state.connection.address}:${state.connection.port}. Tap Connect / Test.`:'Enter a PC address to complete setup.';
   logActivity('Saved PC connection setup.');
 });

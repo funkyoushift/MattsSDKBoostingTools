@@ -19,6 +19,17 @@ app.whenReady().then(async()=>{
  await $('afkMobileStop').onclick();check(sent[1].action==='afk_lobby_stop','stop');
  state.online=false;mobileAfk.connectionChanged();check($('afkMobileStop').disabled,'offline lock');
  const secret='a'.repeat(64);const pair=parsePairingPayload(JSON.stringify({v:3,relay:'https://msbt-afk-relay.screename53.workers.dev',room:secret,token:secret,key:secret}));check(pair.v===3,'remote QR');
+ state.connection={name:pair.name,address:'Remote AFK',remote:pair};write(STORE.connection,state.connection);loadConnection();
+ $('saveConnection').click();loadConnection();
+ check(state.connection.remote?.key===pair.key&&state.connection.remote?.token===pair.token,'Save Setup lost remote credentials after reload');
+ check($('pcAddress').disabled&&$('pcPort').disabled,'remote setup presents editable LAN fields');
+ check(hasSavedPairing(),'remote pairing no longer recognized');
+ const actualConnect=mobileRemote.connect;let remoteConnects=0;mobileRemote.connect=async()=>{remoteConnects++;return true;};
+ await connectGateway();check(remoteConnects===1,'saved remote setup fell through to LAN probing');mobileRemote.connect=actualConnect;
+ state.connection={name:pair.name,address:'Remote AFK',deviceToken:'saved-device',port:'27877'};updateConnectionChrome();
+ check(!hasSavedPairing(),'broken remote label marked as paired');
+ check(await connectGateway({quiet:true})===false&&$('connectionStatus').textContent.includes('Scan the Remote AFK QR'),'broken pairing did not explain recovery');
+ check(!$('pcAddress').disabled,'local fields stayed locked after leaving remote setup');
  let blocked=false;try{mobileRemote.validate({...pair,relay:'http://evil.test'});}catch{blocked=true;}check(blocked,'untrusted relay accepted');
  const payload={codes:'x'.repeat(300000)};const sealed=await msbtRemoteCrypto.seal(secret,payload,'context');const clear=await msbtRemoteCrypto.open(secret,sealed,'context');check(clear.codes===payload.codes,'large browser crypto');
  state.online=true;state.bridgeOnline=true;updateConnectionChrome();mobileAfk.render({afk_lobby:afk});
