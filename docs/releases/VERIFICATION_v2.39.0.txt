@@ -1,0 +1,22 @@
+v2.39.0 release verification
+
+Source: isolated codex/mission-repair-dialogue-uvhm release worktree.
+591 focused Python checks;14 release/import preflight checks;23 Node codec/replay checks.
+31 persistent installer checks; standard desktop identity, settings, responsive600-measurement UI, offline game install, AFK and password checks passed.
+Packaged dependency48/resource3312 audits, packaged startup smoke and updater metadata checks passed.
+The release SDK differs from the live-tested82e75ec candidate only in __version__/pyproject version metadata.
+Live mixed-DLC run775c8821684944349766db46f4550536 finished9/9 with inaccessible content reported. All three:59/59 SDUs. Native challenges2574 complete/0 incomplete/261 unavailable; current vault-card60 verified. Both visitors confirmed story completion and UVHM7. Guest own-game save/rejoin remains unverified.
+Android1.6.2 unchanged; both APK hashes match published1.6.2.
+Publication follows strict tag/artifact preflight and uploaded digest verification.
+
+Artifacts:
+MSBT-Installer-v2.39.0.exe  320406564 bytes  SHA256 e9ca4faf9f14eb80074696f14b24ca1ff8a28715c0ad3fd3f248ab4f1885b602
+MSBT-Installer-v2.39.0.exe.blockmap  320427 bytes  SHA256 ea0151ac485e3ce14b7479a9370bb4d1e453ef3b99d159b4d363173b4cdeae13
+latest.yml  350 bytes  SHA256 4e0e08e081d89cf3c0fd5e52b60dd53893e6c2a8ec7f741925f6e394dd556e8a
+latest.json  1548 bytes  SHA256 c345d6997ff7e91cf4318c2cad77794d54c27d46064254654fdb0d5055e6e83f
+MSBT-Portable-v2.39.0-win-x64.zip  380896956 bytes  SHA256 2f12b14541be4bcf2db851d3d160adbe41680ae654fd423acef645f626571cc2
+MSBT-Setup.exe  71599904 bytes  SHA256 c0cbb63a83526ac6f7e2b034cdc70bdc8d24bfe9629dcecce18f1f9839059320
+MattsSDKBoostingTools.sdkmod  1796166 bytes  SHA256 105f1735ca5fc2c0ac8dbfa7e926c3c1af2cc26a075aa5601a777db3cdf0a111
+mobile-version.json  494 bytes  SHA256 bc0f0daf34e4b2b105c13ec5b69e11f974024dc7fdd814b825b65e5a824e45ea
+MSBT-Mobile-Controller.apk  28084726 bytes  SHA256 c3b08bbbfc27d9604c4880208d36d0f92891c22a85f392ba2f866e934e361092
+MSBT-Mobile-Controller-1.6.2.apk  28084726 bytes  SHA256 c3b08bbbfc27d9604c4880208d36d0f92891c22a85f392ba2f866e934e361092
