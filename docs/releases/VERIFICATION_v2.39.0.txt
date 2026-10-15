@@ -20,3 +20,6 @@ MattsSDKBoostingTools.sdkmod  1796166 bytes  SHA256 105f1735ca5fc2c0ac8dbfa7e926
 mobile-version.json  494 bytes  SHA256 bc0f0daf34e4b2b105c13ec5b69e11f974024dc7fdd814b825b65e5a824e45ea
 MSBT-Mobile-Controller.apk  28084726 bytes  SHA256 c3b08bbbfc27d9604c4880208d36d0f92891c22a85f392ba2f866e934e361092
 MSBT-Mobile-Controller-1.6.2.apk  28084726 bytes  SHA256 c3b08bbbfc27d9604c4880208d36d0f92891c22a85f392ba2f866e934e361092
+
+Published/latest verified: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.0
+All11 uploaded asset sizes/digests match local; public updater files downloaded and matched. Public main README verified. CI38686261167 succeeded.

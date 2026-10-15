@@ -1,3 +1,5 @@
+> This preparation log is superseded by published [v2.39.0](RELEASE_NOTES_v2.39.0.md). Its staged/unreleased statements below describe earlier checkpoints; final release evidence is in VERIFICATION_v2.39.0.txt.
+
 # Unreleased candidate: mission replay and co-op completion repairs
 
 This candidate is based on v2.38.1. Public downloads and version numbers are unchanged.
