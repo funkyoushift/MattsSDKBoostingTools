@@ -59,8 +59,16 @@ def start(job, rows, journal):
         job['recorded_placement'].append(record)
         journal(dict(event='recorded_placement_issued', **record))
         try:
-            if not pawn.K2_TeleportTo(p._vector(point), pawn.K2_GetActorRotation()):
-                raise RuntimeError('Native placement rejected the recorded point. Applied placements remain; no retry issued.')
+            returned = bool(pawn.K2_TeleportTo(p._vector(point), pawn.K2_GetActorRotation()))
+            record['native_reported_success'] = returned
+            if not returned:
+                # BL4 can report false after moving to the requested position.
+                # Reconcile that returned call through exact native readback;
+                # normal grounding/stability verification still runs afterward.
+                actual = p._point(pawn.K2_GetActorLocation())
+                if sum((actual[k] - point[k]) ** 2 for k in point) > 10. ** 2:
+                    raise RuntimeError('Native placement rejected the recorded point. Applied placements remain; no retry issued.')
+                record['arrival_confirmed_by_readback'] = True
         finally:
             # BL4 refreshes movement synchronously even when teleport rejects
             # the location. Restore the captured settings without a flying hold.
@@ -90,7 +98,8 @@ def verify(job, rows):
             raise RuntimeError('Players changed during recorded placement; no retry issued')
         pawn = row['pc'].Pawn
         actual = p._point(pawn.K2_GetActorLocation())
-        if sum((actual[k] - point[k]) ** 2 for k in point) > 150. ** 2:
+        tolerance = 10. if job.get('exact_location') else 150.
+        if sum((actual[k] - point[k]) ** 2 for k in point) > tolerance ** 2:
             raise RuntimeError('Recorded placement moved outside its starting area; inspect before retrying')
     if p.players_grounded(rows):
         return True

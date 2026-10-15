@@ -1,8 +1,8 @@
 {
-  "versionName": "1.6.3",
-  "versionCode": 36,
+  "versionName": "1.6.4",
+  "versionCode": 37,
   "apkUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk",
-  "apkVersionedUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller-1.6.3.apk",
+  "apkVersionedUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller-1.6.4.apk",
   "installUrl": "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html",
   "releaseUrl": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest"
 }

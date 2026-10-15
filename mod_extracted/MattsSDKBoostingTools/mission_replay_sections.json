@@ -1,0 +1,870 @@
+{
+  "schema": 1,
+  "guide": "https://game8.co/games/Borderlands-4/archives/550061",
+  "policy": "Guide-level objectives include their route and internal steps. Native identities define replay boundaries; bookmarks cover smaller practice points.",
+  "missions": {
+    "Mission_Main_PrisonPrologue": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550536",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "INV_Obj_BoltingIntro",
+          "title": "Escape Timekeeper's Prison"
+        },
+        {
+          "checkpoint": 13,
+          "objective": "Obj_FirstGrapple",
+          "title": "Reach the Getaway Vehicle"
+        },
+        {
+          "checkpoint": 22,
+          "objective": "Obj_GoToBoss",
+          "title": "Kill Warden Scathe"
+        }
+      ]
+    },
+    "Mission_Main_Beach": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550579",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Take_Claptraps_Tour",
+          "title": "Take Claptrap's Tour"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "Find_Glide_Pack",
+          "title": "Find Splashzone"
+        },
+        {
+          "checkpoint": 9,
+          "objective": "Return_to_Claptrap",
+          "title": "Return to the Broadcast Tower"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "finf_replacement_button",
+          "title": "Get Clearance for Elevator"
+        }
+      ]
+    },
+    "Mission_Main_Grasslands1": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550644",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Travel_to_Survivlist_HQ",
+          "title": "Go to Outbounders HQ"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "Approach_the_KOTO_FOB",
+          "title": "Go to the Order Surveillance Center"
+        },
+        {
+          "checkpoint": 6,
+          "objective": "Reach_the_Lieutenant",
+          "title": "Find Spymaster"
+        },
+        {
+          "checkpoint": 8,
+          "objective": "Collect_Parts",
+          "title": "Find the Three Bolt Scanners"
+        }
+      ]
+    },
+    "Mission_Main_Grasslands2": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550740",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Reach_Zadras_house_0",
+          "title": "Reach the Order Scientist's Home"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "Reach_Food_Processing_Plant",
+          "title": "Go to the Meat Processing Plant"
+        },
+        {
+          "checkpoint": 9,
+          "objective": "Find_Zadra",
+          "title": "Find Zadra"
+        },
+        {
+          "checkpoint": 21,
+          "objective": "Find_Zadra_0",
+          "title": "Find Zadra's Lab"
+        }
+      ]
+    },
+    "mission_main_grasslands2b": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550758",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "TalkToZadra",
+          "title": "Sabotage Sol's Production Facility"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "MeetZadraMotherbase",
+          "title": "Stop Sol's Airship"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "FindNudge",
+          "title": "Stop Sol's Locust Attack"
+        }
+      ]
+    },
+    "Mission_Main_Mountains1": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550923",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "MTN1_Enter_The_Mountain_Zone",
+          "title": "Find Defiant Calder"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "MTN1_Reach_Calders_Office",
+          "title": "Reach Calder's Office"
+        },
+        {
+          "checkpoint": 27,
+          "objective": "MTN1_Meet_Calder_AugerHQ",
+          "title": "Return to Belton's Bore"
+        }
+      ]
+    },
+    "Mission_Main_Shatteredlands1": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552822",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Head_To_The_Shatteredlands",
+          "title": "Go to Carcadia Burn"
+        },
+        {
+          "checkpoint": 6,
+          "objective": "Extend_the_bridge",
+          "title": "Destroy the Catapult"
+        },
+        {
+          "checkpoint": 11,
+          "objective": "Get_Quent_to_the_Safe_Zone",
+          "title": "Go to the Bar with Quent"
+        }
+      ]
+    },
+    "Mission_Main_Grasslands3": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552685",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "CheckOnRush",
+          "title": "Breach Sol's Fortress"
+        },
+        {
+          "checkpoint": 7,
+          "objective": "EnterFortress",
+          "title": "Sabotage Sol's Airship"
+        },
+        {
+          "checkpoint": 11,
+          "objective": "OverarchingObjective",
+          "title": "Kill Idolator Sol"
+        }
+      ]
+    },
+    "Mission_Main_Mountains2": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552666",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_TalkToCalder",
+          "title": "Find Wildcat"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "Obj_GoToTemple",
+          "title": "Breach Moonfall Site"
+        },
+        {
+          "checkpoint": 10,
+          "objective": "Obj_GoToDigSite1",
+          "title": "Reach Dig Site"
+        }
+      ]
+    },
+    "mission_main_shatteredlands1b": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552881",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Meet_Zane",
+          "title": "Destroy All Catapults"
+        },
+        {
+          "checkpoint": 15,
+          "objective": "Head_to_Electi_Town",
+          "title": "Clear Carcadia of Rippers"
+        }
+      ]
+    },
+    "Mission_Main_Mountains2b": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552882",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_ReturnToCalder",
+          "title": "Break Into Black Site"
+        },
+        {
+          "checkpoint": 3,
+          "objective": "Obj_OVERARCHING_FindPhase",
+          "title": "Find Lilith"
+        }
+      ]
+    },
+    "Mission_Main_Shatteredlands2": {
+      "source": "https://game8.co/games/Borderlands-4/archives/550809",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Talk_to_Technology_House_Leader",
+          "title": "Repair Carcadia"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "GoToBridge",
+          "title": "Reach the Old Refinery"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "Enter_the_Ripper_base",
+          "title": "Get the Old Refinery Password"
+        },
+        {
+          "checkpoint": 17,
+          "objective": "KillRipPPPPTop",
+          "title": "Find the Prisoners"
+        },
+        {
+          "checkpoint": 25,
+          "objective": "FindQueen2",
+          "title": "Find Quent"
+        }
+      ]
+    },
+    "Mission_Main_Mountains3": {
+      "source": "https://game8.co/games/Borderlands-4/archives/551805",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_AssaultTheFortress_Fakeout",
+          "title": "Reach Vile Lictor's Fortress"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "Obj_GotToCommunicationsArray",
+          "title": "Reach Power Substation"
+        },
+        {
+          "checkpoint": 16,
+          "objective": "Obj_EnterFortress",
+          "title": "Breach Vile Lictor\u2019s Fortress"
+        },
+        {
+          "checkpoint": 26,
+          "objective": "Obj_PlayerFacing_KillLictor",
+          "title": "Kill Vile Lictor"
+        }
+      ]
+    },
+    "Mission_Main_Shatteredlands3": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552635",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "TalkFAStart",
+          "title": "Meet Zane at Cliffside"
+        },
+        {
+          "checkpoint": 8,
+          "objective": "GoMegaDrill",
+          "title": "Take Spatial Accelerator"
+        },
+        {
+          "checkpoint": 22,
+          "objective": "ReturnRamp",
+          "title": "Kill Ripper Queen"
+        }
+      ]
+    },
+    "Mission_Main_SearchForLilith": {
+      "source": "https://game8.co/games/Borderlands-4/archives/552978",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "SFL_Goto_Zadra_Hideout",
+          "title": "Take Command Bolts"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "SFL_Reach_Space_Elevator",
+          "title": "Reach Launch Platform"
+        },
+        {
+          "checkpoint": 25,
+          "objective": "SFL_Exit_Control_Room",
+          "title": "Kill Everything"
+        }
+      ]
+    },
+    "Mission_Main_Elpis": {
+      "source": "https://game8.co/games/Borderlands-4/archives/553069",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "TakeOxygenKit",
+          "title": "Get Oxygen Kits for Zane and Amara"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "GoToVault",
+          "title": "Reach the Elpis Core"
+        },
+        {
+          "checkpoint": 19,
+          "objective": "EnterPhase",
+          "title": "Find Lilith"
+        },
+        {
+          "checkpoint": 22,
+          "objective": "DefeatRipperQueen",
+          "title": "Kill Callis"
+        }
+      ]
+    },
+    "Mission_Main_City1": {
+      "source": "https://game8.co/games/Borderlands-4/archives/553091",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "TalkToLilith",
+          "title": "Investigate City Wall"
+        },
+        {
+          "checkpoint": 2,
+          "objective": "Go_to_safehouse",
+          "title": "Go to Safehouse"
+        }
+      ]
+    },
+    "mission_main_city1_b": {
+      "source": "https://game8.co/games/Borderlands-4/archives/554712",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Go_to_Ascension_Fortress",
+          "title": "Go to Ascension Tower"
+        },
+        {
+          "checkpoint": 1,
+          "objective": "Go_to_rail_depot",
+          "title": "Get to the Rail Depot"
+        },
+        {
+          "checkpoint": 8,
+          "objective": "Return_to_Ascension_Fortress",
+          "title": "Return to Ascension Tower"
+        }
+      ]
+    },
+    "Mission_Main_City2": {
+      "source": "https://game8.co/games/Borderlands-4/archives/554739",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "PickUpEchoLog",
+          "title": "Access the Data Dump"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "Go_to_battle",
+          "title": "Remove the Ascension Tower's Lockdown"
+        }
+      ]
+    },
+    "Mission_Main_City3": {
+      "source": "https://game8.co/games/Borderlands-4/archives/554830",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "GetToUppercity",
+          "title": "Reach the Main Tower"
+        },
+        {
+          "checkpoint": 7,
+          "objective": "KillCorruptedAndOrderEnemies",
+          "title": "Fight Through Enemy Forces"
+        },
+        {
+          "checkpoint": 11,
+          "objective": "GetToTopOfTower",
+          "title": "Defeat the Timekeeper"
+        }
+      ]
+    },
+    "mission_main_cityepilogue": {
+      "source": "https://game8.co/games/Borderlands-4/archives/548529",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "EnterVault",
+          "title": "Defeat Arjay in the Vault"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "SpeakToLilith",
+          "title": "Speak to Lilith"
+        }
+      ]
+    },
+    "mission_main_cowbell0": {
+      "source": "https://www.powerpyx.com/borderlands-4-on-icebound-shores-abandoned-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "GoToCowbell",
+          "title": "Travel to the Whispering Glacier"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica0": {
+      "source": "https://allthings.how/borderlands-4-the-skag-and-the-robot-walkthrough-full-quest/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "GoToHarmonica",
+          "title": "Travel to Providence"
+        }
+      ]
+    },
+    "mission_main_harmonica1": {
+      "source": "https://allthings.how/borderlands-4-the-skag-and-the-robot-walkthrough-full-quest/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 1,
+          "objective": "Exit_pod",
+          "title": "Arrival and finding FL4K"
+        },
+        {
+          "checkpoint": 3,
+          "objective": "MeetFl4k",
+          "title": "The hunt with FL4K"
+        },
+        {
+          "checkpoint": 14,
+          "objective": "Ascend_tower",
+          "title": "Climb the tower and assault Chamber Pavilion"
+        },
+        {
+          "checkpoint": 22,
+          "objective": "DefendFl4k",
+          "title": "Defend FL4K and reach Mr. Chew"
+        }
+      ],
+      "entry_checkpoint": 1
+    },
+    "Mission_DLC_Mandolin": {
+      "source": "https://www.youtube.com/watch?v=Lbw8fHUaQRk",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Mandolin_Reach_Arcade",
+          "title": "Meet Zane and enter PRIVATE DICK"
+        },
+        {
+          "checkpoint": 4,
+          "objective": "Mandolin_Reach_Crime_Scene",
+          "title": "Crime-scene investigation",
+          "end_anchor_checkpoint": 7,
+          "required_objectives": {
+            "5": [
+              "Mandolin_Talk_Digi_Zane_REPORTER",
+              "Mandolin_Talk_Digi_Zane_DETECTIVE",
+              "Mandolin_Talk_Digi_Zane_FORENSICS"
+            ],
+            "6": [
+              "Mandolin_Crime_Scene_Echo_Scan"
+            ],
+            "7": [
+              "Mandolin_Collect_Evidence"
+            ],
+            "8": [
+              "Mandolin_Place_Bottle",
+              "Mandolin_Place_Paper",
+              "Mandolin_Place_Head"
+            ]
+          }
+        },
+        {
+          "checkpoint": 9,
+          "objective": "Mandolin_Reach_City_Entered",
+          "title": "Search the city and question Blade Diaz"
+        },
+        {
+          "checkpoint": 17,
+          "objective": "Mandolin_Reach_Club",
+          "title": "Investigate Club Aurora"
+        },
+        {
+          "checkpoint": 18,
+          "objective": "Mandolin_Reach_Arc_Tower",
+          "title": "Investigate Nexus Arc Tower"
+        },
+        {
+          "checkpoint": 27,
+          "objective": "Mandolin_Silent_Crisis_Enter",
+          "title": "Silent Crisis arena investigation"
+        },
+        {
+          "checkpoint": 33,
+          "objective": "Mandolin_NOR_Post_CoS",
+          "title": "Return to PRIVATE DICK and confront the murderer"
+        }
+      ]
+    },
+    "mission_main_cowbell1": {
+      "source": "https://www.powerpyx.com/borderlands-4-on-icebound-shores-abandoned-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "SearchScavCamp",
+          "title": "Search the camp and rescue Pickle"
+        },
+        {
+          "checkpoint": 3,
+          "objective": "FollowPickleFirstPod",
+          "title": "Search the escape pods with Pickle"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "FindDoorway1",
+          "title": "Explore the glacier and open the doorway"
+        },
+        {
+          "checkpoint": 15,
+          "objective": "FindMancubus",
+          "title": "Investigate the Speakeasy"
+        }
+      ]
+    },
+    "Mission_Main_Cowbell2": {
+      "source": "https://www.powerpyx.com/borderlands-4-hearing-things-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "FindEllie",
+          "title": "Track down Ellie"
+        },
+        {
+          "checkpoint": 8,
+          "objective": "ReturnToSpeakEasy",
+          "title": "Return to the Speakeasy"
+        },
+        {
+          "checkpoint": 10,
+          "objective": "FindRanch",
+          "title": "Investigate the shuggurath factory and hatchery"
+        },
+        {
+          "checkpoint": 17,
+          "objective": "ReturnBlockade",
+          "title": "Break the blockade and reach the Hollows"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica2": {
+      "source": "https://allthings.how/borderlands-4-the-chase-full-quest-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_SootheChew",
+          "title": "Follow Mr. Chew to the hideout"
+        },
+        {
+          "checkpoint": 6,
+          "objective": "Obj_ReachTopOfBlind",
+          "title": "Scout the route and free the pets"
+        },
+        {
+          "checkpoint": 16,
+          "objective": "Obj_EnterFl4ksHideout",
+          "title": "Search FL4K's hideout"
+        },
+        {
+          "checkpoint": 18,
+          "objective": "Obj_GoToVolcano",
+          "title": "Reach and assault the Volcano Fortress"
+        }
+      ]
+    },
+    "Mission_Main_Cowbell3": {
+      "source": "https://www.powerpyx.com/borderlands-4-it-grows-below-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Enter_Hollows",
+          "title": "Search the Hollows for Crazy Earl"
+        },
+        {
+          "checkpoint": 13,
+          "objective": "Talk_to_Botanist",
+          "title": "Gather Daphne's tincture ingredients"
+        },
+        {
+          "checkpoint": 24,
+          "objective": "Confront_earl",
+          "title": "Confront Crazed Earl and recover the fragment"
+        }
+      ]
+    },
+    "Mission_main_Harmonica2B": {
+      "source": "https://allthings.how/borderlands-4-clear-comms-walkthrough-on-providence-island/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_GoToTurbineRoom",
+          "title": "Follow Mr. Chew and reach the scrambler facility"
+        },
+        {
+          "checkpoint": 12,
+          "objective": "Obj_DestroySignalSrambler_1",
+          "title": "Disable the signal scramblers"
+        },
+        {
+          "checkpoint": 23,
+          "objective": "Kill_Tediore_Junior_Manager",
+          "title": "Defeat Baggett and restore communications"
+        }
+      ]
+    },
+    "Mission_Main_Cowbell4": {
+      "source": "https://www.powerpyx.com/borderlands-4-what-lies-dreaming-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "ReachStorm",
+          "title": "Reach Ellie and board the ship"
+        },
+        {
+          "checkpoint": 15,
+          "objective": "Reach_elevator",
+          "title": "Reach the cryo pod room with Ellie"
+        },
+        {
+          "checkpoint": 21,
+          "objective": "investigate_Cryo_Room",
+          "title": "Restore the ship's engine"
+        },
+        {
+          "checkpoint": 29,
+          "objective": "Reach_Ellie_0",
+          "title": "Rejoin Ellie and reach the bridge"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "CollectManagerHands",
+          "title": "Collect and deliver the manager Digi-Gauntlets"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3_Hotel": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "PassCapcha",
+          "title": "Complete Megan's orientation"
+        },
+        {
+          "checkpoint": 2,
+          "objective": "Enter_the_courtyard",
+          "title": "Capture-the-flag exercises"
+        },
+        {
+          "checkpoint": 8,
+          "objective": "ZiplinetoIsland",
+          "title": "Island climb and trust fall"
+        },
+        {
+          "checkpoint": 13,
+          "objective": "TotheBeach",
+          "title": "Beach exercise"
+        },
+        {
+          "checkpoint": 18,
+          "objective": "ReachBrandManager",
+          "title": "Find Megan and recover her Digi-Gauntlet"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3_Lava": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "GoToBatthhouse",
+          "title": "Reach and enter the bathhouse"
+        },
+        {
+          "checkpoint": 1,
+          "objective": "TalktoDucky",
+          "title": "Heat the sauna and recover the Digi-Gauntlet"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "HandtoRoost",
+          "title": "Return the Digi-Gauntlet to Mr. Chew"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3_Logistics": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "FindManager",
+          "title": "Reach the control tower"
+        },
+        {
+          "checkpoint": 7,
+          "objective": "KillManagerBot",
+          "title": "Defeat Reyes and delete his Digi-Space source"
+        },
+        {
+          "checkpoint": 14,
+          "objective": "TakeHandToChew",
+          "title": "Return the Digi-Gauntlet to Mr. Chew"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3_Spa": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Obj_FreeButler",
+          "title": "Enter Tranquility Retreat"
+        },
+        {
+          "checkpoint": 2,
+          "objective": "Obj_FindManager",
+          "title": "Search for Schulmann and collect the loot codes"
+        },
+        {
+          "checkpoint": 15,
+          "objective": "Obj_OpenSafeDoor",
+          "title": "Breach the safe room and restore power"
+        },
+        {
+          "checkpoint": 26,
+          "objective": "Obj_TalkToManager",
+          "title": "Recover Schulmann's Digi-Gauntlet and return"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica3_Theatre": {
+      "source": "https://allthings.how/borderlands-4-all-digi-gauntlet-quests-and-locations/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "Talk_to_dying_Electi",
+          "title": "Investigate Chamber Pavilion"
+        },
+        {
+          "checkpoint": 6,
+          "objective": "Investigate_basement",
+          "title": "Find Elena's research facility"
+        },
+        {
+          "checkpoint": 13,
+          "objective": "Scan_server_terminal",
+          "title": "Destroy Elena's research"
+        },
+        {
+          "checkpoint": 18,
+          "objective": "Reach_Elena",
+          "title": "Confront Elena and recover the Digi-Gauntlet"
+        }
+      ]
+    },
+    "Mission_Main_Harmonica4": {
+      "source": "https://allthings.how/borderlands-4-how-to-complete-the-rescue-fl4k-and-the-last-resort/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "InstructMrChew",
+          "title": "Rally Mr. Chew and assault the fortress gates"
+        },
+        {
+          "checkpoint": 5,
+          "objective": "EnterVolcanoBase",
+          "title": "Enter and fight through the Volcano Base"
+        },
+        {
+          "checkpoint": 13,
+          "objective": "RescueFL4K",
+          "title": "Reach FL4K and prepare the Ordonite attack"
+        },
+        {
+          "checkpoint": 17,
+          "objective": "KillHarmony",
+          "title": "Defeat Lieutenant Harmony and free FL4K"
+        }
+      ]
+    },
+    "Mission_Main_Cowbell5": {
+      "source": "https://www.powerpyx.com/borderlands-4-damnation-encroaches-walkthrough/",
+      "basis": "Native mission progression; walkthrough-informed route grouping. Section labels summarize complete routes.",
+      "sections": [
+        {
+          "checkpoint": 0,
+          "objective": "reach_the_megalith",
+          "title": "Reach the megalith"
+        },
+        {
+          "checkpoint": 7,
+          "objective": "Enter_the_megalith_0",
+          "title": "Confront Captain Willis and free Moxxi"
+        }
+      ]
+    }
+  }
+}

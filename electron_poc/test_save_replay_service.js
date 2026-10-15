@@ -4,7 +4,23 @@ const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:
 const crypto=require('node:crypto');
 const {createSaveReplayService}=require('./save_replay_service');
 
-async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,automatic=false,accountId='12345678901234567',encrypted=false,waypoint=false}={}){
+test('transient Windows journal replacement lock retries without repeating a game request',async t=>{
+  const f=await fixture(t);
+  const rename=fs.rename;let locked=0;
+  t.mock.method(fs,'rename',async(from,to)=>{
+    if(to===path.join(f.storage,'active.json')&&locked<2){
+      locked++;throw Object.assign(Error('Windows reader holds journal'),{code:'EPERM'});
+    }
+    return rename(from,to);
+  });
+  const result=await f.service.dispatch('start',{mission:'Mission_Test',checkpoint:28,acknowledge_shared_progress:true});
+  assert.equal(result.state,'await_other',JSON.stringify(result));assert.equal(locked,2);
+  const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  assert.equal(journal.id,f.r.lease);assert.equal(journal.phase,'await_other');
+  assert.deepEqual(await fs.readFile(f.file),f.source);
+});
+
+async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,exactBookmark=false,automatic=false,accountId='12345678901234567',encrypted=false,waypoint=false,nativeStation=false}={}){
   const base=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-replay-test-'));
   t.after(async()=>{const full=await fs.realpath(base);assert.equal(path.dirname(full),await fs.realpath(os.tmpdir()));assert(path.basename(full).startsWith('msbt-replay-test-'));await fs.rm(full,{recursive:true,force:true});});
   const saveRoot=path.join(base,'saves'),storage=path.join(base,'journal');
@@ -22,6 +38,7 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,a
   const section={checkpoint:28,world:'World_P',station:'World_P.Station',refresh_after_load:refresh,location:{x:10,y:20,z:30},initial_objectives:['encounter']};
   const spec={section};
   if(waypoint){spec.kind='selection';section.placement='waypoint';section.native_station_fallback=true;}
+  if(nativeStation){spec.kind='selection';section.placement='native';section.station_location={x:10,y:20,z:30};}
   const r={guid,world:'world_p',session:'session-one',pid:123,lease:null,calls:{},placements:0,
     lostReturn:false,unknown:false,switchDuringEdit:false};
   if(automatic){const text=JSON.stringify({guid:other,name:'Holding character',progress:0,inventory:[],level:1,currency:0});await fs.writeFile(path.join(account,'15.sav'),encrypted?await realCodec('encrypt',text):Buffer.from(text));}
@@ -29,10 +46,14 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,a
   const request=async(action,payload={})=>{
     const op=action.replace('mission_save_replay_','');
     if(op==='capture'){
-      const captured={...section};if(nativeBookmark){captured.placement='native';delete captured.location;}
+      const captured={...section,location:{...section.location}};
+      if(exactBookmark)captured.placement='exact';
+      if(r.captureCount&&r.captureMove)captured.location.x+=r.captureMove;
+      r.captureCount=(r.captureCount||0)+1;
+      if(nativeBookmark){captured.placement='native';delete captured.location;}
       return {ok:true,guid:r.guid,session:r.session,pid:r.pid,spec:{kind:'bookmark',guid:r.guid,mission:'Mission_Test',title:'Synthetic mission',section:captured}};
     }
-    if(op==='status'||op==='restore_guard')return {ok:true,loaded:true,guid:r.guid,world:r.world,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
+    if(op==='status'||op==='restore_guard')return {ok:true,loaded:true,guid:r.guid,world:r.world,travel_loaded:r.travelLoaded,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
     if(op==='begin'){if(r.lease)return {ok:false,message:'Lease already held'};r.lease=payload.id;return {ok:true,guid,session:r.session,pid:r.pid,spec:payload.bookmark_spec?{...payload.bookmark_spec,force_travel:true}:spec};}
     if(payload.session!==r.session||payload.id!==r.lease)return {ok:false,message:'Session differs'};
     if(op==='close'){r.lease=null;return {ok:true};}
@@ -46,10 +67,24 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,a
     if(op==='loader_select'){
       r.automaticCalls.push(payload.slot);
       r.guid=r.wrongAutomaticTarget?'b'.repeat(32):(payload.role==='other'?other:guid);
+      if(r.bookmarkMapArrival&&payload.role==='original'&&r.world!==section.world.toLowerCase()){
+        // Native travel objectives can advance as soon as their character
+        // loads onto the map we are about to leave.
+        const saved=JSON.parse(await fs.readFile(file,'utf8'));
+        await fs.writeFile(file,JSON.stringify({...saved,progress:29}));
+      }
       r.calls[`loader_select_${payload.role}_${payload.cycle}`]={state:'returned',result:{ok:true}};
       return {ok:true};
     }
     if(op==='check')return {ok:true,boundary_ready:r.boundaryReady!==false,encounter_ready:true};
+    if(op==='station_check')return {ok:true,at_station:r.stationAt!==false,placement_ready:r.stationReady!==false,message:'Selected respawn station has not loaded'};
+    if(op==='station_placement_status')return {ok:true,placement_verified:true};
+    if(op==='station_place'){
+      r.stationRequests=(r.stationRequests||0)+1;r.stationAt=!r.stationDrift;
+      r.calls.station_place={state:'returned',result:{ok:true}};
+      if(r.loseStationReturn){r.loseStationReturn=false;throw Error('Station placement return lost');}
+      return {ok:true};
+    }
     if(op==='placement_status')return {ok:true,placement_verified:true};
     if(op==='placement_ready')return {ok:true,placement_ready:r.placementReady!==false};
     if(op==='track'){r.trackRequests=(r.trackRequests||0)+1;return {ok:true,tracked:true};}
@@ -71,6 +106,7 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,a
       return {ok:true,spec:{...p.spec,snapshot_sha256:crypto.createHash('sha256').update(snapshot).digest('hex')},snapshot};
     }
     if(p.action==='edit'){
+      r.editedSpec=p.spec;
       if(r.switchDuringEdit)r.guid=guid;
       return {ok:true,yaml:JSON.stringify({...data,progress:28}),receipt:{preserved_unowned_data:true}};
     }
@@ -91,6 +127,91 @@ async function reach(f,state){
   assert.fail('Did not reach '+state+': '+JSON.stringify(result));
 }
 async function install(f){await start(f);f.r.guid=f.other;await reach(f,'await_original');}
+
+for(const mode of [undefined,'clear','restore'])test('fog choice survives desktop restart before edit: '+mode,async t=>{
+  const f=await fixture(t);await f.service.dispatch('start',{mission:'Mission_Test',checkpoint:28,acknowledge_shared_progress:true,...(mode?{fog_mode:mode}:{})});
+  f.service=f.make();f.r.guid=f.other;await reach(f,'await_original');
+  assert.equal(f.r.editedSpec.fog_mode,mode||'leave');
+});
+
+test('invalid fog choice is rejected before any character/save action',async t=>{
+  const f=await fixture(t);
+  const result=await f.service.dispatch('start',{acknowledge_shared_progress:true,fog_mode:'invalid'});
+  assert.equal(result.ok,false);assert.equal(f.r.lease,null);assert.deepEqual(await fs.readFile(f.file),f.source);
+});
+
+test('bookmark load forwards fog choice without changing captured bookmark',async t=>{
+  const f=await fixture(t,{nativeBookmark:true});
+  const saved=await f.service.dispatch('bookmark_save',{name:'Fog test'});
+  const id=saved.bookmarks[0].id;
+  await f.service.dispatch('bookmark_start',{id,acknowledge_shared_progress:true,fog_mode:'restore'});
+  f.r.guid=f.other;await reach(f,'await_original');
+  assert.equal(f.r.editedSpec.fog_mode,'restore');
+});
+
+test('native replay verifies the nearby station without an unnecessary teleport',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;await reach(f,'ready');
+  assert.equal(f.r.travelRequests,1);assert.equal(f.r.stationRequests,undefined);assert.equal(f.r.placements,0);
+});
+
+test('DLC opening restages inactive on its source map, retaining current gear and the original backup',async t=>{
+  const f=await fixture(t,{nativeStation:true});f.spec.section.restore_active_objectives=['encounter'];
+  await install(f);
+  const destinationSave=JSON.parse(await fs.readFile(f.file,'utf8'));destinationSave.progress=99;
+  await fs.writeFile(f.file,JSON.stringify(destinationSave));
+  f.r.guid=f.guid;await reach(f,'await_other_refresh');
+  const current=JSON.parse(await fs.readFile(f.file,'utf8'));current.inventory.push('@UNewGear');current.currency=100;
+  await fs.writeFile(f.file,JSON.stringify(current));f.r.guid=f.other;
+  await reach(f,'await_original_refresh');
+  const edited=JSON.parse(await fs.readFile(f.file,'utf8'));
+  assert.deepEqual(edited.inventory,current.inventory);assert.equal(edited.currency,100);
+  const job=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  const runs=path.join(f.storage,'runs',job.id);
+  assert.deepEqual(await fs.readFile(path.join(runs,'before.sav')),f.source);
+  assert.equal(job.sourceHash,crypto.createHash('sha256').update(f.source).digest('hex'));
+  assert.equal(JSON.parse(await fs.readFile(path.join(runs,'before-entry-refresh.sav'),'utf8')).currency,100);
+  f.r.guid=f.guid;await reach(f,'ready');
+  assert.equal(f.r.travelRequests,1);assert.equal(f.r.placements,0);
+  f.r.guid=f.other;const restored=await f.service.dispatch('restore');assert.equal(restored.state,'restored');
+  assert.deepEqual(await fs.readFile(f.file),f.source);
+});
+
+test('DLC source-map restage rejects character reselection before replacement',async t=>{
+  const f=await fixture(t,{nativeStation:true});f.spec.section.restore_active_objectives=['encounter'];
+  await install(f);f.r.guid=f.guid;await reach(f,'await_other_refresh');
+  const before=await fs.readFile(f.file);f.r.guid=f.other;f.r.switchDuringEdit=true;
+  const result=await f.service.dispatch('advance');assert.equal(result.state,'uncertain');
+  assert.deepEqual(await fs.readFile(f.file),before);
+});
+
+test('same-map reload waits for the new world before checking station arrival',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;f.r.travelLoaded=false;
+  await reach(f,'travel_wait');const waiting=await f.service.dispatch('advance');assert.equal(waiting.state,'travel_wait');
+  assert.equal(f.r.stationRequests,undefined);f.r.travelLoaded=true;await reach(f,'ready');assert.equal(f.r.travelRequests,1);
+});
+
+test('map entrance arrival is corrected once to a loaded native station',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;f.r.stationAt=false;
+  await reach(f,'ready');assert.equal(f.r.stationRequests,1);assert.equal(f.r.travelRequests,1);assert.equal(f.r.placements,0);
+});
+
+test('an unloaded station never becomes a false ready result or an unsafe teleport',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;f.r.stationAt=false;f.r.stationReady=false;
+  await reach(f,'station_wait');const now=Date.now;let clock=now();t.mock.method(Date,'now',()=>clock);
+  const waiting=await f.service.dispatch('advance');assert.equal(waiting.state,'station_wait');
+  clock+=21000;const failed=await f.service.dispatch('advance');assert.equal(failed.state,'failed');
+  assert.match(failed.message,/station/);assert.equal(f.r.stationRequests,undefined);assert.equal(f.r.placements,0);
+});
+
+test('a lost station correction reply reconciles its receipt without another teleport',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;f.r.stationAt=false;f.r.loseStationReturn=true;
+  await reach(f,'uncertain');f.service=f.make();await reach(f,'ready');assert.equal(f.r.stationRequests,1);
+});
+
+test('movement away after a station correction stops without repeating placement',async t=>{
+  const f=await fixture(t,{nativeStation:true});await install(f);f.r.guid=f.guid;f.r.stationAt=false;f.r.stationDrift=true;
+  const failed=await reach(f,'failed');assert.match(failed.message,/No placement was repeated/);assert.equal(f.r.stationRequests,1);
+});
 
 for(const code of ['EBUSY','EACCES','EPERM'])test(`save read ${code} waits before cross-map travel without another save edit`,async t=>{
   const f=await fixture(t);await install(f);f.r.guid=f.guid;f.r.world='different_map_p';
@@ -295,6 +416,28 @@ test('uncertain generated waypoint never falls back or repeats its teleport',asy
   assert.equal(job.placementFallback,undefined);assert.equal(job.phase,'uncertain');
 });
 
+for(const drift of [false,true])test('refreshed unsafe waypoint verifies native station fallback: '+drift,async t=>{
+  const f=await fixture(t,{waypoint:true});f.spec.section.restore_active_objectives=['encounter'];f.spec.section.station_location={x:10,y:20,z:30};
+  await install(f);f.r.guid=f.guid;await reach(f,'await_other_refresh');
+  f.r.guid=f.other;await reach(f,'await_original_refresh');f.r.guid=f.guid;
+  await reach(f,'placement_final_gate');f.r.placementReady=false;f.r.stationAt=!drift;
+  const active=path.join(f.storage,'active.json'),job=JSON.parse(await fs.readFile(active,'utf8'));
+  job.since=Date.now()-11000;await fs.writeFile(active,JSON.stringify(job));f.service=f.make();
+  const ready=await reach(f,'ready');assert.match(ready.message,/native spawn station/);
+  assert.equal(f.r.placements,0);assert.equal(f.r.stationRequests,drift?1:undefined);
+});
+
+test('refreshed fallback never repeats a station correction whose return was lost',async t=>{
+  const f=await fixture(t,{waypoint:true});f.spec.section.restore_active_objectives=['encounter'];f.spec.section.station_location={x:10,y:20,z:30};
+  await install(f);f.r.guid=f.guid;await reach(f,'await_other_refresh');
+  f.r.guid=f.other;await reach(f,'await_original_refresh');f.r.guid=f.guid;
+  await reach(f,'placement_final_gate');f.r.placementReady=false;f.r.stationAt=false;f.r.loseStationReturn=true;
+  const active=path.join(f.storage,'active.json'),job=JSON.parse(await fs.readFile(active,'utf8'));
+  job.since=Date.now()-11000;await fs.writeFile(active,JSON.stringify(job));f.service=f.make();
+  await reach(f,'uncertain');f.service=f.make();await reach(f,'ready');
+  assert.equal(f.r.stationRequests,1);assert.equal(f.r.placements,0);
+});
+
 test('Epic encrypted account profile completes automatic reload and waypoint transaction',async t=>{
   const accountId='aBcDeFaBcDeFaBcD0123456789abcdef';
   const f=await fixture(t,{automatic:true,encrypted:true,accountId,waypoint:true});
@@ -306,4 +449,46 @@ test('Epic encrypted account profile completes automatic reload and waypoint tra
   assert.equal(data.progress,28);assert.deepEqual(data.inventory,JSON.parse(f.source).inventory);assert.equal(data.level,70);
   const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
   assert.equal(journal.account,accountId);assert.equal(f.r.placements,1);
+});
+
+for(const crossMap of [false,true])test('bookmark reload preserves its boundary after map arrival: '+crossMap,async t=>{
+  const f=await fixture(t,{automatic:true,nativeBookmark:true});
+  const capture=await f.service.dispatch('bookmark_save',{name:'Before travel'});
+  assert.equal(capture.ok,true);
+  f.r.bookmarkMapArrival=true;if(crossMap)f.r.world='harmonica_p';
+  const originalNow=Date.now;let clock=originalNow();Date.now=()=>clock;t.after(()=>Date.now=originalNow);
+  let result=await f.service.dispatch('bookmark_start',{id:capture.bookmarks[0].id,automatic:true,acknowledge_shared_progress:true});
+  for(let i=0;i<55&&result.state!=='ready'&&result.ok;i++){clock+=2000;result=await f.service.dispatch('advance');}
+  assert.equal(result.state,'ready',JSON.stringify(result));
+  assert.equal(JSON.parse(await fs.readFile(f.file,'utf8')).progress,28);
+  assert.deepEqual(f.r.automaticCalls,crossMap?['C_15','C_17','C_15','C_17']:['C_15','C_17']);
+  const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  assert.equal(journal.entryRestaging===true,crossMap);
+  assert.deepEqual(await fs.readFile(path.join(f.storage,'runs',journal.id,'before.sav')),f.source);
+  if(crossMap)assert.equal(JSON.parse(await fs.readFile(path.join(f.storage,'runs',journal.id,'before-entry-refresh.sav'),'utf8')).progress,29);
+});
+
+test('exact bookmark restores its recorded point and mission after cross-map reload, keeping later gear',async t=>{
+  const f=await fixture(t,{automatic:true,exactBookmark:true});
+  f.spec.section.location={x:10.123456789,y:-20.987654321,z:30.125};
+  const capture=await f.service.dispatch('bookmark_save',{name:'Precise practice point'});
+  assert.equal(capture.ok,true);assert.equal(capture.bookmarks[0].exactLocation,true);
+  const later={...JSON.parse(f.source),inventory:['EarnedLaterGear'],level:71,progress:77};
+  await fs.writeFile(f.file,JSON.stringify(later));f.r.world='harmonica_p';f.r.bookmarkMapArrival=true;
+  const originalNow=Date.now;let clock=originalNow();Date.now=()=>clock;t.after(()=>Date.now=originalNow);
+  let result=await f.service.dispatch('bookmark_start',{id:capture.bookmarks[0].id,automatic:true,acknowledge_shared_progress:true});
+  for(let i=0;i<55&&result.state!=='ready'&&result.ok;i++){clock+=2000;result=await f.service.dispatch('advance');}
+  assert.equal(result.state,'ready',JSON.stringify(result));assert.equal(f.r.placements,1);
+  assert.equal(f.r.editedSpec.section.placement,'exact');
+  assert.deepEqual(f.r.editedSpec.section.location,f.spec.section.location);
+  const saved=JSON.parse(await fs.readFile(f.file,'utf8'));
+  assert.equal(saved.progress,28);assert.deepEqual(saved.inventory,later.inventory);assert.equal(saved.level,71);
+});
+
+test('moving during exact bookmark capture leaves no misleading saved point',async t=>{
+  const f=await fixture(t,{exactBookmark:true});f.r.captureMove=11;
+  const result=await f.service.dispatch('bookmark_save',{name:'Moving'});
+  assert.equal(result.ok,false);assert.match(result.message,/changed during capture/);
+  const list=await f.service.dispatch('bookmark_list');assert.deepEqual(list.bookmarks,[]);
+  assert.equal(f.r.placements,0);assert.deepEqual(await fs.readFile(f.file),f.source);
 });

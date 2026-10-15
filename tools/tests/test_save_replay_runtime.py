@@ -32,6 +32,18 @@ def test_bookmark_uses_actual_catalog_membership_and_requires_matching_character
         with pytest.raises(ValueError): m.bookmark_specification(bad, state['guid'])
 
 
+def test_previously_captured_bookmark_survives_location_metadata_only_catalog_rebuild(runtime,monkeypatch):
+    m,state,_=runtime
+    catalog=json.loads((ROOT/'mission_practice_catalog.json').read_text(encoding='utf-8'))
+    previous='0af8298d8427b8802ead1de0e3638ebf50e303586c6388a2919f0dc3dcc61945'
+    assert previous in catalog['bookmark_compatible_catalog_sha256']
+    monkeypatch.setitem(sys.modules,m.__package__+'.mission_execution',N(DATA=catalog['missions']))
+    spec=m.specification('Mission_Main_Shatteredlands3',28)
+    spec.update(kind='bookmark',guid=state['guid'],catalog_sha256=previous)
+    spec['section']['initial_objectives']=[name.casefold() for name in spec['section']['initial_objectives']]
+    assert m.bookmark_specification(spec,state['guid'])['force_travel']
+
+
 def test_native_spawn_state_cannot_issue_custom_placement(runtime):
     m, _, payload = runtime
     m._lease['spec']['section']['placement'] = 'native'
@@ -40,6 +52,58 @@ def test_native_spawn_state_cannot_issue_custom_placement(runtime):
         with pytest.raises(RuntimeError, match='native respawn point'):
             m.dispatch('mission_save_replay_'+action, payload)
     assert 'place_0' not in m._lease['calls']
+
+
+def station_runtime(m, state, monkeypatch, location, actual):
+    m._lease['spec'].update(kind='selection')
+    m._lease['spec']['section']['station_location']=location
+    pc=N(Pawn=N(K2_GetActorLocation=lambda:N(**{k.upper():v for k,v in actual.items()})))
+    m._host=lambda:(pc,N(),state['guid'],state['world'])
+    calls=[]
+    helper=N(preflight=lambda *args:None,
+             start=lambda job,rows,journal:calls.append(job['anchor']['location']),verify=lambda *args:True)
+    monkeypatch.setitem(sys.modules,m.__package__+'.mission_recorded_placement',helper)
+    return helper,calls
+
+
+def test_nearby_native_station_arrival_does_not_issue_any_teleport(runtime,monkeypatch):
+    m,state,p=runtime
+    _,calls=station_runtime(m,state,monkeypatch,dict(x=100,y=0,z=0),dict(x=0,y=0,z=0))
+    assert m.dispatch('mission_save_replay_station_check',p)['at_station']
+    assert calls==[]
+
+
+def test_same_named_old_world_does_not_pass_station_arrival(runtime,monkeypatch):
+    m,state,p=runtime
+    _,calls=station_runtime(m,state,monkeypatch,dict(x=100,y=0,z=0),dict(x=0,y=0,z=0))
+    m._lease['travel_world']=100;monkeypatch.setattr(m,'_world_address',lambda:100)
+    assert not m.dispatch('mission_save_replay_status',{})['travel_loaded']
+    assert not m.dispatch('mission_save_replay_station_check',p)['at_station']
+    monkeypatch.setattr(m,'_world_address',lambda:101)
+    assert m.dispatch('mission_save_replay_station_check',p)['at_station']
+    assert calls==[]
+
+
+def test_wrong_arrival_only_corrects_to_loaded_authored_station_once(runtime,monkeypatch):
+    m,state,p=runtime
+    helper,calls=station_runtime(m,state,monkeypatch,dict(x=10000,y=0,z=0),dict(x=0,y=0,z=0))
+    def unloaded(*args):raise RuntimeError('Recorded location is not loaded or cannot fit this player.')
+    helper.preflight=unloaded
+    result=m.dispatch('mission_save_replay_station_check',p)
+    assert not result['at_station'] and not result['placement_ready'] and calls==[]
+    helper.preflight=lambda *args:None
+    assert m.dispatch('mission_save_replay_station_check',p)['placement_ready']
+    m.dispatch('mission_save_replay_station_place',p);m.dispatch('mission_save_replay_station_place',p)
+    assert calls==[dict(x=10000,y=0,z=0)]
+    assert m.dispatch('mission_save_replay_station_placement_status',p)['placement_verified']
+
+
+def test_station_correction_does_not_apply_to_bookmarks_or_untrusted_location(runtime):
+    m,_,p=runtime
+    m._lease['spec'].update(kind='bookmark')
+    m._lease['spec']['section']['station_location']=dict(x=1,y=2,z=3)
+    with pytest.raises(RuntimeError,match='no authored native station'):
+        m.dispatch('mission_save_replay_station_check',p)
 
 
 def test_forward_dlc_selection_rechecks_ownership_before_acquiring_lease(runtime,monkeypatch):
@@ -53,22 +117,28 @@ def test_forward_dlc_selection_rechecks_ownership_before_acquiring_lease(runtime
     assert m._lease is None
 
 
-def test_state_capture_has_no_position_or_grounding_dependency(runtime, monkeypatch):
+@pytest.mark.parametrize('mode,coordinate',[(1,123.456789),(3,123.456789),(1,float('nan'))])
+def test_bookmark_captures_exact_position_with_current_objectives(runtime, monkeypatch,mode,coordinate):
     m, state, _ = runtime
     m._lease['closed'] = True
     name = 'Mission_Main_Shatteredlands3'
     engine = N(profile='steam-25372571',base=100, snapshot=lambda: {}, u64=lambda addr: 100+0xb973820 if addr==0x1000 else 0,
                fact=lambda *args: dict(tag=2, raw=(b'\x02'+bytes(11)+struct.pack('<i',28)).hex()))
-    m._host = lambda: (N(), engine, state['guid'], 'world_p')
+    pawn=N(CharacterMovement=N(MovementMode=mode),K2_GetActorLocation=lambda:N(X=coordinate,Y=-7.89123,Z=500.125))
+    m._host = lambda: (N(Pawn=pawn), engine, state['guid'], 'world_p')
     progress = sys.modules[m.__package__+'.mission_progression']
     progress.select = lambda *_: [name]
     progress._row = lambda *_: dict(record='0x1000')
     progress._metadata = lambda *_: dict(title='Synthetic')
     monkeypatch.setitem(sys.modules,m.__package__+'.mission_execution',N(DATA={name:{}},
         objectives=lambda *_:[dict(name='KillMudmouth',group=28,state=4)]))
-    captured = m.capture_bookmark()
-    assert captured['spec']['section']['placement'] == 'native'
-    assert 'location' not in captured['spec']['section']
+    if mode!=1 or coordinate!=coordinate:
+        with pytest.raises(RuntimeError):m.capture_bookmark()
+    else:
+        captured=m.capture_bookmark()['spec']['section']
+        assert captured['placement']=='exact'
+        assert captured['location']==dict(x=coordinate,y=-7.89123,z=500.125)
+        assert captured['checkpoint']==28 and captured['initial_objectives']==['killmudmouth']
 
 
 @pytest.fixture
@@ -181,6 +251,8 @@ def test_bridge_routes_and_queues_save_replay():
     scope = {};exec(compile(ast.Module(body=assignments, type_ignores=[]), '<bridge queue>', 'exec'), scope)
     assert 'mission_save_replay_placement_status' in scope['_PROGRESS_JOB_ACTIONS']
     assert 'mission_save_replay_placement_ready' in scope['_PROGRESS_JOB_ACTIONS']
+    for action in ('station_check','station_place','station_placement_status'):
+        assert 'mission_save_replay_'+action in scope['_PROGRESS_JOB_ACTIONS']
     route = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == '_handle_action')
     assert any(isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr == 'startswith'
                and n.args and isinstance(n.args[0], ast.Constant) and n.args[0].value == 'mission_save_replay_'

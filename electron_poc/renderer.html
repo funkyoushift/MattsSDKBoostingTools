@@ -470,6 +470,10 @@
             <label>Replay from <select id="missionPracticeSelect" style="width:100%"></select></label>
             <p id="missionPracticeNote" class="muted-line">Choose the mission beginning or an objective. Replay prepares its area and uses a verified jump location when available.</p>
             <details id="missionPracticeUnavailable" hidden><summary id="missionPracticeUnavailableSummary">Unavailable starting points</summary><ul id="missionPracticeUnavailableList" class="mission-unavailable-points"></ul></details>
+            <div id="missionReplayFogOptions">
+              <label>Map fog when loading <select id="missionReplayFog"><option value="leave" selected>Leave unchanged (default)</option><option value="clear">Clear all saved map fog</option><option value="restore">Restore all saved map fog</option></select></label>
+              <p class="muted-line">Applies when loading a mission or bookmark. Changes fog on maps already recorded in this save; unvisited maps keep their normal fog. Map icons and discovery progress are preserved.</p>
+            </div>
             <div class="button-row">
               <button id="missionPracticeBtn" type="button" disabled>Replay from selected objective</button>
               <button id="missionPracticeStop" type="button" disabled>Stop replay setup</button>
@@ -478,7 +482,7 @@
             <section id="missionSaveReplayControls" aria-label="Save replay progress">
               <fieldset>
                 <legend>Mission-state bookmarks — experimental</legend>
-                <p class="muted-line">While playing a readable mission, save its current state for replay. This does not create starting points for missions you have not bookmarked. Loading restores the captured mission/world timeline, keeping your current equipment and levels. Later mission progress is rewound. New bookmarks use the game’s saved respawn station with no custom location or teleport. Characters reload automatically using a second existing character in the same profile. Mission-state capture and automatic reload have limited live checks; broader encounter behavior remains experimental.</p>
+                <p class="muted-line">Stand at the exact point you want to practice and save a bookmark. It records your position and current saved mission/world state. Loading restores that state and returns you to the recorded position, keeping your current equipment and levels. Smaller steps inside a main objective can be practiced this way. Characters reload automatically using a second existing character in the same profile. Older bookmarks marked “spawn station” retain their original station-based loading.</p>
                 <label>Bookmark name <input id="missionBookmarkName" maxlength="80" placeholder="Before the boss or a favorite mission section"></label>
                 <div class="button-row"><button id="missionBookmarkSave" type="button">Save current mission state</button><button id="missionBookmarkRefresh" type="button">Refresh bookmarks</button></div>
                 <label>Saved mission state <select id="missionBookmarkSelect" style="width:100%"><option value="">No bookmarks yet</option></select></label>

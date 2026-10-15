@@ -47,9 +47,24 @@ def test_native_rejection_or_exception_restores_settings_and_never_retries(nativ
         if result=='exception':raise RuntimeError('uncertain')
         return result
     n.pawn.K2_TeleportTo=teleport
+    n.pawn.K2_GetActorLocation=lambda:dict(X=501.,Y=2.,Z=3.)
     with pytest.raises(RuntimeError):n.module.start(n.job,n.rows,n.events.append)
     assert n.calls==['teleport'] and n.pawn.CharacterMovement.GravityScale==1.5
     assert n.job['state']=='uncertain' and not n.job['recorded_placement'][0]['returned']
+
+
+def test_false_native_return_at_exact_destination_requires_stable_grounded_readback(native,monkeypatch):
+    n=native
+    n.pawn.K2_TeleportTo=lambda *_:n.calls.append('teleport') or False
+    n.module.start(n.job,n.rows,n.events.append)
+    assert n.calls==['teleport']
+    record=n.job['recorded_placement'][0]
+    assert not record['native_reported_success'] and record['arrival_confirmed_by_readback']
+    monkeypatch.setattr(n.module.time,'monotonic',lambda:n.job['recorded_verify_since']+1.)
+    n.helper.players_grounded=lambda _:False
+    assert not n.module.verify(n.job,n.rows)
+    n.helper.players_grounded=lambda _:True
+    assert n.module.verify(n.job,n.rows)
 
 
 def test_unloaded_or_nonwalkable_location_never_moves_player(native):
@@ -96,3 +111,14 @@ def test_verification_requires_same_pawn_and_grounding(native,monkeypatch):
     assert not n.module.verify(n.job,n.rows)
     n.pawn._get_address=lambda:999
     with pytest.raises(RuntimeError,match='Players changed'):n.module.verify(n.job,n.rows)
+
+
+@pytest.mark.parametrize('exact',[False,True])
+def test_exact_bookmark_rejects_position_drift_accepted_for_a_general_waypoint(native,monkeypatch,exact):
+    n=native;n.job['exact_location']=exact
+    n.module.start(n.job,n.rows,n.events.append)
+    monkeypatch.setattr(n.module.time,'monotonic',lambda:n.job['recorded_verify_since']+1.)
+    n.pawn.K2_GetActorLocation=lambda:dict(X=51.,Y=2.,Z=3.)
+    if exact:
+        with pytest.raises(RuntimeError,match='Recorded placement moved'):n.module.verify(n.job,n.rows)
+    else:assert n.module.verify(n.job,n.rows)

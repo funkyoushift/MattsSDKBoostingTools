@@ -9,6 +9,54 @@ spec=importlib.util.spec_from_file_location('practice_catalog_builder',ROOT/'too
 builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
 
 
+def test_level_instance_scope_is_not_silently_resolved_in_top():
+    actor=dict(map='World_P',submap='LI_Harmonica_Mission',groupname='Harmonica',registryname='IO_Discovery_Harmonica')
+    address='registry.world_p.li_harmonica_mission.harmonica.io_discovery_harmonica.__nochannel'
+    top=address.replace('.li_harmonica_mission.','.top.')
+    locations={address:[dict(location=dict(x=1,y=2,z=3),pointer='/right')],top:[dict(location=dict(x=9,y=9,z=9),pointer='/wrong')]}
+    assert builder.actor_locations(actor,locations)[0][0]==address
+    assert builder.actor_locations(actor,{top:locations[top]})==[]
+
+
+def test_native_completion_fields_include_hack_panels_carryable_targets_and_echo_logs():
+    for kind,fields in [('EchoPanelHack',('echopanel','returntrigger')),('PlaceCarryable',('container',)),('EchoLog',('echologio',))]:
+        assert builder.completion_fields(dict(structtype="Asset'/Script/OakGame.ObjectiveTypeSettings_"+kind+"'"))==fields
+
+
+def test_optional_parent_ancestry_changes_spawn_metadata_not_native_child_flag():
+    parent=dict(objective='optional_parent',optional='true')
+    child=dict(objective='child',optional='false',parentobjective='optional_parent')
+    assert builder.optional_for_spawn(child,{'optional_parent':[('/parent',parent)]})
+    assert child['optional']=='false'
+    assert not builder.optional_for_spawn(child,{})
+    assert not builder.optional_for_spawn(dict(child,parentobjective='child'),{'child':[('/child',child)]})
+
+
+def test_scene_reference_never_becomes_an_enemy_completion_and_conditional_ui_markers_are_rejected():
+    address='registry.world_p.top.base.enemy_origin.__nochannel'
+    aliases={'spawn':[dict(map='World_P',groupname='base',registryname='enemy_origin')]}
+    points={address:[dict(location=dict(x=1,y=2,z=3),pointer='/spawnpoint')]}
+    gameplay=dict(structtype="Asset'/Script/OakGame.ObjectiveTypeSettings_OakKill'",spawner='spawn')
+    assert builder.completion_aliases(gameplay)==[(k,None) for k in ('object','triggervolume','ainode','target')]
+    assert builder.authored_scene_anchor(gameplay,aliases,points)['location']==dict(x=1,y=2,z=3)
+    marker=dict(structtype="Asset'/Script/GbxGame.ObjectiveTypeSettings_Custom'",bhidedefaultprimarywaypointinui='true',
+                additionalwaypoints=[dict(runtimeactor='NPC',staticactor='spawn',condition='future')])
+    assert builder.authored_scene_anchor(marker,aliases,points) is None
+
+
+def test_metadata_only_bookmark_compatibility_requires_identical_native_source_and_timeline():
+    before=dict(source_hashes={'source':'hash'},missions={'mission':dict(mission_set='set',groups=[
+        dict(index=0,objectives=[dict(name='parent'),dict(name='child')]),dict(index=1,objectives=[dict(name='parent')])])})
+    after=copy.deepcopy(before);after['missions']['mission']['groups'][1]['objectives'].append(dict(name='child',scene_anchor={'new':'metadata'}))
+    assert builder.same_native_timeline(before,after)
+    for mutate in [lambda d:d['source_hashes'].update(source='new'),
+                   lambda d:d['missions']['mission']['groups'][0].update(index=4),
+                   lambda d:d['missions']['mission']['groups'][0]['objectives'].pop(),
+                   lambda d:d['missions']['mission']['groups'][0]['objectives'].append(dict(name='new_id'))]:
+        changed=copy.deepcopy(after);mutate(changed)
+        assert not builder.same_native_timeline(before,changed)
+
+
 def test_tracker_dependencies_do_not_reinterpret_failure_or_compound_conditions():
     external=dict(structtype="Asset'/Script/GbxGame.ObjectiveTypeSettings_External'",subtype='InternalObjective',internalobjective='Child')
     assert builder.completion_dependencies(external)==['Child']

@@ -4,6 +4,7 @@ Unlike bookmarks, these are requested edits, not captured playthrough states.
 The game initializes the selected/current/future objectives after a fresh reload.
 """
 import copy
+import re
 from pathlib import Path
 import yaml
 from mission_save_boundary import BoundaryError, canonical, mapping, member, rebuild, scalar_edit
@@ -37,6 +38,12 @@ def edit(text, spec):
     checkpoint = section['checkpoint']
     if type(checkpoint) is not int or checkpoint < 0:
         raise BoundaryError('Invalid selected objective')
+    active = section.get('restore_active_objectives', [])
+    if (active and (checkpoint != 0 or section.get('station_selection') != 'authored mission entry'
+            or not set(active).issubset(section.get('initial_objectives', []))
+            or set(active) & set(section['past_objectives'])
+            or any(not isinstance(n, str) or not re.fullmatch(r'[a-z0-9_]+', n) for n in active))):
+        raise BoundaryError('Invalid initial travel-objective state')
     tree = yaml.compose(text)
     before = canonical(tree)
     missions = member(tree, 'missions')
@@ -46,6 +53,12 @@ def edit(text, spec):
     future = {tuple(v) for v in spec['future_missions']}
     if selected in past | future or past & future:
         raise BoundaryError('Conflicting story dependency ownership')
+    station_flags = spec['section'].get('station_prerequisites', [])
+    for flag in station_flags:
+        owner = (flag['mission_set'], flag['mission'])
+        if (owner not in past | {selected} or not re.fullmatch(r'[a-z0-9_]+', flag['objective'])
+                or owner == selected and flag['objective'] not in section['past_objectives']):
+            raise BoundaryError('Respawn station would require future or unrelated objective progress')
     observed = yaml.compose(Path(__file__).with_name('mission_save_observed.yaml').read_text(encoding='utf-8'))
     observed_sets = mapping(member(member(observed, 'missions'), 'local_sets'))
     observed_rec = None
@@ -71,6 +84,10 @@ def edit(text, spec):
         rec = member(records, mission)
         if (set_name, mission) == selected:
             remove(group, 'status')
+            # A chained set can still point at the next mission even after
+            # its selected mission's own cursor is rewound. Let the game
+            # rebuild that set position from the edited mission records.
+            remove(group, 'cursorposition')
             put(rec, 'status', scalar('Active'))
             put(rec, 'cursorposition', yaml.ScalarNode('tag:yaml.org,2002:int', str(checkpoint)))
             put(rec, 'final', native_mapping())
@@ -78,6 +95,8 @@ def edit(text, spec):
             # objectives. Reused objectives stay unset for native initialization.
             put(rec, 'objectives', native_mapping((name, native_mapping([
                 ('status', scalar('Completed_PostFinished'))])) for name in section['past_objectives']))
+            for name in active:
+                put(member(rec, 'objectives'), name, native_mapping([('status', scalar('Active'))]))
             if observed_rec is not None:
                 observed_fields = mapping(observed_rec)
                 for name, (_, value) in mapping(observed_fields.get('objectives', (None, native_mapping()))[1]).items():
@@ -92,6 +111,20 @@ def edit(text, spec):
             remove(rec, 'objectives')
             if 'final' not in mapping(rec):
                 put(rec, 'final', native_mapping())
+    # Some native travel destinations check an objective's completed flag even
+    # when its mission is completed. Preserve only source-declared station gates
+    # in the owned past timeline; never unlock future or parallel objectives.
+    for flag in station_flags:
+        rec = member(member(member(local, flag['mission_set']), 'missions'), flag['mission'])
+        if 'objectives' not in mapping(rec):
+            put(rec, 'objectives', native_mapping())
+        objectives = member(rec, 'objectives')
+        if flag['objective'] not in mapping(objectives):
+            put(objectives, flag['objective'], native_mapping())
+        put(member(objectives, flag['objective']), 'status', scalar('Completed_PostFinished'))
+        if 'final' not in mapping(rec):
+            put(rec, 'final', native_mapping())
+        put(member(rec, 'final'), flag['objective'] + '_endstate', scalar('completed'))
     # A completed set is needed for authored MissionSet dependencies. Do not
     # mark a shared selected/future set completed just because a sibling is past.
     for set_name in {s for s, _ in past} - {selected[0]} - {s for s, _ in future}:
@@ -126,6 +159,8 @@ def edit(text, spec):
             if set_name in value[1]:
                 group = value[1][set_name][1]
                 group.pop('status', None)
+                if set_name == selected[0]:
+                    group.pop('cursorposition', None)
                 group['missions'][1].pop(mission, None)
                 if not group['missions'][1] and set(group) == {'missions'}:
                     del value[1][set_name]
@@ -134,5 +169,6 @@ def edit(text, spec):
         raise BoundaryError('Selection would change an unrelated mission')
     return dict(ok=True, yaml=result, receipt=dict(preserved_unowned_data=True,
         filled_prerequisites=len(past), cleared_future_missions=len(future),
+        filled_station_objectives=len(station_flags),
         authored_progress_override=True, world_effects_verified=False,
         warning='Experimental generated progress; world facts and encounter initialization need gameplay testing.'))

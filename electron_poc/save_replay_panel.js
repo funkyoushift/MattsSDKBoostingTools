@@ -5,6 +5,7 @@
     if(!el('missionReplayMethod'))return null;
     let status={state:'idle',active:false},pending=false;
     const saveMode=()=>el('missionReplayMethod').value==='save';
+    const fogMode=()=>el('missionReplayFog')?.value||'leave';
     function update(){
       const selected=selection();
       el('missionSaveReplayControls').hidden=!saveMode();
@@ -28,6 +29,8 @@
       el('missionSaveReplayRestore').disabled=pending||!status.backupAvailable||status.active;
       el('missionSaveReplayPicker').disabled=pending;
       el('missionReplayMethod').disabled=pending||status.active;
+      if(el('missionReplayFog'))el('missionReplayFog').disabled=pending||status.active;
+      if(el('missionReplayFogOptions'))el('missionReplayFogOptions').hidden=!saveMode();
       if(el('missionBookmarkSave')){
         el('missionBookmarkSave').disabled=pending||status.active||typeof api!=='function';
         el('missionBookmarkReplay').disabled=pending||status.active||!selected.ack||!el('missionBookmarkSelect').value;
@@ -45,7 +48,7 @@
       finally{pending=false;update();}
     }
     async function start(){const s=selection();if(!s.supported||!s.ack||status.active||pending)return;
-      await run('start',{mission:s.mission,checkpoint:s.checkpoint,acknowledge_shared_progress:true,automatic:true});}
+      await run('start',{mission:s.mission,checkpoint:s.checkpoint,acknowledge_shared_progress:true,automatic:true,fog_mode:fogMode()});}
     el('missionSaveReplayCheck').addEventListener('click',()=>run('advance'));
     el('missionSaveReplayStop').addEventListener('click',()=>run('stop'));
     el('missionSaveReplayPicker').addEventListener('click',()=>run('picker'));
@@ -55,10 +58,10 @@
       if(pending||typeof api!=='function')return;
       pending=true;update();
       try{
-        const r=await api(action,{id:el('missionBookmarkSelect').value,name:el('missionBookmarkName').value,acknowledge_shared_progress:!!selection().ack,automatic:true});
+        const r=await api(action,{id:el('missionBookmarkSelect').value,name:el('missionBookmarkName').value,acknowledge_shared_progress:!!selection().ack,automatic:true,...(action==='bookmark_start'?{fog_mode:fogMode()}: {})});
         if(r.bookmarks){
           const select=el('missionBookmarkSelect'),previous=select.value;select.replaceChildren();
-          for(const b of r.bookmarks){const option=doc.createElement('option');option.value=b.id;option.textContent=b.name+' — '+b.mission+' ('+b.world+')';select.append(option);}
+          for(const b of r.bookmarks){const option=doc.createElement('option');option.value=b.id;option.textContent=b.name+' — '+b.mission+' ('+b.world+'; '+(b.exactLocation?'exact position':'spawn station')+')';select.append(option);}
           if([...select.options].some(o=>o.value===previous))select.value=previous;
         }
         el('missionBookmarkOutput').textContent=r.message||(r.ok?'Bookmarks refreshed.':'Bookmark action failed.');

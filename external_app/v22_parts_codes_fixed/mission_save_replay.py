@@ -17,6 +17,17 @@ def identity(text):
 
 
 def edit(text, spec):
+    from mission_save_fog import MODES, apply as apply_fog
+    mode = spec.get('fog_mode', 'leave')
+    if mode not in MODES:
+        raise BoundaryError('Choose leave, clear or restore for map fog')
+    result = _edit_missions(text, spec)
+    result['yaml'], fog = apply_fog(result['yaml'], mode)
+    result['receipt']['fog'] = fog
+    return result
+
+
+def _edit_missions(text, spec):
     if spec.get('kind') == 'selection':
         from mission_selection_state import edit as selection_edit
         return selection_edit(text, spec)
@@ -57,8 +68,12 @@ def inspect(text, spec):
     tree = yaml.compose(text)
     chosen = record(tree, spec['mission_set'], spec['saved_mission'])
     wanted = {n.casefold() for n in spec['section']['initial_objectives']}
+    # A source-map travel objective may not be materialized while the character
+    # is still on the holding map. BL4 omits the empty objectives mapping on save;
+    # native boundary verification after travel still requires the active state.
+    objectives = mapping(chosen).get('objectives')
     states = {k.casefold(): member(v, 'status').value
-              for k, (_, v) in mapping(member(chosen, 'objectives')).items() if k.casefold() in wanted}
+              for k, (_, v) in (mapping(objectives[1]) if objectives else {}).items() if k.casefold() in wanted}
     cursor = mapping(chosen).get('cursorposition')
     # BL4 omits a zero cursor on native save. Its getter f494f8 returns zero
     # when the fact is absent; live Crystal Brawl opening confirmed the case.

@@ -77,8 +77,16 @@ def ordered_predecessor(name, result, members):
 def completion_fields(gameplay):
     """Use the authored completion target, including escort destinations."""
     kind=str(gameplay.get('structtype',''))
+    if kind.endswith(".ObjectiveTypeSettings_EchoPanelHack'"):
+        # A return trigger can differ from the panel. Retain both references;
+        # the existing unique-location check rejects ambiguous completions.
+        return ('echopanel', 'returntrigger')
+    if kind.endswith(".ObjectiveTypeSettings_PlaceCarryable'"):return ('container',)
+    if kind.endswith(".ObjectiveTypeSettings_EchoLog'"):return ('echologio',)
     if 'OakEscort' in kind:return ('endnode',)
-    if 'Talk' in kind or 'OakExchangeItem' in kind:return ('node','npc')
+    # An explicit conversation node locates the interaction. The moving NPC's
+    # default registry waypoint can be elsewhere (Mr. Chew has several nodes).
+    if 'Talk' in kind or 'OakExchangeItem' in kind:return ('node',) if gameplay.get('node') else ('node','npc')
     if 'ObjectiveTypeSettings_Encounter' in kind:return ('encounter',)
     return ('object','triggervolume','ainode','target')
 
@@ -122,7 +130,10 @@ def actor_locations(actor, locations):
     Do not guess 'base' or choose between two groups sharing a registry name.
     """
     if not actor or not all(actor.get(k) for k in ('map','registryname')):return []
-    prefix=f"registry.{actor['map']}.top.".casefold()
+    # DLC discovery actors can live in an authored level instance, not Top.
+    # The old Top-only prefix discarded their real serialized waypoints.
+    scope=actor.get('submap') or 'top'
+    prefix=f"registry.{actor['map']}.{scope}.".casefold()
     suffix=f".{actor['registryname']}.__nochannel".casefold()
     if actor.get('groupname'):
         addresses=[prefix+str(actor['groupname']).casefold()+suffix]
@@ -130,6 +141,110 @@ def actor_locations(actor, locations):
         addresses=[address for address in locations if address.startswith(prefix) and address.endswith(suffix)]
         if len(addresses)!=1:return []
     return [(address,point) for address in addresses for point in locations.get(address,[])]
+
+
+def optional_for_spawn(value, definitions):
+    """Optional parent branches must not choose a required replay start.
+
+    Preserve the child's actual native optional flag for execution. This is
+    ancestry metadata for spawn selection, derived only from explicit links.
+    """
+    seen=set()
+    while value:
+        if value.get('optional') == 'true':return True
+        parent=str(value.get('parentobjective') or '').casefold()
+        if not parent or parent in seen or len(definitions.get(parent,[]))!=1:return False
+        seen.add(parent);value=definitions[parent][0][1]
+    return False
+
+
+def authored_scene_anchor(gameplay, aliases, locations):
+    """Locate a declared scene target, never a moving enemy's completion.
+
+    Static UI waypoints and spawner/boss origins are proximity evidence for
+    station choice only. They do not become preceding-completion coordinates.
+    """
+    kind=str(gameplay.get('structtype',''))
+    fields=()
+    if kind.endswith(".ObjectiveTypeSettings_OakKill'"):fields=('spawner','targetorigin')
+    elif kind.endswith(".ObjectiveTypeSettings_OakBoss'"):fields=('bossfight',)
+    elif kind.endswith(".ObjectiveTypeSettings_OakDamage'"):fields=('targetorigin',)
+    elif kind.endswith(".ObjectiveTypeSettings_OakInteract'"):fields=('spawner',)
+    references=[(field,gameplay[field]) for field in fields if gameplay.get(field)]
+    if not references:
+        waypoints=gameplay.get('additionalwaypoints') or []
+        if len(waypoints)==1 and set(waypoints[0]) <= {'runtimeactor','staticactor','settings'}:
+            marker=waypoints[0];settings=marker.get('settings') or {}
+            display_only=(not settings or (set(settings) <= {'structtype','bneverdisplayasoptional','waypointradius'}
+                and settings.get('structtype')=="Asset'/Script/OakGame.OakObjectiveWaypointSettings'"))
+            if settings.get('waypointradius') is not None:
+                try:display_only=display_only and math.isfinite(float(settings['waypointradius'])) and float(settings['waypointradius'])>=0
+                except (TypeError,ValueError):display_only=False
+            field='staticactor' if marker.get('staticactor') else 'runtimeactor'
+            if display_only and field and marker.get(field):references=[('additionalwaypoints/0/'+field,marker[field])]
+    if not references and kind.endswith(".ObjectiveTypeSettings_OakTravel'") and gameplay.get('detectionmethod')=='Map' and gameplay.get('triggervolume'):
+        references=[('triggervolume',gameplay['triggervolume'])]
+    points={}
+    for field,alias in references:
+        actors=aliases.get(str(alias).casefold(),[])
+        if len(actors)!=1:return None
+        found=actor_locations(actors[0],locations)
+        if len(found)!=1:return None
+        address,point=found[0]
+        try:location={k:float(point['location'][k]) for k in ('x','y','z')}
+        except (KeyError,TypeError,ValueError):return None
+        if not all(math.isfinite(v) for v in location.values()):return None
+        key=(actors[0]['map'].casefold(),tuple(location.values()))
+        points[key]=dict(map=actors[0]['map'],location=location,actor=address,
+                         pointer=point['pointer'],gameplay_field=field,alias=alias)
+    return next(iter(points.values())) if len(points)==1 else None
+
+
+def authored_approach_anchor(gameplay, aliases, locations):
+    """First native route breadcrumb, for nearby-station selection only."""
+    candidates=[]
+    for index,aspect in enumerate(gameplay.get('aspects',[])):
+        data=aspect.get('data',{})
+        if data.get('structtype')!="Asset'/Script/OakGame.MissionObjectiveAspect_Breadcrumbs'":continue
+        crumbs=data.get('breadcrumbs') or []
+        if not crumbs:continue
+        crumb=crumbs[0]
+        if set(crumb)-{'triggervolume','boverridewaypointlocation','waypointoverride'}:continue
+        field='waypointoverride' if crumb.get('boverridewaypointlocation')=='true' else 'triggervolume'
+        actors=aliases.get(str(crumb.get(field) or '').casefold(),[])
+        if len(actors)!=1:continue
+        found=actor_locations(actors[0],locations)
+        if len(found)!=1:continue
+        address,point=found[0]
+        try:location={k:float(point['location'][k]) for k in ('x','y','z')}
+        except (KeyError,TypeError,ValueError):continue
+        if not all(math.isfinite(v) for v in location.values()):continue
+        candidates.append(dict(map=actors[0]['map'],location=location,actor=address,pointer=point['pointer'],
+            gameplay_field=f'aspects/{index}/data/breadcrumbs/0/{field}',alias=crumb[field]))
+    return candidates[0] if len(candidates)==1 else None
+
+
+def mission_entry_anchor(mission, aliases, locations, base_pointer):
+    entries=[(pointer,value) for pointer,value in walk(mission.get('entry_points',{}),base_pointer+'/entry_points')
+             if isinstance(value,dict) and value.get('structtype')=="Asset'/Script/GbxGame.MissionGiverType_Basic'"]
+    if len(entries)>1:
+        # Multiple native mission-giver routes are all valid beginnings. Use
+        # the explicitly numbered entry 1, retaining its authored identity;
+        # never sort actor/station names to manufacture an ordering.
+        entries=[(pointer,giver) for pointer,giver in entries
+                 if pointer.endswith('/1/missiongiver')]
+    if len(entries)!=1:return None
+    pointer,giver=entries[0];alias=giver.get('actoralias');actors=aliases.get(str(alias).casefold(),[])
+    if len(actors)!=1 or not giver.get('waypoint'):return None
+    points={}
+    for address,point in actor_locations(actors[0],locations):
+        try:location={k:float(point['location'][k]) for k in ('x','y','z')}
+        except (KeyError,ValueError,TypeError):return None
+        if not all(math.isfinite(v) for v in location.values()):return None
+        points[(address,tuple(location.values()))]=dict(map=actors[0]['map'],location=location,actor=address,
+            pointer=point['pointer'],entry_pointer=pointer,alias=alias,
+            source_rule='authored mission giver; not previous completion')
+    return next(iter(points.values())) if len(points)==1 else None
 
 
 def dynamic_scene_anchor(gameplay, aliases, locations):
@@ -189,7 +304,28 @@ def encounter_staging(groups):
                     sum((anchor['location'][k]-scene['center'][k])**2 for k in ('x','y','z')) <= scene['radius']**2):
                 objective['scene_anchor'] = anchor
 
+def same_native_timeline(before, after):
+    """Metadata repairs may expose existing implicit composite children.
+
+    Require identical native source bytes, missions, identities and checkpoint
+    order. An expanded group may only add objective IDs already in that same
+    mission; removing a prior membership or adding a new ID requires review.
+    """
+    if before['source_hashes']!=after['source_hashes'] or set(before['missions'])!=set(after['missions']):return False
+    for name,old in before['missions'].items():
+        new=after['missions'][name]
+        if old['mission_set']!=new['mission_set'] or [g['index'] for g in old['groups']]!=[g['index'] for g in new['groups']]:return False
+        def names(m):return {o['name'] for g in m['groups'] for o in g['objectives']}
+        if names(old)!=names(new):return False
+        for left,right in zip(old['groups'],new['groups']):
+            if not {o['name'] for o in left['objectives']} <= {o['name'] for o in right['objectives']}:return False
+    return True
+
+
 def build():
+    output=MOD/'mission_practice_catalog.json'
+    previous_bytes=output.read_bytes() if output.exists() else None
+    previous_catalog=json.loads(previous_bytes) if previous_bytes else None
     catalog = json.loads((MOD/'mission_catalog.json').read_bytes())
     docs, hashes = {}, {}
     for filename in {r['source'] for r in catalog}:
@@ -235,7 +371,9 @@ def build():
                 hidden=value.get('ux_hidden')=='true';optional=value.get('optional')=='true'
                 title=value.get('ux_display',{}).get('text','').split(', ',2)[-1] or name
                 objectives.append(dict(name=name,title=title,hidden=hidden,optional=optional,pointer=path))
-                if not optional:mandatory+=1
+                spawn_optional=optional_for_spawn(value,definitions)
+                if spawn_optional and not optional:objectives[-1]['optional_for_spawn']=True
+                if not spawn_optional:mandatory+=1
                 objective_issues=[]
                 gameplay=value.get('graph_data',{}).get('gameplay',{})
                 if 'ObjectiveTypeSettings_OakTravel' in gameplay.get('structtype',''):
@@ -253,11 +391,24 @@ def build():
                     else:
                         objectives[-1]['unresolved']='composite_children_unresolved'
                 if dependencies:objectives[-1]['wait_for_objectives']=dependencies
+                approach=authored_approach_anchor(gameplay,aliases,locations)
+                if approach:
+                    field=approach.pop('gameplay_field')
+                    objectives[-1]['approach_anchor']=dict(approach,mission=row['name'],objective=name,
+                        source=row['source'],gameplay_pointer=path+'/graph_data/gameplay/'+field,
+                        source_rule='first authored route breadcrumb; station proximity only')
                 scene = dynamic_scene_anchor(gameplay, aliases, locations)
                 if scene:
                     objectives[-1]['scene_anchor'] = dict(scene, mission=row['name'],
                         objective=name, source=row['source'],
                         gameplay_pointer=path+'/graph_data/gameplay/additionalwaypoints/0')
+                else:
+                    scene=authored_scene_anchor(gameplay,aliases,locations)
+                    if scene:
+                        field=scene.pop('gameplay_field')
+                        objectives[-1]['scene_anchor']=dict(scene,mission=row['name'],objective=name,
+                            source=row['source'],gameplay_pointer=path+'/graph_data/gameplay/'+field,
+                            source_rule='authored scene reference; completion unresolved')
                 if gameplay.get('structtype')=="Asset'/Script/GbxGame.ObjectiveTypeSettings_Talk'":
                     actors=aliases.get(str(gameplay.get('npc') or '').casefold(),[])
                     objectives[-1]['interaction']=dict(kind='talk',
@@ -293,7 +444,7 @@ def build():
                 unique={(p['map'],tuple(p['location'].values())):p for p in candidates}
                 if len(unique)==1:
                     anchor=next(iter(unique.values()))
-                    if not optional:anchors.append(anchor)
+                    if not spawn_optional:anchors.append(anchor)
                     # Keep each proven target even when other objectives in
                     # this group finish elsewhere. Group checkpoint placement
                     # still requires one common, unambiguous destination.
@@ -308,7 +459,7 @@ def build():
                                 objectives[-1]['encounter_scene']=dict(actor=actors[0],center=anchor['location'],radius=radius,
                                     previousobjective=value.get('previousobjective'),source=row['source'],pointer=path+'/graph_data/gameplay')
                 else:objective_issues.append(dict(objective=name,reason='missing_completion_location' if not unique else 'ambiguous_completion_location'))
-                if not optional:unresolved.extend(objective_issues)
+                if not spawn_optional:unresolved.extend(objective_issues)
             unique={(p['map'],tuple(p['location'].values())):p for p in anchors}
             if len(unique)>1:unresolved.append(dict(reason='conflicting_required_completion_locations'))
             groups.append(dict(index=index,objectives=objectives,unresolved=unresolved,
@@ -322,9 +473,12 @@ def build():
         target_maps={m for g in groups for o in g['objectives'] for m in o.get('completion_maps',[])}
         target_maps.update(o['scene_anchor']['map'].casefold() for g in groups for o in g['objectives'] if o.get('scene_anchor'))
         execution_map=next(iter(target_maps)) if len(target_maps)==1 else zone.split('.',1)[0] if zone else (next(iter(alias_maps)) if len(alias_maps)==1 else None)
+        entry=mission_entry_anchor(mission,aliases,locations,row['pointer'])
+        if entry:entry=dict(entry,source=row['source'],mission=row['name'])
         result[row['name']]=dict(title=row['title'],source=row['source'],pointer=row['pointer'],mission_set=set_name,
+                                 entry_anchor=entry,
                                  execution_map=execution_map,execution_map_source='unique_completion_map' if len(target_maps)==1 else 'zone' if zone else 'unique_actor_map' if execution_map else None,
-                                 execution_maps=sorted(target_maps or ({execution_map} if execution_map else set())),
+                                 execution_maps=sorted((target_maps or ({execution_map} if execution_map else set())) | ({entry['map'].casefold()} if entry else set())),
                                  replay_station=reference(mission.get('replaytravelstation')),orderdata=mission.get('orderdata'),groups=groups)
     for name,row in result.items():
         dependencies=sets.get(row['mission_set'],{}).get('dependencies',[])
@@ -353,7 +507,27 @@ def build():
             group.pop('completion_anchor')
     payload=dict(version=1,policy='Preceding mission or objective completion location; no nearest station fallback.',
                  source_hashes=hashes,missions=result)
-    (MOD/'mission_practice_catalog.json').write_text(json.dumps(payload,indent=2,ensure_ascii=False)+'\n',encoding='utf-8')
+    def timeline(data):
+        return {name:(m['mission_set'],[(g['index'],[o['name'] for o in g['objectives']]) for g in m['groups']])
+                for name,m in data['missions'].items()}
+    compatible=[]
+    if previous_catalog and same_native_timeline(previous_catalog,payload):
+        compatible=list(previous_catalog.get('bookmark_compatible_catalog_sha256',[]))
+        core={k:v for k,v in previous_catalog.items() if k!='bookmark_compatible_catalog_sha256'}
+        if core!=payload:compatible.append(hashlib.sha256(previous_bytes).hexdigest())
+    if compatible:payload['bookmark_compatible_catalog_sha256']=sorted(set(compatible))
+    encoded=(json.dumps(payload,indent=2,ensure_ascii=False)+'\n').encode('utf-8')
+    digest=hashlib.sha256(encoded).hexdigest()
+    legacy_path=MOD/'mission_save_replay.json'
+    legacy=json.loads(legacy_path.read_bytes())
+    if legacy['catalog_sha256'] not in [digest,*compatible]:
+        changed=[k for k in set(hashes)|set(previous_catalog['source_hashes'] if previous_catalog else {})
+                 if hashes.get(k)!=(previous_catalog or {}).get('source_hashes',{}).get(k)]
+        changed_timelines=[k for k,v in timeline(payload).items() if not previous_catalog or timeline(previous_catalog).get(k)!=v]
+        raise RuntimeError('Review legacy replay boundaries before rebuilding: '+json.dumps(dict(changed_sources=changed,changed_timelines=changed_timelines[:10],changed_timeline_count=len(changed_timelines))))
+    legacy['catalog_sha256']=digest
+    output.write_bytes(encoded)
+    legacy_path.write_text(json.dumps(legacy,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(missions=len(result),mission_starts=sum(bool(r['start_anchor']) for r in result.values()),
                          checkpoints=sum(bool(g['start_anchor']) for r in result.values() for g in r['groups']))))
 

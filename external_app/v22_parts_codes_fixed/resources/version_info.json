@@ -1,8 +1,8 @@
 {
-  "package_version": "2.39.0",
-  "app_version": "2.39.0",
-  "sdkmod_version": "2.39.0",
-  "resources_version": "2.39.0",
+  "package_version": "2.39.2",
+  "app_version": "2.39.2",
+  "sdkmod_version": "2.39.2",
+  "resources_version": "2.39.2",
   "git_commit": "0c70c15225d00a97130726598cd5a4eaaf51167d",
   "built_at_utc": "2026-10-15T05:16:11.529514+00:00",
   "sdk_required": "oak2-mod-manager v0.3",
@@ -13,5 +13,5 @@
   "external_exe_sha256": "",
   "sdkmod_sha256": "",
   "ui_layout_sha256": "",
-  "electron_version": "2.39.0"
+  "electron_version": "2.39.2"
 }

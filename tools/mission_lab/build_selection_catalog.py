@@ -9,19 +9,58 @@ import math
 from pathlib import Path
 
 from build_practice_catalog import ROOT, MOD, SOURCE, walk, resolve, reference
+from replay_spawn_rules import station_context, choose_station, valid_anchor, retain_native_boss_arrival
+
+
+def preceding_required_anchor(definition, first_index, end_index):
+    """Last unambiguous required completion in the preceding main section.
+
+    A summary/escort/talk tracker can lack its own static end, while its last
+    required completed trigger has a real point. Do not use optional branches,
+    still-active trackers, enemy spawn origins, or points before a map crossing.
+    """
+    groups=definition['groups']
+    for group in sorted(groups,key=lambda g:g['index'],reverse=True):
+        if not first_index <= group['index'] < end_index:continue
+        if any(o.get('travel_map') for g in groups if group['index'] <= g['index'] < end_index for o in g['objectives']):
+            return None
+        anchors={}
+        for objective in group['objectives']:
+            if objective.get('optional') or objective.get('optional_for_spawn'):continue
+            if any(g['index'] >= end_index and any(o['name'].casefold()==objective['name'].casefold() for o in g['objectives']) for g in groups):continue
+            anchor=objective.get('completion_anchor')
+            if valid_anchor(anchor):
+                key=(anchor['map'].casefold(),tuple(anchor['location'][k] for k in ('x','y','z')))
+                anchors[key]=anchor
+        if len(anchors)==1:return next(iter(anchors.values()))
+        # A later group with conflicting completed points cannot establish
+        # where its parallel tasks ended; do not fall farther back through it.
+        if anchors:return None
+    return None
 
 
 def start_waypoint(definition, group, previous, definitions, main_groups):
-    """Use only a finished preceding main section, never this section's target."""
+    """Use the mission's entry, or a finished preceding section for later starts."""
+    if previous is None and valid_anchor(definition.get('entry_anchor')):
+        # A prerequisite can end far from this mission's actual giver, especially
+        # on parallel story/DLC routes. Its completion point is not this entry.
+        return dict(definition['entry_anchor'], source_rule='authored mission entry')
     anchor = None
     rule = None
     if previous:
         _, objective = previous
-        last = max(g['index'] for g in definition['groups']
-                   if any(o['name'].casefold() == objective['name'].casefold() for o in g['objectives']))
-        if last < group['index']:
-            anchor = objective.get('completion_anchor')
-            rule = 'previous main objective completion'
+        section_end = previous[0].get('replay_end_anchor')
+        if section_end and previous[0].get('replay_end_index', group['index']) < group['index']:
+            anchor, rule = section_end, 'previous main section completion area'
+        elif 'replay_end_index' in previous[0]:
+            anchor = group.get('start_anchor') or preceding_required_anchor(definition, previous[0]['index'], group['index'])
+            rule = 'previous main section final required completion'
+        else:
+            last = max(g['index'] for g in definition['groups']
+                       if any(o['name'].casefold() == objective['name'].casefold() for o in g['objectives']))
+            if not anchor and last < group['index']:
+                anchor = objective.get('completion_anchor')
+                rule = 'previous main objective completion'
     elif definition.get('predecessor'):
         prior = next((n for n in definitions if n.casefold() == definition['predecessor'].casefold()), None)
         groups = list(main_groups(prior, definitions[prior])) if prior else []
@@ -31,6 +70,29 @@ def start_waypoint(definition, group, previous, definitions, main_groups):
     if not anchor:
         anchor = group.get('start_anchor')
         rule = 'previous authored group completion'
+    if not anchor and previous:
+        anchor=preceding_required_anchor(definition,previous[0]['index'],group['index'])
+        rule='last required completion in preceding main section'
+    if not anchor and previous and len(previous[1].get('wait_for_objectives', [])) > 1:
+        # Parallel collection has no unique last pickup. A following task may
+        # return to the same small area where that collection section began.
+        # Keep that authored past point instead of a nearby station across a door.
+        candidate = previous[0].get('start_anchor')
+        targets = [o.get('completion_anchor') for o in group['objectives']
+                   if not o.get('optional') and not o.get('optional_for_spawn')]
+        past = {o['name'].casefold() for g in definition['groups'] if g['index'] < group['index']
+                for o in g['objectives']}
+        future = {o['name'].casefold() for g in definition['groups'] if g['index'] >= group['index']
+                  for o in g['objectives']}
+        # Fifteen metres is an operational area-match bound, not a native rule.
+        if (valid_anchor(candidate) and candidate.get('objective', '').casefold() in past - future
+                and targets and all(valid_anchor(p) and p['map'].casefold() == candidate['map'].casefold()
+                    and math.dist([p['location'][k] for k in ('x','y','z')],
+                                  [candidate['location'][k] for k in ('x','y','z')]) <= 1500
+                    for p in targets)
+                and not any(o.get('travel_map') for g in definition['groups']
+                    if previous[0]['index'] <= g['index'] < group['index'] for o in g['objectives'])):
+            anchor, rule = candidate, 'return to preceding collection section start'
     point = (anchor or {}).get('location', {})
     if (not (anchor or {}).get('map') or set(point) != {'x', 'y', 'z'}
             or not all(isinstance(v, (int, float)) and math.isfinite(v) and abs(v) < 1e9 for v in point.values())):
@@ -112,9 +174,19 @@ def build():
         return result
 
     ancestors_by_key = {key: ancestors(key) for key in rows}
-    stations = json.loads((MOD / 'travelstations.json').read_text(encoding='utf-8'))['stations']
-    # Native station remains the initial arrival and safe placement fallback.
-    stations = [s for s in stations if s['typedef'].casefold() in ('respawn', 'fast_travel', 'fast_travel_sendonly')]
+    station_bytes = (MOD / 'travelstations.json').read_bytes()
+    stations = json.loads(station_bytes)['stations']
+    by_station = {s['station'].casefold(): s for s in stations}
+    map_defaults = {}
+    for row in json.loads((MOD / 'travelmaps_flat.json').read_text(encoding='utf-8'))['maps']:
+        station = by_station.get(str(row.get('defaultstation')).casefold())
+        if station:
+            try:
+                map_defaults[row['map'].casefold()] = dict(map=station['world'],
+                    location={k: float(station[k]) for k in ('x', 'y', 'z')},
+                    station=station['station'], source=station.get('source_file'))
+            except (KeyError, ValueError, TypeError):
+                pass
     counts = {}
     output = {}
     for rank, key in enumerate(ordered):
@@ -131,29 +203,42 @@ def build():
         selector = importlib.util.module_from_spec(module_spec)
         module_spec.loader.exec_module(selector)
         previous = None
-        for group, primary in selector.main_groups(row['name'], definition):
+        main = list(selector.main_groups(row['name'], definition))
+        for position, (group, primary) in enumerate(main):
             waypoint = start_waypoint(definition, group, previous, practice['missions'], selector.main_groups)
             previous = (group, primary)
-            anchor = waypoint or group.get('start_anchor') or primary.get('completion_anchor')
-            world = (anchor or {}).get('map') or definition.get('execution_map')
-            candidates = [s for s in stations if s['world'].casefold() == str(world).casefold()]
-            if not candidates:
-                continue
-            point = (anchor or {}).get('location')
-            if point:
-                candidates.sort(key=lambda s: sum((float(s[k]) - point[k]) ** 2 for k in ('x', 'y', 'z')))
-            else:
-                candidates.sort(key=lambda s: s['station'].casefold())
-            station = candidates[0]
             earlier = {o['name'].casefold() for g in definition['groups'] if g['index'] < group['index'] for o in g['objectives']}
             later = {o['name'].casefold() for g in definition['groups'] if g['index'] >= group['index'] for o in g['objectives']}
+            next_index = main[position + 1][0]['index'] if position + 1 < len(main) else float('inf')
+            world, points, basis = station_context(definition, group, primary, waypoint, next_index, map_defaults, first_section=position==0)
+            chosen = choose_station(stations, world, points, key, earlier-later, ancestors_by_key[key], rows)
+            if chosen:
+                station, station_location, requirements = chosen
+            else:
+                station = dict(world=world, station=None)
+                station_location, requirements = None, []
             sections[str(group['index'])] = dict(checkpoint=group['index'], world=station['world'],
                 station=station['station'], placement='native', initial_objectives=[primary['name'].casefold()],
                 past_objectives=sorted(earlier-later), refresh_after_load=False,
-                station_selection='nearest authored section anchor' if point else 'native map fallback')
-            if waypoint:
+                station_selection=basis, station_anchors=points, station_location=station_location,
+                station_prerequisites=requirements, station_source=station.get('source_file'),
+                station_dependency=station.get('dependency'),
+                station_type=station.get('typedef'),
+                station_arrival_policy='native server travel; future objectives unchanged')
+            # Cross-map DLC travel openings need their objective restored on
+            # the source map. Ordinary entries initialize during native travel;
+            # a second character refresh can send them to the opposite route.
+            if group['index'] == 0 and basis == 'authored mission entry' and primary.get('travel_map'):
+                sections[str(group['index'])]['restore_active_objectives'] = [primary['name'].casefold()]
+            if not chosen:
+                sections[str(group['index'])]['spawn_issue'] = 'No source-resolved, accessible respawn station near this section'
+            if chosen and retain_native_boss_arrival(station, primary):
+                sections[str(group['index'])]['station_arrival_policy'] = 'native boss arena arrival; retain instead of preceding approach trigger'
+            elif waypoint:
                 sections[str(group['index'])].update(placement='waypoint', location=waypoint['location'],
-                    start_waypoint=waypoint, native_station_fallback=True)
+                    start_waypoint=waypoint,
+                    native_station_fallback=waypoint.get('source_rule') not in (
+                        'return to preceding collection section start', 'previous main section completion area'))
         output[row['name']] = dict(kind='selection', mission=row['name'], saved_mission=key,
             mission_set=row['mission_set'], title=row['title'], campaign=campaign,
             playthrough=dict(rank=rank, number=number, label=f'{title} {number:02}',
@@ -163,6 +248,7 @@ def build():
             future_missions=[[rows[n]['mission_set'], n] for n in ordered if key in ancestors_by_key[n]],
             sections=sections, source=row['source'], pointer=row['pointer'])
     data = dict(schema=1, catalog_sha256=hashlib.sha256((MOD/'mission_practice_catalog.json').read_bytes()).hexdigest(),
+        travel_stations_sha256=hashlib.sha256(station_bytes).hexdigest(),
         policy='Experimental progress override: authored ancestors completed; descendants cleared; earlier selected objectives completed. Not captured gameplay.',
         source_hashes=hashes, missions=output)
     (MOD/'mission_selection_states.json').write_text(json.dumps(data, indent=2)+'\n', encoding='utf-8')

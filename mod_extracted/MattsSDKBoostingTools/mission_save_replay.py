@@ -29,7 +29,9 @@ def specification(name, checkpoint):
         raise RuntimeError('Replay catalog changed; reference data needs review')
     spec['section'] = spec.pop('sections')[str(checkpoint)]
     from .mission_selection_specs import specification as selection_specification
-    spec['selection_fallback'] = selection_specification(name, checkpoint)
+    # The reviewed legacy section supplies its own boundary; prerequisites are
+    # mission-wide even when this internal step is hidden by the main picker.
+    spec['selection_fallback'] = selection_specification(name, 0)
     spec['selection_fallback']['section'] = dict(spec['section'])
     return spec
 
@@ -38,8 +40,10 @@ def bookmark_specification(spec, guid):
     from .mission_execution import DATA
     section = spec.get('section', {})
     name = spec.get('mission')
-    catalog_hash = hashlib.sha256(files(__package__).joinpath('mission_practice_catalog.json').read_bytes()).hexdigest()
-    if spec.get('kind') != 'bookmark' or spec.get('guid') != guid or spec.get('catalog_sha256') != catalog_hash or name not in DATA:
+    catalog_bytes = files(__package__).joinpath('mission_practice_catalog.json').read_bytes()
+    catalog_hash = hashlib.sha256(catalog_bytes).hexdigest()
+    compatible = json.loads(catalog_bytes).get('bookmark_compatible_catalog_sha256', [])
+    if spec.get('kind') != 'bookmark' or spec.get('guid') != guid or spec.get('catalog_sha256') not in [catalog_hash,*compatible] or name not in DATA:
         raise ValueError('Bookmark character, mission or game data differs')
     groups = [g for g in DATA[name]['groups'] if g['index'] == section.get('checkpoint')]
     if len(groups) != 1:
@@ -81,10 +85,19 @@ def capture_bookmark():
     wanted = [o['name'].casefold() for o in objectives(engine,row,DATA[name]) if o.get('group') == cursor and o['state'] == 4]
     if not wanted:
         raise RuntimeError('Wait until a mission objective is active before bookmarking')
+    pawn = pc.Pawn
+    movement = getattr(pawn, 'CharacterMovement', None) if pawn is not None else None
+    if movement is None or int(movement.MovementMode) != 1:
+        raise RuntimeError('Stand on foot at the point you want to bookmark')
+    actual = pawn.K2_GetActorLocation()
+    location = {axis.lower(): float(getattr(actual, axis)) for axis in ('X','Y','Z')}
+    if not all(math.isfinite(v) and abs(v) < 1e9 for v in location.values()):
+        raise RuntimeError('The current player position is unavailable; no bookmark captured')
     return dict(ok=True,pid=os.getpid(),session=SESSION,guid=guid,spec=dict(kind='bookmark',guid=guid,
         mission=name,title=m._metadata(name)['title'],
         catalog_sha256=hashlib.sha256(files(__package__).joinpath('mission_practice_catalog.json').read_bytes()).hexdigest(),
-        section=dict(checkpoint=cursor,world=world,placement='native',initial_objectives=wanted,refresh_after_load=False)))
+        section=dict(checkpoint=cursor,world=world,placement='exact',location=location,
+                     initial_objectives=wanted,refresh_after_load=False)))
 
 
 def _host():
@@ -155,7 +168,8 @@ def _idle_progress():
 
 def _place(pc, section, cycle):
     from . import mission_recorded_placement as placement
-    job = dict(anchor=dict(location=section['location']), ground_to_waypoint=section.get('placement') == 'waypoint')
+    job = dict(anchor=dict(location=section['location']), ground_to_waypoint=section.get('placement') == 'waypoint',
+               exact_location=section.get('placement') == 'exact')
     _lease.setdefault('placement_jobs', {})[str(cycle)] = job
     def journal(event):
         _lease.setdefault('events', []).append(event)
@@ -163,6 +177,23 @@ def _place(pc, section, cycle):
     placement.start(job, [dict(pc=pc, host=True)], journal)
     _save()
     return dict(ok=True, placement_requested=True, message='Checking normal movement at the recorded beginning')
+
+
+def _station_section(spec):
+    section = spec['section']
+    location = section.get('station_location', {})
+    if (spec.get('kind') != 'selection' or set(location) != {'x','y','z'}
+            or not all(isinstance(v, (int,float)) and math.isfinite(v) and abs(v) < 1e9 for v in location.values())):
+        raise RuntimeError('This replay has no authored native station location')
+    return dict(section, location=location, placement='waypoint')
+
+
+def _world_address():
+    from .mission_completion_context import world
+    current = world()
+    if current is None:
+        raise RuntimeError('Wait for the mission map to finish loading')
+    return current._get_address()
 
 
 def dispatch(action, payload):
@@ -184,8 +215,18 @@ def dispatch(action, payload):
         try:
             pc, engine, guid, world = _host()
             result.update(loaded=True, guid=guid, world=world)
+            if _lease and 'travel_world' in _lease:
+                result['travel_loaded'] = _world_address() != _lease['travel_world']
         except RuntimeError as exc:
-            result['message'] = str(exc)
+            message = str(exc)
+            if message in (
+                'Mission run stopped: gameplay world left or changing',
+                'Mission run stopped: no possessed gameplay controller',
+                'Mission run stopped: controller belongs to another world',
+                'Mission run stopped: world instance changed; explicit reload required',
+            ):
+                message = 'Waiting for the character and mission map to finish loading.'
+            result['message'] = message
         return result
     if suffix == 'begin':
         if _lease and not _lease.get('closed'):
@@ -277,12 +318,44 @@ def dispatch(action, payload):
     if suffix == 'travel':
         def travel():
             from .backend_actions import travel_to_station
-            _lease['travel_world'] = engine.world_address
+            _lease['travel_world'] = _world_address()
             _save()
             return travel_to_station(section['station'])
         return _once('travel', travel)
     if world != section['world'].casefold():
         raise RuntimeError('The target map has not loaded; no placement or spawner reset issued')
+    if suffix == 'station_check':
+        station = _station_section(spec)
+        if 'travel_world' in _lease and _world_address() == _lease['travel_world']:
+            return dict(ok=True,at_station=False,placement_ready=False,message='Waiting for the refreshed mission map')
+        if pc.Pawn is None:
+            return dict(ok=True,at_station=False,placement_ready=False,message='Waiting for the character at the selected station')
+        actual = pc.Pawn.K2_GetActorLocation()
+        distance = math.sqrt(sum((float(getattr(actual,k.upper()))-station['location'][k])**2 for k in ('x','y','z')))
+        if not math.isfinite(distance):
+            return dict(ok=True,at_station=False,placement_ready=False,message='Waiting for a readable character position')
+        # Operational arrival tolerance (15 metres), not a claimed native rule.
+        # Authored station origins and the actual pawn spawn have small offsets.
+        if distance <= 1500.:
+            return dict(ok=True, at_station=True, distance=distance, placement_ready=False)
+        from . import mission_recorded_placement as placement
+        try:
+            placement.preflight(dict(anchor=dict(location=station['location']),ground_to_waypoint=True),[dict(pc=pc,host=True)])
+        except RuntimeError as exc:
+            if str(exc).startswith(('Stand on foot','Recorded location is not loaded')):
+                return dict(ok=True,at_station=False,distance=distance,placement_ready=False,
+                            message='The game arrived away from the selected respawn station. '+str(exc))
+            raise
+        return dict(ok=True,at_station=False,distance=distance,placement_ready=True)
+    if suffix == 'station_place':
+        return _once('station_place',lambda:_place(pc,_station_section(spec),'station'))
+    if suffix == 'station_placement_status':
+        _station_section(spec)
+        from . import mission_recorded_placement as placement
+        job = _lease.get('placement_jobs',{}).get('station')
+        if not job:
+            raise RuntimeError('No respawn station placement was issued')
+        return dict(ok=True,placement_verified=placement.verify(job,[dict(pc=pc,host=True)]))
     if suffix == 'check':
         from . import mission_progression as m
         from .mission_execution import objectives, DATA

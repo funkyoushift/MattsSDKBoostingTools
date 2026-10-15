@@ -343,6 +343,7 @@ _PROGRESS_JOB_ACTIONS = frozenset({
     "mission_save_replay_status", "mission_save_replay_begin", "mission_save_replay_picker", "mission_save_replay_capture", "mission_save_replay_loader_inspect", "mission_save_replay_loader_pulse",
         "mission_save_replay_loader_bind", "mission_save_replay_loader_refresh", "mission_save_replay_loader_select",
     "mission_save_replay_travel", "mission_save_replay_check", "mission_save_replay_place", "mission_save_replay_placement_status", "mission_save_replay_placement_ready",
+    "mission_save_replay_station_check", "mission_save_replay_station_place", "mission_save_replay_station_placement_status",
     "mission_save_replay_refresh", "mission_save_replay_track", "mission_save_replay_close", "mission_save_replay_restore_guard",
 })
 
