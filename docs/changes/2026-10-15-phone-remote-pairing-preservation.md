@@ -33,8 +33,15 @@ That suite and test_phone_reconnect.js pass. JavaScript syntax passes. Android
 assembleRelease/lintRelease passed. Local candidate7437dca9 installed in place
 on the attached phone; its assets match source and archive integrity passes.
 Current badge correctly shows OFFLINE for the damaged placeholder entry. Scanner
-opened for Martin to restore the missing credentials from the desktop upper
-Remote AFK QR; reconnection confirmation remains pending. No version bump, tag,
+opened to restore the missing credentials from the desktop upper Remote AFK QR.
+Martin confirmed "Connected now" after the fresh remote QR scan. No version bump, tag,
 release asset replacement or publication is authorized by this repair alone.
 The published Android1.6.4 artifact remains unchanged for rollback. Windows/game
 processes and the active AFK lobby are preserved.
+
+## Phone confirmation
+
+Martin confirmed the phone connected after scanning the upper Remote AFK QR with
+the corrected local APK installed. This verifies restored phone connectivity;
+no new gameplay mutation or full mission replay was performed for this repair.
+The local fix is not included in the published v2.39.2 / Android1.6.4 assets.
