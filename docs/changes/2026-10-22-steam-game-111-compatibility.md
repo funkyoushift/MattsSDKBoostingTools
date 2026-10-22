@@ -130,3 +130,10 @@ guest behavior; the notes do not establish that MSBT caused a reported save
 failure or that the Abandoned Post console is fixed. The patch notes were
 retrieved from the official Steam news API when the linked store page returned
 an access error.
+
+The separate `codex/safehouse-full-progress` candidate handles the authored
+PoA `Claimed` effect omitted by bulk mission completion. It is not merged into
+this installed Steam candidate: current 1.11 PoA state, map unlock, and guest
+save effects have not been observed live, and the patch notes confirm other
+mission state and fast-travel changes. Its offline evidence remains in
+[the safehouse repair note](2026-10-22-full-progress-safehouse-claim.md).
