@@ -215,6 +215,36 @@ as do the checked `pyunrealsdk.dll` files (SHA-256
 `a12534c6b8b411a176c62ed9d7226031b0039727112dce175bcc71c691761a54`).
 This was only a file inventory; Epic was not launched or modified.
 
+## Current Steam and Epic release qualification
+
+The current Epic executable now has an exact-hash mission, character-loader,
+and dialogue profile. [The qualification receipt](../native-missions/EPIC_6D531D91_PROFILE.json)
+and reproducible comparison mapped 51 native locations against current Steam
+26007962; 37 complete function bodies match after only relative branch/RIP
+relocation normalization, with no missing or conflicting references. Exact
+executable selection and runtime fingerprints remain required. Fourteen focused
+mission/dialogue/Quick Menu checks passed and six historical baseline checks
+were skipped because the old installed Epic executable was replaced. Epic was
+not launched; its live missions, saves, and multiplayer remain unverified.
+
+Direct inventory, guest item transactions, and native card mapping remain
+gated on Steam 26007962. Read-only comparison of the installed game found all
+four reviewed direct-inventory spans and all six reviewed Epic-derived gate
+spans mismatched; no safe native port was inferred. Focused tests confirmed the
+actual Steam executable is rejected before native callback binding or memory
+access: 57 tests and 130 subtests passed. A bounded search of local receipts,
+managed worktrees, and game staging locations found no older complete game
+executable for a fresh full-body comparison. No item is sent on this build.
+
+The separate safehouse capture repair was integrated into this Steam branch.
+It applies the authored `Claimed` PoA effect through live native world state
+after a safehouse mission reads completed; it does not edit the save or travel.
+Integration checks passed: 40 focused tests, six historical skips, and Python
+syntax. Its effect on the Abandoned Post map and fast-travel lock is still
+awaiting a live check. The Steam test SDK with this change was installed while
+the game was closed; the prior SDK was backed up outside Git. This is not a
+public release.
+
 ## Official 1.11 notes checked
 
 The [October 22 update notes](https://store.steampowered.com/news/app/1285190/view/705534727891717219?l=english)
