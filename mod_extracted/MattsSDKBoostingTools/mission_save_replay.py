@@ -4,7 +4,7 @@ Uses the native save-slot selector with exact original/holding GUID binding.
 Only source-backed maps/starts and explicitly scoped spawners are accepted.
 """
 from .mission_native import native_address, native_fingerprint
-import hashlib
+from .catalog_integrity import equivalent_digests, verified_digest
 from importlib.resources import files
 import json
 import math
@@ -27,8 +27,7 @@ def specification(name, checkpoint):
         from .mission_selection_specs import specification as selection_specification
         return selection_specification(name, checkpoint)
     catalog = files(__package__).joinpath('mission_practice_catalog.json').read_bytes()
-    if hashlib.sha256(catalog).hexdigest() != spec['catalog_sha256']:
-        raise RuntimeError('Replay catalog changed; reference data needs review')
+    verified_digest(catalog, spec['catalog_sha256'], 'Replay catalog changed; reference data needs review')
     spec['section'] = spec.pop('sections')[str(checkpoint)]
     from .mission_selection_specs import specification as selection_specification
     # The reviewed legacy section supplies its own boundary; prerequisites are
@@ -43,9 +42,10 @@ def bookmark_specification(spec, guid):
     section = spec.get('section', {})
     name = spec.get('mission')
     catalog_bytes = files(__package__).joinpath('mission_practice_catalog.json').read_bytes()
-    catalog_hash = hashlib.sha256(catalog_bytes).hexdigest()
+    expected = json.loads(files(__package__).joinpath('mission_save_replay.json').read_text(encoding='utf-8'))['catalog_sha256']
+    catalog_hashes = equivalent_digests(catalog_bytes, expected, 'Replay catalog changed; reference data needs review')
     compatible = json.loads(catalog_bytes).get('bookmark_compatible_catalog_sha256', [])
-    if spec.get('kind') != 'bookmark' or spec.get('guid') != guid or spec.get('catalog_sha256') not in [catalog_hash,*compatible] or name not in DATA:
+    if spec.get('kind') != 'bookmark' or spec.get('guid') != guid or spec.get('catalog_sha256') not in [*catalog_hashes,*compatible] or name not in DATA:
         raise ValueError('Bookmark character, mission or game data differs')
     groups = [g for g in DATA[name]['groups'] if g['index'] == section.get('checkpoint')]
     if len(groups) != 1:
@@ -95,9 +95,12 @@ def capture_bookmark():
     location = {axis.lower(): float(getattr(actual, axis)) for axis in ('X','Y','Z')}
     if not all(math.isfinite(v) and abs(v) < 1e9 for v in location.values()):
         raise RuntimeError('The current player position is unavailable; no bookmark captured')
+    expected = json.loads(files(__package__).joinpath('mission_save_replay.json').read_text(encoding='utf-8'))['catalog_sha256']
+    catalog_digest = verified_digest(files(__package__).joinpath('mission_practice_catalog.json').read_bytes(),
+                                     expected, 'Replay catalog changed; reference data needs review')
     return dict(ok=True,pid=os.getpid(),session=SESSION,guid=guid,spec=dict(kind='bookmark',guid=guid,
         mission=name,title=m._metadata(name)['title'],
-        catalog_sha256=hashlib.sha256(files(__package__).joinpath('mission_practice_catalog.json').read_bytes()).hexdigest(),
+        catalog_sha256=catalog_digest,
         section=dict(checkpoint=cursor,world=world,placement='exact',location=location,
                      initial_objectives=wanted,refresh_after_load=False)))
 

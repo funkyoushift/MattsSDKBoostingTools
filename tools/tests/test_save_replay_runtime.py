@@ -22,6 +22,10 @@ def test_bookmark_uses_actual_catalog_membership_and_requires_matching_character
     spec['section']['initial_objectives'] = [n.casefold() for n in spec['section']['initial_objectives']]
     result = m.bookmark_specification(spec, state['guid'])
     assert result['force_travel'] and not result['section']['refresh_after_load']
+    import hashlib
+    windows_hash = hashlib.sha256((ROOT / 'mission_practice_catalog.json').read_bytes()).hexdigest()
+    previous_windows = dict(spec, catalog_sha256=windows_hash)
+    assert m.bookmark_specification(previous_windows, state['guid'])['force_travel']
     native = copy.deepcopy(spec);native['section'].pop('location');native['section']['placement'] = 'native'
     assert m.bookmark_specification(native, state['guid'])['section']['placement'] == 'native'
     for field, value in [('guid', 'c'*32), ('catalog_sha256', '0'*64)]:
