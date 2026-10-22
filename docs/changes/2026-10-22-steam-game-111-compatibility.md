@@ -64,7 +64,7 @@ Offline: 8 mission-profile checks passed; 3 historical executable tests skip
 because Steam replaced its older executable. Two new farming profile checks
 passed against the installed binaries. The Quick Menu/no-BLImGui suite passed
 (5 tests). The focused new-build, catalog, and replay-runtime suite passed
-(43 tests, 3 historical skips). All 56 desktop replay-service tests passed,
+(44 tests, 3 historical skips). All 56 desktop replay-service tests passed,
 including the new preflight rejection. Python syntax and `.sdkmod` archive
 CRC checks passed. Broader
 farming tests had 60 passes, one historical executable skip, and six unrelated
@@ -100,8 +100,14 @@ bridge loaded the installed SDK and reported an empty player roster at the
 title screen; no character-level command was run on this restart. A subsequent
 local build includes old Windows bookmark compatibility and has SHA-256
 `f398656cc37c9cbd209f6a9f188d4537859551372f7c3be94a93a93a0d43c241`,
-with 155 CRC-checked entries. This later build is not yet installed because
-the game was running when it was created.
+with 155 CRC-checked entries. Martin closed the game again and this final
+candidate was installed with matching SHA-256. It was not relaunched, so the
+last live load belongs to the prior `b1afc396...` package; the final package
+has offline/package proof only. The installed v2.39.5 desktop process was
+closed normally and a local Electron session was started from this isolated
+worktree with its updated replay-service handling; its renderer reported the
+worktree app path. This is a local development session, not an installed
+desktop update or public release.
 
 Direct inventory/card delivery stays blocked. The updated insert body changed
 from 1,873/424 to 2,330 bytes/540 instructions and two guest-transaction
@@ -111,3 +117,16 @@ baseline, so new mission/map/challenge identities are not yet diffed. A
 post-update Steam save and non-destructive copy validation are needed before
 reconsidering the replay gate. Do not claim 100%
 of game 1.11, save-write safety, guest persistence, or a public release.
+
+## Official 1.11 notes checked
+
+The [October 22 update notes](https://store.steampowered.com/news/app/1285190/view/705534727891717219?l=english)
+describe changes directly relevant to mission testing: first-time Story Pack 2
+multiplayer start, objective progression when enemies die or areas are reached
+early, mission state after save/load, door/elevator interactions, fast travel,
+discoveries, and challenge progression. Bounty Pack 5 also changes a second
+fast-travel unlock. These are reasons to requalify the mission catalog and
+guest behavior; the notes do not establish that MSBT caused a reported save
+failure or that the Abandoned Post console is fixed. The patch notes were
+retrieved from the official Steam news API when the linked store page returned
+an access error.

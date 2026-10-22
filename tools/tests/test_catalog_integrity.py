@@ -3,6 +3,8 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import sys
+from types import ModuleType
 
 import pytest
 
@@ -35,3 +37,23 @@ def test_station_catalog_accepts_both_line_endings():
     expected = json.loads((ROOT / 'mission_selection_states.json').read_text(encoding='utf-8'))['travel_stations_sha256']
     assert integrity.verified_digest(data, expected, 'changed') == expected
     assert integrity.verified_digest(data.replace(b'\r\n', b'\n'), expected, 'changed') == expected
+
+
+def test_selection_specification_uses_verified_catalog_on_windows(monkeypatch):
+    import importlib.resources
+    monkeypatch.setattr(importlib.resources, 'files', lambda _: ROOT)
+    package = ModuleType('selection_integrity_test')
+    package.__path__ = [str(ROOT)]
+    monkeypatch.setitem(sys.modules, package.__name__, package)
+    monkeypatch.setitem(sys.modules, package.__name__ + '.catalog_integrity', integrity)
+    module_spec = importlib.util.spec_from_file_location(package.__name__ + '.mission_selection_specs',
+                                                         ROOT / 'mission_selection_specs.py')
+    module = importlib.util.module_from_spec(module_spec)
+    monkeypatch.setitem(sys.modules, module_spec.name, module)
+    module_spec.loader.exec_module(module)
+    data = json.loads((ROOT / 'mission_selection_states.json').read_text(encoding='utf-8'))
+    name, checkpoint = next((name, checkpoint) for name, row in data['missions'].items()
+                            for checkpoint, section in row['sections'].items() if not section.get('spawn_issue'))
+    result = module.specification(name, checkpoint)
+    assert result['catalog_sha256'] == data['catalog_sha256']
+    assert result['section']['checkpoint'] == int(checkpoint)
