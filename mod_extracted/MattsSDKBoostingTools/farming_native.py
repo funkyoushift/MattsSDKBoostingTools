@@ -66,6 +66,10 @@ class NativeHook:
         try:
             if self.memory is None:self.memory=self.factory()
             self.memory.validate()
+            # The legacy glide trampoline was qualified only on this Steam
+            # image. A newly recognized farming build must not inherit it.
+            if self.name=='glide_duration' and getattr(self.memory,'build','steam-25372571')!='steam-25372571':
+                raise RuntimeError('Unlimited glide native hook is not qualified for this game build')
             if self.name=='legendary_roll':self.profile=BUILDS[getattr(self.memory,'build','steam-25372571')]['legendary_roll']
             self.check_context()
             if self.owned:return self.status()

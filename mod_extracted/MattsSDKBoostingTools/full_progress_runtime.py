@@ -52,15 +52,21 @@ class Driver:
 
     def preflight(self, *, character=True):
         rows=farming_targets.resolve({'target_scope':'all'})
-        packs=mission_dlc.inspect(rows,engine=missions._engine())
+        engine=missions._engine()
+        packs=mission_dlc.inspect(rows,engine=engine)
         samples=[read(r) for r in rows] if character else []
+        limits=[]
+        if engine.profile=='steam-26007962':
+            limits.append('Game update 1.11: mission, discovery and challenge catalogs still come from 1.10. New or changed content is not yet covered by this Full Game run.')
+        limits.extend([
+            'Shared missions affect everyone. Two legacy split definitions are excluded only when absent from the live game.',
+            'Mission completion uses the existing bulk callbacks, without replaying each objective or moving players to waypoints.',
+            'Party Reveal Map and its fog-reveal teleports are excluded from this run.',
+            'Unmapped content is skipped when DLC access is incomplete.',
+            'Successful requests are reported separately from saved-character verification.'])
         return dict(rows=rows,players=[r['label'] for r in rows],samples=samples,
                     binding=missions._binding(rows),packs=packs,
-                    limits=['Shared missions affect everyone. Two legacy split definitions are excluded only when absent from the live game.',
-                            'Mission completion uses the existing bulk callbacks, without replaying each objective or moving players to waypoints.',
-                            'Party Reveal Map and its fog-reveal teleports are excluded from this run.',
-                            'Unmapped content is skipped when DLC access is incomplete.',
-                            'Successful requests are reported separately from saved-character verification.'])
+                    limits=limits)
 
     def step_snapshot(self, stage):
         # Ownership and roster remain fresh on every request. Character inventories

@@ -4,6 +4,18 @@ const fs=require('node:fs/promises'),path=require('node:path'),os=require('node:
 const crypto=require('node:crypto');
 const {createSaveReplayService}=require('./save_replay_service');
 
+test('Steam 1.11 save guard leaves no active replay or save edit',async t=>{
+  const f=await fixture(t);
+  f.r.rejectBegin=true;
+  const result=await f.service.dispatch('start',{mission:'Mission_Test',checkpoint:28,acknowledge_shared_progress:true});
+  assert.equal(result.state,'failed');assert.equal(result.active,false);
+  assert.match(result.message,/paused for Steam game 1\.11/);
+  assert.equal(f.r.lease,null);
+  assert.deepEqual(await fs.readFile(f.file),f.source);
+  const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  assert.equal(journal.closed,true);assert.equal(journal.pending,null);
+});
+
 test('transient Windows journal replacement lock retries without repeating a game request',async t=>{
   const f=await fixture(t);
   const rename=fs.rename;let locked=0;
@@ -106,7 +118,7 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,e
     }
     if(op==='status'&&r.loading)return {ok:true,loaded:false,background_loading:true,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
     if(op==='status'||op==='restore_guard')return {ok:true,loaded:true,guid:r.guid,world:r.world,travel_loaded:r.travelLoaded,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
-    if(op==='begin'){if(r.lease)return {ok:false,message:'Lease already held'};r.lease=payload.id;return {ok:true,guid,session:r.session,pid:r.pid,spec:payload.bookmark_spec?{...payload.bookmark_spec,force_travel:true}:spec};}
+    if(op==='begin'){if(r.rejectBegin)return {ok:false,message:'Save-backed replay is paused for Steam game 1.11 until a current save can be checked; no save was edited.'};if(r.lease)return {ok:false,message:'Lease already held'};r.lease=payload.id;return {ok:true,guid,session:r.session,pid:r.pid,spec:payload.bookmark_spec?{...payload.bookmark_spec,force_travel:true}:spec};}
     if(payload.session!==r.session||payload.id!==r.lease)return {ok:false,message:'Session differs'};
     if(op==='close'){r.lease=null;return {ok:true};}
     if(op==='loader_bind'){r.binding=payload;return {ok:true};}

@@ -40,4 +40,26 @@ BUILDS = {'steam-25372571': {'timestamp': 1789399121,
                               'struct_global': 213375792,
                               'entry_vtable': 188808016,
                               'getter_context': b'H\x83\xec(H\x8b\x05O\xa8\xfc\x03H\x85\xc0t\x05H\x83\xc4('
-                                                b'\xc3'}}}
+                                                b'\xc3'}},
+ 'steam-26007962': {'timestamp': 4086165580,
+                    'image_size': 652288000,
+                    'sha256': 'ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a',
+                    'drop': {'rva': 0x371c0b,
+                             'context': bytes.fromhex(
+                                 '81e5ff7f00000f57c0f30f2ac5f30f5ec6440f2ec7'
+                                 '7606440f2ec073194981c7d00000004981c430ffffff'
+                                 '0f8551ffffffe97c010000')},
+                    'legendary_roll': {'rva': 0x3dac976,
+                                       'context': bytes.fromhex(
+                                           '25ff7f0000f30f2ac0f30f5e05858ab805'
+                                           'f30f5907488d8f180100008b9728010000'
+                                           '85d20f843a010000488b87200100004885c0'
+                                           '480f44c1448b184585db753c'),
+                                       'original': bytes.fromhex(
+                                           '25ff7f0000f30f2ac0f30f5e05858ab805')},
+                    'charges': {'vtable': 0xb63f570,
+                                'getter': 0x8bb6592,
+                                'struct_global': 0xcba2a20,
+                                'entry_vtable': 0xb42b670,
+                                'getter_context': bytes.fromhex(
+                                    '4883ec28488b0583c4fe034885c074054883c428c3')}}}

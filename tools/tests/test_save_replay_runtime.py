@@ -205,6 +205,25 @@ def test_lease_blocks_progress_mutations_but_allows_reads_and_close(runtime):
     assert not m.conflict('full_progress_start')
 
 
+def test_steam_111_replay_begin_rejects_before_lease_or_save(monkeypatch):
+    import importlib.resources
+    monkeypatch.setattr(importlib.resources, 'files', lambda _: ROOT)
+    package = ModuleType('save_replay_steam_guard_test')
+    package.__path__ = [str(ROOT)]
+    monkeypatch.setitem(sys.modules, package.__name__, package)
+    spec = importlib.util.spec_from_file_location(package.__name__ + '.mission_save_replay', ROOT / 'mission_save_replay.py')
+    m = importlib.util.module_from_spec(spec)
+    monkeypatch.setitem(sys.modules, spec.name, m)
+    spec.loader.exec_module(m)
+    m._idle_progress = lambda: None
+    m._host = lambda: (N(), N(profile='steam-26007962'), 'a' * 32, 'world_p')
+    m._save = lambda: pytest.fail('Guard must not create a replay journal')
+    with pytest.raises(RuntimeError, match='paused for Steam game 1.11'):
+        m.dispatch('mission_save_replay_begin', dict(id='d' * 32, mission='Mission_Main_Shatteredlands3',
+                                                     checkpoint=28, acknowledge_shared_progress=True))
+    assert m._lease is None
+
+
 def test_actual_backend_router_delegates_save_actions(monkeypatch):
     text = (ROOT / 'backend_actions.py').read_text(encoding='utf-8')
     tree = ast.parse(text)

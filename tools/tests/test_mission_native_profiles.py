@@ -57,10 +57,11 @@ def test_all_profiles_complete_bodies_and_original_sdu_gate_match_installed_file
     paths = [Path(row['path']) for row in receipt['files']]
     if not all(p.is_file() for p in paths):
         pytest.skip('Both qualified executables are not installed')
-    images = [pefile.PE(str(p), fast_load=True) for p in paths]
     for path, row in zip(paths, receipt['files']):
         with path.open('rb') as stream:
-            assert hashlib.file_digest(stream, 'sha256').hexdigest() == row['sha256']
+            if hashlib.file_digest(stream, 'sha256').hexdigest() != row['sha256']:
+                pytest.skip('The historical qualified executable was replaced by a game update')
+    images = [pefile.PE(str(p), fast_load=True) for p in paths]
     for span in receipt['spans']:
         code = [images[i].get_data(span[k+'_rva'], span['size']) for i,k in enumerate(('steam','epic'))]
         for blob,k in zip(code,('steam','epic')):
@@ -124,6 +125,10 @@ def test_loader_and_dialogue_complete_function_evidence_matches_both_installed_s
     assert evidence['missing']==[] and evidence['conflicts']=={}
     paths=[Path(row['path']) for row in evidence['files']]
     if not all(p.is_file() for p in paths):pytest.skip('Both qualified executables are not installed')
+    for path,row in zip(paths,evidence['files']):
+        with path.open('rb') as stream:
+            if hashlib.file_digest(stream,'sha256').hexdigest()!=row['sha256']:
+                pytest.skip('The historical qualified executable was replaced by a game update')
     images=[pefile.PE(str(p),fast_load=True) for p in paths]
     for span in evidence['spans']:
         code=[image.get_data(span[key+'_rva'],span['size']) for image,key in zip(images,('steam','epic'))]

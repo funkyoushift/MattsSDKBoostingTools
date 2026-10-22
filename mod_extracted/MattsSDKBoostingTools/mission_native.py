@@ -1,14 +1,17 @@
 """Exact, offline-qualified mission build profiles. Unknown builds fail closed.
 
 Source executable hashes, complete normalized bodies and RIP/vtable evidence:
-docs/native-missions/EPIC_PROFILE.json. Epic live execution is not established
-by those offline comparisons. This module never scans runtime memory.
+docs/native-missions/EPIC_PROFILE.json and STEAM_26007962_PROFILE.json.
+The new Steam profile has three reviewed native field-displacement bytes; its
+live execution is not established by offline comparisons. This module never
+scans runtime memory.
 """
 import json
 from importlib.resources import files
 
 PROFILES = json.loads(files(__package__).joinpath('mission_build_profiles.json').read_text())
 STEAM = 'steam-25372571'
+STEAM_26007962 = 'steam-26007962'
 EPIC = 'epic-4845623'
 
 

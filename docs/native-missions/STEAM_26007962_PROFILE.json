@@ -1,0 +1,764 @@
+{
+  "schema": 1,
+  "process_access": "none",
+  "game_files_modified": false,
+  "live_execution": false,
+  "baseline": {
+    "path": "C:\\Program Files\\Epic Games\\Venus\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+    "sha256": "764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719"
+  },
+  "target": {
+    "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+    "sha256": "ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a"
+  },
+  "baseline_previous_span_hashes_verified": 27,
+  "addresses": {
+    "0xf19ee4": "0xf13ae4",
+    "0xd80660": "0xd82910",
+    "0xd82e30": "0xd850e0",
+    "0x5f7dac": "0x5f61f4",
+    "0xd83366": "0xd85616",
+    "0x3a18c8": "0x3a0728",
+    "0x6bbfa4": "0x6ba864",
+    "0x3d32a5c": "0x3d35bac",
+    "0x89062d0": "0x890e696",
+    "0x61aaf4a": "0x61b4a24",
+    "0xce3150": "0xce1a80",
+    "0x3df18e0": "0x3df56c8",
+    "0x3df1dfe": "0x3df5be6",
+    "0x188573c": "0x188339e",
+    "0x891216a": "0x891a530",
+    "0x89068f2": "0x890ecb8",
+    "0x156a95a": "0x1563480",
+    "0x125f73e": "0x125be1e",
+    "0x141b6f0": "0x141705e",
+    "0x419fefa": "0x41a66be",
+    "0x8d09f1a": "0x8d118d2",
+    "0x8905d9e": "0x890e164",
+    "0x89069ca": "0x890ed90",
+    "0xdcb1dc": "0xdcc7dc",
+    "0x105bc10": "0x10560bc",
+    "0xce3c18": "0xce2548",
+    "0xb752920": "0xb75a530",
+    "0xb7dc120": "0xb7e3d30",
+    "0xb975980": "0xb97d710",
+    "0xb973820": "0xb97b5b0",
+    "0xb973940": "0xb97b6d0",
+    "0xb973a20": "0xb97b7b0",
+    "0xb3f6810": "0xb3fe360",
+    "0xcb80808": "0xcb888c8",
+    "0xcb80830": "0xcb888f0",
+    "0xcb80870": "0xcb88930",
+    "0xcb80898": "0xcb88958",
+    "0xcb808a8": "0xcb88968",
+    "0xcb808a0": "0xcb88960",
+    "0xcb808b0": "0xcb88970",
+    "0xd17c02": "0xd1c8e8"
+  },
+  "missing": [],
+  "conflicts": {},
+  "callback_independent_callers": [
+    {
+      "old_epic_rva": "0x8cfaa14",
+      "size": 544,
+      "old_sha256": "51a045151e47e6cb42ce387de63b6c3579bda800a494d7b01d99e96af3f4679e",
+      "normalized_sha256": "b8ede000fccfcd50dca60618d31e6f805facc727f5e9ad266bad2089e0279409",
+      "instructions": 156,
+      "matches": [
+        {
+          "rva": "0x8cfd352",
+          "sha256": "05a8fc578f3b2ef32bb439c8addc2939c92033d79f2a62dcc4b1c8129e7d50d2",
+          "callback_references": [
+            {
+              "old_site": "0x8cfabc4",
+              "new_site": "0x8cfd502",
+              "old_target": "0xd1a212",
+              "new_target": "0xd1c8e8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "old_epic_rva": "0x8cf9262",
+      "size": 696,
+      "old_sha256": "765505dbbfed2f188278c7c937f3b20a6aded2e45370b0f0bd5aee10cc305944",
+      "normalized_sha256": "8ba3cb05bdfecb18e9c684e442045519c48c6b77a902de254e8ba8a46c9fb77a",
+      "instructions": 181,
+      "matches": [
+        {
+          "rva": "0x8cfbba0",
+          "sha256": "e523cf5952efeb4cf755fbd59123f552b0fed54ae1e5525d262429bff18deb27",
+          "callback_references": [
+            {
+              "old_site": "0x8cf94c9",
+              "new_site": "0x8cfbe07",
+              "old_target": "0xd1a212",
+              "new_target": "0xd1c8e8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "old_epic_rva": "0x5dcab30",
+      "size": 819,
+      "old_sha256": "2e6fd7990109e32f4d04f9370d06d7c92f73a1b59d035660ce4ec52936e2db96",
+      "normalized_sha256": "91663bf6cfa758199884087fa9dfd6d0114dad12c48f98f42c9dba2c928ab761",
+      "instructions": 214,
+      "matches": [
+        {
+          "rva": "0x5dc6940",
+          "sha256": "8e437752e21a4b8961cda4f91977cfa4b78ed87a33bc4a47a9bd31faa5ef29d2",
+          "callback_references": [
+            {
+              "old_site": "0x5dcadb6",
+              "new_site": "0x5dc6bc6",
+              "old_target": "0xd1a212",
+              "new_target": "0xd1c8e8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "old_epic_rva": "0xd16458",
+      "size": 2203,
+      "old_sha256": "611820514c06e4b34b26691414b1f67d8a0dea8eea515d512468f9919f3b9183",
+      "normalized_sha256": "665b179128fdbcbc5ee69133919f86d42c7a62d9f642f9e303703d180ed002a7",
+      "instructions": 529,
+      "matches": [
+        {
+          "rva": "0xd18af6",
+          "sha256": "200314464a08f3b6c6bad6988a260858cfeefef29289a687325c11b7c9101920",
+          "callback_references": [
+            {
+              "old_site": "0xd16b2b",
+              "new_site": "0xd191c9",
+              "old_target": "0xd1a212",
+              "new_target": "0xd1c8e8"
+            },
+            {
+              "old_site": "0xd16bf7",
+              "new_site": "0xd19295",
+              "old_target": "0xd1a212",
+              "new_target": "0xd1c8e8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "status": "offline_candidate_requires_live_runtime_validation",
+  "spans": [
+    {
+      "source_steam_rva": "0xf19ee4",
+      "baseline_epic_rva": "0xf17fb4",
+      "target_steam_rva": "0xf13ae4",
+      "baseline_body_rva": "0xf17fb4",
+      "target_body_rva": "0xf13ae4",
+      "size": 113,
+      "baseline_sha256": "6a359dc8c2db38f50db3e80fdf6e882d2fec9522da1a87c1fbef2a4dde0b04ce",
+      "target_sha256": "d39910f16dc4dbba3f938a51a33ba097cc6b50da14d095f860d40221abc569ed",
+      "instructions": [
+        43,
+        43
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "5657534883ec204489c789d34889cee8a48cebff84c074504889f1e830f40200"
+    },
+    {
+      "source_steam_rva": "0xd80660",
+      "baseline_epic_rva": "0xd82c70",
+      "target_steam_rva": "0xd82910",
+      "baseline_body_rva": "0xd82c70",
+      "target_body_rva": "0xd82910",
+      "size": 520,
+      "baseline_sha256": "6cc8c52a00a7d6e19e4f17736674902cd5b367690d9a2e788e1c451a207be2aa",
+      "target_sha256": "63306e9e6dae5ff55c1a5c7f7c835719a133b6b729633fd72f42d008f817ac37",
+      "instructions": [
+        141,
+        141
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "4157415641554154565755534883ec68488b051950980b4831e048894424604c"
+    },
+    {
+      "source_steam_rva": "0xd82e30",
+      "baseline_epic_rva": "0xd85440",
+      "target_steam_rva": "0xd850e0",
+      "baseline_body_rva": "0xd85440",
+      "target_body_rva": "0xd850e0",
+      "size": 714,
+      "baseline_sha256": "ef225e0c789ffb2e0f031bb418b72114e40356217082386ac6d86ee9afe1a8b6",
+      "target_sha256": "a2018198fe008f74cc958deb8bc3b69ac8b579ad8bbc9b38ac1f3c25e8ba5f58",
+      "instructions": [
+        191,
+        191
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "4157415641554154565755534883ec7889d34889ce488b054428980b4831e048"
+    },
+    {
+      "source_steam_rva": "0x5f7dac",
+      "baseline_epic_rva": "0x5f7dac",
+      "target_steam_rva": "0x5f61f4",
+      "baseline_body_rva": "0x5f7dac",
+      "target_body_rva": "0x5f61f4",
+      "size": 91,
+      "baseline_sha256": "e286b797b3c41294b03f3c245395b7150bb2730bc4873bba65926d23053a58d5",
+      "target_sha256": "f0b518175729b079206e1d41a9a6c61a4bbf845c5bac63e924caff15771b86e0",
+      "instructions": [
+        26,
+        26
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "564883ec30488b054017110c4831e04889442428488b4108488b48204885c974"
+    },
+    {
+      "source_steam_rva": "0xd83366",
+      "baseline_epic_rva": "0xd85976",
+      "target_steam_rva": "0xd85616",
+      "baseline_body_rva": "0xd85976",
+      "target_body_rva": "0xd85616",
+      "size": 51,
+      "baseline_sha256": "9953d11f0291a9a8412a63b5e2076cebf132417b43b3c03ea24abaa6f2e1cc63",
+      "target_sha256": "957a96f2f59f4f4bc75bba031b2abe508986e0f3381bcd1403b1d3ac84e47bbb",
+      "instructions": [
+        16,
+        16
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "564883ec204889d6488b4108488b48684885c9751048c706000000004889f048"
+    },
+    {
+      "source_steam_rva": "0x3a18c8",
+      "baseline_epic_rva": "0x3a18c8",
+      "target_steam_rva": "0x3a0728",
+      "baseline_body_rva": "0x3a18c8",
+      "target_body_rva": "0x3a0728",
+      "size": 448,
+      "baseline_sha256": "aca95f7bea6494d1a0bcf2a324d02b31c1d6ed103dd15112d6b25ffbc2aba394",
+      "target_sha256": "a64cd2f85670c4ad53510751693509c98de5abbfc66f19cf37da97479b550bc4",
+      "instructions": [
+        132,
+        132
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "41565657534881ec380100004889d6488b050272360c4831e048898424300100"
+    },
+    {
+      "source_steam_rva": "0x6bbfa4",
+      "baseline_epic_rva": "0x6bbfa4",
+      "target_steam_rva": "0x6ba864",
+      "baseline_body_rva": "0x6bbfa4",
+      "target_body_rva": "0x6ba864",
+      "size": 468,
+      "baseline_sha256": "1fdde305f729a23a72a7ea0518c6ad2d2a90cb15b36a3d17334465fea3d021d1",
+      "target_sha256": "8223d4fe6641bb5455be0a0b89a4ed86b7290ac15f2fad60d72e2e4c63e350a4",
+      "instructions": [
+        143,
+        143
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "41574156565755534883ec58488b05c9d0040c4831e04889442450b801000000"
+    },
+    {
+      "source_steam_rva": "0x3d32a5c",
+      "baseline_epic_rva": "0x3d280f4",
+      "target_steam_rva": "0x3d35bac",
+      "baseline_body_rva": "0x3d280f4",
+      "target_body_rva": "0x3d35bac",
+      "size": 228,
+      "baseline_sha256": "ee9cef1ef4f0155b62c18a0fbfb8bba49a4b06a08fb8d01bd07aa4ed357befa0",
+      "target_sha256": "7ead00975acbe8fa15c6b52128c152d46f955cf85bdae3b4fafad5c9b1f2abf2",
+      "instructions": [
+        59,
+        59
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "5657534883ec404489c3488b05831d9d084831e0488944243880fa070f87bb00"
+    },
+    {
+      "source_steam_rva": "0x89062d0",
+      "baseline_epic_rva": "0x890c598",
+      "target_steam_rva": "0x890e696",
+      "baseline_body_rva": "0x890c598",
+      "target_body_rva": "0x890e696",
+      "size": 323,
+      "baseline_sha256": "053512d92eaed25d997df2987c2d331752bdc88a6450b82d26595a370ed0a0b5",
+      "target_sha256": "d7b3b351a501783932107a9c7f10024ca8fb2452d5492ab43965cf54cb8d277b",
+      "instructions": [
+        86,
+        86
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "415741564154565755534883ec704889ce488b059292df034831e04889442468"
+    },
+    {
+      "source_steam_rva": "0x61aaf4a",
+      "baseline_epic_rva": "0x61b42d0",
+      "target_steam_rva": "0x61b4a24",
+      "baseline_body_rva": "0x61b42d0",
+      "target_body_rva": "0x61b4a24",
+      "size": 98,
+      "baseline_sha256": "55d0f2b737206f669a990bed618de485409e85e7d1e00d68d2a20175d15bff5a",
+      "target_sha256": "55d0f2b737206f669a990bed618de485409e85e7d1e00d68d2a20175d15bff5a",
+      "instructions": [
+        34,
+        34
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "5657534883ec204889cee853000000488b4e604885c9751d488b4e684885c975"
+    },
+    {
+      "source_steam_rva": "0xce3150",
+      "baseline_epic_rva": "0xce575a",
+      "target_steam_rva": "0xce1a80",
+      "baseline_body_rva": "0xce575a",
+      "target_body_rva": "0xce1a80",
+      "size": 579,
+      "baseline_sha256": "a40cd98f8ef9ba8ad227b120a2179871e2011f6b50b1f7c0907e7a85bd0800e2",
+      "target_sha256": "ffb2dcf701cc9216a96a31bb863a3ae380a7d3bae74841f74be32ef973cabe16",
+      "instructions": [
+        174,
+        174
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "415741564154565755534883ec404889ce488b05a85ea20b4831e04889442438"
+    },
+    {
+      "source_steam_rva": "0x3df18e0",
+      "baseline_epic_rva": "0x3de6f78",
+      "target_steam_rva": "0x3df56c8",
+      "baseline_body_rva": "0x3de6f78",
+      "target_body_rva": "0x3df56c8",
+      "size": 532,
+      "baseline_sha256": "fa0c1902af6a5281e53cdac2f71d5e9116350193bf6b1395d9cf1e766f7017dd",
+      "target_sha256": "795d7e1aed1d1fcf34ea73251c2655cfbfb95ec144ea3be45181144e6eeef551",
+      "instructions": [
+        159,
+        159
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "4157415641545657534883ec3889d3488b05622291084831e04889442430488b"
+    },
+    {
+      "source_steam_rva": "0x3df1dfe",
+      "baseline_epic_rva": "0x3de7496",
+      "target_steam_rva": "0x3df5be6",
+      "baseline_body_rva": "0x3de7496",
+      "target_body_rva": "0x3df5be6",
+      "size": 99,
+      "baseline_sha256": "07b56fb72f8aa3eccd563a714398e7b979fec1d161519ce2191eefed2d8490f8",
+      "target_sha256": "24e3313a1929c462ba168048a02a724dfb38593f1997b496b7860c6f54079be9",
+      "instructions": [
+        36,
+        36
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56534883ec2889d34889ce488b4908e86a1373fc84c0742a4889f1e8543702fd"
+    },
+    {
+      "source_steam_rva": "0x188573c",
+      "baseline_epic_rva": "0x187b286",
+      "target_steam_rva": "0x188339e",
+      "baseline_body_rva": "0x187b286",
+      "target_body_rva": "0x188339e",
+      "size": 166,
+      "baseline_sha256": "1c8e8bfa482979c2050b1400188262a9c094a8fef357ec7f0338531d71689c1d",
+      "target_sha256": "39acb5850c2110bbe6e4c9403f6c67c212a8ae09b90a559dff16ea8c4a2361a8",
+      "instructions": [
+        46,
+        46
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56574883ec38488b059545e80a4831e0488944243080fa017568488b15515330"
+    },
+    {
+      "source_steam_rva": "0x891216a",
+      "baseline_epic_rva": "0x8918432",
+      "target_steam_rva": "0x891a530",
+      "baseline_body_rva": "0x8918432",
+      "target_body_rva": "0x891a530",
+      "size": 89,
+      "baseline_sha256": "b1ae6490bc3d320ada5b7fcd1947b6302ddb552669163e6515ed8667cf3193d7",
+      "target_sha256": "3dba66c1abcf4c3e9de343255e2045fc00044216365efb16f4a2937dc813e214",
+      "instructions": [
+        30,
+        30
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56534883ec28488b410880b8c301000000753e89d34889ce84d20f94c24c8d49"
+    },
+    {
+      "source_steam_rva": "0xd17c02",
+      "baseline_epic_rva": "0xd1a212",
+      "target_steam_rva": "0xd1c8e8",
+      "baseline_body_rva": "0xd1a212",
+      "target_body_rva": "0xd1c8e8",
+      "size": 3611,
+      "baseline_sha256": "7c49e05777668a66fa2b11da22b5a7cb1a1982258580b6fff14edcc8998a3f0a",
+      "target_sha256": "dd319bc53f79b67a70125af5359d6219ca5efd44e1cc3dfeb735e00a68280ad9",
+      "instructions": [
+        805,
+        805
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [
+        {
+          "offset": 620,
+          "old": 152,
+          "new": 160
+        },
+        {
+          "offset": 635,
+          "old": 144,
+          "new": 152
+        }
+      ],
+      "target_fingerprint": "4157415641554154565755534881ec280100004c89ce4c89c789d34989ce488b"
+    },
+    {
+      "source_steam_rva": "0x89068f2",
+      "baseline_epic_rva": "0x890cbba",
+      "target_steam_rva": "0x890ecb8",
+      "baseline_body_rva": "0x890cbba",
+      "target_body_rva": "0x890ecb8",
+      "size": 216,
+      "baseline_sha256": "551d21bec7615798f483c956635f560e52102ac0c6effef7e38edc22a5fbc0d0",
+      "target_sha256": "dd62ebff4505238184a54d38076d495f5a9c2e8847b97b4906f93754fce0c718",
+      "instructions": [
+        62,
+        62
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "5657534883ec404889d74889ce488b05748cdf034831e04889442438e85b4263"
+    },
+    {
+      "source_steam_rva": "0x156a95a",
+      "baseline_epic_rva": "0x1566872",
+      "target_steam_rva": "0x1563480",
+      "baseline_body_rva": "0x1566872",
+      "target_body_rva": "0x1563480",
+      "size": 137,
+      "baseline_sha256": "07999cf295a8ff336d4d0abb13ddc3acccede97fde8ae38d72f343d5b1d57228",
+      "target_sha256": "8a6de67c84f8d5624c681a990119ad1568c34c6ab3caa2f7d08b4e15f5c411d3",
+      "instructions": [
+        40,
+        40
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56574883ec58488b05b3441a0b4831e04889442450488b79104885ff753f4889"
+    },
+    {
+      "source_steam_rva": "0x125f73e",
+      "baseline_epic_rva": "0x125d50e",
+      "target_steam_rva": "0x125be1e",
+      "baseline_body_rva": "0x125d50e",
+      "target_body_rva": "0x125be1e",
+      "size": 131,
+      "baseline_sha256": "9431b754f5026dcabbe0630ab5a7279d2109cb55711cc335e46ed9b90a0c2a2e",
+      "target_sha256": "db67ef76c3154e6f003553531e14342ed090b2a84917b4e4cd2460080966c192",
+      "instructions": [
+        43,
+        43
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [
+        {
+          "offset": 35,
+          "old": 192,
+          "new": 184
+        }
+      ],
+      "target_fingerprint": "56574883ec284889d6e80aefea024889c74885c00f94c04885f60f94c108c175"
+    },
+    {
+      "source_steam_rva": "0x141b6f0",
+      "baseline_epic_rva": "0x14188d4",
+      "target_steam_rva": "0x141705e",
+      "baseline_body_rva": "0x141884e",
+      "target_body_rva": "0x1416fd8",
+      "size": 302,
+      "baseline_sha256": "509e9316776dbe0f6c6647457c49e0e9fbcd3f87b4dcfb488604b420cd1dd2c9",
+      "target_sha256": "03c385f5adffe4c15fc5bf45affc13f7dbc2d45037721106538a4eb08909f517",
+      "instructions": [
+        93,
+        93
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "486397400100004885d274e2488b8738010000488b4e184869d2a800000049b800000000ffffffff4c8b48504d85c974334d8b194589da4d21c3483b4848742c4d09da410f95c34c39d1410f94c24584d375194805a80000004881c258ffffff75c6eb8a4531db4531d2ebce4885c00f8479ffffff8b88940000004d85c9741d4180790801751a418b790c8b809800000039f80f4cf801cfe953ffffff31ffebeabfffffff7febe3"
+    },
+    {
+      "source_steam_rva": "0x419fefa",
+      "baseline_epic_rva": "0x41958d2",
+      "target_steam_rva": "0x41a66be",
+      "baseline_body_rva": "0x41958d2",
+      "target_body_rva": "0x41a66be",
+      "size": 790,
+      "baseline_sha256": "1473103c9f696b3caa14bfdd2845c8f814521374c1dc838491d0b2656a06610c",
+      "target_sha256": "1dbdc1a8da8dd6a168c0a1375be4cb3620af5dd4e03374e90889cf0e031b7939",
+      "instructions": [
+        207,
+        207
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "41574156415541545657534883ec704889ce488b05691256084831e048894424"
+    },
+    {
+      "source_steam_rva": "0x8d09f1a",
+      "baseline_epic_rva": "0x8d0ef42",
+      "target_steam_rva": "0x8d118d2",
+      "baseline_body_rva": "0x8d0ef42",
+      "target_body_rva": "0x8d118d2",
+      "size": 123,
+      "baseline_sha256": "d0dc7415435a6faefb95dd57ba5b803fce4eed79ee6cb254ee9c449d718726e4",
+      "target_sha256": "89751edc504e0e4a07f0d9d800bde65c785796d9fdf2ce7fd1c80ee8d66f6914",
+      "instructions": [
+        41,
+        41
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "565755534883ec284889d64889cb4c89c9e8f4b62df84889c7807b2001753248"
+    },
+    {
+      "source_steam_rva": "0x8905d9e",
+      "baseline_epic_rva": "0x890c066",
+      "target_steam_rva": "0x890e164",
+      "baseline_body_rva": "0x890c066",
+      "target_body_rva": "0x890e164",
+      "size": 62,
+      "baseline_sha256": "c56df99a60aab77e5137208907b1fc51efd7fd29e07c256f6c4eeb0e69fdf828",
+      "target_sha256": "fb94037bf458e6459b083d24a718e0a4388c31b3dc71e37a58c7a106c18ae532",
+      "instructions": [
+        23,
+        23
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56574883ec2889d64889cfe8c04d63f84885c074214889c189f2e8db4ff3ff48"
+    },
+    {
+      "source_steam_rva": "0x89069ca",
+      "baseline_epic_rva": "0x890cc92",
+      "target_steam_rva": "0x890ed90",
+      "baseline_body_rva": "0x890cc92",
+      "target_body_rva": "0x890ed90",
+      "size": 626,
+      "baseline_sha256": "323afcc603ec3178cb8cfc4df5c78032d8fb5c498bd43b3ca20980cb0e548cfd",
+      "target_sha256": "99f2e6e43c1b5d777d27074f15a6d68cb808c30e9d07c3019fe0d6af204f9a60",
+      "instructions": [
+        162,
+        162
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "4157415641554154565755534881eca80000000f29b4249000000089d74889ce"
+    },
+    {
+      "source_steam_rva": "0xdcb1dc",
+      "baseline_epic_rva": "0xdcd7ec",
+      "target_steam_rva": "0xdcc7dc",
+      "baseline_body_rva": "0xdcd7ec",
+      "target_body_rva": "0xdcc7dc",
+      "size": 63,
+      "baseline_sha256": "c07a9eadcec83818dd969968fc0aa3879fcd3dd6abd30b1c347126745d59b0cc",
+      "target_sha256": "33d2cdc1db719b4eb328c9e825b28a317cd0f52b4d6c6d80fa7d5c86f3178459",
+      "instructions": [
+        24,
+        24
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "56534883ec2889d34889cee8300000004885c074224889c189dae87569270048"
+    },
+    {
+      "source_steam_rva": "0x105bc10",
+      "baseline_epic_rva": "0x1059ae0",
+      "target_steam_rva": "0x10560bc",
+      "baseline_body_rva": "0x1059ae0",
+      "target_body_rva": "0x10560bc",
+      "size": 136,
+      "baseline_sha256": "2294b6d973ba5e6360a37e2e0305bb139d7dcd066cee51f0931791d14f078ebe",
+      "target_sha256": "614851e2b42cb1b6b58d531d3515ebb36faefb6020db6f90e2e536cbed46d809",
+      "instructions": [
+        46,
+        46
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "41565657534883ec28488b410880b8c301000000755780b8c001000000754e89"
+    },
+    {
+      "source_steam_rva": "0xce3c18",
+      "baseline_epic_rva": "0xce6222",
+      "target_steam_rva": "0xce2548",
+      "baseline_body_rva": "0xce6222",
+      "target_body_rva": "0xce2548",
+      "size": 51,
+      "baseline_sha256": "0b1278f1e813179e6cdee2d5ac3b33f6e5f6c578053c443777180cbbc191dc8d",
+      "target_sha256": "7eaa2df96d549b39a515ac9ffc5f6984e73f230be7082b968b2746bdb1edd208",
+      "instructions": [
+        14,
+        14
+      ],
+      "internal_branch_layout_equal": true,
+      "normalized_byte_differences": [],
+      "target_fingerprint": "564883ec204889cee8650000004889f1e81f0000004889f1e84b020000b9d001"
+    }
+  ],
+  "layout_changes": {
+    "0xd17c02": [
+      {
+        "offset": 620,
+        "old": 152,
+        "new": 160
+      },
+      {
+        "offset": 635,
+        "old": 144,
+        "new": 152
+      }
+    ],
+    "0x125f73e": [
+      {
+        "offset": 35,
+        "old": 192,
+        "new": 184
+      }
+    ]
+  },
+  "loader_dialogue_spans": [
+    {
+      "source": "mission_loader_builds.json.evidence",
+      "baseline_steam_rva": "0x5fd07ea",
+      "baseline_epic_rva": "0x5fdbbc0",
+      "target_steam_rva": "0x5fda108",
+      "size": 81,
+      "baseline_epic_sha256": "dd1a5564eb7f016264495f5afeed245cbdb6b23cba2a80ceca8ec0279ce14650",
+      "target_steam_sha256": "b68ef664a8dec1eec62e3016689ef5506199cc870fae3de53bb75cb05e1e1b21",
+      "instructions": 26,
+      "target_fingerprint": "56574883ec288b81e000000085c0743983b9e40000000074303b05d9de960674"
+    },
+    {
+      "source": "mission_loader_builds.json.direct_evidence.qualification",
+      "baseline_steam_rva": "0x8e31d64",
+      "baseline_epic_rva": "0x8e36d8c",
+      "target_steam_rva": "0x8e39172",
+      "size": 520,
+      "baseline_epic_sha256": "fa1e9741127c4d5c8cf1e77e35b9e94067d5d1b632878b50add10e3f26e135e7",
+      "target_steam_sha256": "e6141cbc58ad60831f5e1f41569351dfd81913dde9855574fab836f4b0f1daf2",
+      "instructions": 142,
+      "target_fingerprint": "41574156415541545657534883ec404489c34989ce488b05b2e78c034831e048"
+    },
+    {
+      "source": "mission_loader_builds.json.direct_evidence.qualification",
+      "baseline_steam_rva": "0x5aede48",
+      "baseline_epic_rva": "0x5afd978",
+      "target_steam_rva": "0x5afa3b6",
+      "size": 511,
+      "baseline_epic_sha256": "32d46f123dd3761288eda893dbac92aad5750c8f7403a98de8423e9b311f666a",
+      "target_steam_sha256": "4950c52bb3a0f8f21770bc4f75731623f1657f3ef5ec1a971253b7a06c8b444f",
+      "instructions": 119,
+      "target_fingerprint": "41565657534883ec484889ce488b0577d5c0064831e04889442440488d794448"
+    },
+    {
+      "source": "mission_loader_builds.json.direct_evidence.qualification",
+      "baseline_steam_rva": "0x15d510a",
+      "baseline_epic_rva": "0x15cff6c",
+      "target_steam_rva": "0x15ce38e",
+      "size": 383,
+      "baseline_epic_sha256": "e408b96380099e75d67eacfccb945c676d067e750792d74410f5645e2938072d",
+      "target_steam_sha256": "e0aab9f1d1a0a779ddff265453a5cee7b62d3f1a49f88f9163a2e5f54c3a736d",
+      "instructions": 84,
+      "target_fingerprint": "5657534881ec800000004889ce488b059e95130b4831e04889442478488b8998"
+    },
+    {
+      "source": "mission_loader_builds.json.direct_evidence.qualification",
+      "baseline_steam_rva": "0x8db40d4",
+      "baseline_epic_rva": "0x8db90fc",
+      "target_steam_rva": "0x8dbb4e4",
+      "size": 83,
+      "baseline_epic_sha256": "01c12e757a1234c248d85cee6c9798c00627ee0a33642bec36da18a5fee81f6a",
+      "target_steam_sha256": "d81e597386793e6468b12f32a56809ad8a6a581f8d32d96212167b78e939b96f",
+      "instructions": 25,
+      "target_fingerprint": "56574883ec284889cee85a05ccfb4885c0742a4889c7e8a11f55f7488b4f1048"
+    },
+    {
+      "source": "mission_loader_builds.json.direct_evidence.qualification",
+      "baseline_steam_rva": "0x41f638a",
+      "baseline_epic_rva": "0x41ebd62",
+      "target_steam_rva": "0x41fb884",
+      "size": 253,
+      "baseline_epic_sha256": "1410f85e8c5aa438ef588f56bf001eca0f7a8ebf37e7e6c36674f47421901be7",
+      "target_steam_sha256": "71f3f6667922e8c4314c2321fed1b38b10c9d19fa2501b499c767bfcc2c83ff5",
+      "instructions": 80,
+      "target_fingerprint": "4157415641554154565755534883ec384489c34889d74889ce488b059cc05008"
+    },
+    {
+      "source": "dialogue_native_builds.json.evidence",
+      "baseline_steam_rva": "0x31838e",
+      "baseline_epic_rva": "0x31838e",
+      "target_steam_rva": "0x3171d0",
+      "size": 1092,
+      "baseline_epic_sha256": "33e81ffc908fdd9c01887643a2d245c6af497bf96d7180e63860eaca66903609",
+      "target_steam_sha256": "5d62e83cd65a8dbd04d8de0044ee9a8a24f62c6eb674b48be19199b7fbc49d20",
+      "instructions": 269,
+      "target_fingerprint": "41574156415541545657534883ec400f297424300f28f34d89c789d34889ce4c"
+    },
+    {
+      "source": "dialogue_native_builds.json.evidence",
+      "baseline_steam_rva": "0x3189a6",
+      "baseline_epic_rva": "0x3189a6",
+      "target_steam_rva": "0x3177e8",
+      "size": 1091,
+      "baseline_epic_sha256": "a4dc430aa97d5d12100a68402ec697ab3bab074e5c510fc432b2f6695a8ef196",
+      "target_steam_sha256": "bf8a50c316f5807b876267571e991cda67eb1d593b7bf4534d326cd8559d9b7b",
+      "instructions": 249,
+      "target_fingerprint": "56574883ec680f297c24500f297424400f28f14889ce488b053b013f0c4831e0"
+    },
+    {
+      "source": "dialogue_native_builds.json.evidence",
+      "baseline_steam_rva": "0x8877c80",
+      "baseline_epic_rva": "0x887df48",
+      "target_steam_rva": "0x887ffb2",
+      "size": 339,
+      "baseline_epic_sha256": "8a1d2ec1c9eae4181d7e8571c1578a3cc11ee5dddcccbd765958d685429623db",
+      "target_steam_sha256": "b21cbe2d83de63930f3877631ec3d13a8bc61025dfea36c56838c6db02197775",
+      "instructions": 93,
+      "target_fingerprint": "5657534883ec404889ce488bbc2480000000488b057579e8034831e048894424"
+    },
+    {
+      "source": "dialogue_native_builds.json.evidence",
+      "baseline_steam_rva": "0x3d6033a",
+      "baseline_epic_rva": "0x3d559d2",
+      "target_steam_rva": "0x3d63f96",
+      "size": 323,
+      "baseline_epic_sha256": "a33567a91f943162718c842021b61c3bd08eafe438e51abd2cd78392770a12cb",
+      "target_steam_sha256": "5c0d4a9d9b8586c6856c824313dac13306a73dde6f8616c1bdc1e67f071e3c24",
+      "instructions": 94,
+      "target_fingerprint": "41565657534883ec38660f297424204889d64889cf8b81600100003b818c0100"
+    }
+  ]
+}

@@ -334,7 +334,14 @@ function createSaveReplayService({request,helper,codec,saveRoot,storage}) {
     job.pending={action:'begin',key:'begin',next:'open_other'};await persist();
     try {const r=await native('begin',{mission:payload.mission,checkpoint:payload.checkpoint,acknowledge_shared_progress:true,bookmark_spec:payload.bookmark?.spec});
       job.session=r.session;job.pid=r.pid;job.guid=r.guid;job.spec=payload.bookmark?{...r.spec,bookmark_snapshot:payload.bookmark.snapshot,fog_mode:fogMode}:{...r.spec,force_travel:true,fog_mode:fogMode};job.pending=null;await jump('open_other');return await step();
-    }catch(error){job.phase='uncertain';job.error=error.message;await persist();return view();}
+    }catch(error){
+      // This native guard rejects before opening a lease or touching a save.
+      // Leave a retryable failed state instead of an uncertain active run.
+      if(error.message?.startsWith('Save-backed replay is paused for Steam game 1.11')){
+        job.phase='failed';job.closed=true;job.pending=null;
+      }else job.phase='uncertain';
+      job.error=error.message;await persist();return view();
+    }
   }
   async function release(){
     try{if(job.session)await native('close');}catch{}
