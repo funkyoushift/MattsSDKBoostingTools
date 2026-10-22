@@ -293,6 +293,10 @@ const els = {
   rarityUncommonPercent: document.getElementById("rarityUncommonPercent"),
   rarityUncommonValue: document.getElementById("rarityUncommonValue"),
   reportActual: document.getElementById("reportActual"),
+  failureReportingEnabled: document.getElementById("failureReportingEnabled"),
+  failureReportingDumps: document.getElementById("failureReportingDumps"),
+  failureReportingSaveBtn: document.getElementById("failureReportingSaveBtn"),
+  failureReportingStatus: document.getElementById("failureReportingStatus"),
   reportCopyBtn: document.getElementById("reportCopyBtn"),
   reportDescription: document.getElementById("reportDescription"),
   reportExpected: document.getElementById("reportExpected"),
@@ -10753,6 +10757,26 @@ async function openReportIssue() {
   setLine(els.reportStatus, "Opened a GitHub issue draft. Review it, attach screenshots/logs if needed, then click Submit new issue on GitHub.", "ok");
 }
 
+async function loadFailureReportingChoice() {
+  if (!window.msbt?.failureReportingGet) return;
+  const pref = await window.msbt.failureReportingGet();
+  els.failureReportingEnabled.checked = pref.enabled === true;
+  els.failureReportingDumps.checked = pref.includeDumps === true;
+  els.failureReportingDumps.disabled = !pref.enabled;
+  setLine(els.failureReportingStatus, pref.enabled ? "Automatic reporting is on." : "Automatic reporting is off.", pref.enabled ? "ok" : "warning");
+}
+
+async function saveFailureReportingChoice() {
+  if (!window.msbt?.failureReportingSet) return;
+  try {
+    const pref = await window.msbt.failureReportingSet({enabled: els.failureReportingEnabled.checked,
+      includeDumps: els.failureReportingEnabled.checked && els.failureReportingDumps.checked});
+    els.failureReportingDumps.checked = pref.includeDumps === true;
+    els.failureReportingDumps.disabled = !pref.enabled;
+    setLine(els.failureReportingStatus, pref.enabled ? "Automatic reporting is on." : "Automatic reporting is off. Pending reports were removed.", "ok");
+  } catch (error) { setLine(els.failureReportingStatus, `Could not save reporting choice: ${error.message || error}`, "bad"); }
+}
+
 const INV_EQUIP_SLOTS = [
   { slot: 0, label: "Weapon 1" },
   { slot: 1, label: "Weapon 2" },
@@ -13919,6 +13943,11 @@ function wireEvents() {
   if (els.reportCopyBtn) els.reportCopyBtn.addEventListener("click", copyReportPreview);
   if (els.reportSaveBtn) els.reportSaveBtn.addEventListener("click", saveReportPreview);
   if (els.reportGithubBtn) els.reportGithubBtn.addEventListener("click", openReportIssue);
+  if (els.failureReportingSaveBtn) els.failureReportingSaveBtn.addEventListener("click", saveFailureReportingChoice);
+  if (els.failureReportingEnabled) els.failureReportingEnabled.addEventListener("change", () => {
+    els.failureReportingDumps.disabled = !els.failureReportingEnabled.checked;
+    if (!els.failureReportingEnabled.checked) els.failureReportingDumps.checked = false;
+  });
   [
     els.reportKind,
     els.reportTitle,
@@ -16328,6 +16357,7 @@ async function init() {
     console.warn("[MSBT] Dev Spawner layout mode bootstrap failed:", error);
   }
   wireEvents();
+  void loadFailureReportingChoice().catch(error => console.warn("[MSBT] Reporting choice unavailable:", error.message));
   wireHoardBuilder();
   void restoreInventorySnapshot();
   try {

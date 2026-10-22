@@ -92,6 +92,8 @@ contextBridge.exposeInMainWorld("msbt", {
   readSdkLogTail: (options) => ipcRenderer.invoke("app:readSdkLogTail", options),
   readResourceJson: (resourceName) => ipcRenderer.invoke("app:readResourceJson", resourceName),
   saveReportFile: (text) => ipcRenderer.invoke("app:saveReportFile", text),
+  failureReportingGet: () => ipcRenderer.invoke("app:failureReportingGet"),
+  failureReportingSet: (value) => ipcRenderer.invoke("app:failureReportingSet", value),
   openExternal: (url) => ipcRenderer.invoke("app:openExternal", url),
   setWindowOpacity: (opacity) => ipcRenderer.invoke("app:setWindowOpacity", opacity),
   remoteAfkInfo: () => ipcRenderer.invoke("remoteAfk:info"),

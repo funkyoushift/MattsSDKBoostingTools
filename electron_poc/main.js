@@ -25,6 +25,7 @@ const { execFile, spawn } = require("child_process");
 const { Blob } = require("buffer");
 const { pathToFileURL } = require("url");
 const { promisify } = require("util");
+const {createFailureReporter} = require("./failure_reporting");
 const { bindWindowState } = require("./window_state_tracker");
 const inventorySnapshotStore = require("./inventory_snapshot_store");
 const {
@@ -97,6 +98,16 @@ const oak2Install = require("./oak2_install");
 const { MAX_OUTPUT_BYTES, PersistentPythonWorker } = require("./python_worker");
 const { loadResolver: loadSerialCardResolver } = require("./serial_card_resolve");
 const mobileDesktopApi = require('./mobile_desktop_api').createMobileDesktopApi();
+const failureReporter = createFailureReporter({
+  userData: app.getPath("userData"), appVersion: app.getVersion(),
+  savedRoot: path.join(app.getPath("documents"), "My Games", "Borderlands 4", "Saved"),
+  sdkLog: async () => {
+    const file = await findSdkLogPath();
+    if (!file) return "";
+    return (await readTextTail(file, 64 * 1024)).split(/\r?\n/)
+      .filter(line => SDK_LOG_FILTER.test(line)).slice(-80).join("\n");
+  }
+});
 function registerDesktopHandler(channel, handler) {
   ipcMain['handle'](channel, handler);
   mobileDesktopApi.register(channel, handler);
@@ -105,6 +116,9 @@ function registerDesktopHandler(channel, handler) {
 function reportFatalStartupError(kind, error) {
   const message = error && error.stack ? error.stack : String(error);
   console.error(`[MSBT Electron] ${kind}: ${message}`);
+  if (!process.argv.includes("--smoke") && !process.argv.includes("--install-sdkmods-and-exit")
+      && !process.argv.some(arg => arg.startsWith("--set-failure-reporting=")))
+    void failureReporter.desktopFailure(kind, error).catch(() => {});
   if (process.argv.includes("--smoke")) {
     process.exit(1);
   }
@@ -112,6 +126,9 @@ function reportFatalStartupError(kind, error) {
 
 process.on("uncaughtException", (error) => reportFatalStartupError("uncaughtException", error));
 process.on("unhandledRejection", (error) => reportFatalStartupError("unhandledRejection", error));
+app.on("render-process-gone", (_event, _contents, details) => {
+  void failureReporter.desktopFailure("renderer_process_gone", `${details.reason} (exit ${details.exitCode})`).catch(() => {});
+});
 
 const execFileAsync = promisify(execFile);
 const SOURCE_ROOT = path.resolve(__dirname, "..");
@@ -165,7 +182,8 @@ const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const FORCE_TOUR = process.argv.includes("--force-tour");
 const INSTALL_SDKMODS_AND_EXIT = process.argv.includes("--install-sdkmods-and-exit");
-if (app.isPackaged && !SMOKE_MODE && !INSTALL_SDKMODS_AND_EXIT) {
+const FAILURE_REPORTING_SETUP = process.argv.find(arg => /^--set-failure-reporting=(logs|dumps)$/.test(arg));
+if (app.isPackaged && !SMOKE_MODE && !INSTALL_SDKMODS_AND_EXIT && !FAILURE_REPORTING_SETUP) {
   if (!app.requestSingleInstanceLock()) app.quit();
   app.on("second-instance",()=>remoteBackground.show());
 }
@@ -769,8 +787,16 @@ function createWindow() {
 }
 
 async function requestBridge({ method = "GET", path: route = "/status", payload = null, timeoutMs = 8000 }) {
-  return bridgeClient.request({method, path:route, payload, timeoutMs});
+  const result = await bridgeClient.request({method, path:route, payload, timeoutMs});
+  if (route === "/action" && String(method).toUpperCase() === "POST" && result.status !== 0
+      && (result.ok === false || result.data?.ok === false))
+    void failureReporter.commandFailure({action: payload?.action, status: result.status,
+      message: result.data?.message || result.data?.error || "Game command failed"}).catch(() => {});
+  return result;
 }
+
+ipcMain.handle("app:failureReportingGet", () => failureReporter.get());
+ipcMain.handle("app:failureReportingSet", (_event, value) => failureReporter.set(value));
 
 registerDesktopHandler("bridge:request", async (event, args) => {
   if(event.mobile){
@@ -792,7 +818,11 @@ async function requestSaveReplay(action,payload={}) {
   const deadline=Date.now()+20000;
   while(Date.now()<deadline){
     const polled=await requestBridge({method:'GET',path:resultPath,timeoutMs:8000});
-    if(polled.data?.state==='completed')return polled.data.result;
+    if(polled.data?.state==='completed'){
+      const completed = polled.data.result;
+      if(completed?.ok===false)void failureReporter.commandFailure({action,status:200,message:completed.message||completed.error||'Queued command failed'}).catch(()=>{});
+      return completed;
+    }
     await new Promise(resolve=>setTimeout(resolve,250));
   }
   throw Error('Replay action is still unconfirmed; it will not be resent.');
@@ -3068,8 +3098,21 @@ app.whenReady().then(() => {
       });
     return;
   }
+  if (FAILURE_REPORTING_SETUP) {
+    failureReporter.set({enabled: true, includeDumps: FAILURE_REPORTING_SETUP.endsWith("=dumps")})
+      .then(() => app.exit(0)).catch(error => {
+        console.error("[MSBT] Could not save optional reporting choice:", error.message);
+        app.exit(2);
+      });
+    return;
+  }
 
   configureAutoUpdater();
+  void failureReporter.scanGameCrashes().catch(() => {});
+  void failureReporter.flush().catch(() => {});
+  const crashScan = setInterval(() => void failureReporter.scanGameCrashes().catch(() => {}), 120000);
+  crashScan.unref();
+  app.once("before-quit", () => clearInterval(crashScan));
   installNativeCardProtocol(protocol);
   createWindow();
   remoteAfk.restore().then(info=>{if(!info.enabled)remoteBackground.show();}).catch(error=>{console.error("[MSBT Remote] Restore failed:",error.message);remoteBackground.show();});

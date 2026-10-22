@@ -17,5 +17,5 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
-  <ItemGroup><Compile Include="Engine.cs"/><Compile Include="Program.cs"/></ItemGroup>
+  <ItemGroup><Compile Include="Engine.cs"/><Compile Include="Program.cs"/><Compile Include="ReportingPreferences.cs"/></ItemGroup>
 </Project>

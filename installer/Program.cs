@@ -39,6 +39,8 @@ sealed class SetupForm : Form
     readonly Button install = new() { Text = "Install / Update", AutoSize = true };
     readonly Button launch = new() { Text = "Open Borderlands 4 Modding Tools", AutoSize = true, Enabled = false };
     readonly Button gameFolder = new() { Text = "Choose game folder", AutoSize = true };
+    readonly CheckBox reportingEnabled = new() { Text = "Send redacted failure and crash reports automatically", AutoSize = true };
+    readonly CheckBox reportingDumps = new() { Text = "Also send crash memory dumps (may contain private data)", AutoSize = true };
     string? selectedGameRoot;
     readonly int? waitPid;
     readonly bool uninstall;
@@ -48,7 +50,7 @@ sealed class SetupForm : Form
     {
         this.waitPid = waitPid; this.uninstall = uninstall;
         selectedGameRoot = gameRoot;
-        Text = "Borderlands 4 Modding Tools — Powered by Funk — Setup"; Width = 800; Height = 340; StartPosition = FormStartPosition.CenterScreen;
+        Text = "Borderlands 4 Modding Tools — Powered by Funk — Setup"; Width = 800; Height = 455; StartPosition = FormStartPosition.CenterScreen;
         MinimumSize = Size;
         var buttons = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 60, Padding = new Padding(15) };
         buttons.Controls.Add(install); buttons.Controls.Add(launch); buttons.Controls.Add(gameFolder);
@@ -60,7 +62,17 @@ sealed class SetupForm : Form
                 Report("Game folder selected: " + selectedGameRoot + "\n\nUse Install / Update to complete app and game setup.");
             }
         };
-        Controls.Add(status); Controls.Add(buttons);
+        var reportChoice = new FlowLayoutPanel { Dock = DockStyle.Bottom, Height = 101, Padding = new Padding(15, 0, 15, 0), FlowDirection = FlowDirection.TopDown, WrapContents = false };
+        reportChoice.Controls.Add(new Label { AutoSize = false, Width = 740, Height = 38,
+            Text = "Optional: private Cloudflare reports include limited redacted logs and crash context, never saves or command inputs. Reports are scheduled for deletion after seven days." });
+        var savedReporting = ReportingPreferences.Read();
+        reportingEnabled.Checked = savedReporting.Enabled;
+        reportingDumps.Checked = savedReporting.IncludeDumps;
+        reportingDumps.Enabled = reportingEnabled.Checked;
+        reportingEnabled.CheckedChanged += (_, _) => { reportingDumps.Enabled = reportingEnabled.Checked; if (!reportingEnabled.Checked) reportingDumps.Checked = false; };
+        reportChoice.Controls.Add(reportingEnabled); reportChoice.Controls.Add(reportingDumps);
+        reportChoice.Visible = !uninstall && !waitPid.HasValue;
+        Controls.Add(status); Controls.Add(reportChoice); Controls.Add(buttons);
         if (uninstall) { install.Text = "Uninstall Borderlands 4 Modding Tools"; status.Text = "Remove the Borderlands 4 Modding Tools app? Saved settings and installed game mods will be kept."; }
         install.Click += async (_, _) => await Run();
         launch.Click += (_, _) => {
@@ -102,6 +114,7 @@ sealed class SetupForm : Form
                 await Task.Run(() => engine.Apply(release));
                 engine.Register(Environment.ProcessPath!, release.Tag);
                 await engine.InstallGameIntegration(selectedGameRoot);
+                if (!waitPid.HasValue) ReportingPreferences.Write(reportingEnabled.Checked, reportingDumps.Checked);
                 Report("Borderlands 4 Modding Tools " + release.Tag + " and its game integration are installed. Use Open Borderlands 4 Modding Tools to continue.\n\nExisting SDK/mod-manager installations and your saved settings are kept.");
                 launch.Enabled = true;
             }

@@ -2738,6 +2738,12 @@
         <div class="report-form">
           <h2>Report an Issue to the Developer</h2>
           <p>Use this tab to send bugs or feature requests to the Borderlands 4 Modding Tools developer (FunkYouSHiFT) on GitHub. The app builds a clean report, opens a GitHub issue draft, then you can attach screenshots or logs before submitting.</p>
+          <h3>Automatic failure reports</h3>
+          <p>Optional. When on, failed game commands and new crash reports are sent to a private Cloudflare inbox with redacted, limited log excerpts. Reports are scheduled for deletion after seven days. Save files and command inputs are never included. You can turn this off here at any time.</p>
+          <label class="check-line"><input id="failureReportingEnabled" type="checkbox"> Send failure reports automatically</label>
+          <label class="check-line"><input id="failureReportingDumps" type="checkbox"> Also include crash memory dumps (may contain private game or account data)</label>
+          <div class="button-row wrap"><button id="failureReportingSaveBtn" type="button">Save reporting choice</button></div>
+          <div id="failureReportingStatus" class="status-line">Automatic reporting is off until you choose it.</div>
           <label for="reportKind">Report Type</label>
           <select id="reportKind">
             <option value="bug">Report Bug</option>

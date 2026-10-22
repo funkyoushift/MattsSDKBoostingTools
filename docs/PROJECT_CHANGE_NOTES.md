@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-10-22: Optional private failure reporting](changes/2026-10-22-optional-failure-reporting.md): Both Windows install paths and the Report tab offer disabled-by-default reporting; opted-in failed game commands, desktop exceptions and game crash context use bounded redacted logs, with dumps requiring separate consent. Private Cloudflare intake and daily review are live; desktop source is isolated and unreleased. Offline and synthetic receiver checks passed; no real-user or installed-app proof yet.
+
 - [2026-10-22: v2.39.4 mission-control recovery](changes/2026-10-22-mission-control-recovery-release.md): A stale failed replay journal silently locked every mission view. Windows now explains it and exposes Stop replay setup without restoring a save; mission and Full Game controls refresh after closure. Desktop also cleans its own temporary file after failed writes. Focused patch from public v2.39.3; package and publication evidence is separate.
 
 - [2026-10-15: v2.39.3 / Android 1.6.5 release](releases/RELEASE_NOTES_v2.39.3.md): Martin requested inclusion of the confirmed phone pairing repair. Rebuild and publication checks in progress; existing live phone reconnection confirmation retained.
