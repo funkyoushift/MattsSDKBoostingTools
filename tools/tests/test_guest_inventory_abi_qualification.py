@@ -47,3 +47,16 @@ def test_reject_changed_field_offset():
 def test_reject_undecodable_trailing_byte():
     with pytest.raises(ValueError, match='Incomplete instruction decoding'):
         proof('c3 0f', 'c3 0f')
+
+
+def test_indirect_inventory_keeps_dynamic_slots_separate_from_direct_calls():
+    image = Image('ff9010010000 e800000000 c3')
+    sites = qualification.indirect_sites(image, 0x1000, len(image.data))
+    assert [(x['operation'], x['operand']) for x in sites] == [('call', 'qword ptr [rax + 0x110]')]
+
+
+def test_indirect_inventory_records_register_dispatch_without_inventing_target():
+    image = Image('ffe0')
+    sites = qualification.indirect_sites(image, 0x1000, len(image.data))
+    assert [(x['operation'], x['operand']) for x in sites] == [('jmp', 'rax')]
+    assert 'target' not in sites[0]

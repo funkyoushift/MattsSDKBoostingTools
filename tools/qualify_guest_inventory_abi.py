@@ -165,6 +165,74 @@ def wrapper_dispatch(pes):
             'selection':'All three cleanup-adjacent virtual slots select the same wrapper; the duplicate occupies the slot two entries earlier.'}
 
 
+def indirect_sites(pe, start, size):
+    md = capstone.Cs(capstone.CS_ARCH_X86, capstone.CS_MODE_64)
+    md.detail = True
+    instructions = list(md.disasm(pe.get_data(start, size), start))
+    return [{'rva': hex(i.address), 'operation': i.mnemonic, 'operand': i.op_str,
+             'preceding_instructions': [{'rva':hex(j.address), 'instruction':j.mnemonic+' '+j.op_str}
+                 for j in instructions[max(0,index-4):index]]}
+            for index, i in enumerate(instructions)
+            if i.mnemonic in ('call', 'jmp') and i.operands[0].type != capstone.CS_OP_IMM]
+
+
+def transitive_trace(pes, serializer, wrapper):
+    # One additional direct-call generation is deliberately bounded. A body
+    # match is never promoted to proof of its indirect runtime destinations.
+    sources = [('serializer', [(0x6231364,2095),(0x623a918,2098),(0x6242dfa,2098)])]
+    pairs = []
+    for row in serializer['direct_callees']:
+        sources.append((row['entry_rvas'][0], [(int(b['rva'],16),b['size']) for b in row['resolved_spans']]))
+        pairs.append(row['comparisons'])
+    pairs.append(wrapper['comparisons'])
+    pending = {}
+    for pair in pairs:
+        for old, steam in pair[0]['external_calls'].items():
+            epic = pair[1]['external_calls'].get(steam)
+            if epic is None:
+                raise ValueError('Transitive target correspondence missing')
+            pending[(old,steam,epic)] = None
+    results = []
+    for targets in sorted(pending):
+        row = {'entry_rvas':list(targets)}
+        try:
+            bodies = [callee_span(pe,int(rva,16)) for pe,rva in zip(pes,targets)]
+            row['comparisons'] = [control_flow(pes[i],pes[i+1],bodies[i][0],bodies[i+1][0],
+                                              bodies[i][1],bodies[i+1][1]) for i in (0,1)]
+            row['status'] = 'body_edges_match_only'
+            row['spans'] = [{'rva':hex(a),'size':n,'sha256':hashlib.sha256(pe.get_data(a,n)).hexdigest()}
+                            for pe,(a,n,_) in zip(pes,bodies)]
+            sources.append((targets[0],[(a,n) for a,n,_ in bodies]))
+        except (ValueError,KeyError,StopIteration) as error:
+            row.update(status='unresolved',reason=str(error))
+        results.append(row)
+    sites = []
+    seen = set()
+    for name, spans in sources:
+        if tuple(spans) in seen:
+            continue
+        seen.add(tuple(spans))
+        findings = [indirect_sites(pe,a,n) for pe,(a,n) in zip(pes,spans)]
+        if any(findings):
+            sites.append({'source':name,'sites_by_build':findings,'status':'runtime_target_not_resolved'})
+    # Dispatch is a local relative switch, so resolve its 15 entries as data.
+    dispatch_tables = []
+    for pe,a in zip(pes,(0x5e096f2,0x5e36b8a,0x5e41c2a)):
+        refs = decode(pe.get_data(a,290),a)[2]
+        table = next(x['target'] for x in refs if x['kind']=='rip')
+        targets = [table+x[0] for x in struct.iter_unpack('<i',pe.get_data(table,60))]
+        dispatch_tables.append({'table_rva':hex(table),'targets':[hex(t) for t in targets],
+                                'offsets':[t-a for t in targets],
+                                'sha256':hashlib.sha256(pe.get_data(table,60)).hexdigest()})
+    if len({tuple(x['offsets']) for x in dispatch_tables}) != 1:
+        raise ValueError('Changed operation dispatch table')
+    return {'depth':'One generation beyond serializer direct callees and server wrapper',
+            'runtime_enablement_allowed':False,'direct_frontier':results,
+            'indirect_sites':sites,'operation_dispatch_tables':dispatch_tables,
+            'specific_blocker':'Serializer indirect calls use vtables from caller-supplied RDX and R8 objects; concrete runtime classes/slot implementations are not identified by this static graph.',
+            'further_frontier':'Additional direct targets listed by successful body comparisons are not recursively qualified.'}
+
+
 def recover(paths):
     for path, expected in zip(paths, HASHES):
         with path.open('rb') as stream:
@@ -198,8 +266,11 @@ def recover(paths):
                 assert tables[0]['body_offsets'] == tables[1]['body_offsets'] == tables[2]['body_offsets']
                 row['operation_tables'] = tables
             rows.append(row)
+        serializer = serializer_proof(pes)
+        wrapper = wrapper_dispatch(pes)
         return {'schema': 1, 'process_access': 'none', 'game_files_modified': False,
-                'serializer_proof': serializer_proof(pes), 'wrapper_dispatch': wrapper_dispatch(pes),
+                'serializer_proof': serializer, 'wrapper_dispatch': wrapper,
+                'transitive_trace': transitive_trace(pes,serializer,wrapper),
                 'profile_enabled': False, 'executable_sha256': list(HASHES), 'spans': rows,
                 'unresolved': ['Transitive external/indirect call closure and live joined-client receipt/save persistence remain unverified.'],
                 'op15_change': 'Mask 0x97 becomes 0x93; existing request flag 0x08 does not set changed bit 0x04.'}

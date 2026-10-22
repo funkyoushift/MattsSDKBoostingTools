@@ -5,7 +5,7 @@
 Joined-client inventory transactions remain blocked on Steam 26007962 and Epic
 6d531d91. This pass recovered the previously missing constructor and complete
 validator from the verified old executable. A second bounded pass proved
-serializer control-flow equivalence, all 11 direct serializer callees, and the
+serializer control-flow equivalence, all 11 direct serializer callee spans, and the
 Epic server-wrapper virtual-slot identity offline. Transitive indirect/external
 targets and live delivery remain outside this proof. `guest_inventory.py` remains unchanged.
 No game process was opened, no inventory was changed, and no release was made.
@@ -54,7 +54,8 @@ The recovery tool now follows branch and fallthrough edges from entry instead
 of comparing linear instruction order. All 519 instructions participate in a
 complete bijection for both old Steam to current Steam and current Steam to
 Epic. Moved cleanup blocks preserve their instructions and outgoing edges.
-All 11 direct call targets have corresponding complete control-flow proofs.
+All 11 direct call targets have corresponding control-flow proofs for their
+recorded spans. These spans do not recursively include external branches.
 One old call through jump thunk 0x6819078 now calls the corresponding body
 0x572512c directly; resolving the thunk establishes the same 124-byte body.
 Transitive external callees, RIP data and indirect-call implementations are not
@@ -69,6 +70,37 @@ The same cleanup-adjacent relationship holds for old and current Steam, and
 all 18 wrapper instructions have corresponding control-flow edges. This
 resolves the candidate ambiguity without selecting by proximity or first match.
 
+## Bounded transitive and indirect trace
+
+A further generation of direct targets was followed from the serializer callee
+spans and server wrapper: 14 unique target triples, 12 matching recorded bodies
+and two unresolved leaf continuations. The unresolved old Steam addresses are
+0x56c40c3/0x56c4116, corresponding to current Steam 0x56ceca3/0x56cecf6 and
+Epic 0x56e0423/0x56e0476. The original 103-byte serial-object lookup span has
+outgoing branches to these continuations, so its matched span is not evidence
+of complete transitive behavior. The tool records this frontier explicitly.
+
+The operation dispatcher's separate 15-entry relative jump table is now checked
+across all three builds. Current Steam table 0xb413494 and Epic 0xb3ff4d4
+resolve to the same dispatcher-relative offsets as old table 0xb40b934.
+
+The serializer contains 14 indirect calls on each build: eight through virtual
+offset 0x170, two through 0x160 and four through 0x2a8. Current Steam examples
+are 0x623aaa3, 0x623ab95 and 0x623ab24 respectively. Its prologue preserves
+caller RDX in RDI and caller R8 in R14; the callsites obtain virtual tables from
+those supplied objects. Their concrete runtime classes and slot implementations
+have not been identified by the static control-flow comparison. This is the
+specific blocker to claiming transitive native-call equivalence. The receipt
+lists every indirect callsite and preceding instructions for all three builds,
+plus additional indirect sites found in callee spans. No runtime target is
+invented from a register value or from generic Unreal behavior.
+
+Further direct descendants remain an explicit bounded frontier. No runtime
+profile was enabled. Completing this proof requires exact executable-backed
+class/vtable provenance for the supplied archive/object-map instances and
+qualification of the remaining leaf continuations and descendants; live
+joined-client receipt/save persistence remains a separate proof boundary.
+
 Earlier searches used captured disassembly and PE unwind-table function starts.
 The 909-byte validator is a leaf absent from that table; decoding only to its
 first return examines just 125 bytes. This pass uses the complete old gate span
@@ -78,9 +110,10 @@ and checks its switch table, avoiding that false-negative/incomplete proof.
 
 - Recovery tool passed against all three exact-hash EXEs: 13 span groups; all
   current Steam/Epic bodies matched, including the complete validator.
-- 19 focused guest request/reference, direct-inventory and qualification checks
+- 21 focused guest request/reference, direct-inventory and qualification checks
   passed. Rejection tests cover changed branch destinations, changed field
   offsets and incomplete decoding; a reordered-block case verifies edge matching.
+  Indirect-site tests keep register/memory dispatch distinct from direct calls.
 - Python syntax compilation passed for the recovery tool and unchanged guest module.
 - No live joined-client, host-to-P2 receipt, or save persistence proof was obtained.
 
