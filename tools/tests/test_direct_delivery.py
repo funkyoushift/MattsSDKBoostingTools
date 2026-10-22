@@ -228,7 +228,12 @@ def test_queue_preserves_password_guard_and_refuses_to_replace_active_work(monke
 def test_native_gate_mismatch_cannot_bind_or_call_native_functions(monkeypatch):
     spec=importlib.util.spec_from_file_location('direct_inventory_test',SDK/'direct_inventory.py')
     native=importlib.util.module_from_spec(spec);spec.loader.exec_module(native)
-    kernel=SimpleNamespace(GetModuleHandleW=lambda _:0x100000,VirtualQuery=lambda *a:1)
+    def get_module_filename(_module, buffer, _size):
+        path = str(SDK/'direct_inventory.py')
+        buffer.value = path
+        return len(path)
+    kernel=SimpleNamespace(GetModuleHandleW=lambda _:0x100000,VirtualQuery=lambda *a:1,
+                           GetModuleFileNameW=get_module_filename)
     monkeypatch.setattr(native.C,'WinDLL',lambda *a,**k:kernel,raising=False)
     monkeypatch.setattr(native.NativeInventory,'read',lambda self,p,n:b'\0'*n)
     monkeypatch.setattr(native.C,'CFUNCTYPE',lambda *a:(_ for _ in ()).throw(AssertionError('bound native code')))
