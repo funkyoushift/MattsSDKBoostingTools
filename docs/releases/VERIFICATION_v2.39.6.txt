@@ -1,0 +1,43 @@
+v2.39.6 / Android 1.6.5 release candidate — preparation status
+
+This is metadata and notes preparation only. The Electron app, installer,
+portable archive and SDK release artifacts have not been built. No release,
+tag, upload or push has been made. latest.json and version_info.json leave
+git_commit and built_at_utc null until an actual release build records them.
+
+Steam 26007962 mission profile: exact executable identity and profile checks
+are recorded in docs/native-missions/STEAM_26007962_PROFILE.json. The
+2026-10-22 Steam compatibility change note records read-only mission previews
+and an authored save-backed replay that survived Save/Quit and reload on one
+character. This does not establish complete mission catalog coverage, all
+save branches, guest persistence or full playthroughs.
+
+Epic current executable: docs/native-missions/EPIC_6D531D91_PROFILE.json
+records source/body qualification for mission, character-loader and dialogue
+functions. Epic was not launched; live behavior remains unverified.
+
+Inventory and item cards: direct backpack transactions and card delivery
+remain gated on Steam 26007962. Native mappings and guest transactions are
+unresolved; the app must continue to fail closed. Do not report these paths as
+working or send items on this build.
+
+Safehouses: docs/changes/2026-10-22-full-progress-safehouse-claim.md records
+the conditional authored PoA Claimed effect. During the current Abandoned Post
+check, its PoA state was already Claimed, both discovery entries were already
+discovered, and the map entry was unlocked after Save/Quit and reload. Since
+the state was already set, the repair's causal effect on an unclaimed
+safehouse is not established. Guest persistence is also unverified.
+
+Full Game: its catalog comes from game 1.10. New or changed game 1.11 content
+is not fully covered; do not claim a complete 1.11 run or achievement result.
+
+Android 1.6.5 is planned for byte-identical reuse from the current public
+release. Verify its final release digest against the published v2.39.5 APK
+before publication.
+
+Before release: finish native inventory/card investigation and resolve its
+release scope; build the Windows and SDK artifacts; run required source,
+package, startup and release preflight checks; verify all asset hashes and
+confirm Android byte identity; then update the actual source commit/build
+timestamp in both manifests. Publication still requires explicit release
+authorization.
