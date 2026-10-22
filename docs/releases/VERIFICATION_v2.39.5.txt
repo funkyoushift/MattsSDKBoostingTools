@@ -1,0 +1,11 @@
+v2.39.5 / Android 1.6.5 verification — 2026-10-22
+
+Scope: Optional private failure reporting in the Windows installers and desktop Report tab. Based on public v2.39.4. Full SDK and standalone selector game behavior is unchanged except matching version metadata. Android 1.6.5 is reused byte-identically. Mission overhaul and Steam/Epic crash/save root-cause repairs are outside this release.
+
+Source checks: 4 client reporting tests, 4 receiver tests, 5 Quick Menu/bridge startup checks, source Electron smoke, 22 standalone package/import checks, 13 release-publisher preflight tests, and full desktop check passed. The previous incomplete isolated package was rejected because ignored runtime assets were absent.
+
+Official Windows build: 31 persistent-installer checks, 48 packaged dependency checks, 3,315 packaged resource checks, packaged startup smoke, updater packaging, and portable bundle construction passed. The official oak2 SDK zip hash is 602675446abed184169fa158be3c8bc81777a71203581e4a248eca8a3d00b5c7. Full and standalone SDK archives pass CRC. Packaged latest.json equals source latest.json. Both Android APK names reuse the byte-identical published 1.6.5 file, SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5. All release-file SHA256 values are in SHA256SUMS.txt.
+
+Packaged reporting helper: --set-failure-reporting=logs saved the enabled, dumps-off choice successfully. Windows resolved the normal app profile despite an attempted temporary APPDATA override; that new choice was immediately set back to disabled and read back as disabled. The normal profile now has an explicit disabled preference file. The NSIS run-as-user handoff itself and an actual opted-in game failure remain untested. No customer report has yet been received through this version. This release does not prove Steam/Epic save/crash cause, guest persistence, complete mission playability, or achievement coverage.
+
+Release tag, public asset hashes, and CI status are pending publication verification.
