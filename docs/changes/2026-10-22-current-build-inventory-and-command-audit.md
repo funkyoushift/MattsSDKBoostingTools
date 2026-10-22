@@ -29,6 +29,21 @@ This is a live activation/restoration check for the FLiNG-derived 100% Drop Rate
 control, not a loot-outcome or probability test. No other trainer-derived
 effect was inferred from it.
 
+## Live host-to-guest delivery in a three-player Steam lobby
+
+With the same exact-hash Steam SDK candidate loaded, the host bridge saw the
+original P2 guest and another joined player. A full, untruncated P2 inventory
+read showed six equipped and 17 backpack items. The host sent one duplicate of
+P2's own equipped serial using `give_serial_selected` with the index and exact
+name in the same request. The queued delivery pinned that player's session
+identity. Full inventory readback showed the exact serial once in P2's
+backpack (zero before, one after), 18 total backpack items, the same six
+equipped items, and `truncated=false`. The delivery then reached `complete`
+with no recorded error; the game and guest remained connected. No second item
+was sent. This establishes host-authority delivery to that guest in the active
+lobby, not persistence in the guest's save after leaving and rejoining. The
+joined-client-local transaction path remains gated.
+
 ## Deployment and follow-up
 
 The local Steam SDK was backed up outside Git before installing the candidate. Release packaging and publication status are recorded in `docs/releases/VERIFICATION_v2.39.6.txt`. If this candidate causes problems, restore the previous SDK backup or reinstall the prior public release. Joined-client delivery, host-to-P2 receipt and guest-save persistence, native item cards, and complete current-build command execution remain open. Do not claim those paths work from the host test.

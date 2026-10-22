@@ -73,6 +73,15 @@ compilation passed. The native mapping checks are offline evidence;
 the separate Steam live execution above does not establish Epic behavior or
 guest-session support. No release was published.
 
+Later, while three players were present in the same Steam lobby, the host read
+an equipped P2 serial and `native_card_preview` returned
+`native-standalone-widget-v1` successfully for it. This verifies one native
+guest-item preview in a multiplayer host session, not every item class or a
+guest's own local SDK/card renderer. The game remained connected.
+The same P2 widget rendered through the desktop capture path to an 819 × 701
+PNG without warnings; visual inspection showed its shotgun name, level, stats,
+effects and price. Its widget and image remain in the private local test folder.
+
 ## Initial diagnosis and safe fallback (historical)
 
 The current Steam/Epic host inventory profiles do not qualify native item-card
