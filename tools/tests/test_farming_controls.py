@@ -196,6 +196,13 @@ def test_charge_reference_rejects_changed_getter(charge_fixture):
     s,pawn,_,_,_,storage=charge_fixture;profile=s.BUILDS[s._memory.build]['charges'];storage[0x140000000+profile['getter']]=0
     with pytest.raises(RuntimeError,match='Unqualified'):list(s.references(pawn))
 
+def test_current_epic_charge_enumeration_fails_closed(modules):
+    e,_,_,_=modules
+    skill_resources=e.skill_resources
+    skill_resources._memory=types.SimpleNamespace(build='epic-6d531d91',validate=lambda:None)
+    with pytest.raises(RuntimeError,match='not qualified for this game build'):
+        list(skill_resources.references(types.SimpleNamespace()))
+
 def test_glide_cleanup_does_not_hide_failed_scalar_restore(modules):
     e,n,_,_=modules
     e.restore=lambda *args:{'ok':False,'error':'scalar restore failed'}

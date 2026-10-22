@@ -1,6 +1,6 @@
 """Read-only enumeration of owned charge components; mutations use native SDK APIs.
 
-Qualified Steam 25372571 and Epic 4845623. GbxSkill's component list is not reflected. Its
+Qualified Steam 25372571, Steam 26007962, and Epic 4845623. GbxSkill's component list is not reflected. Its
 entry/instance pointers are read through ReadProcessMemory, then the native
 charge getter and live ScriptStruct identity validate each SDK reference.
 """
@@ -23,7 +23,9 @@ def references(pawn):
     global _memory
     if _memory is None:_memory=NativeMemory()
     m=_memory;m.validate()
-    profile=BUILDS[getattr(m,'build','steam-25372571')]['charges']
+    profile=BUILDS[getattr(m,'build','steam-25372571')].get('charges')
+    if profile is None:
+        raise RuntimeError('Skill-charge native enumeration is not qualified for this game build')
     q=lambda address:struct.unpack('<Q',m.read(address,8))[0]
     if m.read(m.base+profile['getter'],len(profile['getter_context']))!=profile['getter_context']:
         raise RuntimeError('Unqualified skill-charge getter')

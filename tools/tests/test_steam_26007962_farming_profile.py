@@ -16,7 +16,7 @@ ROOT = Path(__file__).parents[2]
 SOURCE = Path(r"C:\Program Files\Epic Games\Venus\OakGame\Binaries\Win64\Borderlands4.exe")
 TARGET = Path(r"C:\Program Files (x86)\Steam\steamapps\common\Borderlands 4\OakGame\Binaries\Win64\Borderlands4.exe")
 HASHES = (
-    "764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719",
+    "6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e",
     "ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a",
 )
 
@@ -70,8 +70,8 @@ def test_new_profile_has_exact_identity_and_code_sites():
     assert new.FILE_HEADER.TimeDateStamp == profile["timestamp"]
     assert new.OPTIONAL_HEADER.SizeOfImage == profile["image_size"]
     for key, old_rva, size, instructions in (
-        ("drop", 0x372dc9, 2015, 415),
-        ("legendary_roll", 0x3d9e2d2, 495, 144),
+        ("drop", 0x373dc3, 2015, 415),
+        ("legendary_roll", 0x3da200e, 495, 144),
     ):
         row = profile[key]
         assert new.get_data(row["rva"], len(row["context"])) == row["context"]
@@ -82,17 +82,18 @@ def test_new_profile_has_exact_identity_and_code_sites():
 
 
 def test_charge_getter_and_constructor_references_match_new_image():
-    old, new = _images()
+    _, new = _images()
     row = _profile()["charges"]
     assert new.get_data(row["getter"], len(row["getter_context"])) == row["getter_context"]
-    _same_body_layout(old, new, 0x8bb32d6, row["getter"], 57, 13)
-    _same_body_layout(old, new, 0x11b947a, 0x11b61cc, 870, None)
-    old_ctor = old.get_data(0x11b947a, 870)
-    new_ctor = new.get_data(0x11b61cc, 870)
-    _, _, old_refs, old_count = decode(old_ctor, 0x11b947a)
-    _, _, new_refs, new_count = decode(new_ctor, 0x11b61cc)
-    assert old_count == new_count
-    assert sum(a["target"] == 0xb40fb50 and b["target"] == row["entry_vtable"]
-               for a, b in zip(old_refs, new_refs)) == 2
+    start, body = _function(new, row["getter"])
+    assert len(body) == 57
+    _, _, _, getter_count = decode(body, start)
+    assert getter_count == 13
+    start, body = _function(new, 0x11b61cc)
+    assert len(body) == 870
+    _, _, refs, instruction_count = decode(body, start)
+    assert instruction_count == 211
+    assert sum(ref["kind"] == "rip" and ref["target"] == row["entry_vtable"]
+               for ref in refs) == 2
     assert row["vtable"] == 0xb63f570
     assert row["struct_global"] == 0xcba2a20

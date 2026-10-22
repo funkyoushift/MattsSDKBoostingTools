@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "process_access": "none",
+  "live_epic": false,
+  "game_files_modified": false,
+  "normalization": "Relative branch and RIP displacements only; all other instruction bytes must match",
+  "files": [
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+      "sha256": "ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a",
+      "timestamp": 4086165580,
+      "image_size": 652288000
+    },
+    {
+      "path": "C:\\Program Files\\Epic Games\\Venus\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+      "sha256": "6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e",
+      "timestamp": 257896457,
+      "image_size": 617152512
+    }
+  ],
+  "qualified_native_sites": {
+    "drop": {
+      "steam_rva": "0x371c0b",
+      "epic_rva": "0x373dc3",
+      "function_size": 2015,
+      "instruction_count": 415,
+      "steam_function_sha256": "c69eb1ea9cda615a1d79b72f487d015682cfb512ec62df0fb6097088e51ff898",
+      "epic_function_sha256": "d5da55fffeae7783d84503b85afc43783a4b79f2250796cf3c8a3fc5b5333861",
+      "unique_normalized_match": true
+    },
+    "legendary_roll": {
+      "steam_rva": "0x3dac976",
+      "epic_rva": "0x3da200e",
+      "function_size": 495,
+      "instruction_count": 144,
+      "steam_function_sha256": "f6cf637a12e76bc1125ea8f75415fa0c18a156047a4a7a64740f3d54a978340e",
+      "epic_function_sha256": "c5ff55f8a408e3147d6ddd6b78d835b2d8586a8f058795f2a40112e0edfc4163",
+      "unique_normalized_match": true
+    }
+  },
+  "unqualified_native_features": {
+    "skill_charge_enumeration": {
+      "steam_charge_getter_rva": "0x8bb6592",
+      "steam_charge_constructor_rva": "0x11b61cc",
+      "epic_charge_getter_normalized_candidate_count": 2587,
+      "epic_charge_constructor_unique_match_rva": "0x11b4048",
+      "reason": "The 57-byte getter layout has 2,587 current Epic candidates and cannot identify the charge getter. The 870-byte constructor has one complete normalized match at 0x11b4048 and maps its entry vtable reference, but this does not identify the charge-component vtable or struct-global chain. No charge-enumeration profile is inferred.",
+      "live_epic": false
+    }
+  }
+}

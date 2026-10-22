@@ -61,5 +61,24 @@ BUILDS = {'steam-25372571': {'timestamp': 1789399121,
                                 'getter': 0x8bb6592,
                                 'struct_global': 0xcba2a20,
                                 'entry_vtable': 0xb42b670,
-                                'getter_context': bytes.fromhex(
-                                    '4883ec28488b0583c4fe034885c074054883c428c3')}}}
+                                           'getter_context': bytes.fromhex(
+                                    '4883ec28488b0583c4fe034885c074054883c428c3')}},
+ 'epic-6d531d91': {'timestamp': 257896457,
+                   'image_size': 617152512,
+                   'sha256': '6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e',
+                   'drop': {'rva': 0x373dc3,
+                            'context': bytes.fromhex(
+                                '81e5ff7f00000f57c0f30f2ac5f30f5ec6440f2ec7'
+                                '7606440f2ec073194981c7d00000004981c430ffffff'
+                                '0f8551ffffffe97c0100004c636c2468418d450189')},
+                   'legendary_roll': {'rva': 0x3da200e,
+                                      'context': bytes.fromhex(
+                                          '25ff7f0000f30f2ac0f30f5e05edf3b705'
+                                          'f30f5907488d8f180100008b9728010000'
+                                          '85d20f843a010000488b87200100004885c0'
+                                          '480f44c1448b184585db753c'),
+                                      'original': bytes.fromhex(
+                                          '25ff7f0000f30f2ac0f30f5e05edf3b705')},
+                   # Current Epic does not have an identified charge-enumeration
+                   # vtable/getter/struct-global chain.
+                   'charges': None}}
