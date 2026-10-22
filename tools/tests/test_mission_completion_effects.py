@@ -10,6 +10,7 @@ PATH = Path(__file__).parents[2] / 'mod_extracted/MattsSDKBoostingTools/mission_
 spec = importlib.util.spec_from_file_location('completion_effects_test', PATH)
 effects = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(effects)
+CLAIM = effects._world_safehouse_claim_address(effects.SAFEHOUSE, PATH.parent)
 
 
 def context(monkeypatch, child='locked', parent='completed'):
@@ -21,11 +22,12 @@ def context(monkeypatch, child='locked', parent='completed'):
         values[kw['AddressString']] = kw['AsName']
     facts = NS(ReadFact=lambda **kw: (None, values.get(kw['AddressString'], 'None')),
                WriteFact=write)
-    monkeypatch.setitem(sys.modules, 'unrealsdk', NS(find_object=lambda *args: facts))
+    monkeypatch.setitem(sys.modules, 'unrealsdk', NS(find_object=lambda *args: facts,
+                                                    find_all=lambda *args, **kw: []))
     owner = NS(_job=dict(names=[effects.BEACH], total=1, target='host'),
                _journal=journal.append, _state=lambda r: r,
                _row=lambda snap, name: parent if name == effects.BEACH else child)
-    return owner, NS(snapshot=lambda: {}), [dict(pc=NS(_path_name=lambda: 'host'))], writes, values
+    return owner, NS(snapshot=lambda: {}), [dict(pc=NS(_path_name=lambda: 'host'), host=True)], writes, values
 
 
 def test_repairs_then_queues_external_objective_once(monkeypatch):
@@ -41,6 +43,129 @@ def test_completed_safehouse_is_not_replayed(monkeypatch):
     owner, engine, party, _, _ = context(monkeypatch, child='completed')
     effects.complete_dependencies(owner, engine, party, effects.BEACH)
     assert owner._job['names'] == [effects.BEACH]
+
+
+def test_fast_completion_claims_abandoned_post_world_state_once(monkeypatch):
+    owner, engine, party, writes, values = context(monkeypatch, child='completed')
+    owner._job['names'] = [effects.SAFEHOUSE]
+    values[CLAIM] = 'Claimable'
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert writes == [CLAIM]
+    assert values[CLAIM] == 'Claimed'
+    assert owner._job['names'] == [effects.SAFEHOUSE]
+    assert any(event['event'] == 'safehouse_claim_verified' for event in owner._journal.__self__)
+
+
+def test_fast_completion_claims_uninitialized_safehouse(monkeypatch):
+    owner, engine, party, writes, values = context(monkeypatch, child='completed')
+    owner._job['names'] = [effects.SAFEHOUSE]
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert writes == [CLAIM]
+    assert values[CLAIM] == 'Claimed'
+
+
+def test_loaded_safehouse_actor_uses_native_state_machine(monkeypatch):
+    import json
+    owner, engine, party, writes, values = context(monkeypatch, child='completed')
+    identity = json.loads((PATH.parent / 'mission_activity_actors.json').read_text())[
+        effects.SAFEHOUSE]['actor']
+    actor = NS(FactsConduit=NS(GroupName=NS(Name=identity['groupname']),
+                                RegistryName=NS(Name=NS(Name=identity['registryname']))),
+               state='Claimable')
+    transitions = []
+    def set_state(**kw):
+        transitions.append(kw['StateValue'].Name)
+        kw['OwnerContext'].state = kw['StateValue'].Name
+    lib = NS(GetActorStateValue=lambda **kw: (kw['OwnerContext'].state,),
+             GetActorStateMachineStates=lambda **kw: ([NS(Name='Initialization'), NS(Name='Claimed')],),
+             SetActorStateValue=set_state)
+    sdk = sys.modules['unrealsdk']
+    sdk.find_all = lambda *args, **kw: [actor]
+    sdk.find_object = lambda *args: lib
+    sdk.make_struct = lambda path, **kw: NS(**kw)
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert transitions == ['Claimed'] and actor.state == 'Claimed'
+    assert not writes and not values
+
+
+def test_ambiguous_loaded_safehouse_aborts_without_write(monkeypatch):
+    import json
+    owner, engine, party, writes, _ = context(monkeypatch, child='completed')
+    identity = json.loads((PATH.parent / 'mission_activity_actors.json').read_text())[
+        effects.SAFEHOUSE]['actor']
+    actor = NS(FactsConduit=NS(GroupName=NS(Name=identity['groupname']),
+                                RegistryName=NS(Name=NS(Name=identity['registryname']))))
+    sys.modules['unrealsdk'].find_all = lambda *args, **kw: [actor, actor]
+    with pytest.raises(RuntimeError, match='ambiguous'):
+        effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert not writes
+
+
+def test_party_safehouse_capture_uses_host_world_context(monkeypatch):
+    owner, engine, party, _, values = context(monkeypatch, child='completed')
+    owner._job.update(names=[effects.SAFEHOUSE], target='visitor')
+    host = party[0]['pc']
+    visitor = NS(_path_name=lambda: 'visitor')
+    party.insert(0, dict(pc=visitor, host=False))
+    contexts = []
+
+    def write(**kw):
+        contexts.append(kw['OwnerContext'])
+        values[kw['AddressString']] = kw['AsName']
+
+    sys.modules['unrealsdk'].find_object = lambda *args: NS(
+        ReadFact=lambda **kw: (None, values.get(kw['AddressString'], 'None')),
+        WriteFact=write)
+    effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert contexts == [host]
+
+
+def test_safehouse_capture_requires_completed_mission_and_known_state(monkeypatch):
+    owner, engine, party, writes, values = context(monkeypatch, child='active')
+    owner._job['names'] = [effects.SAFEHOUSE]
+    with pytest.raises(RuntimeError, match='Complete'):
+        effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    values[CLAIM] = 'Failed'
+    owner._row = lambda snapshot, name: 'completed'
+    with pytest.raises(RuntimeError, match='unknown'):
+        effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
+    assert not writes
+
+
+def test_safehouse_claim_matches_authored_completion_action():
+    import json
+    source = PATH.parents[2] / 'external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-Mission4.json'
+    entry = json.loads(source.read_text(encoding='utf-8'))['mission']['records'][2]['entries'][20]
+    mission = entry['zoneactivity_grasslands_safehousemain']
+    poa = next(row['poa']['aliasdata']['actor'] for row in mission['alias_nodes']['alias'] if 'poa' in row)
+    action = next(row['data'] for row in mission['states']['completed']['actions']
+                  if row['data'].get('alias') == 'PoA')
+    assert mission['mission'] == effects.SAFEHOUSE
+    assert action['factchange'] == {'fact': 'State', 'value': {'namevalue': 'Claimed'}}
+    assert CLAIM == '.'.join((
+        'registry', poa['map'], 'top', poa['groupname'], poa['registryname'], 'State'))
+
+
+def test_all_base_safehouse_claims_match_authored_actions():
+    import json
+    source = PATH.parents[2] / 'external_app/v22_parts_codes_fixed/matt_editor/LegitItems/Nexus-Data-Mission4.json'
+    records = json.loads(source.read_text(encoding='utf-8'))['mission']['records']
+    missions = {item['mission']: item for record in records for entry in record.get('entries', [])
+                for item in entry.values() if isinstance(item, dict) and 'mission' in item}
+    actors = json.loads((PATH.parent / 'mission_activity_actors.json').read_text())
+    base = {name: row for name, row in actors.items()
+            if name.startswith('ZoneActivity_') and 'Safehouse' in name and row['actor']['map'] == 'World_P'}
+    assert len(base) == 14
+    for name, row in base.items():
+        actions = missions[name]['states']['completed']['actions']
+        assert any(action.get('data', {}).get('alias', '').casefold() == 'poa'
+                   and action['data'].get('factchange') == {'fact': 'State', 'value': {'namevalue': 'Claimed'}}
+                   for action in actions)
+        actor = row['actor']
+        assert effects._world_safehouse_claim_address(name, PATH.parent) == '.'.join((
+            'registry', actor['map'], 'top', actor['groupname'], actor['registryname'], 'State'))
 
 
 def test_subordinate_requirements_skip_completed_and_queued_work(monkeypatch):
