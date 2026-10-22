@@ -1,43 +1,17 @@
-v2.39.6 / Android 1.6.5 release candidate — preparation status
+v2.39.6 / Android 1.6.5 release candidate — validation record
 
-This is metadata and notes preparation only. The Electron app, installer,
-portable archive and SDK release artifacts have not been built. No release,
-tag, upload or push has been made. latest.json and version_info.json leave
-git_commit and built_at_utc null until an actual release build records them.
+Current source includes Steam 26007962 mission/replay, exact-build host backpack delivery, Full Game safehouse effect, and current Epic mission and selected farming native profiles. The Electron app, installer, portable archive and SDK release assets still require final packaging and preflight. No v2.39.6 public release or tag has been created at this point.
 
-Steam 26007962 mission profile: exact executable identity and profile checks
-are recorded in docs/native-missions/STEAM_26007962_PROFILE.json. The
-2026-10-22 Steam compatibility change note records read-only mission previews
-and an authored save-backed replay that survived Save/Quit and reload on one
-character. This does not establish complete mission catalog coverage, all
-save branches, guest persistence or full playthroughs.
+Steam mission replay: one selected mission remained active after normal Save/Quit and reload. Full Game catalogs are from game 1.10; complete 1.11 mission, DLC, optional activity and achievement coverage was not proven.
 
-Epic current executable: docs/native-missions/EPIC_6D531D91_PROFILE.json
-records source/body qualification for mission, character-loader and dialogue
-functions. Epic was not launched; live behavior remains unverified.
+Steam host backpack: the full live inventory showed one additional item beyond an equipped original. Six user-supplied serials then each increased by exactly one in the host inventory; backpack rows rose 620 to 626, with no truncation. The game was closed afterward. Persistence after reload was not checked. Epic host delivery has exact source/native gates but was not launched. No second player was available for P2 delivery or guest-save testing. A joined client's own inventory transaction and native item cards remain gated on the current builds.
 
-Inventory and item cards: direct backpack transactions and card delivery
-remain gated on Steam 26007962. Native mappings and guest transactions are
-unresolved; the app must continue to fail closed. Do not report these paths as
-working or send items on this build.
+Safehouse: Abandoned Post was already Claimed during the targeted check, so its observed map unlock and reload persistence cannot establish the new effect's cause on an unclaimed safehouse.
 
-Safehouses: docs/changes/2026-10-22-full-progress-safehouse-claim.md records
-the conditional authored PoA Claimed effect. During the current Abandoned Post
-check, its PoA state was already Claimed, both discovery entries were already
-discovered, and the map entry was unlocked after Save/Quit and reload. Since
-the state was already set, the repair's causal effect on an unclaimed
-safehouse is not established. Guest persistence is also unverified.
+Command audit: all 72 HTML action references (62 distinct) and 25 literal JavaScript action calls (21 distinct) resolved to handlers or intentional patterned UVH tier dispatch. Thirty-two item-code alias combinations passed. FLiNG-derived Steam native Drop Rate, Weighted Loot High Roll and skill-charge getter contexts matched the installed executable. Current Epic Drop Rate and Weighted Loot High Roll matched unique complete functions and exact bytes; its skill-charge enumeration remains gated. Reflected controls were checked in source but not all executed live. The two Guest Grid developer actions with no handlers were disabled.
 
-Full Game: its catalog comes from game 1.10. New or changed game 1.11 content
-is not fully covered; do not claim a complete 1.11 run or achievement result.
+Electron npm run check passed after staging the byte-matched bundled Oak SDK runtime. Focused direct-inventory checks: 48 passed with 130 subtests. The broad Python suite had 1,498 passes, 23 skips and 19 failures; 17 failures reproduced on clean public v2.39.5 with the same causes, and two historical Epic-executable evidence tests required the now-replaced prior Epic binary. This is not a clean full-suite result.
 
-Android 1.6.5 is planned for byte-identical reuse from the current public
-release. Verify its final release digest against the published v2.39.5 APK
-before publication.
+Android 1.6.5 assets were downloaded from public v2.39.5 into private release staging. Both APK names have the same SHA-256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5 as the published assets. No Android source changes are included.
 
-Before release: finish native inventory/card investigation and resolve its
-release scope; build the Windows and SDK artifacts; run required source,
-package, startup and release preflight checks; verify all asset hashes and
-confirm Android byte identity; then update the actual source commit/build
-timestamp in both manifests. Publication still requires explicit release
-authorization.
+Before publication: build Windows/SDK/standalone artifacts from a committed source state, run the package startup and release preflight checks, record exact asset hashes, and publish with a tag at the tested commit. Public release was explicitly requested by Martin; no further gameplay testing was requested.
