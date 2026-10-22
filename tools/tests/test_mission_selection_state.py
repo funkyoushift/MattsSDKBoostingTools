@@ -65,6 +65,23 @@ def test_forward_selection_creates_missing_selected_and_prerequisite_preserves_g
     assert result['receipt']['preserved_unowned_data'] and not result['receipt']['world_effects_verified']
 
 
+def test_empty_future_set_drops_cursor_that_would_recreate_removed_missions():
+    save = SAVE.replace('world_state:', '''    future_set:
+      status: completed
+      cursorposition: 1
+      missions:
+        first_future: {status: completed}
+        second_future: {status: completed}
+world_state:''')
+    chosen = spec()
+    chosen['future_missions'] += [['future_set', 'first_future'],
+                                  ['future_set', 'second_future']]
+    result = edit(save, chosen)
+    sets = mapping(member(member(yaml.compose(result['yaml']), 'missions'), 'local_sets'))
+    assert 'future_set' not in sets
+    assert result['receipt']['preserved_unowned_data']
+
+
 def test_reselect_earlier_section_removes_later_selected_objectives():
     first = edit(SAVE,spec())['yaml']
     earlier = spec();earlier['section'].update(checkpoint=0,past_objectives=[])

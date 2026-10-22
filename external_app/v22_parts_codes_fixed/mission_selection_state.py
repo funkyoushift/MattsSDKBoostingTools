@@ -72,6 +72,10 @@ def edit(text, spec):
         group = member(local, set_name)
         remove(member(group, 'missions'), mission)
         remove(group, 'status')
+        if not mapping(member(group, 'missions')):
+            # A completed chained set can retain a cursor pointing at a
+            # removed future mission. The game recreates that mission on load.
+            remove(group, 'cursorposition')
         if not mapping(member(group, 'missions')) and set(mapping(group)) == {'missions'}:
             remove(local, set_name)
     for set_name, mission in [*sorted(past), selected]:
@@ -153,6 +157,7 @@ def edit(text, spec):
     if protected(before) != protected(after):
         raise BoundaryError('Selection would change protected character/world data')
     # Within local_sets, preserve every unowned mission and set metadata.
+    future_sets = {set_name for set_name, _ in future}
     def unowned(value):
         value = copy.deepcopy(value)
         for set_name, mission in past | future | {selected}:
@@ -162,6 +167,8 @@ def edit(text, spec):
                 if set_name == selected[0]:
                     group.pop('cursorposition', None)
                 group['missions'][1].pop(mission, None)
+                if set_name in future_sets and not group['missions'][1]:
+                    group.pop('cursorposition', None)
                 if not group['missions'][1] and set(group) == {'missions'}:
                     del value[1][set_name]
         return value

@@ -132,26 +132,81 @@ same character. The live bridge reported that exact archive and solo
 native lease. The game then autosaved the character; a read-only copy of that
 autosave parsed with the same GUID, selected mission `Active`, cursor 0, and
 initial travel objective active. The candidate bytes had changed because the
-game itself autosaved. No guest was present. Normal exit/rejoin persistence
-is still pending at this point. The character-specific archive is a private
-test artifact and must not be published.
+game itself autosaved. Martin then used normal Save/Quit and reloaded the same
+character. The live mission preview still read `active`; a new post-rejoin save
+copy decrypted with the same GUID, `Active` mission, cursor 0, and active
+initial travel objective. The reload also reactivated
+`mission_main_shatteredlands1b`, a later mission already listed among this
+selection's 36 future missions. The first game-written autosave had only the
+selected mission active; after normal exit/rejoin there were two active story
+missions. The selector therefore does **not** meet the requested rule that only
+the selected mission be available. No guest was present. The character-specific
+archive is a private test artifact and must not be published.
+
+The staged save showed the exact reactivation path: its
+`missionset_main_shatteredlands1` record had no missions but retained
+`cursorposition: 1`. On the first game load, the first future sibling was
+recreated as completed; after normal exit/rejoin, the second sibling became
+active. `mission_selection_state.py` now removes the stale cursor when a
+future-owned set becomes empty and removes that set if no other metadata
+remains. A synthetic chained-set regression and a new edit of the backed-up
+1.11 character copy passed: the future set was absent, unrelated fields and
+character identity were preserved, and fog stayed unchanged. A second,
+character-specific live replay reached `ready` with a verified backup and a
+closed lease. Its first game-written save contained only
+`mission_main_grasslands1` active and no
+`missionset_main_shatteredlands1`. After Martin used normal Save/Quit and
+reloaded that character, live preview still read the selected mission as
+active. The next save copy had a different SHA-256 from the first autosave,
+still had exactly one active mission, and still omitted the future set. This
+fix passed the specific reload regression seen in the first probe. It does
+not prove all mission branches or all available side content are cleared.
 
 The source guard removal and its replacement standard-lease test passed 63
 focused replay/selection/catalog tests, 9 Quick Menu/native-profile checks,
 and Python syntax. A rebuilt archive has 155 CRC-checked entries and SHA-256
 `17b0c6acfa9833c91f4843bd04d47f5ca017b15805020c43c590170a590358d0`.
 It has exactly the same members as the prior final candidate, with only
-`mission_save_replay.py` content changed. It is not installed while the game
-is running.
+`mission_save_replay.py` content changed. After the game closed, the exact
+service backup from before replay was checked against its recorded SHA-256 and
+same character identity. A private copy of the changed save was retained,
+and the pre-test character save was restored byte-for-byte while the game was
+closed. The profile save was not manually edited. The unrestricted rebuilt
+archive was briefly installed but never launched; the character-specific
+probe archive was reinstalled after the second active mission was found.
+After the successful second reload, Martin closed the game. The second probe's
+pre-edit character backup matched its journal hash; the post-reload save was
+retained privately, and that pre-edit backup was restored byte-for-byte while
+the game was closed. The profile was not manually edited. The unrestricted
+Steam candidate was then installed from this checkout with its expected SHA-256
+`17b0c6acfa9833c91f4843bd04d47f5ca017b15805020c43c590170a590358d0`;
+the private character-specific probe was archived outside Git. The game
+remains closed. The desktop change is available in the local worktree Electron
+session but has not been installed as a public desktop update. There is no
+public release.
 
 Direct inventory/card delivery stays blocked. The updated insert body changed
 from 1,873/424 to 2,330 bytes/540 instructions and two guest-transaction
 functions have no complete match; copying old offsets would be unsafe. The
 installed 1.11 IoStore content has no local extractor and no full 1.10 asset
 baseline, so new mission/map/challenge identities are not yet diffed. The
-current-save copy and one live save-write/reload passed, but broader mission
-coverage, normal exit/rejoin, Epic behavior, and guest persistence remain
-unverified. Do not claim 100% of game 1.11 or a public release.
+current-save copy and the second live save-write/reload passed the observed
+future-mission regression. Broader mission coverage, Epic behavior, and guest
+persistence remain unverified. Do not claim 100% of game 1.11 or a public
+release.
+
+## Epic installation inventory, read-only
+
+The completed Epic installation is at `C:\Program Files\Epic Games\Venus`.
+Its launcher manifest has no build-version value, so no Epic patch number was
+inferred. The Epic main game executable is 612,202,784 bytes, SHA-256
+`6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e`,
+which differs from the installed Steam executable. The checked Epic and Steam
+`unrealsdk.dll` files match byte-for-byte (SHA-256
+`d9936cbe3da434743a93e0dadc2f6a5cc82102936c1c249db014a3081fdb4433`),
+as do the checked `pyunrealsdk.dll` files (SHA-256
+`a12534c6b8b411a176c62ed9d7226031b0039727112dce175bcc71c691761a54`).
+This was only a file inventory; Epic was not launched or modified.
 
 ## Official 1.11 notes checked
 
