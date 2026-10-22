@@ -254,10 +254,6 @@
   const reveal = newPanel("travel-reveal", "Map Reveal & Fog", "map-travel");
   note(reveal, "Party Reveal uncovers guest maps. Host Clear Fog fills this machine’s tiles. Hide Fog changes only this client’s overlay.");
   panel("travel-main").querySelectorAll('[data-action^="party_reveal"], [data-action^="fog_of_war"]').forEach(n => reveal.append(n));
-  const probe = document.createElement("details"); const probeTitle = document.createElement("summary");
-  probeTitle.textContent = "Advanced guest-grid diagnostics"; probe.append(probeTitle); reveal.append(probe);
-  move('[data-msbt-panel="travel-main"] > p.muted-line', probe);
-  panel("travel-main").querySelectorAll('[data-action^="guest_grid"]').forEach(n => probe.append(n));
   panel("travel-main").querySelector("p").textContent = "Choose a map, then a station on that map. Travel favorites stay below; saved in-map positions and map reveal have their own pages.";
   // Keep the slot being edited ahead of optional F7 modules and command history.
   const qm = document.getElementById("tab-quick-menu");

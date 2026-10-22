@@ -2111,29 +2111,6 @@ async function runBoostActionButton(button) {
     }
     return result;
   }
-  if (GUEST_GRID_DEV_ACTIONS.has(action)) {
-    if (action === "guest_grid_try" && !state.selectedTarget) {
-      const message = "Select P2–P4 in Named player, then Fill Guest Grid.";
-      setOutput(els.boostOutput, message);
-      appendActivity(message);
-      return { ok: false, message };
-    }
-    if (state.selectedTarget) {
-      const ok = await ensureSelectedTarget(els.boostOutput);
-      if (!ok) {
-        const message = "Could not apply the named party player.";
-        setOutput(els.boostOutput, message);
-        appendActivity(message);
-        return { ok: false, message };
-      }
-    }
-    return runAction(
-      action,
-      { target_player: state.selectedTarget || undefined },
-      els.boostOutput,
-      30000
-    );
-  }
   const result = action === "max_all"
     ? await runMaxAllScoped(els.boostOutput, "public")
     : DEV_SCOPED_BOOST_ACTIONS.has(action)
@@ -3195,11 +3172,6 @@ function renderPlayers(status = {}) {
 const LATE_JOIN_CHARACTER_ACTIONS = new Set([
   "load_character_late_join",
   "select_character_late_join"
-]);
-
-const GUEST_GRID_DEV_ACTIONS = new Set([
-  "guest_grid_dump",
-  "guest_grid_try"
 ]);
 
 const PUBLIC_SCOPED_BOOST_ACTIONS = new Set([

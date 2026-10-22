@@ -8,7 +8,7 @@ Steam 26007962 and the current Epic executable now have exact-hash host backpack
 
 Full Game now conditionally applies the authored safehouse `Claimed` effect after the corresponding mission record completes. In the observed Abandoned Post check, the safehouse was already `Claimed`, both discovery entries were already discovered, and its map entry was unlocked after Save/Quit and reload. That observation does not establish that the repair caused the unlock. An unclaimed safehouse and guest persistence remain unverified.
 
-Item-send actions and trainer-derived controls were audited for current-build routing and native gates. Static checks do not prove every command in gameplay. Two Guest Grid developer buttons without handlers are now disabled. Android remains version 1.6.5 and is reused unchanged.
+Item-send actions and trainer-derived controls were audited for current-build routing and native gates. Static checks do not prove every command in gameplay. The two unreliable Guest Grid fog-of-war experiments were removed; Party Reveal Map remains. Android remains version 1.6.5 and is reused unchanged.
 
 ## Downloads
 
