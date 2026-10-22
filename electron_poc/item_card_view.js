@@ -104,9 +104,17 @@
       host.dispatchEvent(new CustomEvent('msbt-card-ready',{detail:reply}));
     }).catch(error=>{
       if(!current())return;
-      marker.textContent=String(error.message).includes('New game cards require a solo session')
+      const message=String(error.message);
+      marker.textContent=message.includes('Game cards are not supported by this game build')
+        ? 'Game card preview is unavailable for this BL4 build. Original item code shown below; stats have not been generated.'
+        : message.includes('New game cards require a solo session')
         ? 'Update the game mod and restart BL4 to generate new cards with guests. Existing cached cards remain available.'
         : error.message;
+      if(message.includes('Game cards are not supported by this game build')&&typeof item.serial==='string'){
+        const code=document.createElement('code');code.className='item-card-serial-fallback';
+        code.textContent=item.serial;code.style.cssText='display:block;overflow-wrap:anywhere;user-select:text';
+        host.append(code);
+      }
     });
     return host;
   }

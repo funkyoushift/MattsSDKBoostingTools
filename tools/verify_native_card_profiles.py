@@ -15,11 +15,18 @@ builds = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(builds)
 
 
-def verify(steam_path, epic_path):
+def verify(steam_path, epic_path, profile=builds.EPIC):
     expected = {
         'steam': '9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0',
         'epic': '764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719',
     }
+    if profile in builds.CURRENT_FUNCTIONS:
+        expected['epic'] = {'steam-26007962': 'ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a',
+                            'epic-6d531d91': '6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e'}[profile]
+    elif profile != builds.EPIC:
+        raise ValueError('Unsupported comparison profile')
+    functions = builds.CURRENT_FUNCTIONS.get(profile, builds.EPIC_FUNCTIONS)
+    data = builds.CURRENT_DATA.get(profile, builds.EPIC_DATA)
     files = {'steam': steam_path, 'epic': epic_path}
     images = {}
     for store, path in files.items():
@@ -30,8 +37,8 @@ def verify(steam_path, epic_path):
         images[store] = pefile.PE(str(path), fast_load=True)
     gates = sum((gates_from(ROOT / 'mod_extracted/MattsSDKBoostingTools' / name) for name in
                  ('native_sdk_card_probe.py','native_sdk_widget_probe.py')), [])
-    mapped = builds.card_gates(builds.EPIC, gates)
-    if len(gates) != len(builds.EPIC_FUNCTIONS):
+    mapped = builds.card_gates(profile, gates)
+    if len(gates) != len(functions):
         raise ValueError('Incomplete profile')
     reference_map = {}
     normalized_instructions = 0
@@ -58,16 +65,21 @@ def verify(steam_path, epic_path):
             assert hashlib.sha256(changed).hexdigest()!=digest
     if any(len(v)!=1 for v in reference_map.values()):
         raise ValueError('Conflicting shared address correspondence')
-    for source,(target,*_) in builds.EPIC_FUNCTIONS.items():
+    for source,(target,*_) in functions.items():
         if source in reference_map and reference_map[source]!={target}:
             raise ValueError(f'Call target mismatch {source:x}')
-    for source,target in builds.EPIC_DATA.items():
+    for source,target in data.items():
         if reference_map.get(source)!={target}:
             raise ValueError(f'Vtable reference mismatch {source:x}')
     for sv,ev,sd in ((0xB99E210,0xB98A050,0x8E1AA38),(0xB9B7700,0xB9A3530,0x575204C)):
+        if profile in builds.CURRENT_FUNCTIONS:
+            mapped_vtables = reference_map.get(sv, set())
+            if len(mapped_vtables) != 1:
+                raise ValueError('Constructor vtable has no unique reference')
+            ev = next(iter(mapped_vtables))
         if reference_map.get(sv)!={ev}:
             raise ValueError('Constructor vtable reference mismatch')
-        for store,vtable,dtor in [('steam',sv,sd),('epic',ev,builds.card_rva(builds.EPIC,sd))]:
+        for store,vtable,dtor in [('steam',sv,sd),('epic',ev,builds.card_rva(profile,sd))]:
             pe=images[store]
             if struct.unpack('<Q',pe.get_data(vtable,8))[0]-pe.OPTIONAL_HEADER.ImageBase!=dtor:
                 raise ValueError('Destructor vtable slot mismatch')
@@ -82,8 +94,9 @@ if __name__=='__main__':
     parser.add_argument('--steam',type=Path,required=True)
     parser.add_argument('--epic',type=Path,required=True)
     parser.add_argument('--output',type=Path)
+    parser.add_argument('--profile',default=builds.EPIC,choices=[builds.EPIC,*builds.CURRENT_FUNCTIONS])
     args=parser.parse_args()
-    result=verify(args.steam,args.epic)
+    result=verify(args.steam,args.epic,args.profile)
     if args.output:
         args.output.parent.mkdir(parents=True,exist_ok=True)
         args.output.write_text(json.dumps(result,indent=2))

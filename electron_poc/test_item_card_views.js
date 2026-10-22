@@ -54,7 +54,7 @@ app.whenReady().then(async()=>{
   const stale=document.createElement('div');host.append(stale);fillBl4ItemCard(stale,{serial:'@UOld'});fillBl4ItemCard(stale,{serial:'@UGzo'});
   await wait(()=>stale.querySelector('img'));check(stale.querySelectorAll('img').length===1&&stale.querySelector('img').alt==='GZO name','changed host must ignore old response');
   for(const id of ['boostSerialText','serialToolsSerialized','validatorBasicInput','validatorBulkInput','bl4Serial'])
-    check(document.getElementById(id).nextElementSibling.classList.contains('serial-card-previews'),'missing preview '+id);
+    check(document.querySelector('.serial-card-previews[data-serial-preview-for="'+id+'"]')?.parentElement===document.getElementById(id).parentElement,'missing preview '+id);
   check(document.querySelector('#tab-matt-editor #editorLiveCard')&&document.getElementById('editorCardAuto').checked,'automatic editor preview');
   let switches=0;
   window.msbt.nativeItemPreview=async(serial,wantImage,layout)=>{switches++;return {ok:true,serial,session:'same-session',widget:{Name:'Expanded'},image:{ok:true,layout:layout==='compact'?'compact':'expanded',base64:${JSON.stringify(png.toString('base64'))}}};};
@@ -71,6 +71,15 @@ app.whenReady().then(async()=>{
   const unavailable=document.createElement('div');host.append(unavailable);fillBl4ItemCard(unavailable,{serial:'@UUncached'});
   await wait(()=>unavailable.textContent.includes('Update the game mod and restart BL4'));
   check(!unavailable.textContent.includes('RuntimeError'),'raw solo exception leaked into card');
+  window.msbt.nativeItemPreview=async()=>({ok:false,message:"RuntimeError('Game cards are not supported by this game build (steam-26007962)')"});
+  const unsupported=document.createElement('div');host.append(unsupported);
+  const exactSerial='@UMixedCaseAbCd<original>';
+  let inventedName=false;unsupported.addEventListener('msbt-card-name',()=>{inventedName=true});
+  fillBl4ItemCard(unsupported,{serial:exactSerial});
+  await wait(()=>unsupported.querySelector('.item-card-serial-fallback'));
+  check(unsupported.querySelector('code').textContent===exactSerial,'fallback must preserve exact serial');
+  check(!unsupported.querySelector('img')&&!unsupported.querySelector('original')&&!inventedName,'fallback must not invent a card/name or interpret serial markup');
+  check(unsupported.textContent.includes('stats have not been generated')&&!unsupported.textContent.includes('RuntimeError'),'unsupported build must explain preview limits');
   return {upload:true,gzo:true,native:true,community:true,mismatch:true,stale:true,serialMenus:6,clearUnavailableMessage:true,layoutToggle:true,savedCardNames:true};
  })()`);
  assert.equal(result.community,true);console.log(JSON.stringify(result));win.destroy();app.exit(0);

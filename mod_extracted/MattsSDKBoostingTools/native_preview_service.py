@@ -12,7 +12,7 @@ from .native_sdk_card_probe import run
 MAX_ENTRIES = 512
 MAX_BYTES = 32 * 1024 * 1024
 SCHEMA = 'native-standalone-widget-v1'
-PROFILE_REVISION = 'native-card-profiles-20261008'
+PROFILE_REVISION = 'native-card-profiles-20261022'
 _thread = None
 _session = None
 _cache = OrderedDict()

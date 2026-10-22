@@ -4,7 +4,7 @@
   function addPreview(anchor,readCodes) {
     if(!anchor)return;
     const details=document.createElement('details'),summary=document.createElement('summary'),grid=document.createElement('div');
-    details.className='serial-card-previews';summary.textContent='Item cards';
+    details.className='serial-card-previews';details.dataset.serialPreviewFor=anchor.id;summary.textContent='Item cards';
     grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px';
     details.append(summary,grid);anchor.insertAdjacentElement('afterend',details);
     let last='',timer;

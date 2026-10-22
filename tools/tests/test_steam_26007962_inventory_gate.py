@@ -1,4 +1,4 @@
-"""Current host delivery requires identity; guest/card builds remain blocked.
+"""Current host delivery requires identity; guest builds remain blocked.
 
 Reads the executable as data only; never loads game code or opens a process.
 """
@@ -60,10 +60,9 @@ def test_new_steam_guest_rejected_before_memory_access_or_binding(monkeypatch):
         guest.GuestInventory(SimpleNamespace(profile=BUILD, read=forbidden))
 
 
-def test_new_steam_card_mapping_stays_blocked():
+def test_new_steam_card_mapping_is_exact_and_not_the_old_address():
     cards = load("native_card_builds")
-    for call in (lambda: cards.require_card_profile(BUILD),
-                 lambda: cards.card_rva(BUILD, 0x56D3CCA),
-                 lambda: cards.card_gates(BUILD, ())):
-        with pytest.raises(RuntimeError, match="not supported"):
-            call()
+    cards.require_card_profile(BUILD)
+    assert cards.card_rva(BUILD, 0x56D3CCA) == 0x56E051C
+    source = cards.CURRENT_FUNCTIONS[BUILD][0x56D3CCA]
+    assert cards.card_gates(BUILD, ((0x56D3CCA, 0x56D3CCA + source[1], source[2]),)) == ((source[0], source[0] + source[1], source[3]),)

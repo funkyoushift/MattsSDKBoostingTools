@@ -105,11 +105,34 @@ class ProbeTest(unittest.TestCase):
             self.run_probe(export_model=False,compare_self=False)
         self.assertEqual(self.events[-3:],['0x8e1fa60','identity_destroy','identity_destroy'])
 
+    def test_current_profiles_bind_and_clean_up_only_mapped_functions(self):
+        for profile in ('steam-26007962', 'epic-6d531d91'):
+            with self.subTest(profile=profile):
+                self.events.clear()
+                self.profile = profile
+                self.output = Path(self.storage.name) / (profile + '.json')
+                result = self.run_probe(export_model=False, compare_self=False)
+                self.assertEqual(result['profile'], profile)
+                self.assertEqual(result['inventory_insertions'], 0)
+                for source in (0x56D3CCA, 0xBABBE2, 0xBAF88E, 0xB95EC6):
+                    self.assertIn(hex(card_rva(profile, source)), self.events)
+                    self.assertNotIn(hex(source), self.events)
+                self.assertEqual(self.events[-3:], [hex(card_rva(profile, 0x8E1AA38)), 'identity_destroy', 'identity_destroy'])
+
     def test_unknown_build_rejected_before_constructing(self):
         self.profile = 'epic-unknown'
         with self.assertRaisesRegex(RuntimeError,'not supported'):
             self.run_probe(export_model=False)
         self.assertEqual(self.events,['native_init'])
+
+    def test_current_builds_research_export_rejected_before_card_binding(self):
+        for profile in ('steam-26007962', 'epic-6d531d91'):
+            with self.subTest(profile=profile):
+                self.events.clear()
+                self.profile = profile
+                with self.assertRaisesRegex(RuntimeError, 'model export'):
+                    self.run_probe(export_model=True)
+                self.assertEqual(self.events, ['native_init'])
 
     def test_epic_research_model_does_not_use_steam_fname_pool(self):
         self.profile = EPIC
@@ -120,7 +143,7 @@ class ProbeTest(unittest.TestCase):
     def test_each_bad_gate_blocks_all_card_function_binding(self):
         from MattsSDKBoostingTools.native_sdk_widget_probe import WIDGET_GATES
         gates=probe.GATES+probe.PRICE_GATES+probe.EMPTY_COMPARISON_GATES+WIDGET_GATES
-        for profile in (STEAM,EPIC):
+        for profile in (STEAM,EPIC,'steam-26007962','epic-6d531d91'):
             self.profile=profile
             for gate in gates:
                 self.events.clear()
@@ -183,6 +206,11 @@ class PriceCleanupTest(unittest.TestCase):
 
     def test_epic_copy_failure_uses_epic_text_vtable_and_cleanup(self):
         self.check_copy_failure(EPIC)
+
+    def test_current_profiles_price_failure_cleanup(self):
+        for profile in ('steam-26007962', 'epic-6d531d91'):
+            with self.subTest(profile=profile):
+                self.check_copy_failure(profile)
 
     def check_copy_failure(self, profile):
         identity=C.create_string_buffer(0xd8)
@@ -256,6 +284,12 @@ class WidgetProfileCleanupTest(unittest.TestCase):
     def test_steam_widget_failure_cleanup(self): self.check_widget(STEAM,True)
     def test_epic_widget_success(self): self.check_widget(EPIC,False)
     def test_epic_widget_failure_cleanup(self): self.check_widget(EPIC,True)
+
+    def test_current_profiles_widget_success_and_failure_cleanup(self):
+        for profile in ('steam-26007962', 'epic-6d531d91'):
+            for fail in (False, True):
+                with self.subTest(profile=profile, fail=fail):
+                    self.check_widget(profile, fail)
 
 
 class PreviewBuildIdentityTest(unittest.TestCase):

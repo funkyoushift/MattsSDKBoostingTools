@@ -1,0 +1,483 @@
+{
+  "scope": "Complete normalized instruction equivalence and reference/vtable correspondence; offline only",
+  "profiles": [
+    {
+      "profile": "steam-26007962",
+      "source": {
+        "path": "C:\\src\\MSBT-Workspace\\local\\steam-25372571-native-card-reference\\Borderlands4.exe",
+        "sha256": "9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0"
+      },
+      "target": {
+        "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Borderlands 4\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+        "sha256": "ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a"
+      },
+      "normalization": "relative branches and RIP-relative displacements only",
+      "spans": [
+        {
+          "source_rva": "0x56d3cca",
+          "target_rva": "0x56e051c",
+          "size": 772,
+          "source_sha256": "5ce1aaa8933709a337c65faf40db6c17e45ec6bbc895296c8fc71b30d1a58802",
+          "target_sha256": "e3b3bb0d462a55761dbd8deebc41cbda11e74ada48ac42f01335540166df8863",
+          "instructions": 151
+        },
+        {
+          "source_rva": "0xbabbe2",
+          "target_rva": "0xbabe90",
+          "size": 111,
+          "source_sha256": "d69c483030211fa666465e66e55105f947ce61c406b5497d78f604528ecc5e70",
+          "target_sha256": "d69c483030211fa666465e66e55105f947ce61c406b5497d78f604528ecc5e70",
+          "instructions": 29
+        },
+        {
+          "source_rva": "0xbac7d2",
+          "target_rva": "0xbaca80",
+          "size": 1681,
+          "source_sha256": "6aff5e04e3b4d3bb0ebbf2aafe5c21dc5f0150771b3b4b6bc7c07297527e5319",
+          "target_sha256": "59a504f47fcc7551105b306cc79afcf609f1da10068f99a09ceac69a7f58c52b",
+          "instructions": 418
+        },
+        {
+          "source_rva": "0xbaf88e",
+          "target_rva": "0xbafb3c",
+          "size": 4333,
+          "source_sha256": "51bd17ddef73d78301659fe08778d375c51dff57bdfb7cab293a941f66a6a4d5",
+          "target_sha256": "ed60ca616b63f35728e1639f6ca331b00bc401eb50fd08afab8abd22bb563af5",
+          "instructions": 998
+        },
+        {
+          "source_rva": "0x8e1aa38",
+          "target_rva": "0x8e21e46",
+          "size": 38,
+          "source_sha256": "fe7689fda843ad3179819bd789dc53c22f0d1778ea6ddfba9c14dbba199dc1d8",
+          "target_sha256": "2ee20228c67f5b0da22df1346b4cd12f5da6c9bce178872291d848f8ee9fefe6",
+          "instructions": 15
+        },
+        {
+          "source_rva": "0xe69a30",
+          "target_rva": "0xe62f2a",
+          "size": 633,
+          "source_sha256": "ec1f59a0363723667b0d3f99537cafe84f166171ea923ed07e46dabc86e0b593",
+          "target_sha256": "b0e28f3d67cd313acac33d8ff459825ed0f5e7f2fb27b4990eabc586aeb85374",
+          "instructions": 179
+        },
+        {
+          "source_rva": "0xe69d1a",
+          "target_rva": "0xe63214",
+          "size": 1085,
+          "source_sha256": "0a8a22ae8ab912bc37dd763440fd0322b20a12884fd804f3765f4a844c971c73",
+          "target_sha256": "ff33d7a4bcab233490d254cc853fa8d080351908df69864b58723ac1b33f17cc",
+          "instructions": 286
+        },
+        {
+          "source_rva": "0xe69ca9",
+          "target_rva": "0xe631a3",
+          "size": 113,
+          "source_sha256": "bfc0da2a7661a8f5f785a94a6f2ae2d54d5c0d89333506ac802a7b79a0fa67ed",
+          "target_sha256": "2d9251ba97a4314b967c61fd383734798aec0494aaa72d1e11a20adbb9a8e21a",
+          "instructions": 38
+        },
+        {
+          "source_rva": "0x20a8",
+          "target_rva": "0x20a8",
+          "size": 64,
+          "source_sha256": "7b0652ce5487ac59d2d731b69715d6a77a54ebcf2bcd221ea82f7ed66108978f",
+          "target_sha256": "20ec097ebc70a919861f2b29d573a2bb5ef8136d4ce8c29f542443c3821edd66",
+          "instructions": 21
+        },
+        {
+          "source_rva": "0x5c4b4f8",
+          "target_rva": "0x5c56198",
+          "size": 22,
+          "source_sha256": "ec1033a2760eeb536c16690b3e953b4cc1d1341147dd7e73d9aafacc9285e586",
+          "target_sha256": "ec1033a2760eeb536c16690b3e953b4cc1d1341147dd7e73d9aafacc9285e586",
+          "instructions": 8
+        },
+        {
+          "source_rva": "0x5c4b50e",
+          "target_rva": "0x5c561ae",
+          "size": 374,
+          "source_sha256": "96c18b1dbda7900d1eb51cb989eeca169f923f1c7d842f676c7e4087abe770c9",
+          "target_sha256": "4be8d6bcbf22d66a9e82be7d9c7a300c53a7f3008034f3092de1b3fd94c5dfbc",
+          "instructions": 102
+        },
+        {
+          "source_rva": "0x236036",
+          "target_rva": "0x2349c6",
+          "size": 278,
+          "source_sha256": "471951c9b998dd98fe1120f420c18a7487e8167cf34972a3c32b3b42a881f9d1",
+          "target_sha256": "bdd780030075459f1b9fab8a355048311e9c7cf9e6b539412a3629fb76efd943",
+          "instructions": 78
+        },
+        {
+          "source_rva": "0x479623a",
+          "target_rva": "0x47a1f4a",
+          "size": 118,
+          "source_sha256": "0be1c20f5860b44ee8f6a96a66ece5716e2bb0c28e58c4b0e626034c7414cc34",
+          "target_sha256": "09ebc4950dad87d2e2a8bd2697e5555b446b30c47dbac98c251fb81478d32e65",
+          "instructions": 36
+        },
+        {
+          "source_rva": "0x4994e1a",
+          "target_rva": "0x49a0272",
+          "size": 205,
+          "source_sha256": "92b6a793b98a730f39f4f464a6dcdc17d4d1fa44f68a902b7b5ba9d4f938e1ec",
+          "target_sha256": "e52fdc7ee339e0cc28048866ef22909b3a39559c45a74b117fa2ed63bd9660cf",
+          "instructions": 69
+        },
+        {
+          "source_rva": "0x4774916",
+          "target_rva": "0x4780626",
+          "size": 384,
+          "source_sha256": "f83496dc177e13c3d75b5b865591823d356ed2c4a9bde6fc21b04ae21cc84446",
+          "target_sha256": "a3d1027b48bddbf26ae3c1f9779847233498c0065910e9320db05fcda0d39e18",
+          "instructions": 105
+        },
+        {
+          "source_rva": "0xb95ec6",
+          "target_rva": "0xb96410",
+          "size": 98,
+          "source_sha256": "8d005584492b7e689def0e1a72e0834ab0e6474d4e347bd6774c757de08dfadf",
+          "target_sha256": "b33522e03f4e03c94f054cdcd9958ec9506067b129b5330006a713f14115819a",
+          "instructions": 27
+        },
+        {
+          "source_rva": "0xb95f28",
+          "target_rva": "0xb96472",
+          "size": 185,
+          "source_sha256": "e7fde244391f8a884916c7c4a6b8f53b399540e14a0c47cedfd00bfc0135bd91",
+          "target_sha256": "064ce3a716af736cad78f0f2e17964d74612391f5076aabdabf03c6586aafd08",
+          "instructions": 55
+        },
+        {
+          "source_rva": "0x58cf8c4",
+          "target_rva": "0x58da1f2",
+          "size": 235,
+          "source_sha256": "ab40f436d65c9c3a2f61b79ead977c106d6d84e7fee392e8ef933aea2d8f2518",
+          "target_sha256": "7f8f087e72e51806e37c84b6607cd44e4574d5236db1d77906d67b0feee532c0",
+          "instructions": 40
+        },
+        {
+          "source_rva": "0xe95040",
+          "target_rva": "0xe8cffc",
+          "size": 386,
+          "source_sha256": "83cf31d4221c0c77bbff7daa6094fea31a557c7e225fe3c6db1643d447025b7a",
+          "target_sha256": "1589b843f7ef7b769b57f013b90a89f2d34b09f1b80883d0dd3f817c55dff2c6",
+          "instructions": 63
+        },
+        {
+          "source_rva": "0x11fc6ba",
+          "target_rva": "0x11f7666",
+          "size": 20881,
+          "source_sha256": "fb86d5e63e7e052c5badaf1a09fdbbfcb8ed45faa37e9fa743ccf5b3cd7f10c9",
+          "target_sha256": "f3948f7c762f4dde814ca5fda66a604ff6c92dd75141acb85b2d53542529ec06",
+          "instructions": 4823
+        },
+        {
+          "source_rva": "0x575204c",
+          "target_rva": "0x575cc36",
+          "size": 38,
+          "source_sha256": "482279190c6ac5458d1017137810a2670fc207e692424eacbe5dff91ba0834cb",
+          "target_sha256": "4cdd344aa2e2b9348d29be9f77748a5b03bbccbf59d309bee04e45fdea0b6f68",
+          "instructions": 15
+        },
+        {
+          "source_rva": "0x5752072",
+          "target_rva": "0x575cc5c",
+          "size": 114,
+          "source_sha256": "9a07ffab4f3eac413527b7553cefbea1289bd8a66c69f60c67e1fabe6669ec10",
+          "target_sha256": "4f95fa97be1cbfb5d5329278878d6dd74ddb3dc9aff9e3e25d65865030f209d0",
+          "instructions": 26
+        },
+        {
+          "source_rva": "0x10f1bc6",
+          "target_rva": "0x10ecf08",
+          "size": 1213,
+          "source_sha256": "9467c955bf42c217ba7a0acd98172b808f16bc9bc4d6d15b6bad168d67848601",
+          "target_sha256": "32ef242d7da96d0c73a4e0aa1d22d88c0574e85c9edab0fa2dfa76c0e96790bb",
+          "instructions": 305
+        },
+        {
+          "source_rva": "0x167376e",
+          "target_rva": "0x166c572",
+          "size": 1952,
+          "source_sha256": "f464d4f455549b0f4859241a0696f1252abe11e550aa91f81b020b512b2b098c",
+          "target_sha256": "7981ac3c2f52af01d259b24a4c55e41327fc5342bd14de76da9b9563125d12a2",
+          "instructions": 459
+        },
+        {
+          "source_rva": "0x10c71fe",
+          "target_rva": "0x10c2540",
+          "size": 2315,
+          "source_sha256": "1bf67fc5592bd2e68edfc04a7ccbeaf3cee430cb47d89c443ea069bff2817156",
+          "target_sha256": "7cd17c3e818cf99cc66333d5f3e5c5cced20316f1376440e1ae5127c07d09205",
+          "instructions": 514
+        },
+        {
+          "source_rva": "0x16193f4",
+          "target_rva": "0x16123fc",
+          "size": 1566,
+          "source_sha256": "e1852cd6457b393abbb2051ebf026a303ae1a2747cba3913639b544d02339f2e",
+          "target_sha256": "23cc649284abb7f3b3cec68412a23ab5fffb6150d9b1af4a2db21f1381f6011a",
+          "instructions": 361
+        }
+      ],
+      "vtables": [
+        {
+          "steam_vtable": 194634256,
+          "epic_vtable": 194666176,
+          "steam_slot0": 149006904,
+          "epic_slot0": 149036614
+        },
+        {
+          "steam_vtable": 194737920,
+          "epic_vtable": 194769952,
+          "steam_slot0": 91562060,
+          "epic_slot0": 91606070
+        }
+      ],
+      "reference_targets": 1552,
+      "reference_conflicts": [],
+      "live_verified": false
+    },
+    {
+      "profile": "epic-6d531d91",
+      "source": {
+        "path": "C:\\src\\MSBT-Workspace\\local\\steam-25372571-native-card-reference\\Borderlands4.exe",
+        "sha256": "9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0"
+      },
+      "target": {
+        "path": "C:\\Program Files\\Epic Games\\Venus\\OakGame\\Binaries\\Win64\\Borderlands4.exe",
+        "sha256": "6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e"
+      },
+      "normalization": "relative branches and RIP-relative displacements only",
+      "spans": [
+        {
+          "source_rva": "0x56d3cca",
+          "target_rva": "0x56f1c9c",
+          "size": 772,
+          "source_sha256": "5ce1aaa8933709a337c65faf40db6c17e45ec6bbc895296c8fc71b30d1a58802",
+          "target_sha256": "0c66c57598866d3ee05bcec22e8558a2a9c5d38c9c946c8730080cf3d1cd2a0a",
+          "instructions": 151
+        },
+        {
+          "source_rva": "0xbabbe2",
+          "target_rva": "0xbaba1c",
+          "size": 111,
+          "source_sha256": "d69c483030211fa666465e66e55105f947ce61c406b5497d78f604528ecc5e70",
+          "target_sha256": "d69c483030211fa666465e66e55105f947ce61c406b5497d78f604528ecc5e70",
+          "instructions": 29
+        },
+        {
+          "source_rva": "0xbac7d2",
+          "target_rva": "0xbac60c",
+          "size": 1681,
+          "source_sha256": "6aff5e04e3b4d3bb0ebbf2aafe5c21dc5f0150771b3b4b6bc7c07297527e5319",
+          "target_sha256": "7dd7bfd4694baa0ced6b5be1fd7a3e3d747c6b49317d659c10b20fff407a721b",
+          "instructions": 418
+        },
+        {
+          "source_rva": "0xbaf88e",
+          "target_rva": "0xbaf6c8",
+          "size": 4333,
+          "source_sha256": "51bd17ddef73d78301659fe08778d375c51dff57bdfb7cab293a941f66a6a4d5",
+          "target_sha256": "a5a492fe5b30c671fa8434ec4360bdd46165a1439b21475246b94c7bf067eba0",
+          "instructions": 998
+        },
+        {
+          "source_rva": "0x8e1aa38",
+          "target_rva": "0x8e26e6e",
+          "size": 38,
+          "source_sha256": "fe7689fda843ad3179819bd789dc53c22f0d1778ea6ddfba9c14dbba199dc1d8",
+          "target_sha256": "3ee64b3b2dbc10575f5c066f1708a8b39ae22135da55e7f618413ed72437d310",
+          "instructions": 15
+        },
+        {
+          "source_rva": "0xe69a30",
+          "target_rva": "0xe6147a",
+          "size": 633,
+          "source_sha256": "ec1f59a0363723667b0d3f99537cafe84f166171ea923ed07e46dabc86e0b593",
+          "target_sha256": "2cb2686d06eb2c9c7b80b3dfa696aa7e24685316405e075a3cc06c8592486cad",
+          "instructions": 179
+        },
+        {
+          "source_rva": "0xe69d1a",
+          "target_rva": "0xe61764",
+          "size": 1085,
+          "source_sha256": "0a8a22ae8ab912bc37dd763440fd0322b20a12884fd804f3765f4a844c971c73",
+          "target_sha256": "6dfce03edcfbc79a0ee8ff6e6735bcd1c300dbb71b67deed8be0945bf07b9ae3",
+          "instructions": 286
+        },
+        {
+          "source_rva": "0xe69ca9",
+          "target_rva": "0xe616f3",
+          "size": 113,
+          "source_sha256": "bfc0da2a7661a8f5f785a94a6f2ae2d54d5c0d89333506ac802a7b79a0fa67ed",
+          "target_sha256": "f1a86d79735f1e51b53f044713fb3daf2d8aae82a3d7d991c507c9b6d225ab21",
+          "instructions": 38
+        },
+        {
+          "source_rva": "0x20a8",
+          "target_rva": "0x20a8",
+          "size": 64,
+          "source_sha256": "7b0652ce5487ac59d2d731b69715d6a77a54ebcf2bcd221ea82f7ed66108978f",
+          "target_sha256": "fa3c4c1f3729d9d16fd596693c3eeb7cab99f470331a2b4bb76656f3211b50f9",
+          "instructions": 21
+        },
+        {
+          "source_rva": "0x5c4b4f8",
+          "target_rva": "0x5c649fc",
+          "size": 22,
+          "source_sha256": "ec1033a2760eeb536c16690b3e953b4cc1d1341147dd7e73d9aafacc9285e586",
+          "target_sha256": "ec1033a2760eeb536c16690b3e953b4cc1d1341147dd7e73d9aafacc9285e586",
+          "instructions": 8
+        },
+        {
+          "source_rva": "0x5c4b50e",
+          "target_rva": "0x5c64a12",
+          "size": 374,
+          "source_sha256": "96c18b1dbda7900d1eb51cb989eeca169f923f1c7d842f676c7e4087abe770c9",
+          "target_sha256": "b99e0d76d32501afedda48e6da4f1289b7ff0992585c119f0a84beedccd58678",
+          "instructions": 102
+        },
+        {
+          "source_rva": "0x236036",
+          "target_rva": "0x2349c6",
+          "size": 278,
+          "source_sha256": "471951c9b998dd98fe1120f420c18a7487e8167cf34972a3c32b3b42a881f9d1",
+          "target_sha256": "f074cca34f6525fea2215c985652a36a39718bdff20c2ebfca35767d57eaf01d",
+          "instructions": 78
+        },
+        {
+          "source_rva": "0x479623a",
+          "target_rva": "0x47b36ba",
+          "size": 118,
+          "source_sha256": "0be1c20f5860b44ee8f6a96a66ece5716e2bb0c28e58c4b0e626034c7414cc34",
+          "target_sha256": "7b844b38d43d8f480c84b706f02e6ab8a0e7916a0bdc9610291856bffe47b827",
+          "instructions": 36
+        },
+        {
+          "source_rva": "0x4994e1a",
+          "target_rva": "0x49b19e2",
+          "size": 205,
+          "source_sha256": "92b6a793b98a730f39f4f464a6dcdc17d4d1fa44f68a902b7b5ba9d4f938e1ec",
+          "target_sha256": "600ff8f9b194ce5906056cddaa488c01f4b834b1351104ceffd9d2531b6eb67d",
+          "instructions": 69
+        },
+        {
+          "source_rva": "0x4774916",
+          "target_rva": "0x4791d96",
+          "size": 384,
+          "source_sha256": "f83496dc177e13c3d75b5b865591823d356ed2c4a9bde6fc21b04ae21cc84446",
+          "target_sha256": "9c8f662ed8ddb83591c87d778e5e3e4a2225a34d08e2c2a35429a0699fd9cd33",
+          "instructions": 105
+        },
+        {
+          "source_rva": "0xb95ec6",
+          "target_rva": "0xb95f9c",
+          "size": 98,
+          "source_sha256": "8d005584492b7e689def0e1a72e0834ab0e6474d4e347bd6774c757de08dfadf",
+          "target_sha256": "30d54a93ec8fa4b40b4d07763bc44ad7d26b5dc95d6c9015a43f09d2e7b0fc2b",
+          "instructions": 27
+        },
+        {
+          "source_rva": "0xb95f28",
+          "target_rva": "0xb95ffe",
+          "size": 185,
+          "source_sha256": "e7fde244391f8a884916c7c4a6b8f53b399540e14a0c47cedfd00bfc0135bd91",
+          "target_sha256": "04390b11b5b9e317c45f01182797ead6786612aa5606c91f06259210da0072b4",
+          "instructions": 55
+        },
+        {
+          "source_rva": "0x58cf8c4",
+          "target_rva": "0x58eb538",
+          "size": 235,
+          "source_sha256": "ab40f436d65c9c3a2f61b79ead977c106d6d84e7fee392e8ef933aea2d8f2518",
+          "target_sha256": "5cd6c997a980416750d82d376665add96917b7c1165c47098c323ba3b15f94ac",
+          "instructions": 40
+        },
+        {
+          "source_rva": "0xe95040",
+          "target_rva": "0xe8b0d0",
+          "size": 386,
+          "source_sha256": "83cf31d4221c0c77bbff7daa6094fea31a557c7e225fe3c6db1643d447025b7a",
+          "target_sha256": "dd76581951673762fcf70977eb7390099eb617e3b9054fc5b67204305addb920",
+          "instructions": 63
+        },
+        {
+          "source_rva": "0x11fc6ba",
+          "target_rva": "0x11f5712",
+          "size": 20881,
+          "source_sha256": "fb86d5e63e7e052c5badaf1a09fdbbfcb8ed45faa37e9fa743ccf5b3cd7f10c9",
+          "target_sha256": "a53cff89a1803f6bd79256a3bb23fb63ab6421a9f371c8141a4d590fc7061a58",
+          "instructions": 4823
+        },
+        {
+          "source_rva": "0x575204c",
+          "target_rva": "0x576e3b6",
+          "size": 38,
+          "source_sha256": "482279190c6ac5458d1017137810a2670fc207e692424eacbe5dff91ba0834cb",
+          "target_sha256": "f90dffb6c9bebdf7ba1f0ed0d4f34f51beb619ea06b48d68a49cbe76889a02ed",
+          "instructions": 15
+        },
+        {
+          "source_rva": "0x5752072",
+          "target_rva": "0x576e3dc",
+          "size": 114,
+          "source_sha256": "9a07ffab4f3eac413527b7553cefbea1289bd8a66c69f60c67e1fabe6669ec10",
+          "target_sha256": "ce13d39932d9daf530b60347020617d6c56fe9d16d3e78c42cbf33cba82cf94e",
+          "instructions": 26
+        },
+        {
+          "source_rva": "0x10f1bc6",
+          "target_rva": "0x10eac8e",
+          "size": 1213,
+          "source_sha256": "9467c955bf42c217ba7a0acd98172b808f16bc9bc4d6d15b6bad168d67848601",
+          "target_sha256": "8f79c6184c1f66fca7985dde93101209952e6a49146d70b35bb9e8537ea2a5fd",
+          "instructions": 305
+        },
+        {
+          "source_rva": "0x167376e",
+          "target_rva": "0x1666bcc",
+          "size": 1952,
+          "source_sha256": "f464d4f455549b0f4859241a0696f1252abe11e550aa91f81b020b512b2b098c",
+          "target_sha256": "40e464f3ca290966469fcb5df36f4baea4fe31139461083bd2c262c7ef9db95a",
+          "instructions": 459
+        },
+        {
+          "source_rva": "0x10c71fe",
+          "target_rva": "0x10c0466",
+          "size": 2315,
+          "source_sha256": "1bf67fc5592bd2e68edfc04a7ccbeaf3cee430cb47d89c443ea069bff2817156",
+          "target_sha256": "5e89ddacc4a3941946f6c06983c285c2b81d0594670439bd236255a4718f76f1",
+          "instructions": 514
+        },
+        {
+          "source_rva": "0x16193f4",
+          "target_rva": "0x160d18c",
+          "size": 1566,
+          "source_sha256": "e1852cd6457b393abbb2051ebf026a303ae1a2747cba3913639b544d02339f2e",
+          "target_sha256": "6755e11b4a4d49b7da90853bd3d145cf5d7711cae932ed623a7ba18a121988f9",
+          "instructions": 361
+        }
+      ],
+      "vtables": [
+        {
+          "steam_vtable": 194634256,
+          "epic_vtable": 194583808,
+          "steam_slot0": 149006904,
+          "epic_slot0": 149057134
+        },
+        {
+          "steam_vtable": 194737920,
+          "epic_vtable": 194687568,
+          "steam_slot0": 91562060,
+          "epic_slot0": 91677622
+        }
+      ],
+      "reference_targets": 1552,
+      "reference_conflicts": [],
+      "live_verified": false
+    }
+  ]
+}
