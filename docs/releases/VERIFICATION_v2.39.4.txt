@@ -1,0 +1,9 @@
+v2.39.4 / Android 1.6.5 verification — 2026-10-22
+
+Scope: Windows mission-control recovery and desktop atomic-writer temporary-file cleanup. Public v2.39.3 is the source baseline. Full SDK and standalone selector game behavior is unchanged except matching 2.39.4 version metadata. Android code is unchanged; both APK names reuse the byte-identical published 1.6.5 artifact (SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5).
+
+The installed v2.39.3 panel's old failed/open replay journal was stopped live with its verified backup retained and lobby connected. No save restore or mission mutation was issued. New source checks: stale-lock Electron regression, existing mission-views Electron regression, Full Game panel test, 55 desktop replay-service tests including five injected temp failures, Python syntax/Quick Menu/release-import checks. The standalone package/import suite passed 22 checks after replacing a hard-coded 2.39.3 test expectation with a version match against package.json.
+
+The official Windows build passed 31 installer checks, desktop identity/UI/responsive checks, 48 packaged dependency checks, 3,313 packaged resource checks, packaged startup smoke, and updater packaging checks. Both SDK archives pass CRC and source compilation. The full SDK embedded in Windows matches its standalone download. This is source/package validation, not a new live mission, Epic customer, multiplayer guest-save, or customer crash reproduction. The reported save/crash root cause and the 100% mission overhaul remain unresolved.
+
+Artifact SHA256 values are in SHA256SUMS.txt. Publication verification, tag, public asset hashes and CI status must be appended only after publication.
