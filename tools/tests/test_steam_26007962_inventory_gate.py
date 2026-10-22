@@ -1,4 +1,4 @@
-"""New Steam build must remain blocked until native inventory is recovered.
+"""Current host delivery requires identity; guest/card builds remain blocked.
 
 Reads the executable as data only; never loads game code or opens a process.
 """
@@ -25,7 +25,7 @@ def load(name):
     return module
 
 
-def test_installed_new_steam_rejected_before_native_binding(monkeypatch):
+def test_installed_new_steam_missing_identity_rejected_before_native_binding(monkeypatch):
     if not TARGET.is_file():
         pytest.skip("New Steam executable not installed")
     with TARGET.open("rb") as stream:
@@ -37,14 +37,15 @@ def test_installed_new_steam_rejected_before_native_binding(monkeypatch):
         # Exercise the actual constructor through its profile gate. Binding is
         # a failure even if no native function is subsequently called.
         kernel = SimpleNamespace(GetModuleHandleW=lambda _: 0x140000000,
-                                 VirtualQuery=lambda *args: 1)
+                                 VirtualQuery=lambda *args: 1,
+                                 GetModuleFileNameW=lambda *args: 0)
         monkeypatch.setattr(native.C, "WinDLL", lambda *args, **kwargs: kernel, raising=False)
         monkeypatch.setattr(native.NativeInventory, "read",
                             lambda self, ptr, size: image.get_data(ptr - self.base, size))
         def forbidden(*args):
             pytest.fail("Unsupported executable reached native function binding")
         monkeypatch.setattr(native.C, "CFUNCTYPE", forbidden)
-        with pytest.raises(RuntimeError, match="not supported.*no items sent"):
+        with pytest.raises(RuntimeError, match="Cannot identify game executable; no items sent"):
             native.NativeInventory()
     finally:
         image.close()

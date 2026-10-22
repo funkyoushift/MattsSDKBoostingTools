@@ -1,6 +1,7 @@
 """Build-gated native inventory insertion. Call only from the game thread.
 
-Recovered against Steam 25372571 and Epic 4845623; build gates are defined below.
+Historical and current Steam/Epic build gates are defined below. Current host
+ABI evidence is reproduced by tools/qualify_current_direct_inventory.py.
 Never bind an address until every gate for its complete profile passes.
 """
 from __future__ import annotations
@@ -28,11 +29,35 @@ EPIC_GATES = (
     (0x9F1B230, 16, '33a19b30e4619e9461a715728eac41c86fa995b3aa49597a39b6a83085a1264d'),
 )
 PROFILES = (('steam-25372571', GATES), ('epic-4845623', EPIC_GATES))
+# Current native caller constructs a stack identity, inserts via interface slot
+# +0x30 with flags 8, slot -1 and final argument 0, then destroys it. Both
+# current store builds match all six complete bodies after relocation only.
+# Guest transactions and cards retain their separate unsupported-build gates.
+CURRENT_PROFILES = (('steam-26007962',
+  'ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a',
+  ((8964208, 739, '33a63a20107bcd5656407961b9823bbf5caba710203940d0a07035e206c5c72b'),
+   (3574614, 184, '4f4b181f8c71e7eb7fcebdfaeb43e4b46ba6ea43cb39e08429370ec4e49398fc'),
+   (20150016, 22, '44645cf9f58a57466dd40e044c9d7044acee0700bc6ca3bc23d60b53fda8f66f'),
+   (20150038, 2330, '95f2b205cf8508a048c3a427a9871c131bfe006dc42128ff6b3e2350e4eb93d9'),
+   (64707594, 688, '948120be264b23525c25d3c68b89164afb2b0a166675e70b8c94ece6a00c8178'),
+   (148666092, 216, '8f328a6f14bdfdd1ef3e8879ef3fa2d8e4ef8a9e571c779d2f730a5291c7fb9f'),
+   (166945200, 16, '33a19b30e4619e9461a715728eac41c86fa995b3aa49597a39b6a83085a1264d'))),
+ ('epic-6d531d91',
+  '6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e',
+  ((8972688, 739, '300090af6c8581deb6f4eb6ef2425f3572f266f6102755b3a30ae8f8883f7107'),
+   (3583246, 184, 'b0684d443b02b6e243ad6ef5518d697f8f730d2814998a689c97b0968a797eed'),
+   (20138356, 22, '44645cf9f58a57466dd40e044c9d7044acee0700bc6ca3bc23d60b53fda8f66f'),
+   (20138378, 2330, 'cdd57cb551799a2eb807d9566d82af0bac5820c8bc60c301f01931597dafde58'),
+   (64664226, 688, '587a9c123c51d610811606e73ecf4cdf7ba88da33f32dd07a370b3c4ad16b8e2'),
+   (148686612, 216, 'e31435c28b4c499db85b1c1aba02349072d8f852e85daacd56c69e05c69e7432'),
+   (166863408, 16, '33a19b30e4619e9461a715728eac41c86fa995b3aa49597a39b6a83085a1264d'))))
 
 
-def select_profile(read_rva):
+def select_profile(read_rva, executable_digest=None):
     """Match one complete profile; never mix addresses from different builds."""
-    for name, gates in PROFILES:
+    profiles = PROFILES + tuple((name, gates) for name, digest, gates in CURRENT_PROFILES
+                                if executable_digest == digest)
+    for name, gates in profiles:
         try:
             if all(hashlib.sha256(read_rva(rva, size)).hexdigest() == digest
                    for rva, size, digest in gates):
@@ -64,7 +89,20 @@ class NativeInventory:
         kernel.VirtualQuery.argtypes = [C.c_void_p, C.POINTER(MemoryInfo), C.c_size_t]
         kernel.VirtualQuery.restype = C.c_size_t
         self.query = kernel.VirtualQuery
-        self.profile, gates = select_profile(lambda rva, size: self.read(self.base + rva, size))
+        read_rva = lambda rva, size: self.read(self.base + rva, size)
+        try:
+            self.profile, gates = select_profile(read_rva)
+        except RuntimeError:
+            # Current profiles require both an exact executable and native gates.
+            kernel.GetModuleFileNameW.argtypes = [C.c_void_p, C.c_wchar_p, C.c_uint32]
+            kernel.GetModuleFileNameW.restype = C.c_uint32
+            filename = C.create_unicode_buffer(32768)
+            length = kernel.GetModuleFileNameW(None, filename, len(filename))
+            if not 0 < length < len(filename):
+                raise RuntimeError('Cannot identify game executable; no items sent.')
+            with open(filename.value, 'rb') as stream:
+                digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+            self.profile, gates = select_profile(read_rva, digest)
         construct_rva, destroy_rva, self.insert_rva = (gate[0] for gate in gates[:3])
         import unrealsdk
         self.flags = int(unrealsdk.find_enum('EInventoryItemFlags').AllowOverflow)
