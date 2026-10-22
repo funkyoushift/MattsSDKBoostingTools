@@ -37,15 +37,24 @@ function createSaveReplayService({request,helper,codec,saveRoot,storage}) {
     await fs.mkdir(path.dirname(file),{recursive:true});
     const temp=file+'.'+crypto.randomUUID()+'.tmp';
     const handle=await fs.open(temp,'wx');
-    try {await handle.writeFile(data);await handle.sync();}finally{await handle.close();}
-    // Windows readers/scanners can briefly deny replacement of the journal.
-    // Retry only this identical journal rename, never a save write or game call.
-    for(let attempt=0;;attempt++){
-      try{await fs.rename(temp,file);break;}
-      catch(error){
-        if(file!==active||!['EPERM','EACCES','EBUSY'].includes(error.code)||attempt>=10)throw error;
-        await sleep(100);
+    let closed=false;
+    try {
+      await handle.writeFile(data);await handle.sync();await handle.close();closed=true;
+      // Windows readers/scanners can briefly deny replacement of the journal.
+      // Retry only this identical journal rename, never a save write or game call.
+      for(let attempt=0;;attempt++){
+        try{await fs.rename(temp,file);break;}
+        catch(error){
+          if(file!==active||!['EPERM','EACCES','EBUSY'].includes(error.code)||attempt>=10)throw error;
+          await sleep(100);
+        }
       }
+    }catch(error){
+      if(!closed)await handle.close().catch(()=>{});
+      // Exclusive creation succeeded: only this call's exact temporary file is owned.
+      // Cleanup is best effort and must not hide the original transaction failure.
+      await fs.unlink(temp).catch(()=>{});
+      throw error;
     }
   }
   async function persist(){await atomic(active,JSON.stringify(job,null,2));}

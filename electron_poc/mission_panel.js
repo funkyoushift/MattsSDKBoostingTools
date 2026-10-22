@@ -61,7 +61,7 @@
     doc.querySelectorAll("[data-mission-view-button]").forEach(button => {
       button.addEventListener("click", () => showView(doc, button.dataset.missionViewButton));
     });
-    root.MsbtFullProgressPanel?.bind(doc, call);
+    const updateFullProgress=root.MsbtFullProgressPanel?.bind(doc, call);
     const el = id => doc.getElementById(id);
     async function dialogueSkip(action) {
       const button = el("dialogueSkipToggle");
@@ -557,7 +557,7 @@
       selection:()=>({mission:practicePreview?.mission,checkpoint:Number(el('missionPracticeSelect').value),
         supported:practicePreview?.choices?.some(c=>String(c.index)===el('missionPracticeSelect').value&&c.save_backed_supported&&!c.save_backed_reason),
         ack:el('missionSharedAck').checked,busy,refreshing}),
-      legacyUpdate:()=>{renderPracticeChoices(doc,practicePreview,el('missionPracticeSelect').value);update();}
+      legacyUpdate:()=>{renderPracticeChoices(doc,practicePreview,el('missionPracticeSelect').value);update();updateFullProgress?.();}
     });
     let syncing=false;
     const statusTimer=root.setInterval(async()=>{

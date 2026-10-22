@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-10-22: v2.39.4 mission-control recovery](changes/2026-10-22-mission-control-recovery-release.md): A stale failed replay journal silently locked every mission view. Windows now explains it and exposes Stop replay setup without restoring a save; mission and Full Game controls refresh after closure. Desktop also cleans its own temporary file after failed writes. Focused patch from public v2.39.3; package and publication evidence is separate.
+
 - [2026-10-15: v2.39.3 / Android 1.6.5 release](releases/RELEASE_NOTES_v2.39.3.md): Martin requested inclusion of the confirmed phone pairing repair. Rebuild and publication checks in progress; existing live phone reconnection confirmation retained.
 
 - [2026-10-15: Phone remote pairing preservation](changes/2026-10-15-phone-remote-pairing-preservation.md): Save Setup could discard remote credentials while retaining the Remote AFK address label. Local correction preserves remote setup and explains recovery for damaged entries. Real-page and reconnect suites pass; Android build/lint passed and candidate7437dca9 installed. Martin confirmed reconnection after the fresh remote QR scan; published release unchanged.

@@ -8,6 +8,12 @@
     const fogMode=()=>el('missionReplayFog')?.value||'leave';
     function update(){
       const selected=selection();
+      if(el('missionReplayLock')){
+        el('missionReplayLock').hidden=!status.active;
+        el('missionReplayLockMessage').textContent=status.active?
+          `Save-backed replay setup is ${status.state||'open'}. Mission completion and Full game are paused until you stop this setup. Any verified pre-replay backup is retained.`:'';
+        el('missionReplayLockStop').disabled=pending||!status.active;
+      }
       el('missionSaveReplayControls').hidden=!saveMode();
       if(saveMode()){
         el('missionPracticeBtn').textContent='Start save-backed replay';
@@ -39,23 +45,26 @@
     }
     async function run(action,payload){
       if(typeof api!=='function'){status={ok:false,message:'This desktop build does not support save-backed replay.'};update();return;}
+      const wasActive=!!status.active;
       pending=true;update();
       try{
         const result=await api(action,payload||{});
         if(['start','advance','status','stop','restore'].includes(action))status=result;
         else if(!result?.ok)status={...status,message:result?.message||'The action was not confirmed.'};
       }catch(error){status={...status,message:`Result unknown: ${error.message}. Check progress before repeating.`};}
-      finally{pending=false;update();}
+      finally{pending=false;if(wasActive!==!!status.active)legacyUpdate();else update();}
     }
     async function start(){const s=selection();if(!s.supported||!s.ack||status.active||pending)return;
       await run('start',{mission:s.mission,checkpoint:s.checkpoint,acknowledge_shared_progress:true,automatic:true,fog_mode:fogMode()});}
     el('missionSaveReplayCheck').addEventListener('click',()=>run('advance'));
     el('missionSaveReplayStop').addEventListener('click',()=>run('stop'));
+    el('missionReplayLockStop')?.addEventListener('click',()=>run('stop'));
     el('missionSaveReplayPicker').addEventListener('click',()=>run('picker'));
     el('missionSaveReplayBackup').addEventListener('click',()=>run('backup'));
     el('missionSaveReplayRestore').addEventListener('click',()=>run('restore'));
     async function bookmark(action){
       if(pending||typeof api!=='function')return;
+      const wasActive=!!status.active;
       pending=true;update();
       try{
         const r=await api(action,{id:el('missionBookmarkSelect').value,name:el('missionBookmarkName').value,acknowledge_shared_progress:!!selection().ack,automatic:true,...(action==='bookmark_start'?{fog_mode:fogMode()}: {})});
@@ -67,7 +76,7 @@
         el('missionBookmarkOutput').textContent=r.message||(r.ok?'Bookmarks refreshed.':'Bookmark action failed.');
         if(action==='bookmark_start')status=r;
       }catch(error){el('missionBookmarkOutput').textContent=error.message;}
-      finally{pending=false;update();}
+      finally{pending=false;if(wasActive!==!!status.active)legacyUpdate();else update();}
     }
     el('missionBookmarkSave')?.addEventListener('click',()=>bookmark('bookmark_save'));
     el('missionBookmarkRefresh')?.addEventListener('click',()=>bookmark('bookmark_list'));

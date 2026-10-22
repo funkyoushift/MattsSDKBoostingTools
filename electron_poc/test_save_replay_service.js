@@ -20,6 +20,57 @@ test('transient Windows journal replacement lock retries without repeating a gam
   assert.deepEqual(await fs.readFile(f.file),f.source);
 });
 
+for(const failure of ['writeFile','sync','rename','cleanup'])test('failed save '+failure+' preserves originals and uncertain receipt',async t=>{
+  const f=await fixture(t);await start(f);f.r.guid=f.other;
+  const calls=JSON.stringify(f.r.calls),open=fs.open,rename=fs.rename,unlink=fs.unlink;
+  const injected=Object.assign(Error('Injected save '+failure+' failure'),{code:failure==='writeFile'?'ENOSPC':'EACCES'});
+  let temp,attempts=0;
+  t.mock.method(fs,'open',async(file,...args)=>{
+    const handle=await open(file,...args);
+    if(file.startsWith(f.file+'.')&&file.endsWith('.tmp')){
+      temp=file;
+      if(failure==='writeFile'){
+        const write=handle.writeFile.bind(handle);
+        t.mock.method(handle,'writeFile',async data=>{attempts++;await write(data.subarray(0,2));throw injected;});
+      }else if(failure==='sync')t.mock.method(handle,'sync',async()=>{attempts++;throw injected;});
+    }
+    return handle;
+  });
+  t.mock.method(fs,'rename',async(from,to)=>{
+    if(to===f.file&&['rename','cleanup'].includes(failure)){attempts++;throw injected;}
+    return rename(from,to);
+  });
+  t.mock.method(fs,'unlink',async file=>{
+    if(file===temp&&failure==='cleanup')throw Error('Injected cleanup denial');
+    return unlink(file);
+  });
+  const result=await f.service.dispatch('advance');
+  assert.equal(result.state,'uncertain');assert.equal(result.message,injected.message);assert.equal(attempts,1);
+  assert.deepEqual(await fs.readFile(f.file),f.source);
+  const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  assert.equal(journal.pending.action,'write');assert.equal(journal.backupVerified,true);
+  assert.deepEqual(await fs.readFile(path.join(f.storage,'runs',journal.id,'before.sav')),f.source);
+  const leftovers=(await fs.readdir(path.dirname(f.file))).filter(name=>name.endsWith('.tmp'));
+  assert.deepEqual(leftovers,failure==='cleanup'?[path.basename(temp)]:[]);
+  assert.equal(JSON.stringify(f.r.calls),calls);
+  await f.service.dispatch('advance');assert.equal(attempts,1);assert.equal(JSON.stringify(f.r.calls),calls);
+});
+
+test('exclusive-create collision retains the unowned temporary file and original save',async t=>{
+  const f=await fixture(t);await start(f);f.r.guid=f.other;
+  const open=fs.open,collision=Buffer.from('pre-existing temporary file');let temp;
+  t.mock.method(fs,'open',async(file,...args)=>{
+    if(file.startsWith(f.file+'.')&&file.endsWith('.tmp')){temp=file;await fs.writeFile(file,collision,{flag:'wx'});}
+    return open(file,...args);
+  });
+  const result=await f.service.dispatch('advance');
+  assert.equal(result.state,'uncertain');assert.match(result.message,/EEXIST/);
+  assert.deepEqual(await fs.readFile(temp),collision);assert.deepEqual(await fs.readFile(f.file),f.source);
+  const journal=JSON.parse(await fs.readFile(path.join(f.storage,'active.json'),'utf8'));
+  assert.equal(journal.pending.action,'write');
+  assert.deepEqual(await fs.readFile(path.join(f.storage,'runs',journal.id,'before.sav')),f.source);
+});
+
 async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,exactBookmark=false,automatic=false,accountId='12345678901234567',encrypted=false,waypoint=false,nativeStation=false}={}){
   const base=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-replay-test-'));
   t.after(async()=>{const full=await fs.realpath(base);assert.equal(path.dirname(full),await fs.realpath(os.tmpdir()));assert(path.basename(full).startsWith('msbt-replay-test-'));await fs.rm(full,{recursive:true,force:true});});
@@ -53,6 +104,7 @@ async function fixture(t,{refresh=false,snapshotPadding=0,nativeBookmark=false,e
       if(nativeBookmark){captured.placement='native';delete captured.location;}
       return {ok:true,guid:r.guid,session:r.session,pid:r.pid,spec:{kind:'bookmark',guid:r.guid,mission:'Mission_Test',title:'Synthetic mission',section:captured}};
     }
+    if(op==='status'&&r.loading)return {ok:true,loaded:false,background_loading:true,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
     if(op==='status'||op==='restore_guard')return {ok:true,loaded:true,guid:r.guid,world:r.world,travel_loaded:r.travelLoaded,session:r.session,pid:r.pid,lease:r.lease,calls:r.calls,lease_data:{original_guid:guid,spec}};
     if(op==='begin'){if(r.lease)return {ok:false,message:'Lease already held'};r.lease=payload.id;return {ok:true,guid,session:r.session,pid:r.pid,spec:payload.bookmark_spec?{...payload.bookmark_spec,force_travel:true}:spec};}
     if(payload.session!==r.session||payload.id!==r.lease)return {ok:false,message:'Session differs'};
@@ -310,6 +362,22 @@ test('unloaded destination waits without issuing any teleport',async t=>{
   const f=await fixture(t);await install(f);f.r.guid=f.guid;f.r.placementReady=false;
   await reach(f,'placement_initial_gate');await f.service.dispatch('advance');assert.equal(f.r.placements,0);
   f.r.placementReady=true;await reach(f,'ready');assert.equal(f.r.placements,1);
+});
+
+test('pure loading receipt preserves the replay through both character transitions',async t=>{
+  const f=await fixture(t);await start(f);f.r.loading=true;
+  const before=JSON.stringify(f.r.calls);
+  for(let i=0;i<3;i++)assert.equal((await f.service.dispatch('advance')).state,'await_other');
+  assert.deepEqual(await fs.readFile(f.file),f.source);
+  assert.equal(JSON.stringify(f.r.calls),before);
+  f.r.loading=false;f.r.guid=f.other;await reach(f,'await_original');
+  const installed=await fs.readFile(f.file),after=JSON.stringify(f.r.calls);
+  f.r.loading=true;
+  for(let i=0;i<3;i++)assert.equal((await f.service.dispatch('advance')).state,'await_original');
+  assert.deepEqual(await fs.readFile(f.file),installed);
+  assert.equal(JSON.stringify(f.r.calls),after);
+  f.r.loading=false;f.r.guid=f.guid;await reach(f,'ready');
+  assert.equal(f.r.placements,1);
 });
 
 test('autosave during verification settles without repeating an edit or native action',async t=>{

@@ -39,7 +39,7 @@
     el("fullProgressPanel").dataset.bound="true";
     let preview=null,job=null,busy=false;
     function update(){
-      el("fullProgressStart").disabled=busy || ["running","stopped","uncertain","interrupted"].includes(job?.state) || !preview?.allowed || !el("fullProgressAck").checked;
+      el("fullProgressStart").disabled=busy || el("missionReplayLock")?.hidden===false || ["running","stopped","uncertain","interrupted"].includes(job?.state) || !preview?.allowed || !el("fullProgressAck").checked;
       el("fullProgressClose").disabled=busy || !job?.id || !["stopped","uncertain","interrupted"].includes(job.state) || !el("fullProgressAck").checked;
       el("fullProgressContinue").textContent=["stopped","uncertain"].includes(job?.state)?"Repair and continue":"Continue run";
       el("fullProgressPreview").disabled=busy;
@@ -121,6 +121,7 @@
     call("full_progress_status",{}).then(value=>{
       if(!busy && !job && value?.id){job=value;report(value);}
     }).catch(()=>{});
+    return update;
   }
   root.MsbtFullProgressPanel={bind,advance,pollDelay};
   if(typeof module!=="undefined")module.exports={bind,advance,pollDelay};
