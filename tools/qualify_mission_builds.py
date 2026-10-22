@@ -27,9 +27,12 @@ TOKENS = (0xcb80808, 0xcb80830, 0xcb80870, 0xcb80898,
           0xcb808a8, 0xcb808a0, 0xcb808b0)
 
 
-def qualify(steam_path, epic_path):
+def qualify(steam_path, epic_path, *, expected=None, code=None, vtables=None, tokens=None):
+    CODE = tuple(code) if code is not None else globals()['CODE']
+    VTABLES = tuple(vtables) if vtables is not None else globals()['VTABLES']
+    TOKENS = tuple(tokens) if tokens is not None else globals()['TOKENS']
     paths = [steam_path, epic_path]
-    expected = ('9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0',
+    expected = expected or ('9c3afb7dc6a550a6c2e817846cd2c40ff11e066dc6aefeb819f802e6a4c5c3e0',
                 '764a4bb5403a2619a0be627de5a738e23ea021e8672f7f0e7a536697d4a06719')
     digests = []
     for path, known in zip(paths, expected):

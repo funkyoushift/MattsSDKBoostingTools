@@ -1,7 +1,8 @@
 """Exact, offline-qualified mission build profiles. Unknown builds fail closed.
 
 Source executable hashes, complete normalized bodies and RIP/vtable evidence:
-docs/native-missions/EPIC_PROFILE.json and STEAM_26007962_PROFILE.json.
+docs/native-missions/EPIC_PROFILE.json, STEAM_26007962_PROFILE.json and
+EPIC_6D531D91_PROFILE.json.
 The new Steam profile has three reviewed native field-displacement bytes; its
 live execution is not established by offline comparisons. This module never
 scans runtime memory.
