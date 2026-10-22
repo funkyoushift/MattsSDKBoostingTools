@@ -10,4 +10,17 @@ The Abandoned Post fast-travel station `World_P.FT_GRA_BeachTower` also has the 
 
 Validation: 91 focused Python checks passed, including source-to-address checks for all 14 safehouses, loaded actor and unloaded stored-fact paths, no duplicate write, unknown/ambiguous-state refusal, incomplete-mission refusal, and host context in a mixed lobby. Python syntax passed. Installed v2.39.5 and the running game were not changed; no full run, map unlock, guest saved-character check, or reload persistence has been demonstrated. The BL4 external inspector failed against this game's current resolver, so it supplied no fact readback. The read-only installed mission preview confirmed the Abandoned Post mission record as completed only.
 
-Deployment/rollback: candidate branch `codex/safehouse-full-progress` in an isolated worktree from v2.39.5. A local `.sdkmod` package was built and its ZIP integrity checked; it has not been installed or published. Keep a byte-for-byte backup of the installed SDK package before local testing and restore it to roll back. Before claiming the player-facing fix, verify the PoA State and Abandoned Post map/fast-travel availability in game, then check that a subsequent fast Full Game run applies the effect without travel and that host/visitor saved state behaves as expected.
+Deployment/rollback: candidate branch `codex/safehouse-full-progress` in an isolated worktree from v2.39.5. A local `.sdkmod` package was built and its ZIP integrity checked. The change was later integrated into the Steam 26007962 compatibility branch, with a byte-for-byte backup of the previous locally installed SDK package retained outside Git. No release has yet been published.
+
+Steam 26007962 live follow-up: the authorized test character and profile were
+backed up before a targeted solo check. The Abandoned Post mission read
+completed. A named completion job reached completed; its journal reported
+that the loaded PoA actor's State was already `Claimed`, so the repair issued
+**no** state write. The safehouse discovery and its child fast-travel discovery
+both read `2` (already discovered), and the authored Beach Tower travel
+requirement read `Completed`; those targeted jobs also issued no write.
+Martin then saw Abandoned Post unlocked in the map/fast-travel list, and it
+remained unlocked after normal Save/Quit and reload. This confirms the current
+player-facing state but does not establish that the repair caused it. No fast
+Full Game run, unclaimed PoA write, or visitor-save result was tested. The
+game was closed after this check.

@@ -240,10 +240,14 @@ The separate safehouse capture repair was integrated into this Steam branch.
 It applies the authored `Claimed` PoA effect through live native world state
 after a safehouse mission reads completed; it does not edit the save or travel.
 Integration checks passed: 40 focused tests, six historical skips, and Python
-syntax. Its effect on the Abandoned Post map and fast-travel lock is still
-awaiting a live check. The Steam test SDK with this change was installed while
-the game was closed; the prior SDK was backed up outside Git. This is not a
-public release.
+syntax. The Steam test SDK with this change was installed while the game was
+closed; the prior SDK was backed up outside Git. A targeted solo job then
+observed Abandoned Post's loaded PoA actor already `Claimed`, its two discovery
+entries already discovered, and its travel requirement already `Completed`;
+no state write was issued. Martin observed the map/fast-travel entry unlocked,
+including after Save/Quit and reload. The repair's causal effect on an
+unclaimed safehouse remains unproven, as does guest persistence. The game was
+closed after this check. This is not a public release.
 
 ## Official 1.11 notes checked
 
