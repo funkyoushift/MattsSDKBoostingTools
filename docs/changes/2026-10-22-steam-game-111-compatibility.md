@@ -195,6 +195,13 @@ future-mission regression. Broader mission coverage, Epic behavior, and guest
 persistence remain unverified. Do not claim 100% of game 1.11 or a public
 release.
 
+The final focused checkout checks passed: 65 Python replay/selection/Quick
+Menu tests, Python syntax, 56 desktop replay-service tests, two Electron
+replay-panel tests, the phone replay-route test, and archive CRC for all 155
+SDK members. The local Electron session still runs from this checkout. An
+installed desktop build was not replaced: this checkout does not contain the
+bundled setup and Python resources required by its normal packager.
+
 ## Epic installation inventory, read-only
 
 The completed Epic installation is at `C:\Program Files\Epic Games\Venus`.
