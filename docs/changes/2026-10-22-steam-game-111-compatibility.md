@@ -66,7 +66,8 @@ passed against the installed binaries. The Quick Menu/no-BLImGui suite passed
 (5 tests). The focused new-build, catalog, and replay-runtime suite passed
 (44 tests, 3 historical skips). All 56 desktop replay-service tests passed,
 including the new preflight rejection. Python syntax and `.sdkmod` archive
-CRC checks passed. Broader
+CRC checks passed. The Electron mission replay panel's UI test passed with
+stubbed actions; no live save operation was made. Broader
 farming tests had 60 passes, one historical executable skip, and six unrelated
 environment/fixture failures (missing `unicorn`; old bridge stubs lack
 `full_progress_conflict`). These do not prove native farming execution.
