@@ -17,8 +17,6 @@ import uuid
 
 SESSION = uuid.uuid4().hex
 _lease = None
-STEAM_111_SAVE_GUARD = ('Save-backed replay is paused for Steam game 1.11 until a '
-                        'current save can be checked; no save was edited.')
 
 
 def specification(name, checkpoint):
@@ -240,8 +238,6 @@ def dispatch(action, payload):
             raise ValueError('Acknowledge the replay changes first')
         _idle_progress()
         pc, engine, guid, world = _host()
-        if getattr(engine, 'profile', None) == 'steam-26007962':
-            raise RuntimeError(STEAM_111_SAVE_GUARD)
         spec = (bookmark_specification(payload['bookmark_spec'], guid) if payload.get('bookmark_spec')
                 else specification(payload.get('mission'), payload.get('checkpoint')))
         if spec.get('kind') == 'selection':

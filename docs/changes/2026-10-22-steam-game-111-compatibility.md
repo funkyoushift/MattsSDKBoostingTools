@@ -36,15 +36,21 @@ Full Game preview now warns that its mission, discovery, and challenge catalogs
 were extracted from game 1.10. New or changed 1.11 content is not yet covered;
 the UI must not claim complete 1.11 coverage from the older catalog.
 
-Save-backed Mission Selector now rejects `begin` on Steam 26007962 before
-creating a native lease or editing a save. The desktop records this known
-preflight rejection as a closed, retryable failure instead of leaving an
-uncertain active replay that would lock mission controls. A read-only audit
-found only a pre-update Steam save. Its decrypted YAML parsed, and an
-encrypt/decrypt roundtrip of a temporary copy preserved the YAML tree, but
-that cannot establish 1.11 save-write or reload safety. The original save's
-hash was unchanged. Existing replay restore remains available for earlier
-runs. A pre-existing Windows catalog checksum blocker was traced to Git
+Save-backed Mission Selector initially rejected `begin` on Steam 26007962
+before creating a native lease or editing a save. The desktop records this
+known preflight rejection from an older SDK as a closed, retryable failure
+instead of leaving an uncertain active replay that would lock mission controls.
+A current game-1.11 character save became available after a normal Save/Quit.
+Two private copies of the character and profile were backed up outside Git;
+the post-exit character copy decrypted, parsed, and re-encrypted with identical
+YAML. An authored Mission Selector rewind on a separate copy preserved the
+character identity and unrelated data and also survived encrypt/decrypt. A
+character-specific temporary SDK then ran that replay in a solo Steam game:
+the native lease closed at `ready`, and the game autosaved the selected mission
+as `Active` at cursor 0. With this live result, the temporary 1.11 `begin`
+block was removed from product source. This validates one character and
+mission, not all 1.11 saves or the complete mission catalog. Existing replay
+restore remains available for earlier runs. A pre-existing Windows catalog checksum blocker was traced to Git
 line-ending conversion: the checked-in practice catalog hashes to
 `04de7048793242fcc94e87cea710a97e46b4b94f52337ecc838b77bd10ad5fdb`,
 while Windows checkout and packaged CRLF bytes hash to
@@ -102,22 +108,50 @@ title screen; no character-level command was run on this restart. A subsequent
 local build includes old Windows bookmark compatibility and has SHA-256
 `f398656cc37c9cbd209f6a9f188d4537859551372f7c3be94a93a93a0d43c241`,
 with 155 CRC-checked entries. Martin closed the game again and this final
-candidate was installed with matching SHA-256. It was not relaunched, so the
-last live load belongs to the prior `b1afc396...` package; the final package
-has offline/package proof only. The installed v2.39.5 desktop process was
-closed normally and a local Electron session was started from this isolated
+candidate was installed with matching SHA-256. He later opened a Steam
+character, loading the final package. Read-only bridge
+calls on the final package returned a ready solo roster, 21 story mission
+preview entries, Full Game preview `allowed=true` with the explicit 1.11
+catalog limit, and save-replay status loaded with no active lease. No mission
+write, save edit, farming patch, or Full Game run was issued. The installed
+v2.39.5 desktop process was closed normally and a local Electron session was started from this isolated
 worktree with its updated replay-service handling; its renderer reported the
 worktree app path. This is a local development session, not an installed
 desktop update or public release.
+
+For the save-write probe, the final installed archive was copied to
+`C:\src\MSBT-Workspace\local\steam-26007962-final-installed.sdkmod`.
+A temporary archive changed only `mission_save_replay.py` and allowed `begin`
+for the backed-up character GUID; its SHA-256 was
+`92ceb78738c1c438ea89f4e6c914bdb3b4311b86136ba5d8ff6b961fccddc526`.
+Martin closed the game, this local archive was installed, and he loaded the
+same character. The live bridge reported that exact archive and solo
+`world_p` state. An automatic replay of `Mission_Main_Grasslands1` checkpoint
+0 reached `ready` with a verified pre-edit backup in
+`C:\src\MSBT-Workspace\local\steam-111-replay-service-probe` and a closed
+native lease. The game then autosaved the character; a read-only copy of that
+autosave parsed with the same GUID, selected mission `Active`, cursor 0, and
+initial travel objective active. The candidate bytes had changed because the
+game itself autosaved. No guest was present. Normal exit/rejoin persistence
+is still pending at this point. The character-specific archive is a private
+test artifact and must not be published.
+
+The source guard removal and its replacement standard-lease test passed 63
+focused replay/selection/catalog tests, 9 Quick Menu/native-profile checks,
+and Python syntax. A rebuilt archive has 155 CRC-checked entries and SHA-256
+`17b0c6acfa9833c91f4843bd04d47f5ca017b15805020c43c590170a590358d0`.
+It has exactly the same members as the prior final candidate, with only
+`mission_save_replay.py` content changed. It is not installed while the game
+is running.
 
 Direct inventory/card delivery stays blocked. The updated insert body changed
 from 1,873/424 to 2,330 bytes/540 instructions and two guest-transaction
 functions have no complete match; copying old offsets would be unsafe. The
 installed 1.11 IoStore content has no local extractor and no full 1.10 asset
-baseline, so new mission/map/challenge identities are not yet diffed. A
-post-update Steam save and non-destructive copy validation are needed before
-reconsidering the replay gate. Do not claim 100%
-of game 1.11, save-write safety, guest persistence, or a public release.
+baseline, so new mission/map/challenge identities are not yet diffed. The
+current-save copy and one live save-write/reload passed, but broader mission
+coverage, normal exit/rejoin, Epic behavior, and guest persistence remain
+unverified. Do not claim 100% of game 1.11 or a public release.
 
 ## Official 1.11 notes checked
 

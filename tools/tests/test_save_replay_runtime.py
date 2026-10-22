@@ -209,7 +209,7 @@ def test_lease_blocks_progress_mutations_but_allows_reads_and_close(runtime):
     assert not m.conflict('full_progress_start')
 
 
-def test_steam_111_replay_begin_rejects_before_lease_or_save(monkeypatch):
+def test_steam_111_replay_begin_uses_standard_lease_path(monkeypatch):
     import importlib.resources
     monkeypatch.setattr(importlib.resources, 'files', lambda _: ROOT)
     package = ModuleType('save_replay_steam_guard_test')
@@ -221,11 +221,15 @@ def test_steam_111_replay_begin_rejects_before_lease_or_save(monkeypatch):
     spec.loader.exec_module(m)
     m._idle_progress = lambda: None
     m._host = lambda: (N(), N(profile='steam-26007962'), 'a' * 32, 'world_p')
-    m._save = lambda: pytest.fail('Guard must not create a replay journal')
-    with pytest.raises(RuntimeError, match='paused for Steam game 1.11'):
-        m.dispatch('mission_save_replay_begin', dict(id='d' * 32, mission='Mission_Main_Shatteredlands3',
-                                                     checkpoint=28, acknowledge_shared_progress=True))
-    assert m._lease is None
+    m.specification = lambda name, checkpoint: dict(kind='practice', mission=name,
+                                                     section=dict(checkpoint=checkpoint))
+    saved = []
+    m._save = lambda: saved.append(True)
+    result = m.dispatch('mission_save_replay_begin', dict(id='d' * 32,
+                        mission='Mission_Main_Shatteredlands3', checkpoint=28,
+                        acknowledge_shared_progress=True))
+    assert result['ok'] and result['guid'] == 'a' * 32
+    assert m._lease['id'] == 'd' * 32 and saved == [True]
 
 
 def test_actual_backend_router_delegates_save_actions(monkeypatch):
