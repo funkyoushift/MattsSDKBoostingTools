@@ -18,6 +18,17 @@ Live Steam: a private pretest copy of slot 16 and profile was made before instal
 
 The first capped Backpack read showed only one matching serial after a send; that was an incomplete diagnostic because its 48-item cap includes equipped rows and deduplicates serials. The full Inventory read showed the equipped original and the appended backpack copy. A native `returned` event alone is not proof of receipt; the full inventory readback is the evidence used here.
 
+## Later Steam 1.11 trainer-control check
+
+With the current-build card candidate loaded in a solo Steam game session, the
+bridge's `drop_rate_on` action returned `active=true`, `owned=true` and
+`conflict=false`. The immediately following `drop_rate_off` returned
+`active=false`, `owned=false` and `conflict=false`, confirming the native patch
+was accepted and its original bytes restored. The game remained running.
+This is a live activation/restoration check for the FLiNG-derived 100% Drop Rate
+control, not a loot-outcome or probability test. No other trainer-derived
+effect was inferred from it.
+
 ## Deployment and follow-up
 
 The local Steam SDK was backed up outside Git before installing the candidate. Release packaging and publication status are recorded in `docs/releases/VERIFICATION_v2.39.6.txt`. If this candidate causes problems, restore the previous SDK backup or reinstall the prior public release. Joined-client delivery, host-to-P2 receipt and guest-save persistence, native item cards, and complete current-build command execution remain open. Do not claim those paths work from the host test.
