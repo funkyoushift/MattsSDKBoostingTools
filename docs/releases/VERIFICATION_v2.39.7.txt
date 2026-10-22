@@ -1,0 +1,44 @@
+v2.39.7 / Android 1.6.5 — release verification
+
+Scope: patch repair for native item cards after BL4 game 1.11. Exact executable
+Steam 26007962 and Epic 6d531d91 card mappings were recovered from game code
+with 26 complete function spans and ownership checks per build. Unknown builds
+remain fail-closed. No Vault Surge source or package was changed.
+
+Live Steam evidence before version stamping: the v2.39.6 candidate SDK
+(SHA256 fc82da811ee722a321a8e7076d8ee3ef4d23db80e4bc6fc3d0141e98fbe4bcbe)
+built a weapon, shield and class-mod card in solo play. In a three-player lobby,
+one guest's equipped shotgun produced a native card and an 819x701 desktop
+image without warnings. One duplicate equipped item sent from the host to P2
+appeared once in P2's full, untruncated backpack readback (17 to 18 items),
+with six equipped items unchanged. Delivery completed without an error. The
+same lobby remained connected. The v2.39.7 SDK
+(SHA256 966a83153ca88a66cf83bc5b308e7009a438103420d12eefaabe76585772a0ba)
+has identical archive members and content to that live candidate except
+__init__.py and pyproject.toml version metadata. The running game was not
+interrupted to replace its loaded SDK.
+
+Offline and package checks: 43 focused card/Quick Menu tests plus 250 subtests
+passed, and 22 SDK ZIP/import/standalone selector tests passed. Electron
+npm run check, card-layout, game-update and unsupported-card tests passed.
+The Windows builder passed 31 setup checks, audited 48 packaged dependency
+packages and 3,315 packaged assets, checked updater packaging and produced
+installer/portable artifacts. The packaged executable --smoke exited zero.
+The standalone selector was rebuilt from the v2.39.7 SDK and emitted 191 files.
+SHA256SUMS.txt lists 12 non-checksum release assets. Android 1.6.5 APKs remain
+byte-identical to the previously published build
+(SHA256 f6a2a35fcfac914611bd972f03ef5c72eb53d4fd8fd49eccf4fe971bca6ee2c5).
+
+Limits: Epic profiles are executable-backed offline evidence; Epic was not
+launched at Martin's request. Guest save persistence after leaving/rejoining,
+joined-client-local inventory, full 1.11 mission/catalog coverage, safehouse
+repair causality and complete runtime command coverage remain unverified.
+The broad Python suite has known historical/environment failures. The legacy
+test:item-cards command still fails on three imported-data provenance hashes
+that have disagreed with checked-in 1.10 files since the v2.11.4 import; its
+remaining naming, serial resolution and renderer checks passed when run
+separately. No imported-data hashes were rewritten without source evidence.
+
+Publication status: prepared locally; public tag, upload and digest readback
+pending. The active game retains the live-tested candidate until it is closed
+normally for a later SDK replacement.
