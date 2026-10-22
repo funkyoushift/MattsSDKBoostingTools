@@ -71,7 +71,8 @@ The desktop `npm run check`, `npm run test:card-layout`, and
 `npm run test:game-update` checks passed after the source changes. Python
 compilation passed. The native mapping checks are offline evidence;
 the separate Steam live execution above does not establish Epic behavior or
-guest-session support. No release was published.
+guest-session support. No release had been published at that check; the final
+package was subsequently published as v2.39.7 after release verification.
 
 Later, while three players were present in the same Steam lobby, the host read
 an equipped P2 serial and `native_card_preview` returned

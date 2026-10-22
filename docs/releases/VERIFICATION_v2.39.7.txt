@@ -39,6 +39,15 @@ that have disagreed with checked-in 1.10 files since the v2.11.4 import; its
 remaining naming, serial resolution and renderer checks passed when run
 separately. No imported-data hashes were rewritten without source evidence.
 
-Publication status: prepared locally; public tag, upload and digest readback
-pending. The active game retains the live-tested candidate until it is closed
-normally for a later SDK replacement.
+Published 2026-10-22 22:39:57 UTC: stable/latest GitHub release v2.39.7
+targets tag 0e122bf15c10908e15802718dd10cf401bc35188. The release has
+13 assets: the 12 files in SHA256SUMS.txt plus the checksum file itself.
+GitHub's SHA-256 digests for all 13 assets matched the local files; the release
+is neither draft nor prerelease, and GitHub's latest-release endpoint returned
+v2.39.7. Release URL:
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.7
+
+The active game retains the live-tested candidate until it is closed normally
+for a later SDK replacement. Replacing an SDK ZIP while the game has it mapped
+can break Python zip imports. No game restart or live retest was performed
+after publication.
