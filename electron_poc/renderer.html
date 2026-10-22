@@ -2302,10 +2302,10 @@
           <button data-action="fog_of_war_off">Show Fog</button>
           <button data-action="fog_of_war_toggle">Toggle Fog Hide</button>
         </div>
-        <p class="muted-line">DEV guest-grid probe — does not replace Party Reveal. Named player P2–P4 only. Dump first, then fill. Needs the new SDK action (or <code>pyexec fodmem_guest_grid.py</code> while this BL4 session is already open).</p>
+        <p id="guestGridUnavailable" class="muted-line">Guest Grid dev probes are unavailable: this SDK has no handler for these commands.</p>
         <div class="button-row wrap">
-          <button type="button" data-action="guest_grid_dump">Dump Guest Grid (dev)</button>
-          <button type="button" data-action="guest_grid_try">Fill Guest Grid (dev)</button>
+          <button type="button" disabled aria-describedby="guestGridUnavailable">Dump Guest Grid (dev)</button>
+          <button type="button" disabled aria-describedby="guestGridUnavailable">Fill Guest Grid (dev)</button>
         </div>
         <div class="grid two">
           <div>
