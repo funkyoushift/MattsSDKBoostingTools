@@ -51,7 +51,7 @@ def open_selector(_option):
 mod = build_mod(
     name="BL4 Mission Selector",
     author="FunkYouSHiFT; MSBT foundation by Mattmab",
-    version="2.39.6",
+    version="2.39.7",
     supported_games=Game.BL4,
     coop_support=CoopSupport.Unknown,
     description="Open Mission replay below to choose a campaign, mission and objective. Experimental; solo play with a second saved character required.",
