@@ -1,0 +1,50 @@
+v2.39.8 / Android 1.6.5 — release verification
+
+Scope: patch repair for Full Game recovery, uncertain mission challenge credit,
+interrupted receipt closure and current-Epic catalog-limit disclosure. The
+standalone selector was repackaged with matching version metadata. Android
+1.6.5 was reused byte-for-byte. No Vault Surge files were changed.
+
+Live Steam evidence before version stamping: the local test SDK reached all
+nine Full Game stages in a shared lobby without stalling. Five stages finished,
+three were partial and one was skipped; 241 of 245 eligible mission entries
+verified. Challenge readback found 2,264 complete, two incomplete and 166
+unavailable player/definition checks. The result explicitly said 100% was not
+verified. The versioned SDK retains that recovery implementation and changes
+the preflight warning for current Epic. The live test does not prove saved
+guest progress, trophy awards, or every objective in the game.
+
+Epic evidence: installed executable SHA256
+6d531d91011ae0d67ac461a3cacabc99993c279bf325dfe70ff1af00ec43c87e
+matches the source-qualified mission, farming, host inventory and item-card
+profile. Current Epic Full Game preflight now warns about the 1.10-derived
+catalogs. Epic was not launched. Joined-client-local inventory remains gated;
+native Epic mission credit and save persistence have no live proof.
+
+Offline checks: 286 focused Python/release checks passed. Current Epic profile
+checks passed 35 tests with three skips and 114 subtests. Sixteen standalone
+selector checks passed. Python compilation, git whitespace check, Electron
+Full Game panel test and npm run check passed. The local Windows builder passed
+31 installer checks, audited 48 packaged dependency packages and 3,315
+packaged assets, checked updater packaging, and passed packaged startup smoke.
+The 156-entry SDK archive passed integrity checks and includes the tracked
+mission_credit_catalog.json. Full SDK SHA256
+7aa06ed40f3388143eb51927fa65aa9bd5bf1d2ba9ee9b5555caa46823645154
+matches the Windows bundle and portable ZIP. SHA256SUMS.txt lists the 12
+non-checksum assets.
+
+Published 2026-10-23 04:33:52 UTC: stable/latest GitHub release v2.39.8 at
+tag commit 6b19e1b6b0acdaa3757e5fc07441a84107029af5. All 13 GitHub
+asset digests matched local files, including the separately uploaded
+standalone selector and its README. GitHub's latest-release endpoint returned
+v2.39.8. The release-policy CI job passed and the duplicate build-release job
+was intentionally skipped for reviewed local artifacts. Release URL:
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.8
+
+Limits: host WSW Bridge challenge credits previously rolled back after normal
+reload; Fuel Siphon parent and unavailable challenge-manager definitions remain
+unresolved. Guest save/rejoin and platform trophy proof remain outstanding.
+The broad historical Python suite was not treated as a passing release gate;
+focused source, package and startup checks above were run. The currently
+running Steam game retains the earlier local test SDK until a normal exit and
+update; it was not interrupted to replace a mapped SDK ZIP.
