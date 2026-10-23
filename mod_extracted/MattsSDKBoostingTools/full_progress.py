@@ -82,15 +82,18 @@ class Run:
         snapshot=self.driver.preflight()
         gate=eligibility(snapshot['players'],snapshot['packs'])
         if not gate['allowed']: raise ValueError(gate['reason'])
+        replace = payload.get('replace_other_progress') is True
+        if not replace:self.driver.check_idle()
+        cleanup = self.driver.prepare_start(replace_other_progress=replace) if hasattr(self.driver, 'prepare_start') else []
         self.driver.check_idle()
         self.folder.mkdir(parents=True,exist_ok=True)
         ident=uuid.uuid4().hex
         self.job=dict(ok=True,id=ident,state='running',index=0,total=len(STAGES),
                       phase='ready',binding=snapshot['binding'],solo=gate['solo'],
-                      skipped=gate['skipped'],results=[],child=None,
+                      skipped=gate['skipped'],prior_uvh_cleanup=cleanup,results=[],child=None,
                       path=str(self.folder/(ident+'.jsonl')),message='Ready to start',
                       completion_verified=False)
-        self.record('start',players=snapshot['players'])
+        self.record('start',players=snapshot['players'],prior_uvh_cleanup=cleanup)
         return self.status()
 
     def step(self, ident):
@@ -142,6 +145,9 @@ class Run:
             self.record('stage_finished',stage=name)
         except Exception as exc:
             message=str(exc)
+            if not self.job.get('child') and hasattr(self.driver,'pending_child'):
+                try:self.job['child']=self.driver.pending_child(name)
+                except Exception:pass
             try:
                 if hasattr(self.driver,'stop'):self.driver.stop(self.job.get('child'))
             except Exception as cleanup:
@@ -187,18 +193,22 @@ class Run:
         ident=payload.get('job_id','')
         if not isinstance(ident,str) or len(ident)!=32 or any(c not in '0123456789abcdef' for c in ident):
             raise ValueError('Invalid run identifier')
+        path=self.folder/(ident+'.jsonl')
+        if not path.is_file():raise ValueError('Run receipt not found')
         if self.job and self.job['state']=='running':raise RuntimeError('Stop the active run first')
         if self.job and self.job['id']==ident:
             if not self.driver.cancel(self.job.get('child')):
                 raise RuntimeError('Child operation is still settling; inspect it before closing')
+        elif hasattr(self.driver,'close_interrupted'):
+            events=[json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()]
+            self.driver.close_interrupted(events)
         self.driver.check_idle()
-        path=self.folder/(ident+'.jsonl')
-        if not path.is_file():raise ValueError('Run receipt not found')
         with path.open('a',encoding='utf-8') as f:
             f.write(json.dumps(dict(event='operator_closed',state='cancelled',time=time.time(),completion_verified=False))+'\n')
             f.flush();os.fsync(f.fileno())
         if self.job and self.job['id']==ident:
             self.job.update(ok=True,state='cancelled',message='Run record closed. Applied progress retained; inspect results before a new run.')
+            self.job=None
         return dict(ok=True,state='cancelled',id=ident,message='Run record closed; no game calls repeated or rolled back.')
 
     def cancel(self, ident):

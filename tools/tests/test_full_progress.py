@@ -30,6 +30,16 @@ def test_no_write_before_gate_or_ack(tmp_path):
     with pytest.raises(ValueError):r.start({})
     assert not d.calls
 
+
+def test_start_records_cleanup_of_uncertain_prior_uvh(tmp_path):
+    d=Driver();d.prepare_start=lambda **kwargs:[dict(ok=True,kind='uvh',discarded_steps=25,prior_requests_sent=2)]
+    run=m.Run(d,tmp_path)
+    job=run.start({'acknowledge_shared_progress':True})
+    assert job['prior_uvh_cleanup'][0]['discarded_steps']==25
+    import json
+    first=json.loads(Path(run.job['path']).read_text().splitlines()[0])
+    assert first['prior_uvh_cleanup']==job['prior_uvh_cleanup']
+
 def test_waits_before_next_stage(tmp_path):
     d=Driver();d.wait=True;r=m.Run(d,tmp_path);job=r.start({'acknowledge_shared_progress':True})
     assert r.step(job['id'])['index']==0
@@ -71,6 +81,30 @@ def test_unknown_outcome_never_reissued(tmp_path):
     assert r.step(job['id'])['state']=='uncertain'
     r.step(job['id']);assert d.calls==['once']
     assert m.Run(d,tmp_path).status()['state']=='interrupted'
+
+
+def test_begin_failure_records_owned_mission_child_for_restart(tmp_path):
+    import json
+    d=Driver();d.begin=lambda *args:(_ for _ in ()).throw(RuntimeError('Native callback uncertain'))
+    d.pending_child=lambda stage:dict(kind='mission',id='started-before-error')
+    run=m.Run(d,tmp_path);job=run.start(dict(acknowledge_shared_progress=True))
+    stopped=run.step(job['id'])
+    assert stopped['state']=='uncertain'
+    assert stopped['child']==dict(kind='mission',id='started-before-error')
+    event=json.loads(Path(run.job['path']).read_text().splitlines()[-1])
+    assert event['child']==stopped['child']
+
+
+def test_interrupted_run_closes_owned_child_before_new_start(tmp_path):
+    import json
+    d=Driver();seen=[]
+    d.close_interrupted=lambda events:seen.append(events[-1]['child']['id'])
+    run=m.Run(d,tmp_path);ident='f'*32
+    (tmp_path/(ident+'.jsonl')).write_text(json.dumps(dict(event='stopped',
+        state='uncertain',child=dict(kind='mission',id='child-job')))+'\n')
+    result=run.close(dict(job_id=ident,acknowledge_shared_progress=True))
+    assert result['state']=='cancelled' and seen==['child-job']
+    assert run.status()['state']=='idle'
 
 
 def test_cancel_cleanup_failure_blocks_poll_and_resume(tmp_path):
@@ -122,6 +156,7 @@ def character_driver():
     source=(P.parent/'full_progress_runtime.py').read_text().replace('            from . import vehicle_tuning','            vehicle_tuning = vehicle_stub').replace('        from . import mission_discovery','        mission_discovery = discovery_stub')
     source=source.replace('from . import sdu_progress', 'sdu_progress = sdu_stub')
     source=source.replace('from . import challenge_objective_complete', 'challenge_objective_complete = challenge_stub')
+    source=source.replace('from . import mission_challenges', 'mission_challenges = credit_stub')
     source=source.replace('from . import dlc_refresh', 'dlc_refresh = refresh_stub')
     tree=ast.parse(source)
     cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Driver')
@@ -138,9 +173,387 @@ def character_driver():
                _give_currency_on_pc=lambda pc,t,amount:calls.append(('currency',pc,t,amount)) or True,
                _set_max_sdu_points_on_pc=lambda pc:True)
     env=dict(vehicle_stub=NS(_load_vehicle_catalog_rows=lambda:[],_load_vehicle_unlock_rows=lambda:[]),economy=economy,MAX_PLAYER_LEVEL=70,MAX_SPEC_LEVEL=701,MAX_VAULT_CARD_LEVEL=9999,time=time,
-             sdu_stub=NS(snapshot=lambda *a: None, advance=lambda *a: True), missions=NS(_engine=lambda: None))
+             credit_stub=NS(CreditReadbackMismatch=type('CreditReadbackMismatch',(RuntimeError,),{}),CreditPending=type('CreditPending',(RuntimeError,),{})),
+             sdu_stub=NS(snapshot=lambda *a: None, advance=lambda *a: True), missions=NS(_engine=lambda: None),
+             mission_credit_plan=lambda snapshot:([],[]),
+             fact_trigger_plan=lambda snapshot,incomplete:([],[]))
     exec(compile(ast.Module(body=[cls],type_ignores=[]),'<driver>','exec'),env)
     return env['Driver'](),calls
+
+
+@pytest.mark.parametrize('profile,warning',[
+    ('steam-26007962',True),('epic-6d531d91',True),('steam-25372571',False)])
+def test_current_build_catalog_limit_shown_for_steam_and_epic(profile,warning):
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.preflight.__globals__
+    rows=[dict(pc='host',label='Host')]
+    env['farming_targets']=NS(resolve=lambda payload:rows)
+    env['missions']=NS(_engine=lambda:NS(profile=profile),_binding=lambda party:'fixed')
+    env['mission_dlc']=NS(inspect=lambda party,engine:dict())
+    result=driver.preflight(character=False)
+    assert any('catalogs still come from 1.10' in limit for limit in result['limits']) is warning
+
+
+def test_challenge_readback_retains_incomplete_names_after_unavailable_samples():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.poll.__globals__
+    env['backend']=NS(complete_challenges_status=lambda:dict(active=False,failed_count=0,message='Done'),
+                      _full_progress_queue_guard=None,_challenge_retry_failed=False)
+    env['missions']=NS(_engine=lambda:'engine')
+    names=[f'Unavailable_{i}' for i in range(25)]+['ActuallyIncomplete']
+    env['challenge_stub']=NS(inspect_batch=lambda engine,pc,batch:[dict(name=n,
+        exists=n=='ActuallyIncomplete',complete=False) for n in batch])
+    child=dict(kind='challenges',names=names,skipped=0)
+    result=driver.poll('challenges',child,dict(rows=[dict(pc='host',label='Host')]))
+    assert result['state']=='partial'
+    assert result['child']['readback']['incomplete']==1
+    assert result['child']['readback']['incomplete_names']==[
+        dict(player='Host',challenge='ActuallyIncomplete')]
+    assert len(result['child']['readback']['samples'])==20
+
+
+def test_read_only_challenge_audit_pages_native_state_without_grants():
+    import ast
+    from types import SimpleNamespace as NS
+    source=(P.parent/'full_progress_runtime.py').read_text().replace(
+        'from . import challenge_objective_complete','challenge_objective_complete = challenge_stub')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name=='challenge_audit')
+    names=[f'Challenge_{i}' for i in range(70)]
+    calls=[]
+    def inspect(engine,pc,batch):
+        calls.append((pc,tuple(batch)))
+        return [dict(name=n,exists=True,complete=n!='Challenge_63') for n in batch]
+    env=dict(Driver=lambda:NS(preflight=lambda **kwargs:dict(rows=[dict(pc='host',label='Host')],players=['Host'],binding='same-lobby')),
+             challenge_plan=lambda snapshot:dict(selected=[(n,1) for n in names]),
+             missions=NS(_engine=lambda:'engine'),challenge_stub=NS(inspect_batch=inspect))
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<challenge-audit>','exec'),env)
+    result=env['challenge_audit'](dict(offset=0))
+    assert result['next_offset']==64 and result['total']==70
+    assert result['binding']=='same-lobby'
+    assert result['rows']==[dict(player='Host',challenge='Challenge_63',state='incomplete')]
+    assert len(calls)==1 and len(calls[0][1])==64
+    assert env['challenge_audit'](dict(offset=64))['next_offset'] is None
+
+
+def test_exact_challenge_probe_restricts_catalog_and_reads_both_players():
+    import ast
+    from types import SimpleNamespace as NS
+    source=(P.parent/'full_progress_runtime.py').read_text().replace(
+        'from . import challenge_objective_complete','challenge_objective_complete = challenge_stub')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef) and n.name=='challenge_probe')
+    calls=[]
+    def inspect(engine,pc,names):
+        calls.append((pc,tuple(names)))
+        return [dict(challenge=name,native_complete=False) for name in names]
+    env=dict(Driver=lambda:NS(preflight=lambda **kwargs:dict(
+        rows=[dict(pc='host',label='Host'),dict(pc='guest',label='Guest')],
+        players=['Host','Guest'],binding='same-lobby')),
+        challenge_plan=lambda snapshot:dict(selected=[('Allowed',1)]),
+        missions=NS(_engine=lambda:'engine'),challenge_stub=NS(inspect_exact_progress=inspect))
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<challenge-probe>','exec'),env)
+    result=env['challenge_probe'](dict(challenge_ids=['Allowed']))
+    assert result['ok'] and len(result['results'])==2
+    assert calls==[('host',('Allowed',)),('guest',('Allowed',))]
+    with pytest.raises(ValueError,match='outside'):
+        env['challenge_probe'](dict(challenge_ids=['Unknown']))
+    assert len(calls)==2
+
+
+def test_exact_challenge_record_probe_reads_goal_and_relationship_without_writes():
+    import ast
+    import struct
+    from types import SimpleNamespace as NS
+    source=(P.parent/'challenge_objective_complete.py').read_text()
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)
+              and n.name=='inspect_exact_progress')
+    node.body=[item for item in node.body if not isinstance(item,ast.ImportFrom)]
+    def sparse(engine,address,stride,maximum):
+        return {1000+0x290:[2000,2100],1000+0x2e0:[4000],
+                1000+0x3d8:[8000],8008:[8100,8200]}[address]
+    pointers={2008:3000,2108:3100,4000:3000,4500:3100,3000:6000,3100:6100,
+              6000+0x498:7000,6100+0x498:0,7000:5,
+              8100:3000,8108:9000,8200:3100,8208:9100}
+    def read(address,size):
+        values={2000:b'aaaaaaaa',2100:b'bbbbbbbb',5000+0x394:struct.pack('<i',2),
+                8000:struct.pack('<i',2),6000+0x160:b'\x0e'+b'\0'*7,
+                6100+0x160:b'\x01'+b'\0'*7,6000+0x4a0:b'\x01',
+                6100+0x4a0:b'\x00',
+                6000+0x120:b'\x01'*16+struct.pack('<Q',1234),
+                6100+0x120:b'\0'*24,9000:struct.pack('<q',1),
+                9100:struct.pack('<q',0),
+                9000+0x10:bytes.fromhex('00000000ffffffff3d05000000000000010000000000000001000000'),
+                9100+0x10:bytes.fromhex('00000000ffffffffffffffff00000000000000000000000001000000')}
+        return values[address][:size]
+    engine=NS(profile='steam-26007962',ensure_world=lambda:None,
+              read=read,u64=lambda address:pointers[address],
+              array=lambda address,maximum:(4500,1))
+    pc=NS(PlayerState=NS(_get_address=lambda:5000,PlayerId=2),Pawn=object(),
+          OakChallengeManager=NS(_get_address=lambda:1000),HasAuthority=lambda:True)
+    lib=NS(GetChallengeProgressForPlayer=lambda **kwargs:1,
+           IsChallengeCompleteForPlayer=lambda **kwargs:False)
+    env=dict(sparse_entries=sparse,_name=lambda engine,name:(b'aaaaaaaa' if name=='A' else b'bbbbbbbb'),
+             FGameDataHandle=lambda *args:args,_library=lambda:lib)
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<exact-progress>','exec'),env)
+    result=env['inspect_exact_progress'](engine,pc,['A','B'])
+    assert result[0]['definition_type']==14 and result[0]['final_goal']==5
+    assert result[0]['related_parents']==[dict(challenge='B',definition_type=1)]
+    assert result[0]['gate_18']==1341 and result[0]['gate_28']==1
+    assert result[0]['linked_reference_cached'] is True
+    assert result[1]['linked_reference_cached'] is False
+    assert result[1]['tier_count']==0 and result[1]['final_goal'] is None
+
+
+def test_fact_trigger_plan_uses_exact_native_shortfall_and_skips_other_types():
+    import ast
+    from types import SimpleNamespace as NS
+    source=(P.parent/'full_progress_runtime.py').read_text().replace(
+        'from . import challenge_objective_complete','challenge_objective_complete = challenge_stub')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)
+              and n.name=='fact_trigger_plan')
+    inspected=[]
+    def inspect(engine,pc,names):
+        inspected.append((pc,tuple(names)))
+        return [dict(challenge=name,exists=True,progress_present=True,
+                     definition_type=14 if name=='Bridge' else 1,
+                     tier_count=1,final_goal=2,native_count=1,record_count=1,
+                     gate_11=0,gate_18=1341,gate_28=1) for name in names]
+    env=dict(missions=NS(_engine=lambda:NS(profile='steam-26007962')),
+             challenge_stub=NS(inspect_exact_progress=inspect))
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<fact-plan>','exec'),env)
+    snapshot=dict(rows=[dict(pc='host',label='Host')])
+    plan,issues=env['fact_trigger_plan'](snapshot,[
+        dict(player='Host',challenge='Bridge'),dict(player='Host',challenge='Parent')])
+    assert plan==[dict(player='Host',challenge='Bridge',amount=1,expected_goal=2)]
+    assert issues==[] and inspected==[('host',('Bridge','Parent'))]
+    assert env['fact_trigger_plan'](snapshot,[])==([],[])
+
+
+def test_fact_trigger_repair_issues_once_then_rechecks_without_repeating():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.fact_trigger_repair.__globals__
+    calls=[]
+    env['fact_trigger_plan']=lambda snapshot,incomplete:([
+        dict(player='Host',challenge='Bridge',amount=1,expected_goal=2)],[])
+    def inspect(engine,pc,names):
+        return [dict(challenge='Bridge',definition_type=14,final_goal=2,
+            record_count=2 if calls else 1,native_count=2 if calls else 1,
+            native_complete=bool(calls),gate_11=0,gate_18=1341,gate_28=1)]
+    env['challenge_stub']=NS(inspect_exact_progress=inspect)
+    env['missions']=NS(_engine=lambda:'engine',_binding=lambda rows:'bound')
+    env['farming_targets']=NS(resolve=lambda payload:['host'])
+    backend=NS(_full_progress_queue_guard=None,_challenge_retry_failed=True,
+        _challenge_queue_start=lambda rows,**kwargs:calls.append((rows,kwargs)) or dict(ok=True),
+        complete_challenges_status=lambda:dict(active=False,failed_count=0,message='Done'))
+    env['backend']=backend
+    snapshot=dict(rows=[dict(pc='host',label='Host')],binding='bound')
+    child=dict(readback=dict(incomplete_names=[dict(player='Host',challenge='Bridge')]))
+    first=driver.fact_trigger_repair(child,snapshot)
+    assert first['state']=='running' and calls[0][0]==[('Bridge',1)]
+    assert calls[0][1]['targets']==['host']
+    second=driver.fact_trigger_repair(child,snapshot)
+    assert second['state']=='running' and child['fact_repair_done']
+    assert 'readback' not in child and len(calls)==1
+    assert driver.fact_trigger_repair(child,snapshot) is None
+
+
+def test_mission_credit_plan_requires_live_rules_and_completed_shared_records():
+    import ast
+    from types import SimpleNamespace as NS
+    source=(P.parent/'full_progress_runtime.py').read_text().replace(
+        'from . import mission_challenges','mission_challenges = credit_stub')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)
+              and n.name=='mission_credit_plan')
+    definitions=[dict(challenge='Valid',missions=['A','B']),
+                 dict(challenge='Changed',missions=['C'])]
+    def read(engine,pc,definition):
+        if definition['challenge']=='Changed':raise RuntimeError('Mission credit counting rules changed')
+        return dict(credited={0,1} if pc=='host' else {0})
+    credit=NS(MISSION_CREDIT_CATALOG=dict(entries=definitions),
+              credit_definition=lambda challenge:next(d for d in definitions if d['challenge']==challenge),
+              read_player=read)
+    engine=NS(snapshot=lambda:dict(missions=[]))
+    env=dict(credit_stub=credit,missions=NS(_engine=lambda:engine,
+             _row=lambda snapshot,name:dict(name=name),_state=lambda row:'completed'),
+             challenge_plan=lambda snapshot:dict(selected=[('Valid',1),('Changed',1)]),
+             mission_dlc=NS(requirement=lambda name,packs:None))
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<credit-plan>','exec'),env)
+    plan,issues=env['mission_credit_plan'](dict(rows=[dict(pc='host'),dict(pc='guest')],packs={}))
+    assert plan==[dict(challenge='Valid',missions=['B'])]
+    assert issues==[dict(challenge='Changed',reason='Mission credit counting rules changed')]
+
+
+def test_full_game_repairs_only_planned_missing_mission_credit_before_readback():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.mission_credit_repair.__globals__
+    started=[];polled=[]
+    env['mission_credit_plan']=lambda snapshot:([dict(challenge='Reviewed',missions=['B'])],[])
+    env['missions']=NS(start=lambda payload,**kwargs:started.append((payload,kwargs)) or dict(id='child',state='running'),
+                       poll=lambda ident:polled.append(ident) or dict(id=ident,state='completed'))
+    snapshot=dict(rows=[dict(host=True,index=0,label='Host')],binding='fixed')
+    child=dict(kind='challenges')
+    first=driver.mission_credit_repair(child,snapshot)
+    assert first['state']=='running' and child['credit_active']['id']=='child'
+    assert started[0][0]['scope']=='challenge_credit'
+    assert started[0][0]['missions']==['B'] and started[0][0]['challenge_id']=='Reviewed'
+    assert started[0][1]==dict(use_objective_graph=False)
+    assert driver.mission_credit_repair(child,snapshot) is None
+    assert polled==['child'] and child['credit_done'] and not child['credit_issues']
+
+
+def test_full_game_skips_unstartable_credit_group_without_repeating_it():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.mission_credit_repair.__globals__
+    calls=[]
+    env['mission_credit_plan']=lambda snapshot:([dict(challenge='Reviewed',missions=['B'])],[])
+    def fail(*args,**kwargs):
+        calls.append(True);raise ValueError('Mission completion changed')
+    env['missions']=NS(start=fail)
+    snapshot=dict(rows=[dict(host=True,index=0,label='Host')],binding='fixed')
+    child=dict(kind='challenges')
+    assert driver.mission_credit_repair(child,snapshot)['state']=='running'
+    assert driver.mission_credit_repair(child,snapshot) is None
+    assert len(calls)==1 and child['credit_done']
+    assert child['credit_issues']==[dict(challenge='Reviewed',reason='Mission completion changed')]
+
+
+def test_full_game_cancel_waits_for_issued_mission_credit():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.cancel.__globals__
+    cancelled=[]
+    env['missions']=NS(cancel=lambda ident:dict(state='running'))
+    env['backend']=NS(complete_challenges_cancel=lambda:cancelled.append('bulk'))
+    child=dict(kind='challenges',credit_active=dict(id='child',challenge='Reviewed'))
+    assert driver.cancel(child) is False and child['credit_active']['id']=='child'
+    assert not cancelled
+    env['missions']=NS(cancel=lambda ident:dict(state='cancelled'))
+    assert driver.cancel(child) is True and child['credit_active'] is None
+    assert cancelled==['bulk']
+
+
+@pytest.mark.parametrize('state',['uncertain','interrupted'])
+def test_full_game_cancel_keeps_credit_receipt_until_recovery_closes_it(state):
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.cancel.__globals__
+    closed=[];cancelled=[]
+    env['missions']=NS(cancel=lambda ident:dict(state=state),
+        recover=lambda payload:closed.append(payload) or dict(closed=False))
+    env['backend']=NS(complete_challenges_cancel=lambda:cancelled.append('bulk'))
+    child=dict(kind='challenges',credit_active=dict(id='child',challenge='Reviewed'))
+    assert driver.cancel(child) is False
+    assert child['credit_active']['id']=='child' and not cancelled
+    assert closed==[dict(job_id='child',mode='close',acknowledge_shared_progress=True)]
+    env['missions'].recover=lambda payload:dict(closed=True)
+    assert driver.cancel(child) is True
+    assert child['credit_active'] is None and cancelled==['bulk']
+
+
+def test_full_game_recovery_closes_uncertain_credit_without_reissuing():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver();env=driver.recover.__globals__;calls=[]
+    env['missions']=NS(status=lambda:dict(id='child',state='uncertain'),
+        recover=lambda payload:calls.append(payload) or dict(closed=True))
+    child=dict(kind='challenges',credit_active=dict(id='child',challenge='Reviewed'),
+               credit_index=0)
+    driver.recover(child,dict(rows=[]))
+    assert calls==[dict(job_id='child',mode='close',acknowledge_shared_progress=True)]
+    assert child['credit_active'] is None and child['credit_index']==1
+    assert child['credit_issues'][0]['challenge']=='Reviewed'
+
+
+@pytest.mark.parametrize('action',[
+    'full_progress_challenge_audit','full_progress_mission_credit_probe',
+    'full_progress_challenge_probe'])
+def test_challenge_audit_is_reachable_through_bridge(action):
+    from test_bridge_perf_bounds import _load_bridge
+    bridge=_load_bridge();calls=[]
+    bridge.backend_actions.run_quick_menu_action=lambda action,payload,record=False:(
+        calls.append((action,payload,record)) or dict(ok=True,rows=[]))
+    result=bridge._handle_action(action,dict(offset=64))
+    assert result['ok'] and calls==[(action,dict(offset=64),False)]
+    assert action in bridge._PROGRESS_JOB_ACTIONS
+
+
+def test_interrupted_full_run_closes_only_matching_mission_receipt():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.close_interrupted.__globals__;calls=[]
+    env['missions']=NS(status=lambda:dict(state='interrupted',id='owned'),
+        recover=lambda payload:calls.append(payload))
+    events=[dict(event='observed',result=dict(child=dict(kind='mission',id='owned')))]
+    d.close_interrupted(events)
+    assert calls==[dict(job_id='owned',mode='close',acknowledge_shared_progress=True)]
+    calls.clear()
+    with pytest.raises(RuntimeError,match='does not match'):
+        d.close_interrupted([dict(child=dict(kind='mission',id='other'))])
+    assert not calls
+
+
+@pytest.mark.parametrize('child',[
+    dict(kind='challenges',credit_active=dict(id='owned',challenge='Credit')),
+    dict(kind='final_recheck',active=dict(stage='missions',child=dict(kind='mission',id='owned'))),
+])
+def test_interrupted_full_run_closes_nested_mission_receipt(child):
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.close_interrupted.__globals__;calls=[]
+    env['missions']=NS(status=lambda:dict(state='interrupted',id='owned'),
+        recover=lambda payload:calls.append(payload))
+    d.close_interrupted([dict(event='stopped',child=child)])
+    assert calls==[dict(job_id='owned',mode='close',acknowledge_shared_progress=True)]
+
+
+def test_interrupted_full_run_does_not_use_stale_earlier_child():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.close_interrupted.__globals__;calls=[]
+    env['missions']=NS(status=lambda:dict(state='interrupted',id='owned'),
+        recover=lambda payload:calls.append(payload))
+    events=[dict(event='observed',result=dict(child=dict(kind='mission',id='owned'))),
+            dict(event='stopped',child=dict(kind='challenges',credit_active=None))]
+    with pytest.raises(RuntimeError,match='does not match'):
+        d.close_interrupted(events)
+    assert not calls
+
+
+def test_full_game_releases_only_uncertain_paused_uvh():
+    from types import SimpleNamespace as NS
+    driver,_=character_driver()
+    env=driver.check_idle.__globals__
+    env['missions']=NS(status=lambda:{'state':'idle'})
+    uvh=dict(active=False,paused_steps=25,uncertain=True)
+    cleared=[]
+    env['backend']=NS(complete_challenges_status=lambda:{'active':False},
+                      uvh_boost_status=lambda:uvh.copy(),
+                      uvh_boost_discard_paused=lambda **kwargs:cleared.append(True) or dict(ok=True,discarded_steps=25))
+    driver.check_idle()
+    assert driver.prepare_start()==[dict(ok=True,kind='uvh',discarded_steps=25)] and cleared
+    uvh['uncertain']=False
+    with pytest.raises(RuntimeError,match='Finish or cancel'):
+        driver.check_idle()
+    assert len(cleared)==1
+
+
+def test_full_game_override_stops_pending_work_before_start(tmp_path):
+    from types import SimpleNamespace as NS
+    driver,_=character_driver()
+    env=driver.check_idle.__globals__
+    mission=dict(id='old',state='running')
+    challenge=dict(active=True,steps_remaining=4)
+    uvh=dict(active=False,paused_steps=25,uncertain=False)
+    calls=[]
+    def stop_mission(ident):
+        assert ident=='old';calls.append('mission');mission['state']='cancelled'
+        return dict(state='cancelled',message='Remaining mission work cancelled')
+    def stop_challenge():
+        calls.append('challenge');challenge['active']=False
+        return dict(message='Challenges cancelled')
+    def discard_uvh(**kwargs):
+        assert kwargs['allow_manual'];calls.append('uvh');uvh['paused_steps']=0
+        return dict(ok=True,message='Paused UVHM closed',discarded_steps=25)
+    env['missions']=NS(status=lambda:mission.copy(),cancel=stop_mission)
+    env['backend']=NS(complete_challenges_status=lambda:challenge.copy(),complete_challenges_cancel=stop_challenge,
+                      uvh_boost_status=lambda:uvh.copy(),uvh_boost_discard_paused=discard_uvh)
+    notes=driver.prepare_start(replace_other_progress=True)
+    driver.check_idle()
+    assert calls==['mission','challenge','uvh']
+    assert [n['kind'] for n in notes]==['mission','challenges','uvh']
 
 
 def test_campaign_challenges_precede_uvhm_unlocks():
@@ -214,6 +627,45 @@ def test_full_progress_initial_missions_use_original_bulk_completion():
     result=d.begin('missions',dict(access_refreshed=True,rows=[dict(host=True,index=0,label='Host')]))
     assert result['state']=='finished' and len(calls)==1
     assert calls[0][0]['scope']=='all' and calls[0][1] is False
+
+
+def test_full_game_defers_inconsistent_preexisting_credit_without_claiming_completion():
+    d,_=character_driver()
+    acceptance=d.acceptance(dict(rows=[dict(host=True,index=0,label='Host')]))
+    assert acceptance['defer_unconfirmed_mission_credit'] and acceptance['continue_on_mission_failure']
+    result=d.mission_result(dict(state='completed',message='Missions verified',
+        unverified_challenge_credit=[dict(mission='mission_main_cityepilogue',reason='Native records disagree')]),
+        dict(kind='mission',id='job'))
+    assert result['state']=='partial'
+    assert len(result['details']['unverified_challenge_credit'])==1
+
+
+def test_full_game_marks_quarantined_mission_operation_partial():
+    d,_=character_driver()
+    result=d.mission_result(dict(state='completed',message='Mission batch finished',
+        unverified_operations=[dict(mission='Mission_Main_Beach',operation='switch_toggle')]),
+        dict(kind='mission',id='job'))
+    assert result['state']=='partial'
+    assert result['details']['unverified_operations'][0]['operation']=='switch_toggle'
+
+
+def test_final_credit_recheck_records_persistent_mismatch_and_moves_on():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.final_recheck.__globals__;calls=[]
+    mismatch=env['credit_stub'].CreditReadbackMismatch
+    def inspect_credit(*args):
+        calls.append(True)
+        raise mismatch('Native records still disagree')
+    env['credit_stub'].credit_completed=inspect_credit
+    env['missions']=NS(_engine=lambda:NS(snapshot=lambda:{}),
+        _row=lambda snapshot,name:dict(state='completed'),_state=lambda row:row['state'],
+        CATALOG={'mission_main_cityepilogue':dict(title='Secrets of the Vault')})
+    child=dict(kind='final_recheck',done=[],attempted=[],active=None,mayhem_done=True,
+        results=[],wait_since=0,credit_pending=[dict(mission='mission_main_cityepilogue')],
+        credit_index=0,credit_active=None,credit_unverified=[])
+    result=d.final_recheck(child,dict(rows=['host']))
+    assert result['state']=='running' and child['credit_index']==1
+    assert len(child['credit_unverified'])==1 and len(calls)==1
 
 
 def test_full_progress_refreshes_access_before_any_mission_start():
@@ -446,6 +898,18 @@ def test_final_pass_reports_still_locked_without_forcing():
     assert not starts
 
 
+def test_final_pass_keeps_unknown_issued_operation_unverified_without_retry():
+    d,child,starts=final_driver({'Mission_Main_Beach':'available'})
+    child['operation_pending']=[dict(mission='Mission_Main_Beach',title='Recruitment Drive',
+                                     operation='switch_toggle',issued=True)]
+    first=d.final_recheck(child,dict(packs={}))
+    assert first['state']=='running' and child['operation_index']==1
+    result=d.final_recheck(child,dict(packs={}))
+    assert result['state']=='partial'
+    assert result['skipped'][0]['title']=='Recruitment Drive'
+    assert not starts
+
+
 def test_final_pass_omits_only_explained_exclusions_and_keeps_other_missing():
     d,child,starts=final_driver({'legacy':'unavailable','missing':'unavailable'})
     d.final_recheck.__globals__['missions']._automatic_exclusion=lambda s,n:'Legacy split' if n=='legacy' else None
@@ -472,6 +936,27 @@ def test_final_pass_rechecks_dependencies_after_child_completion():
     assert 'first' in child['done'] and child['active'] is None
     d.final_recheck(child,dict(packs={}))
     assert starts[0]['missions']==['next'] and not starts[0]['reset_completed']
+
+
+def test_final_credit_callback_must_settle_before_cancel_or_recovery():
+    from types import SimpleNamespace as NS
+    d,_=character_driver();env=d.cancel.__globals__
+    receipt=dict(operation='challenge_credit',player_id=2)
+    child=dict(kind='final_recheck',active=None,credit_active=receipt)
+    rows=[dict(pc='guest',state=NS(PlayerId=2))]
+    env['farming_targets']=NS(resolve=lambda payload:rows)
+    env['missions']=NS(_engine=lambda:'engine')
+    env['_runner']=NS(record=lambda *a,**kw:None)
+    env['backend']=NS(_full_progress_queue_guard=None,_challenge_retry_failed=False)
+    calls=[]
+    def reconcile(*args):
+        calls.append(args[2])
+        if len(calls)==1:raise env['credit_stub'].CreditPending('waiting')
+    env['credit_stub'].reconcile=reconcile
+    assert d.cancel(child) is False and child['credit_active']==receipt
+    d.recover(child,dict(rows=rows))
+    assert calls==[receipt,receipt] and child['credit_active'] is None
+    assert d.cancel(child) is True
 
 
 def test_resume_keeps_stage_and_never_reissues_begin(tmp_path):

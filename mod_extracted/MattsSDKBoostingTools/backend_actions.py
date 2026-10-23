@@ -1807,7 +1807,7 @@ def run_quick_menu_action(
     objective = sys.modules.get(__package__ + '.mission_objectives')
     if objective and objective.conflict(key):
         return dict(ok=False, message='An objective run needs completion or recovery before another mission action.')
-    if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume"):
+    if key in ("full_progress_preview", "full_progress_status", "full_progress_start", "full_progress_step", "full_progress_cancel", "full_progress_close", "full_progress_resume", "full_progress_challenge_audit", "full_progress_mission_credit_probe", "full_progress_challenge_probe"):
         from . import full_progress_runtime
         return full_progress_runtime.dispatch(key, payload)
     if full_progress_conflict(key):
@@ -4323,6 +4323,28 @@ def uvh_boost_cancel() -> dict[str, Any]:
     return {"ok": True, "message": _uvh_last_status, "paused_steps": remaining}
 
 
+def uvh_boost_discard_paused(*, allow_manual: bool = False) -> dict[str, Any]:
+    """Close a paused UVHM queue without repeating or rolling back issued calls."""
+    global _uvh_uncertain, _uvh_failed_count, _uvh_sent_count, _uvh_native_verified
+    if _uvh_running or _uvh_queue:
+        return dict(ok=False, message='UVHM is still active; no steps discarded.')
+    if not _uvh_paused_queue or (not _uvh_uncertain and not allow_manual):
+        return dict(ok=False, message='No eligible paused UVHM run to discard.')
+    remaining = len(_uvh_paused_queue)
+    sent = _uvh_sent_count
+    prior = _uvh_last_status
+    _uvh_paused_queue.clear()
+    _uvh_paused_targets.clear()
+    _uvh_step_receipts.clear()
+    _uvh_uncertain = False
+    _uvh_failed_count = 0
+    _uvh_sent_count = 0
+    _uvh_native_verified = False
+    _uvh_set_status(f'Previous UVHM run closed; {remaining} unsent steps discarded. Already issued requests were not rolled back.')
+    return dict(ok=True, message=_uvh_last_status, prior_error=prior,
+                discarded_steps=remaining, prior_requests_sent=sent)
+
+
 def uvh_boost_resume() -> dict[str, Any]:
     global _uvh_queue, _uvh_targets, _uvh_next_at, _uvh_running, _uvh_paused_queue, _uvh_paused_targets
     if _uvh_uncertain:
@@ -4815,6 +4837,10 @@ def complete_challenges(payload: dict[str, Any] | None = None) -> dict[str, Any]
         except Exception:
             amount = 1
         rows = _challenge_rows_for_ids(ids, fallback_amount=amount)
+        if payload.get("amount") is not None:
+            # An explicit amount is a per-request increment. The catalog amount
+            # is only the default for an ordinary bulk-completion request.
+            rows = [(challenge, amount) for challenge, _catalog_amount in rows]
         if len(rows) == 1:
             return _challenge_queue_start(rows, label=f"Challenge {rows[0][0]}")
         return _challenge_queue_start(rows, label=f"{len(rows)} selected challenges")

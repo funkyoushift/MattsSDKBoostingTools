@@ -80,14 +80,71 @@ def test_loaded_safehouse_actor_uses_native_state_machine(monkeypatch):
     lib = NS(GetActorStateValue=lambda **kw: (kw['OwnerContext'].state,),
              GetActorStateMachineStates=lambda **kw: ([NS(Name='Initialization'), NS(Name='Claimed')],),
              SetActorStateValue=set_state)
-    sdk = sys.modules['unrealsdk']
-    sdk.find_all = lambda *args, **kw: [actor]
-    sdk.find_object = lambda *args: lib
-    sdk.make_struct = lambda path, **kw: NS(**kw)
+    sdk = NS(find_all=lambda *args, **kw: [actor], find_object=lambda *args: lib,
+             make_struct=lambda path, **kw: NS(**kw))
+    monkeypatch.setitem(sys.modules, 'unrealsdk', sdk)
     effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
     effects.complete_dependencies(owner, engine, party, effects.SAFEHOUSE)
     assert transitions == ['Claimed'] and actor.state == 'Claimed'
     assert not writes and not values
+
+
+def test_inspect_safehouse_claim_reads_loaded_actor_without_writing(monkeypatch):
+    import json
+    context(monkeypatch)
+    identity = json.loads((PATH.parent / 'mission_activity_actors.json').read_text())[
+        effects.SAFEHOUSE]['actor']
+    actor = NS(FactsConduit=NS(GroupName=NS(Name=identity['groupname']),
+                                RegistryName=NS(Name=NS(Name=identity['registryname']))),
+               state='Claimable')
+    writes = []
+    lib = NS(GetActorStateValue=lambda **kw: (kw['OwnerContext'].state,),
+             SetActorStateValue=lambda **kw: writes.append(kw))
+    sdk = NS(find_all=lambda *args, **kw: [actor], find_object=lambda *args: lib,
+             make_struct=lambda path, **kw: NS(**kw))
+    monkeypatch.setitem(sys.modules, 'unrealsdk', sdk)
+    result = effects.inspect_safehouse_claim(object(), effects.SAFEHOUSE, CLAIM)
+    assert result == dict(mission=effects.SAFEHOUSE, address=CLAIM,
+                          channel='loaded_actor', state='Claimable')
+    assert actor.state == 'Claimable' and not writes
+
+
+def test_inspect_safehouse_claim_reads_stored_fact_without_writing(monkeypatch):
+    owner, _, _, writes, values = context(monkeypatch)
+    values[CLAIM] = 'Discovered'
+    result = effects.inspect_safehouse_claim(owner, effects.SAFEHOUSE, CLAIM)
+    assert result == dict(mission=effects.SAFEHOUSE, address=CLAIM,
+                          channel='stored_fact', state='Discovered')
+    assert not writes and values[CLAIM] == 'Discovered'
+
+
+def test_inspect_safehouse_claim_rejects_unreviewed_identity_before_reads(monkeypatch):
+    owner, _, _, writes, _ = context(monkeypatch)
+    reads = []
+    sdk = sys.modules['unrealsdk']
+    sdk.find_all = lambda *args, **kw: reads.append('actors') or []
+    with pytest.raises(ValueError, match='address does not match'):
+        effects.inspect_safehouse_claim(owner, effects.SAFEHOUSE, CLAIM + '.wrong')
+    with pytest.raises(ValueError, match='not a reviewed'):
+        effects.inspect_safehouse_claim(owner, 'ZoneActivity_Grasslands_SafehouseMadeUp', CLAIM)
+    assert not reads and not writes
+
+
+def test_safehouse_claim_read_failure_journals_bounded_underlying_error(monkeypatch):
+    owner, _, _, writes, _ = context(monkeypatch, child='completed')
+    owner._job['names'] = [effects.SAFEHOUSE]
+    sdk = sys.modules['unrealsdk']
+    sdk.find_all = lambda *args, **kw: []
+    sdk.find_object = lambda *args: NS(ReadFact=lambda **kw: (_ for _ in ()).throw(
+        OSError('readback transport unavailable')))
+    with pytest.raises(OSError, match='readback transport unavailable'):
+        effects.complete_dependencies(owner, NS(snapshot=lambda: {}),
+            [dict(pc=object(), host=True)], effects.SAFEHOUSE)
+    failure = next(event for event in reversed(owner._journal.__self__)
+                   if event['event'] == 'safehouse_claim_error')
+    assert failure['stage'] == 'before_read'
+    assert failure['error'] == 'OSError: readback transport unavailable'
+    assert not writes
 
 
 def test_ambiguous_loaded_safehouse_aborts_without_write(monkeypatch):

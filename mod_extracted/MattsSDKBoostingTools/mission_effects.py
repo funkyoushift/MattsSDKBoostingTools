@@ -30,25 +30,29 @@ def _world_safehouse_claim_address(name, resources):
                      identity['registryname'], 'State'))
 
 
-def _verify_safehouse_claim(owner, target, name, address):
-    """Apply the authored safehouse effect to the loaded actor or stored fact.
-
-    Nexus-Data-Mission4.json gives all 14 World_P safehouses a completed action
-    of PoA.State=Claimed. A fast mission callback can finish the mission record
-    without running that action. Readback keeps a locked safehouse from being
-    reported as captured.
-    """
-    import unrealsdk
+def _safehouse_claim_access(target, name, address):
+    """Resolve the exact reviewed base-game safehouse claim read/write channel."""
     import json
+    import unrealsdk
     from importlib.resources import files
-    identity = json.loads(files(__package__).joinpath('mission_activity_actors.json').read_text())[name]['actor']
-    actors = [actor for actor in unrealsdk.find_all('PoAActor')
-              if str(actor.FactsConduit.GroupName.Name).casefold() == identity['groupname'].casefold()
-              and str(actor.FactsConduit.RegistryName.Name.Name).casefold() == identity['registryname'].casefold()]
-    if len(actors) > 1:
+    actors_by_mission = json.loads(
+        files(__package__).joinpath('mission_activity_actors.json').read_text())
+    row = actors_by_mission.get(name)
+    identity = row.get('actor') if isinstance(row, dict) else None
+    if (not isinstance(identity, dict) or identity.get('map') != 'World_P'
+            or not name.startswith('ZoneActivity_') or 'Safehouse' not in name):
+        raise ValueError(name + ': not a reviewed base-game safehouse')
+    expected_address = '.'.join(('registry', identity['map'], 'top', identity['groupname'],
+                                 identity['registryname'], 'State'))
+    if address != expected_address:
+        raise ValueError(name + ': safehouse claim address does not match reviewed identity')
+    matches = [actor for actor in unrealsdk.find_all('PoAActor')
+               if str(actor.FactsConduit.GroupName.Name).casefold() == identity['groupname'].casefold()
+               and str(actor.FactsConduit.RegistryName.Name.Name).casefold() == identity['registryname'].casefold()]
+    if len(matches) > 1:
         raise RuntimeError(name + ': safehouse actor is ambiguous; capture not issued')
-    if actors:
-        actor = actors[0]
+    if matches:
+        actor = matches[0]
         lib = unrealsdk.find_object('GbxActorStateBlueprintLibrary',
                                    '/Script/GbxEngine.Default__GbxActorStateBlueprintLibrary')
         key = unrealsdk.make_struct('/Script/GbxEngine.GbxActorStateMachineKey', Name='State', Index=0)
@@ -70,8 +74,44 @@ def _verify_safehouse_claim(owner, target, name, address):
             facts.WriteFact(OwnerContext=target, AddressString=address,
                             AsName='Claimed', AsInt=0, AsBool=False)
         channel = 'stored_fact'
+    return dict(identity=identity, channel=channel, read=read, write=write)
 
-    before = read()
+
+def inspect_safehouse_claim(target, name, address):
+    """Read current claim state for an exact reviewed base-game safehouse; never writes."""
+    access = _safehouse_claim_access(target, name, address)
+    return dict(mission=name, address=address, channel=access['channel'],
+                state=access['read']())
+
+
+def _journal_safehouse_error(owner, name, address, channel, stage, exc):
+    try:
+        detail = str(exc)
+    except Exception:
+        detail = '<exception text unavailable>'
+    detail = (type(exc).__name__ + ': ' + detail)[:500]
+    try:
+        owner._journal(dict(event='safehouse_claim_error', mission=name, address=address,
+                            channel=channel, stage=stage, error=detail))
+    except Exception:
+        pass
+
+
+def _verify_safehouse_claim(owner, target, name, address):
+    """Apply the authored safehouse effect to the loaded actor or stored fact.
+
+    Nexus-Data-Mission4.json gives all 14 World_P safehouses a completed action
+    of PoA.State=Claimed. A fast mission callback can finish the mission record
+    without running that action. Readback keeps a locked safehouse from being
+    reported as captured.
+    """
+    access = _safehouse_claim_access(target, name, address)
+    channel, read, write = access['channel'], access['read'], access['write']
+    try:
+        before = read()
+    except Exception as exc:
+        _journal_safehouse_error(owner, name, address, channel, 'before_read', exc)
+        raise
     if before.casefold() == 'claimed':
         owner._journal(dict(event='safehouse_claim_verified', mission=name,
                             address=address, channel=channel, before=before))
@@ -88,8 +128,11 @@ def _verify_safehouse_claim(owner, target, name, address):
         if after.casefold() != 'claimed':
             raise RuntimeError(name + ': capture did not read back as Claimed')
     except Exception as exc:
+        _journal_safehouse_error(owner, name, address, channel, 'write_or_after_read', exc)
         error = RuntimeError(name + ': capture is unconfirmed; inspect before continuing')
         error.issued = True
+        error.operation = 'safehouse_claim'
+        error.address = address
         raise error from exc
 
 

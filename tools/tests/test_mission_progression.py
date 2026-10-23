@@ -134,6 +134,125 @@ def test_close_unloaded_objective_run_never_reads_or_repeats_native_calls(mod, m
     mod.require_clear_journals()
 
 
+def test_full_run_quarantines_one_failed_mission_and_continues_next(mod, monkeypatch, tmp_path):
+    names=['Mission_Main_Beach','Mission_Side_Heist']
+    rows=[row(name,'completed') for name in names]
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:{'missions':rows}))
+    pc=NS(_path_name=lambda:'host')
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=pc,host=True)])
+    monkeypatch.setattr(mod,'_binding',lambda party:['same'])
+    monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    calls=[]
+    def credit(engine,party,name):
+        calls.append(name)
+        if name==names[0]:raise RuntimeError('Native side effect unverified')
+    monkeypatch.setattr(mod,'_credit_completed',credit)
+    mod._job=dict(id='job',ok=True,state='running',binding=['same'],target='host',
+                  names=names,index=0,total=2,completed=[],deferred=[],phase='complete',
+                  completion_path='normal_acceptance',continue_on_mission_failure=True,
+                  preserve_completed=True,
+                  journal=str(tmp_path/'job.jsonl'))
+    first=mod.step('job')
+    assert first['state']=='running' and first['index']==1
+    assert first['unverified_operations'][0]['mission']==names[0]
+    second=mod.step('job')
+    assert second['state']=='stopped'
+    assert calls==names and mod._job['completed']==[names[1]],second
+
+
+@pytest.mark.parametrize('pending', [False, True])
+def test_uncertain_challenge_credit_keeps_its_mission_receipt(mod, monkeypatch, tmp_path, pending):
+    names=['Mission_Main_Beach','Mission_Side_Heist']
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:{'missions':[row(n,'completed') for n in names]}))
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=NS(_path_name=lambda:'host'),host=True)])
+    monkeypatch.setattr(mod,'_binding',lambda party:['same'])
+    monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    class CreditUncertain(Exception):
+        issued=True
+    calls=[]
+    def credit(engine,party,name):
+        calls.append(name)
+        raise CreditUncertain('Original callback has no confirmed result')
+    monkeypatch.setattr(mod,'_credit_completed',credit)
+    receipt=dict(mission=names[0],operation='challenge_credit')
+    mod._job=dict(id='job',ok=True,state='running',binding=['same'],target='host',
+                  names=names,index=0,total=2,completed=[],deferred=[],phase='complete',
+                  completion_path='normal_acceptance',continue_on_mission_failure=True,
+                  challenge_pending=receipt if pending else None,
+                  journal=str(tmp_path/'job.jsonl'))
+    result=mod.step('job')
+    assert result['state']=='uncertain' and result['index']==0
+    assert result.get('challenge_pending')==receipt if pending else not result.get('challenge_pending')
+    assert not result.get('unverified_operations')
+    assert calls==[names[0]]
+    assert mod.step('job')['state']=='uncertain' and calls==[names[0]]
+
+
+def test_manual_failed_mission_still_stops_without_skip(mod, monkeypatch, tmp_path):
+    name='Mission_Main_Beach'
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:{'missions':[row(name,'completed')]}))
+    pc=NS(_path_name=lambda:'host')
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=pc,host=True)])
+    monkeypatch.setattr(mod,'_binding',lambda party:['same'])
+    monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    monkeypatch.setattr(mod,'_credit_completed',lambda *args:(_ for _ in ()).throw(RuntimeError('Side effect failed')))
+    mod._job=dict(id='job',ok=True,state='running',binding=['same'],target='host',
+                  names=[name],index=0,total=1,completed=[],deferred=[],phase='complete',
+                  completion_path='normal_acceptance',continue_on_mission_failure=False,
+                  journal=str(tmp_path/'job.jsonl'))
+    result=mod.step('job')
+    assert result['state']=='stopped' and result['index']==0
+    assert not result.get('unverified_operations')
+
+
+def test_unreturned_call_can_close_after_restart_without_native_reads(mod, monkeypatch, tmp_path):
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod,'_engine',lambda:pytest.fail('Closing must not read process-local state'))
+    folder=tmp_path/'msbt_missions';folder.mkdir()
+    ident='b'*32;path=folder/(ident+'.jsonl')
+    path.write_text(json.dumps(dict(event='issued',mission='Mission_Main_Beach',
+                                    operation='safehouse_claim',address='registry.World_P.top.test.actor.State'))+'\n')
+    result=mod.recover(dict(job_id=ident,mode='close',acknowledge_shared_progress=True))
+    assert result['closed'] and result['report']['observed']=='unverified_after_reload'
+    assert mod.status()['state']=='idle'
+
+
+def test_live_full_run_recovers_unknown_unreturned_call_by_quarantining(mod, monkeypatch, tmp_path):
+    ident='c'*32;name='Mission_Main_Beach';path=tmp_path/(ident+'.jsonl')
+    path.write_text(json.dumps(dict(event='issued',mission=name,operation='switch_toggle'))+'\n')
+    pc=NS(_path_name=lambda:'host')
+    monkeypatch.setattr(mod,'_party',lambda:[dict(pc=pc,host=True)])
+    monkeypatch.setattr(mod,'_binding',lambda party:['same'])
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    mod._job=dict(id=ident,ok=False,state='uncertain',binding=['same'],target='host',
+                  names=[name],index=0,total=1,completed=[],deferred=[],phase='complete',
+                  completion_path='normal_acceptance',continue_on_mission_failure=True,
+                  journal=str(path))
+    before=path.read_bytes()
+    assert mod.recover(dict(job_id=ident,mode='inspect'))['observed']=='unverified'
+    assert path.read_bytes()==before
+    result=mod.recover(dict(job_id=ident,mode='continue',acknowledge_shared_progress=True))
+    assert result['state']=='stopped' and result['index']==1
+    assert result['unverified_operations'][0]['operation']=='switch_toggle'
+    assert sum(json.loads(line).get('event')=='issued' for line in path.read_text().splitlines())==1
+
+
+def test_uncertain_full_run_can_close_without_reissuing_returned_call(mod, monkeypatch, tmp_path):
+    ident='d'*32;name='Mission_Main_Beach';path=tmp_path/(ident+'.jsonl')
+    path.write_text(''.join(json.dumps(e)+'\n' for e in [
+        dict(event='issued',mission=name,operation='complete'),
+        dict(event='returned',mission=name,operation='complete'),
+        dict(event='state',state='uncertain')]))
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod,'_engine',lambda:pytest.fail('Close must not reissue or read native calls'))
+    mod._job=dict(id=ident,ok=False,state='uncertain',names=[name],index=0,
+                  completion_path='normal_acceptance',continue_on_mission_failure=True,
+                  journal=str(path))
+    result=mod.recover(dict(job_id=ident,mode='close',acknowledge_shared_progress=True))
+    assert result['closed'] and mod.status()['state']=='stopped'
+    assert json.loads(path.read_text().splitlines()[-1])['report']['observed']=='unverified_without_retry'
+
+
 def test_party_change_stops_before_journal_or_native_mutation(mod, monkeypatch, tmp_path):
     r = row()
     monkeypatch.setattr(mod, '_engine', lambda: NS(snapshot=lambda: {'missions': [r]}))
@@ -670,6 +789,61 @@ def test_replay_start_attaches_world_guard_unless_internal_practice_owns_it(mod,
     result=mod.start(payload,**(dict(manage_replay_travel=False) if owned_by_practice else {}))
     assert result['completion_path']==('normal_acceptance' if owned_by_practice else 'mission_replay')
     assert ('completion_context' in result) is not owned_by_practice
+
+
+def test_authored_credit_job_uses_completed_records_without_replaying_mission(mod,monkeypatch,tmp_path):
+    name='Mission_Harmonica_Main01';challenge='Achievement_Test'
+    # The authored list is supplied by the reviewed challenge catalog; the
+    # job may send only guarded Mission credit after a completed shared read.
+    r=row(name,'completed');pc=NS(_path_name=lambda:'host');party=[dict(pc=pc)]
+    engine=NS(snapshot=lambda:dict(missions=[r]))
+    monkeypatch.setattr(mod,'__package__','authored_credit_test')
+    monkeypatch.setitem(sys.modules,'authored_credit_test',NS(
+        mission_discovery=NS(SCOPES=()),
+        farming_targets=NS(resolve=lambda payload:party)))
+    monkeypatch.setitem(sys.modules,'authored_credit_test.mission_challenges',NS(
+        CREDIT_MISSIONS=(),credit_definition=lambda key:dict(missions=[name]) if key==challenge else None))
+    monkeypatch.setitem(sys.modules,'mods_base',NS(SETTINGS_DIR=tmp_path))
+    monkeypatch.setattr(mod,'CATALOG',{name:dict(name=name,title='Mission',category='dlc',exit_names=['None'])})
+    monkeypatch.setattr(mod,'_engine',lambda:engine)
+    monkeypatch.setattr(mod,'_party',lambda:party)
+    monkeypatch.setattr(mod,'_binding',lambda rows:['same'])
+    monkeypatch.setattr(mod,'_validate_exit',lambda *args:None)
+    monkeypatch.setattr(mod,'require_clear_journals',lambda:None)
+    credited=[]
+    monkeypatch.setattr(mod,'_credit_completed',lambda e,p,n:credited.append((n,mod._job['credit_challenge'])) or True)
+    payload=dict(scope='challenge_credit',challenge_id=challenge,mode='complete',
+                 acknowledge_shared_progress=True)
+    started=mod.start(payload)
+    assert started['completion_path']=='normal_acceptance' and started['total']==1
+    assert mod.step(started['id'])['state']=='completed'
+    assert credited==[(name,challenge)]
+    events=[json.loads(line) for line in Path(mod._job['journal']).read_text().splitlines()]
+    assert not any(e.get('operation') in ('reset','accept','complete') for e in events)
+
+
+def test_authored_credit_job_rejects_incomplete_shared_record_before_journal(mod,monkeypatch,tmp_path):
+    name='Mission_Harmonica_Main01';challenge='Achievement_Test'
+    monkeypatch.setattr(mod,'__package__','authored_credit_guard_test')
+    monkeypatch.setitem(sys.modules,'authored_credit_guard_test',NS(
+        mission_discovery=NS(SCOPES=())))
+    monkeypatch.setitem(sys.modules,'authored_credit_guard_test.mission_challenges',NS(
+        CREDIT_MISSIONS=(),credit_definition=lambda key:dict(missions=[name])))
+    monkeypatch.setattr(mod,'_engine',lambda:NS(snapshot=lambda:dict(missions=[row(name,'active')])))
+    with pytest.raises(ValueError,match='completed shared mission records'):
+        mod.start(dict(scope='challenge_credit',challenge_id=challenge,
+                       acknowledge_shared_progress=True))
+    assert mod._job is None and not list(tmp_path.iterdir())
+
+
+def test_authored_credit_selection_is_bounded_and_preserves_definition_order(mod,monkeypatch):
+    monkeypatch.setattr(mod,'__package__','authored_credit_subset_test')
+    monkeypatch.setitem(sys.modules,'authored_credit_subset_test.mission_challenges',NS(
+        CREDIT_MISSIONS=(),credit_definition=lambda key:dict(missions=['A','B','C'])))
+    assert mod.select({},'challenge_credit',['C','A'],'Reviewed')==['A','C']
+    for names in (['C','C'],['outside'],[{}],[]):
+        with pytest.raises(ValueError,match='authored challenge'):
+            mod.select({},'challenge_credit',names,'Reviewed')
 
 
 def test_unresolved_replay_map_rejected_before_reset_or_journal(mod,monkeypatch):

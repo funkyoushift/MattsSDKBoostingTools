@@ -3,6 +3,7 @@ import importlib.util
 import importlib.resources
 import json
 import struct
+import sys
 import time
 from pathlib import Path
 from types import SimpleNamespace as NS
@@ -26,6 +27,146 @@ def test_source_list_is_fully_covered(mod):
     assert len(mod.MISSIONS)==len(set(mod.MISSIONS))==98
     assert set(mod.MISSIONS)<=catalog
     assert mod.DATA['goals']==[10,25,50,75,98]
+
+
+def test_mission_credit_probe_reports_missing_bits_without_issuing_callbacks(mod,monkeypatch):
+    entry=dict(challenge='Achievement',source='old.json',missions=['Mission_A','Mission_B'])
+    monkeypatch.setattr(mod,'MISSION_CREDIT_CATALOG',dict(game_build=25234898,entries=[entry]))
+    monkeypatch.setattr(mod,'MISSION_CREDIT_DEFINITIONS',{'Achievement':entry})
+    calls=[]
+    def read(engine,pc,data):
+        calls.append((pc,data))
+        return dict(count=1,credited={0})
+    monkeypatch.setattr(mod,'read_player',read)
+    result=mod.inspect_mission_credit_catalog('engine',[dict(pc='guest',label='Guest')],['Achievement'])
+    assert result[0]['players']==[dict(player='Guest',verified=True,count=1,
+                                      credited=['Mission_A'],missing=['Mission_B'])]
+    assert calls==[('guest',dict(challenge='Achievement',missions=['Mission_A','Mission_B']))]
+    with pytest.raises(ValueError,match='Unknown authored'):
+        mod.inspect_mission_credit_catalog('engine',[dict(pc='guest',label='Guest')],['Other'])
+
+
+def test_live_definition_probe_preserves_unknown_fnames(mod,monkeypatch):
+    challenge='Challenges_Achievements_55_Harmonica_Activities'
+    known='ZoneActivity_Intro_Safehouse_Horde'
+    monkeypatch.setattr(mod,'MISSION_NAME_CANDIDATES',[known])
+    monkeypatch.setattr(mod,'_name',lambda engine,name:b'challenge' if name==challenge else b'known123')
+    monkeypatch.setattr(mod,'sparse_entries',lambda engine,address,stride,maximum:[2000])
+    def read(address,size):
+        return {2000:b'challenge',3800:b'\x01\x01\x01',4000:b'known123',
+                4024:b'unknown1'}[(address)]
+    engine=NS(ensure_world=lambda:None,u64=lambda address:{2008:2100,2100:3000}[address],
+              array=lambda address,limit:(4000,2),read=read)
+    pc=NS(OakChallengeManager=NS(_get_address=lambda:1000),HasAuthority=lambda:True)
+    result=mod.inspect_live_definition(engine,pc,challenge)
+    assert result==dict(count=2,flags='010101',missions=[known,dict(unresolved_fname=b'unknown1'.hex())],
+                        all_names_resolved=False)
+
+
+def test_raw_live_progress_probe_reads_both_counters_without_inferred_credit(mod,monkeypatch):
+    challenge='Challenges_Achievements_55_Harmonica_Activities'
+    name=b'12345678'
+    monkeypatch.setattr(mod,'_name',lambda engine,value:name)
+    monkeypatch.setattr(mod,'sparse_entries',lambda engine,address,stride,maximum:{
+        1000+0x290:[2000],1000+0x3d8:[3000],3008:[4000]}[address])
+    library=NS(GetChallengeProgressForPlayer=lambda **kwargs:3,
+               IsChallengeCompleteForPlayer=lambda **kwargs:False)
+    unreal=NS(FGameDataHandle=lambda *args:args)
+    monkeypatch.setitem(sys.modules,'unrealsdk',NS(find_object=lambda *args:library))
+    monkeypatch.setitem(sys.modules,'unrealsdk.unreal',unreal)
+    def read(address,size):
+        return {5000+0x394:struct.pack('<i',2),2000:name,3000:struct.pack('<i',2),
+                6000:name,7000:struct.pack('<q',3),8000:struct.pack('<I',5)}[address]
+    engine=NS(ensure_world=lambda:None,
+              u64=lambda address:{2008:2500,4000:2500,4008:7000}[address],
+              array=lambda address,limit:{5000+0x1300:(6000,1),6008:(8000,1)}[address],
+              read=read)
+    pc=NS(PlayerState=NS(_get_address=lambda:5000,PlayerId=2,PlayerNamePrivate='Guest'),
+          Pawn=object(),OakChallengeManager=NS(_get_address=lambda:1000),HasAuthority=lambda:True)
+    result=mod.inspect_live_player_progress(engine,pc,challenge)
+    assert result==dict(player='Guest',player_id=2,native_counter=3,record_counter=3,
+                        challenge_complete=False,raw_record_present=True,raw_bit_words=['0x5'])
+
+
+def test_current_harmonica_flags_require_exact_definition_and_coherent_player_count(mod,monkeypatch):
+    challenge='Challenges_Achievements_55_Harmonica_Activities'
+    data=mod.credit_definition(challenge)
+    monkeypatch.setattr(mod,'_name',lambda engine,value:b'12345678')
+    monkeypatch.setattr(mod,'sparse_entries',lambda engine,address,stride,maximum:{
+        1000+0x290:[2000],1000+0x3d8:[3000],3008:[4000]}[address])
+    library=NS(GetChallengeProgressForPlayer=lambda **kwargs:0)
+    monkeypatch.setitem(sys.modules,'unrealsdk',NS(find_object=lambda *args:library))
+    monkeypatch.setitem(sys.modules,'unrealsdk.unreal',NS(FGameDataHandle=lambda *args:args))
+    flags=[b'\x01\x00\x01']
+    def read(address,size):
+        if address==5000+0x394:return struct.pack('<i',2)
+        if address in (2000,*[9000+i*24 for i in range(len(data['missions']))]):return b'12345678'
+        if address==2500+0x320:return flags[0]
+        if address==3000:return struct.pack('<i',2)
+        if address==7000:return struct.pack('<q',0)
+        raise AssertionError('Unexpected native read')
+    engine=NS(profile='steam-26007962',ensure_world=lambda:None,
+              u64=lambda address:{2008:2100,2100:2500,4000:2100,4008:7000}[address],
+              array=lambda address,limit:{2500+0x328:(9000,len(data['missions'])),
+                                        5000+0x1300:(6000,0)}[address],read=read)
+    pc=NS(PlayerState=NS(_get_address=lambda:5000,PlayerId=2,PlayerNamePrivate='Guest'),
+          Pawn=object(),OakChallengeManager=NS(_get_address=lambda:1000),
+          HasAuthority=lambda:True,_path_name=lambda:'guest')
+    assert mod.read_player(engine,pc,data)['credited']==set()
+    engine.profile='epic-26007962'
+    with pytest.raises(RuntimeError,match='counting rules changed'):
+        mod.read_player(engine,pc,data)
+    engine.profile='steam-26007962'
+    with pytest.raises(RuntimeError,match='counting rules changed'):
+        mod.read_player(engine,pc,dict(challenge='Other',missions=data['missions']))
+    flags[0]=b'\x01\x00\x00'
+    with pytest.raises(RuntimeError,match='counting rules changed'):
+        mod.read_player(engine,pc,data)
+
+
+def test_authored_credit_callback_targets_only_missing_guest_and_reconciles(mod,monkeypatch):
+    challenge='Challenges_Achievements_59_Harmonica_Mission01'
+    data=mod.credit_definition(challenge)
+    assert len(data['missions'])==1
+    host,guest=object(),object();issued=[];events=[];guest_credited=set()
+    def read(engine,pc,definition):
+        assert definition==data
+        credited={0} if pc is host else set(guest_credited)
+        return dict(pid=1 if pc is host else 2,path='host' if pc is host else 'guest',
+                    player='Host' if pc is host else 'Guest',count=len(credited),
+                    credited=credited,manager=100,entry=200,progress=300)
+    monkeypatch.setattr(mod,'read_player',read)
+    monkeypatch.setattr(mod,'native_address',lambda e,r:r)
+    monkeypatch.setattr(mod,'native_fingerprint',lambda e,r,f:f)
+    monkeypatch.setattr(mod,'_name',lambda e,n:b'12345678')
+    def factory(*signature):
+        def bind(address):
+            def invoke(manager,pid,entry,progress,event):
+                assert pid==2 and events[-1]['event']=='issued'
+                issued.append(pid);guest_credited.add(0)
+            return invoke
+        return bind
+    monkeypatch.setattr(mod.C,'WINFUNCTYPE',factory)
+    engine=NS(read=lambda a,n:bytes.fromhex(mod.FINGERPRINT))
+    party=[dict(pc=host),dict(pc=guest)]
+    with pytest.raises(mod.CreditPending) as pending:
+        mod.credit_completed(engine,party,data['missions'][0],events.append,challenge_id=challenge)
+    receipt=pending.value.receipt
+    assert receipt['challenge']==challenge and issued==[2]
+    loaded=NS(_path_name=lambda:'guest')
+    assert mod.reconcile(engine,[dict(pc=loaded,state=NS(PlayerId=2))],receipt,events.append)['count']==1
+    assert issued==[2] and events[-1]['event']=='challenge_verified'
+
+
+def test_authored_credit_definition_mismatch_does_not_issue_callback(mod,monkeypatch):
+    challenge='Challenges_Achievements_59_Harmonica_Mission01'
+    data=mod.credit_definition(challenge)
+    monkeypatch.setattr(mod,'read_player',lambda *args:(_ for _ in ()).throw(
+        RuntimeError('Mission credit counting rules changed')))
+    with pytest.raises(RuntimeError,match='counting rules changed'):
+        mod.credit_completed(None,[dict(pc=object())],data['missions'][0],
+                             lambda event:pytest.fail('No callback should be journaled'),
+                             challenge_id=challenge)
 
 
 def test_campaign_unlock_matches_exact_authored_definition(mod):
@@ -136,6 +277,24 @@ def test_preflight_mismatch_never_issues_callback(mod,monkeypatch):
     with pytest.raises(RuntimeError):
         mod.credit_completed(None,[{'pc':None}],mod.MISSIONS[0],journal.append)
     assert not journal
+
+
+def test_deferred_host_mismatch_still_checks_guest_credit(mod,monkeypatch):
+    host=NS(_path_name=lambda:'host');guest=NS(_path_name=lambda:'guest')
+    seen=[];deferred=[]
+    def read(engine,pc):
+        seen.append(pc)
+        if pc is host:
+            raise mod.CreditReadbackMismatch('Host counters disagree')
+        return dict(count=1,credited={0},player='Guest')
+    monkeypatch.setattr(mod,'read_player',read)
+    party=[dict(pc=host,state=NS(PlayerId=1)),dict(pc=guest,state=NS(PlayerId=2))]
+    result=mod.credit_completed(None,party,mod.MISSIONS[0],lambda event:None,
+                                on_mismatch=deferred.append)
+    assert seen==[host,guest]
+    assert deferred==[dict(mission=mod.MISSIONS[0],player_id=1,player_path='host',
+                           reason='Host counters disagree')]
+    assert result[0]['unverified'] and result[1]['already_credited']
 
 
 def test_pending_credit_waits_without_a_second_write(mod,monkeypatch):

@@ -10,7 +10,7 @@ import pytest
 
 def environment():
     source = (Path(__file__).parents[2] / 'mod_extracted/MattsSDKBoostingTools/backend_actions.py').read_text(encoding='utf-8')
-    functions = {'uvh_boost_tick', 'uvh_boost_status', 'uvh_boost_cancel', 'uvh_boost_resume', '_uvh_stop_uncertain', '_uvh_queue_for_pc'}
+    functions = {'uvh_boost_tick', 'uvh_boost_status', 'uvh_boost_cancel', 'uvh_boost_resume', 'uvh_boost_discard_paused', '_uvh_stop_uncertain', '_uvh_queue_for_pc'}
     nodes = [n for n in ast.parse(source).body if isinstance(n, ast.FunctionDef) and n.name in functions]
     calls = []
     pc = NS(ServerIncrementChallengeForPlayer=lambda *a: calls.append(a), HasAuthority=lambda: True,
@@ -93,6 +93,26 @@ def test_repeated_cancel_preserves_remaining_steps():
     e, pc, calls, notes, tick = environment()
     e['uvh_boost_cancel']();e['uvh_boost_cancel']()
     assert len(e['_uvh_paused_queue'])==2 and not calls
+
+
+def test_uncertain_paused_tail_can_be_discarded_without_repeating_requests():
+    e, pc, calls, notes, tick = environment()
+    e['_uvh_stop_uncertain']('First challenge was not confirmed')
+    assert e['uvh_boost_status']()['paused_steps']==2
+    receipt=e['uvh_boost_discard_paused']()
+    assert receipt['ok'] and receipt['discarded_steps']==2
+    assert not e['uvh_boost_status']()['paused_steps']
+    assert not e['uvh_boost_status']()['uncertain']
+    assert not calls
+
+
+def test_manually_paused_uvh_is_not_discarded():
+    e, pc, calls, notes, tick = environment()
+    e['uvh_boost_cancel']()
+    assert not e['uvh_boost_discard_paused']()['ok']
+    assert e['uvh_boost_status']()['paused_steps']==2
+    assert e['uvh_boost_discard_paused'](allow_manual=True)['ok']
+    assert not e['uvh_boost_status']()['paused_steps']
 
 
 def test_full_progress_roster_guard_stops_before_native_call():

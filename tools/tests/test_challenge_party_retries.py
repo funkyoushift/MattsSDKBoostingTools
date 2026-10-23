@@ -3,6 +3,7 @@ import ast
 from collections import deque
 from pathlib import Path
 from types import SimpleNamespace
+from typing import Any
 
 
 def queue_env(fail):
@@ -57,3 +58,18 @@ def test_full_progress_roster_guard_stops_before_send():
     env['complete_challenges_cancel']=lambda:env['_challenge_queue'].clear()
     tick()
     assert not calls and env['_challenge_failed']==1
+
+
+def test_explicit_challenge_amount_overrides_catalog_default():
+    source=(Path(__file__).resolve().parents[2]/'mod_extracted/MattsSDKBoostingTools/backend_actions.py').read_text(encoding='utf-8')
+    node=next(n for n in ast.parse(source).body if isinstance(n,ast.FunctionDef)
+              and n.name=='complete_challenges')
+    queued=[]
+    env=dict(Any=Any,_challenge_ids_from_payload=lambda payload:['Known'],
+             _challenge_rows_for_ids=lambda ids,fallback_amount:[('Known',2)],
+             _challenge_queue_start=lambda rows,**kwargs:queued.append(rows) or dict(ok=True))
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'<challenge-request>','exec'),env)
+    assert env['complete_challenges'](dict(challenge_id='Known',amount=1))['ok']
+    assert queued[-1]==[('Known',1)]
+    assert env['complete_challenges'](dict(challenge_id='Known'))['ok']
+    assert queued[-1]==[('Known',2)]

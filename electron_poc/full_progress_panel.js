@@ -38,8 +38,24 @@
     if(!el("fullProgressPanel") || el("fullProgressPanel").dataset.bound)return;
     el("fullProgressPanel").dataset.bound="true";
     let preview=null,job=null,busy=false;
+    function acceptStatus(value){
+      // A status error without an identity is not proof that a saved run is
+      // gone. Keep its recovery controls until the backend confirms idle or
+      // returns a specific run record.
+      if(value?.ok===true && value.state==="idle"){
+        job=null;
+        return true;
+      }
+      if(value?.id && ["running","stopped","uncertain","interrupted","finished","partial","cancelled"].includes(value.state)){
+        job=value;
+        return true;
+      }
+      return false;
+    }
     function update(){
-      el("fullProgressStart").disabled=busy || el("missionReplayLock")?.hidden===false || ["running","stopped","uncertain","interrupted"].includes(job?.state) || !preview?.allowed || !el("fullProgressAck").checked;
+      const replace=el("fullProgressReplaceWork")?.checked===true;
+      const recoveryRun=replace && ["stopped","uncertain","interrupted"].includes(job?.state) && !!job?.id;
+      el("fullProgressStart").disabled=busy || el("missionReplayLock")?.hidden===false || job?.state==="running" || (["stopped","uncertain","interrupted"].includes(job?.state) && !recoveryRun) || !preview?.allowed || !el("fullProgressAck").checked;
       el("fullProgressClose").disabled=busy || !job?.id || !["stopped","uncertain","interrupted"].includes(job.state) || !el("fullProgressAck").checked;
       el("fullProgressContinue").textContent=["stopped","uncertain"].includes(job?.state)?"Repair and continue":"Continue run";
       el("fullProgressPreview").disabled=busy;
@@ -51,6 +67,7 @@
       if(value.players)lines.push("Players: "+value.players.join(", "));
       if(value.available_content)lines.push("Available content for this lobby: "+(value.available_content.join(", ") || "Base game; no additional content confirmed"));
       if(value.total)lines.push(`${value.index} / ${value.total} stages finished`);
+      for(const row of value.prior_uvh_cleanup || [])lines.push(`Previous ${row.kind || 'UVHM'} work stopped: ${row.message || 'Remaining work closed; applied changes kept.'}`);
       for(const row of value.skipped || [])lines.push("Unavailable: "+(row.title || row)+ (row.reason?" — "+row.reason:""));
       for(const row of value.blockers || [])lines.push("Blocked: "+row.title+" — "+row.reason);
       for(const row of value.results || []){
@@ -62,15 +79,17 @@
       for(const line of value.coverage || [])lines.push(line);
       for(const line of value.limits || [])lines.push(line);
       if(value.state === "finished")lines.push("Save and quit normally, then verify progress in each player's own game.");
+      if(value.state === "interrupted")lines.push("This saved run cannot be resumed in this session. Close its run record after backend cleanup is confirmed, then check the lobby again before starting another run.");
       el("fullProgressOutput").textContent=lines.join("\n");update();
     }
     el("fullProgressAck").addEventListener("change",update);
+    el("fullProgressReplaceWork")?.addEventListener("change",update);
     el("fullProgressPreview").addEventListener("click",async()=>{
       preview=null;update();try{preview=await call("full_progress_preview",{});report(preview);}
       catch(e){report({message:e.message});}
     });
     el("fullProgressStatus").addEventListener("click",async()=>{
-      try{const value=await call("full_progress_status",{});if(!busy && value?.state)job=value;report(value);}
+      try{const value=await call("full_progress_status",{});if(!busy)acceptStatus(value);report(value);}
       catch(e){report({message:e.message});}
     });
     el("fullProgressClose").addEventListener("click",async()=>{
@@ -81,12 +100,41 @@
       if(el("fullProgressStart").disabled)return;
       busy=true;update();
       try{
-        const started=await call("full_progress_start",{acknowledge_shared_progress:true});
+        const replace=el("fullProgressReplaceWork")?.checked===true;
+        if(replace && ["stopped","uncertain","interrupted"].includes(job?.state)){
+          const previousId=job.id;
+          const current=await call("full_progress_status",{});
+          if(current?.id!==previousId || !acceptStatus(current) || !["stopped","uncertain","interrupted"].includes(current.state)){
+            report({...current,message:"The previous run could not be verified as stopped. No new run was started."});
+            return;
+          }
+          const closed=await call("full_progress_close",{job_id:previousId,acknowledge_shared_progress:true});
+          if(closed?.ok!==true){
+            job=current;
+            report({...closed,message:closed?.message || "The previous run could not be safely closed. No new run was started."});
+            return;
+          }
+          const verified=await call("full_progress_status",{});
+          if(!(verified?.ok===true && verified.state==="idle")){
+            acceptStatus(verified);
+            report({...verified,message:"The previous run has not been confirmed closed. No new run was started."});
+            return;
+          }
+          job=null;
+          preview=await call("full_progress_preview",{});
+          report(preview);
+          if(!preview?.ok || !preview.allowed){
+            report({...preview,message:preview?.reason || "Lobby verification failed. No new run was started."});
+            return;
+          }
+        }
+        const started=await call("full_progress_start",{acknowledge_shared_progress:true,
+          replace_other_progress:replace});
         if(!started?.id || !started?.state){
           // A rejected start must not replace a recoverable run with an error
           // object that has no identifier. Read status; never resend start.
           const current=await call("full_progress_status",{});
-          if(current?.state)job=current;
+          acceptStatus(current);
           report({...current,message:[started?.message,current?.message].filter(Boolean).join(". ")});
           return;
         }
@@ -100,8 +148,8 @@
       busy=true;update();
       try{
         const current=await call("full_progress_status",{});
-        if(current?.id!==job.id){report({message:"Waiting for this run's status. Progress is retained; try Continue run when connected."});return;}
-        job=current;report(job);
+        if(current?.id!==job.id || !acceptStatus(current)){report({message:"Waiting for this run's verified status. Progress is retained; try Continue run when connected."});return;}
+        report(job);
         if(!["running","stopped","uncertain"].includes(job.state))return;
         if(job.state !== "running"){
           const recovered=await call("full_progress_resume",{job_id:job.id,acknowledge_shared_progress:true});
@@ -119,7 +167,7 @@
     });
     update();
     call("full_progress_status",{}).then(value=>{
-      if(!busy && !job && value?.id){job=value;report(value);}
+      if(!busy && !job && acceptStatus(value))report(value);
     }).catch(()=>{});
     return update;
   }

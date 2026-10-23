@@ -115,9 +115,18 @@ def _campaign_names(snapshot):
     return names
 
 
-def select(snapshot, scope, names=None):
+def select(snapshot, scope, names=None, challenge_id=None):
     if scope == 'challenge_credit':
-        from .mission_challenges import CREDIT_MISSIONS
+        from .mission_challenges import CREDIT_MISSIONS, credit_definition
+        if challenge_id:
+            authored=list(credit_definition(challenge_id)['missions'])
+            if names is None:return authored
+            if not isinstance(names,list) or not names or any(
+                    not isinstance(name,str) or name not in authored for name in names):
+                raise ValueError('Credit selection must contain distinct missions from the authored challenge')
+            if len(names)!=len(set(names)):
+                raise ValueError('Credit selection must contain distinct missions from the authored challenge')
+            return [name for name in authored if name in names]
         return [n for n in CREDIT_MISSIONS if any((r.get('source_identity') or {}).get('name')==n
                 and _state(r)=='completed' and not r.get('generated') and r.get('replication_type')==0
                 for r in snapshot['missions'])]
@@ -157,7 +166,7 @@ def preview(payload):
     if scope in discovery.SCOPES:
         entries = discovery.plan(scope, snapshot)
         return dict(ok=True, scope=scope, missions=entries, max_batch=len(entries), unit='locations or requirements', message='Discovery and travel requirements affect shared party progress.')
-    names = select(snapshot, scope, payload.get('missions'))
+    names = select(snapshot, scope, payload.get('missions'),payload.get('challenge_id'))
     entries = []
     for name in names:
         try:
@@ -165,7 +174,7 @@ def preview(payload):
             if scope == 'bounty':
                 _validate_exit(_engine(), row, name)
             state = _state(row)
-            reason = None if state in ('active', 'accepted', 'available', 'completed') else 'Mission prerequisites are not available'
+            reason = None if state == 'completed' or (scope != 'challenge_credit' and state in ('active', 'accepted', 'available')) else 'Mission completion is required before credit repair'
         except ValueError as exc:
             state, reason = 'unavailable', str(exc)
         exclusion = _automatic_exclusion(snapshot, name) if scope in CATEGORY_SCOPES else (
@@ -221,6 +230,18 @@ def _defer(name, reason, access=None):
     return status()
 
 
+def _quarantine_failed_mission(name, exc, issued, operation):
+    """Retain an unresolved receipt and continue independent Full Game work."""
+    item=dict(mission=name,title=_metadata(name)['title'],operation=operation,
+              issued=bool(issued or getattr(exc,'issued',False)),reason=str(exc))
+    if getattr(exc,'operation',None):item['operation']=exc.operation
+    if getattr(exc,'address',None):item['address']=exc.address
+    _job.setdefault('unverified_operations',[]).append(item)
+    _journal(dict(event='operation_quarantined',**item))
+    _job.update(ok=True,state='running')
+    return _defer(name,'Unverified operation retained; no automatic retry: '+str(exc))
+
+
 def _journal(event):
     with Path(_job['journal']).open('a', encoding='utf-8') as stream:
         stream.write(json.dumps(dict(event, time=time.time())) + '\n')
@@ -254,7 +275,19 @@ def start(payload, *, manage_replay_travel=True, use_objective_graph=True):
     entries = discovery.plan(scope, snapshot, payload.get('missions')) if discovery_job else []
     if any(r['blocked_reason'] for r in entries):
         raise ValueError('Travel requirement parent mission is unfinished')
-    names = [r['name'] for r in entries] if discovery_job else select(snapshot, scope, payload.get('missions'))
+    names = [r['name'] for r in entries] if discovery_job else select(snapshot, scope, payload.get('missions'),payload.get('challenge_id'))
+    credit_challenge=payload.get('challenge_id') if scope=='challenge_credit' else None
+    if credit_challenge:
+        incomplete=[]
+        for name in names:
+            try:
+                row=_row(snapshot,name)
+                if _state(row)!='completed' or row.get('generated') or row.get('replication_type',0)!=0:
+                    incomplete.append(name)
+            except ValueError:
+                incomplete.append(name)
+        if incomplete:
+            raise ValueError('Mission credit requires completed shared mission records: '+', '.join(incomplete[:8]))
     mode = payload.get('mode', 'complete')
     if mode not in ('complete', 'reopen', 'reset_completed'):
         raise ValueError('Unknown mission operation')
@@ -349,7 +382,11 @@ def start(payload, *, manage_replay_travel=True, use_objective_graph=True):
                 campaign_replay=mode == 'reset_completed',
                 catalog_total=len(names) + len(excluded), excluded=excluded, pending=[], stall_since=None,
                 exclusion_reasons=exclusion_reasons,
-                deferred=[],
+                deferred=[], defer_unconfirmed_mission_credit=payload.get('defer_unconfirmed_mission_credit') is True,
+                continue_on_mission_failure=payload.get('continue_on_mission_failure') is True,
+                unverified_operations=[],
+                unverified_challenge_credit=[],
+                credit_challenge=credit_challenge,
                 settle_guest_progress=payload.get('settle_guest_progress') is True, next_step_at=0.0,
                 guest_persistence='requires own-game verification')
     if graph or replay_travel:
@@ -428,8 +465,9 @@ def _credit_completed(engine, party, name):
     if name.startswith('bounty:'):
         return True
     import sys
-    from . import mission_effects
-    mission_effects.complete_dependencies(sys.modules[__name__], engine, party, name)
+    if _job.get('selection_scope')!='challenge_credit':
+        from . import mission_effects
+        mission_effects.complete_dependencies(sys.modules[__name__], engine, party, name)
     from . import mission_challenges
     if _job.get('challenge_pending'):
         mission_challenges.reconcile(engine, party, _job['challenge_pending'], _journal)
@@ -438,7 +476,16 @@ def _credit_completed(engine, party, name):
         _job.update(state='cancelled', message='Issued credit verified; remaining work cancelled')
         _journal(dict(event='state', state='cancelled', index=_job['index']))
         return False
-    receipts = mission_challenges.credit_completed(engine, party, name, _journal)
+    def record_mismatch(item):
+        pending=_job['unverified_challenge_credit']
+        if not any(r['mission']==item['mission'] and r.get('player_id')==item['player_id']
+                   and r.get('player_path')==item['player_path'] for r in pending):
+            pending.append(item)
+            _journal(dict(event='challenge_credit_deferred',**item))
+    receipts = mission_challenges.credit_completed(
+        engine, party, name, _journal,
+        on_mismatch=record_mismatch if _job.get('defer_unconfirmed_mission_credit') else None,
+        challenge_id=_job.get('credit_challenge'))
     if receipts:
         _job['challenge_credit'] = receipts
     return True
@@ -708,6 +755,15 @@ def step(job_id):
             from .mission_completion_placement import stop
             stop(sys.modules[__name__],str(exc),'stopped')
             return status()
+        if (_job.get('continue_on_mission_failure') and not pending_campaign and not pending_travel
+                and not _job.get('challenge_pending') and exc.__class__.__name__ != 'CreditUncertain'
+                and _job.get('completion_path') == 'normal_acceptance'
+                and 'name' in locals() and name == _job['names'][_job['index']]):
+            try:
+                if _binding(_party()) == _job['binding']:
+                    return _quarantine_failed_mission(name,exc,issued,locals().get('operation'))
+            except Exception:
+                pass  # A changed or unreadable lobby is a global stop, not a skipped mission.
         _job.update(ok=False, state='uncertain' if issued or pending_campaign or pending_travel or getattr(exc, 'issued', False) else 'stopped', message=str(exc))
     _journal(dict(event='state', state=_job['state'], index=_job['index'], message=_job['message']))
     return status()
@@ -866,6 +922,22 @@ def recover(payload):
     from mods_base import SETTINGS_DIR
     path = Path(_job['journal']) if live else Path(SETTINGS_DIR) / 'msbt_missions' / (job_id + '.jsonl')
     events = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines()]
+    if (live and payload.get('mode')=='close' and _job.get('continue_on_mission_failure')
+            and _job.get('completion_path')=='normal_acceptance'):
+        if payload.get('acknowledge_shared_progress') is not True:
+            raise ValueError('Acknowledge shared progress before closing this run')
+        if _job.get('challenge_pending') or _job.get('completion_context',{}).get('travel'):
+            raise ValueError('An issued operation is still settling; inspect it before closing')
+        report=dict(operation='full_run_abandoned',mission=(
+            _job['names'][_job['index']] if _job['index']<len(_job['names']) else None),
+            observed='unverified_without_retry')
+        event=dict(event='recovered',state='stopped',closed=True,report=report,time=time.time())
+        with path.open('a',encoding='utf-8') as stream:
+            stream.write(json.dumps(event)+'\n');stream.flush();os.fsync(stream.fileno())
+        _job.update(ok=True,state='stopped',closed=True,
+                    message='Run closed; applied progress retained and uncertain work not repeated')
+        return dict(ok=True,state='stopped',closed=True,id=job_id,report=report,
+                    message=_job['message'])
     if live and _job.get('completion_path') in ('objective_graph', 'mission_replay'):
         import sys
         from . import mission_completion_context
@@ -885,24 +957,73 @@ def recover(payload):
                      if events[i].get('event') == 'campaign_reset_issued'), None)
     if campaign is not None:
         return _recover_campaign(payload, events, path, live, job_id, campaign)
+    if not live and payload.get('mode')=='close':
+        if payload.get('acknowledge_shared_progress') is not True:
+            raise ValueError('Acknowledge shared progress before closing this interrupted run')
+        last=next((e for e in reversed(events) if e.get('event')=='issued'),{})
+        operation,name=last.get('operation'),last.get('mission')
+        observed='unverified_after_reload' if operation else 'no_issued_call_found'
+        report=dict(operation=operation,mission=name,observed=observed)
+        event=dict(event='recovered',state='stopped',closed=True,report=report,time=time.time())
+        with path.open('a',encoding='utf-8') as stream:
+            stream.write(json.dumps(event)+'\n');stream.flush();os.fsync(stream.fileno())
+        return dict(ok=True,state='stopped',closed=True,id=job_id,report=report,
+                    message='Interrupted mission run closed without repeating or verifying old calls. Applied progress retained.')
     issued = next((i for i in range(len(events)-1, -1, -1) if events[i].get('event') == 'issued'), None)
     if issued is None:
         raise ValueError('No recorded mission call to reconcile')
     call = events[issued]
     name, operation = call.get('mission'), call.get('operation')
-    if not live and operation == 'objective_complete' and name in CATALOG and payload.get('mode') == 'close':
+    returned = next((e for e in events[issued+1:] if e.get('event') == 'returned'
+                     and e.get('operation') == operation and e.get('mission') == name), None)
+    if returned is None and payload.get('mode') == 'close':
         if payload.get('acknowledge_shared_progress') is not True:
             raise ValueError('Acknowledge shared progress before closing this interrupted run')
-        # Native tokens contain process-local name identities. After reload they
-        # cannot prove what the old call did. Explicit close abandons that run;
-        # it neither verifies completion nor resumes/reissues the native call.
-        report = dict(operation=operation, mission=name, observed='unverified_after_reload')
+        # Closing is receipt-only. It never infers that an unreturned call worked,
+        # and it makes an interrupted run restartable without repeating the call.
+        report = dict(operation=operation, mission=name, observed=(
+            'unverified_after_reload' if not live and operation=='objective_complete'
+            else 'unverified_unreturned_call'))
         event = dict(event='recovered', state='stopped', closed=True, report=report, time=time.time())
         with path.open('a', encoding='utf-8') as stream:
             stream.write(json.dumps(event) + '\n'); stream.flush(); os.fsync(stream.fileno())
+        if live:
+            _job.update(ok=True,state='stopped',closed=True,
+                        message='Unreturned operation retained as unverified; job closed without retry')
         return dict(ok=True, state='stopped', closed=True, id=job_id, report=report,
-                    message='Interrupted objective run closed without verifying completion or repeating calls. '
+                    message='Interrupted operation closed without verifying completion or repeating calls. '
                             'Applied progress is retained. Refresh preview before starting another run.')
+    if returned is None and live and _job.get('continue_on_mission_failure') and name in CATALOG:
+        mode=payload.get('mode','inspect')
+        if mode not in ('inspect','continue'):
+            raise ValueError('Choose inspect, continue, or close')
+        if _job['names'][_job['index']] != name or _binding(_party()) != _job['binding']:
+            raise ValueError('Original mission or lobby changed; close this run before restarting')
+        observed=None
+        read_error=None
+        if operation == 'safehouse_claim' and call.get('address'):
+            try:
+                from . import mission_effects
+                host=next(r['pc'] for r in _party() if r['host'])
+                observed=mission_effects.inspect_safehouse_claim(host,name,call['address'])
+            except Exception as exc:
+                read_error=str(exc)[:500]
+        report=dict(ok=True,id=job_id,mission=name,operation=operation,
+                    observed=observed['state'] if observed else 'unverified',
+                    channel=observed['channel'] if observed else None,read_error=read_error)
+        if mode=='inspect':return report
+        if payload.get('acknowledge_shared_progress') is not True:
+            raise ValueError('Acknowledge shared progress before continuing')
+        _job.update(ok=True,state='running')
+        if observed and observed['state'].casefold()=='claimed':
+            _job['phase']='complete'
+            _journal(dict(event='recovered',state='running',report=report))
+            return status()
+        error=RuntimeError('Issued '+str(operation)+' has no return receipt; no call repeated')
+        if operation=='safehouse_claim' and call.get('address'):
+            error.address=call['address']
+        result=_quarantine_failed_mission(name,error,True,operation)
+        return result
     if operation == 'challenge_credit':
         from . import mission_challenges
         returned = next((e for e in events[issued+1:] if e.get('event') == 'returned'

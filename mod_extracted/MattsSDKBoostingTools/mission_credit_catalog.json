@@ -1,0 +1,393 @@
+{
+  "game_build": 25234898,
+  "entries": [
+    {
+      "challenge": "Challenge_Misc_World_CompleteCityEpilogue",
+      "missions": [
+        "mission_main_cityepilogue"
+      ],
+      "source": "Nexus-Data-challenge0.json",
+      "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+      "pointer": "/challenge/records/0/entries/147/challenge_misc_world_completecityepilogue",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_24_missions_side",
+      "missions": [
+        "Grasslands_Side_ClaptrapOfPandora",
+        "Side_Grasslands_LighthouseKeeper",
+        "Mission_Side_TheCure",
+        "Grasslands_Survivalists01",
+        "Grasslands_Survivalists02",
+        "Grasslands_Survivalists03",
+        "Mission_Side_Heist",
+        "Grasslands_Side_MurderMystery",
+        "Mission_Side_LifesPurpose",
+        "Side_Grasslands_SumOfHisParts",
+        "Mission_Side_PlanetaryEscape",
+        "Side_Grasslands_SalvageRipperTunnels",
+        "Mission_Side_ThresherRancher",
+        "Mission_Side_MountainsFaction1",
+        "Mission_Side_MountainsFaction2",
+        "Mission_Side_MountainsFaction3",
+        "Mission_Side_MountainsFaction4",
+        "Mission_Micro_MountainsFaction4Intro",
+        "Mission_Side_FlatKairoser",
+        "Mission_Side_MadScientist",
+        "Grasslands_Side_RocketMonsters",
+        "Mission_Side_ObstacleCourseGlide",
+        "Mission_Side_ObstacleCourse_Grapple",
+        "Mission_Side_TheWeirdWayHome",
+        "Mission_Side_LifeCoach",
+        "Mission_Side_AGreatDisturbance",
+        "Mission_Side_CastingCall",
+        "Mission_Side_ElectiFactionMission1",
+        "Mission_Side_ElectiFactionMission2",
+        "Mission_Side_ElectiFactionMission3",
+        "MIssion_Side_ClapGen",
+        "Mission_Side_Vending",
+        "Mission_Side_City_AAAForEffort",
+        "Mission_Side_BelowTheSurface",
+        "Mission_Side_NoEscapeRoom",
+        "Mission_Side_OldRaymondPart1",
+        "Mission_Side_OldRaymondPart2",
+        "Mission_Side_OneGassyIssue",
+        "Mission_City_Side_OverwritingAWrong",
+        "Mission_Side_SeedsOfRevolutionPart1",
+        "Mission_Side_SeedsOfRevolutionPart2",
+        "Mission_Side_ThePriceOfFreedomPart1",
+        "Mission_Side_ThePriceOfFreedomPart2",
+        "Mission_Side_ThePriceOfFreedomPart3",
+        "Mission_Side_City_WaterTheChances",
+        "Mission_Side_WhatLurksBeneath",
+        "Micro_Grasslands_AbductionInjunction",
+        "Micro_Grasslands_AbductionInjunctionEnding",
+        "Micro_Grasslands_CarriedAway01",
+        "Micro_Grasslands_CarriedAway02",
+        "Micro_Grasslands_CarriedAway03",
+        "Micro_Grasslands_ExtremeBopIT",
+        "Micro_Grasslands_ExtremeBopIt2",
+        "Micro_Grasslands_ExtremeBopIt3",
+        "Micro_Grasslands_GottaGoFast",
+        "Mission_Micro_HeistRecruits_Demo",
+        "Mission_Micro_HeistRecruits_Tech",
+        "Micro_Grasslands_HydroplantPowerUp",
+        "Micro_Grasslands_HydroplantPowerup2",
+        "Mission_Micro_PowercorePlinko",
+        "Mission_Micro_RainbowEgg",
+        "Micro_Grasslands_SplicerSplits",
+        "Micro_Grasslands_SplicerSplits2",
+        "Micro_Grasslands_SplicerSplits3",
+        "Micro_Grasslands_UnderConstruction",
+        "Mission_Micro_WhackAThresher",
+        "Micro_AugerScout",
+        "micro_blackmarketbolts",
+        "Micro_BoltFuneralRites",
+        "Micro_Mountains_WhoNeedsInstructions",
+        "Mission_Micro_BackMcCrackyPt1",
+        "micro_nevermeetyourheroes",
+        "micro_orderup",
+        "Mission_Micro_TheEntertainment",
+        "Mission_Micro_TheSupply",
+        "Micro_Mountains_YouAreTheLifeCoachPT1",
+        "Mission_Micro_Zanzibart",
+        "Mission_Micro_AndWelcomeToTheJam",
+        "Micro_Shattered_BrokenShips",
+        "Micro_Shattered_HTBRipperPBJ",
+        "Micro_Shattered_RipplesAndRituals",
+        "Micro_Shattered_SiblingRivalry",
+        "VendingMicro1_Zink",
+        "Micro_Shattered_VGDave",
+        "Micro_Shattered_William",
+        "Mission_Micro_Catnapping",
+        "Mission_Micro_HuntedPart1",
+        "Mission_Micro_HuntedPart2",
+        "Mission_Micro_HuntedPart3",
+        "Mission_Micro_JoeAndSue",
+        "Mission_Micro_Resistance",
+        "Mission_Micro_BlackMarket",
+        "Mission_Side_GrasslandsVault",
+        "Mission_Side_Vault_Glide",
+        "Mission_Side_ResonatorVault",
+        "Micro_Shattered_HOF1",
+        "Micro_Shattered_EP_Agri",
+        "Micro_Shattered_EP_Mole"
+      ],
+      "source": "Nexus-Data-challenge0.json",
+      "sha256": "e06bed1b20979483cf05531d4e7f6d20c82ff4bac7565e36ad3d13296fa237f1",
+      "pointer": "/challenge/records/3/entries/7/challenges_achievements_24_missions_side",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_39_Cowbell_complete_all_side_missions",
+      "missions": [
+        "Mission_Side_DutyBeyondDeath",
+        "Mission_Side_Invasive1",
+        "Mission_Side_Invasive2",
+        "Mission_Side_RomeoAndRomeo",
+        "Mission_Side_SafeHaven",
+        "Mission_Side_SummoningCircle",
+        "Mission_Side_UnfinishedBusiness",
+        "Mission_Micro_Hosting",
+        "Mission_Micro_IceFishing",
+        "Mission_Micro_Operation",
+        "Mission_Micro_WhoDidIt"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/186/challenges_achievements_39_cowbell_complete_all_side_missions",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_41_Cowbell_mission_01_PolarWastes",
+      "missions": [
+        "mission_main_cowbell1"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/188/challenges_achievements_41_cowbell_mission_01_polarwastes",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_42_Cowbell_mission_02_FindEllie",
+      "missions": [
+        "Mission_Main_Cowbell2"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/189/challenges_achievements_42_cowbell_mission_02_findellie",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_43_Cowbell_mission_03_BloodstainedHollows",
+      "missions": [
+        "Mission_Main_Cowbell3"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/190/challenges_achievements_43_cowbell_mission_03_bloodstainedhollows",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_44_Cowbell_mission_04_ColonyShip",
+      "missions": [
+        "Mission_Main_Cowbell4"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/191/challenges_achievements_44_cowbell_mission_04_colonyship",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_45_Cowbell_Main_mission",
+      "missions": [
+        "Mission_Main_Cowbell5"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/192/challenges_achievements_45_cowbell_main_mission",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_55_Harmonica_Activities",
+      "missions": [
+        "ZoneActivity_Intro_Safehouse_Horde",
+        "ZoneActivity_Jungle_Safehouse_Horde",
+        "ZoneActivity_Lava_Safehouse_Horde",
+        "ZoneActivity_Grotto_Jungle",
+        "ZoneActivity_Grotto_Lava",
+        "ZoneActivity_Lockdown_Jungle",
+        "ZoneActivity_Lockdown_Lava"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/200/challenges_achievements_55_harmonica_activities",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_56_Harmonica_SideMissions",
+      "missions": [
+        "Mission_Side_Harmonica_Microplastics",
+        "Mission_Side_Harmonica_NoVacancy",
+        "Mission_Side_Harmonica_RescueRangers",
+        "Mission_Side_Harmonica_SpatialAwareness1",
+        "Mission_Side_Harmonica_SpatialAwareness2",
+        "Mission_Side_Harmonica_SpatialAwarenessReward",
+        "Mission_Side_Harmonica_TradingUp",
+        "Mission_Side_SasaengInvasion",
+        "Mission_Side_VeryMerryUnfestival",
+        "Mission_Micro_CatchingFire",
+        "Mission_Micro_Harmonica_Guarded",
+        "Mission_Micro_Harmonica_GuardedEnding",
+        "Mission_Micro_ManagerHand1_Pangolin",
+        "Mission_Micro_ManagerHand2_Tediore",
+        "Mission_Micro_SnowCone"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/201/challenges_achievements_56_harmonica_sidemissions",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_59_Harmonica_Mission01",
+      "missions": [
+        "mission_main_harmonica1"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/204/challenges_achievements_59_harmonica_mission01",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_60_Harmonica_Mission02B",
+      "missions": [
+        "Mission_main_Harmonica2B"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/205/challenges_achievements_60_harmonica_mission02b",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_62_Harmonica_Mission04",
+      "missions": [
+        "Mission_Main_Harmonica4"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/1/entries/207/challenges_achievements_62_harmonica_mission04",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_20_missions_survivalist",
+      "missions": [
+        "Grasslands_Survivalists01",
+        "Grasslands_Survivalists02",
+        "Grasslands_Survivalists03"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/2/entries/20/challenges_achievements_20_missions_survivalist",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_21_missions_auger",
+      "missions": [
+        "Mission_Side_MountainsFaction1",
+        "Mission_Side_MountainsFaction2",
+        "Mission_Side_MountainsFaction3",
+        "Mission_Side_MountainsFaction4"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/2/entries/21/challenges_achievements_21_missions_auger",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_22_missions_electi",
+      "missions": [
+        "Mission_Side_ElectiFactionMission1",
+        "Mission_Side_ElectiFactionMission2",
+        "Mission_Side_ElectiFactionMission3"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/2/entries/22/challenges_achievements_22_missions_electi",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenges_Achievements_23_missions_claptrap",
+      "missions": [
+        "Grasslands_Side_ClaptrapOfPandora",
+        "Side_Grasslands_SumOfHisParts",
+        "MIssion_Side_ClapGen",
+        "Mission_Side_ObstacleCourse_Grapple",
+        "Mission_Side_ObstacleCourseGlide"
+      ],
+      "source": "Nexus-Data-challenge4.json",
+      "sha256": "5eed13c56e8736fb3657a72e08c0ae22103cabb7a178da7eac06690ac892b685",
+      "pointer": "/challenge/records/2/entries/23/challenges_achievements_23_missions_claptrap",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenge_Misc_World_CompleteMainStory",
+      "missions": [
+        "Mission_Main_PrisonPrologue",
+        "Mission_Main_Beach",
+        "Mission_Main_Grasslands1",
+        "Mission_Main_Grasslands2",
+        "Mission_Main_Grasslands2b",
+        "Mission_Main_Grasslands3",
+        "Mission_Main_Mountains1",
+        "Mission_Main_Mountains2",
+        "Mission_Main_Mountains2b",
+        "Mission_Main_Mountains3",
+        "Mission_Main_Shatteredlands1",
+        "Mission_Main_Shatteredlands2",
+        "Mission_Main_Shatteredlands3",
+        "Mission_Main_SearchForLilith",
+        "Mission_Main_City1",
+        "Mission_Main_City2",
+        "Mission_Main_City3",
+        "Mission_Main_Elpis"
+      ],
+      "source": "Nexus-Data-challenge6.json",
+      "sha256": "290e13b1ef594bf9ba7cc88158498d2e611583316798e6541aa657c831590dd2",
+      "pointer": "/challenge/records/0/entries/46/challenge_misc_world_completemainstory",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    },
+    {
+      "challenge": "Challenge_Misc_World_CompleteSideMissions",
+      "missions": [
+        "Grasslands_Survivalists01",
+        "Grasslands_Survivalists02",
+        "Grasslands_Survivalists03",
+        "Grasslands_Side_ClaptrapOfPandora",
+        "Grasslands_Side_MurderMystery",
+        "Side_Grasslands_SalvageRipperTunnels",
+        "Mission_Side_Heist",
+        "Mission_Side_LifesPurpose",
+        "Mission_Side_PlanetaryEscape",
+        "Mission_Side_TheCure",
+        "Mission_Side_ThresherRancher",
+        "Side_Grasslands_LighthouseKeeper",
+        "Side_Grasslands_SumOfHisParts",
+        "Mission_Side_ElectiFactionMission1",
+        "Mission_Side_ElectiFactionMission2",
+        "Mission_Side_ElectiFactionMission3",
+        "Mission_Side_MountainsFaction1",
+        "Mission_Side_MountainsFaction2",
+        "Mission_Side_MountainsFaction3",
+        "Mission_Side_MountainsFaction4",
+        "Mission_Side_AGreatDisturbance",
+        "Mission_Side_CastingCall",
+        "Mission_Side_NoEscapeRoom",
+        "Mission_Side_ThePriceOfFreedomPart1",
+        "Mission_Side_ThePriceOfFreedomPart2",
+        "Mission_Side_ThePriceOfFreedomPart3",
+        "Mission_Side_OldRaymondPart1",
+        "Mission_Side_OldRaymondPart2",
+        "Mission_Side_City_AAAForEffort",
+        "Mission_Side_BelowTheSurface",
+        "Mission_City_Side_OverwritingAWrong",
+        "Mission_Side_OneGassyIssue",
+        "Mission_Side_SeedsOfRevolutionPart1",
+        "Mission_Side_SeedsOfRevolutionPart2",
+        "Mission_Side_WhatLurksBeneath",
+        "Grasslands_Side_RocketMonsters",
+        "Mission_Side_FlatKairoser",
+        "Mission_Side_LifeCoach",
+        "Mission_Side_MadScientist",
+        "Mission_Side_ObstacleCourse_Grapple",
+        "Mission_Side_ObstacleCourseGlide",
+        "Mission_Side_TheWeirdWayHome",
+        "MIssion_Side_ClapGen",
+        "Mission_Side_Vending"
+      ],
+      "source": "Nexus-Data-challenge6.json",
+      "sha256": "290e13b1ef594bf9ba7cc88158498d2e611583316798e6541aa657c831590dd2",
+      "pointer": "/challenge/records/0/entries/47/challenge_misc_world_completesidemissions",
+      "provenance": "Extracted BL4 1.10 challenge source; build 25234898 only."
+    }
+  ]
+}
