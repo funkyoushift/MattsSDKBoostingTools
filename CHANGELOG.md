@@ -1,3 +1,9 @@
+# v2.39.8 — Full Game recovery
+
+- Keep an uncertain mission challenge callback attached to its original receipt and allow an interrupted Full Game run to close only its matching mission job.
+- Continue other independent missions after a recorded failed operation, and expose explicit Run anyway recovery for a stopped run.
+- Show current Epic users the same 1.10 catalog coverage warning as current Steam users. Live Epic gameplay and saved 100% completion remain unverified.
+
 # v2.39.0 — Mission selection and co-op progress
 
 - Repair solo save-backed replay with a unified, numbered selector for39 story/DLC missions and 506 main objective sections, including later points in a playthrough. Native character swaps are automatic; a second existing character in the same profile is required.
