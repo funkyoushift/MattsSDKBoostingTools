@@ -33,6 +33,11 @@ contains the Buy Me a Coffee URL, omits the old donation-page URL and retains
 Mattmab's Ko-fi URL. Packaged latest.json matches source exactly. Twelve
 release assets are listed in SHA256SUMS.txt.
 
-Public release status: pending tag, upload and remote asset verification.
+Public release: v2.39.9 was published stable/latest on 2026-10-26 at
+15:41:16 UTC from tag b20bc1039fb00d5c137c26bbd37bf7370a4b99ba. The
+11 core assets and standalone selector SDK/README are present. All 12 asset
+digests match SHA256SUMS.txt, and that checksum file's own remote digest
+matches the local release copy. The tag is the packaged source; a later main
+merge preserved the previously published Android pairing repair note.
 Full Game, Epic gameplay, guest saved progress and trophy proof remain at
 their v2.39.8 evidence level; no new game behavior is claimed here.
