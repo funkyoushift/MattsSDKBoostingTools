@@ -45,3 +45,13 @@ Martin confirmed the phone connected after scanning the upper Remote AFK QR with
 the corrected local APK installed. This verifies restored phone connectivity;
 no new gameplay mutation or full mission replay was performed for this repair.
 The local fix is not included in the published v2.39.2 / Android1.6.4 assets.
+
+## Published inclusion
+
+Martin explicitly requested "include it" after confirming phone connection.
+Released Windows/full and standaloneSDK2.39.3 plus Android1.6.5/build38.
+All13 release assets, rolling updater metadata, actual publicAPK and README
+verified; CI passed. The finalAPK pairing JavaScript byte-matches the confirmed
+local candidate. Phone was detached during the version-only rebuild, so a fresh
+physical1.6.5 installation is not claimed. See [verification](../releases/VERIFICATION_v2.39.3.txt).
+Public download: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.3
