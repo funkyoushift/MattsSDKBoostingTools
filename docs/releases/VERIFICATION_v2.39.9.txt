@@ -1,0 +1,38 @@
+v2.39.9 / Android 1.6.6 — release verification
+
+Scope: FunkYouSHiFT development support links now use Buy Me a Coffee on the
+website, GitHub funding metadata, Windows and Android. Mattmab's independent
+Ko-fi, charity links and merch are unchanged. Desktop walkthrough and mobile
+announcement opt-out choices now persist as labeled. No game action changed.
+
+Destination evidence: the supplied branded QR decoded exactly to
+https://buymeacoffee.com/funkyoushift with ZXing. HTTPS GET returned 200 with
+the title Martin Wenn (FunkYouSHiFT). Website commit 6a37978 deployed from
+current main; GitHub Pages build reported built. Hosted donate.html returned
+200 with the Buy Me a Coffee URL and QR, without old payment cards. Hosted QR
+SHA256 matched the source image.
+
+Offline source checks: npm run test:settings passed, including complete app
+exit/restart, unchecked/checked tour choice, announcement opt-out and opt-in,
+boot welcome, movement and rarity presets. npm run check passed. The three
+focused Python release/startup checks passed 19 tests. Android companion
+syntax, mobile AFK and reconnect tests passed. Python compile and Git
+whitespace checks passed.
+
+Android: assembleRelease and lintRelease succeeded on 1.6.6/build 39. The
+new APK passes apksigner verification with the same certificate digest as
+1.6.5, so it can update the prior installed package. Packaged assets/app.js
+contains the Buy Me a Coffee URL. Native-device upgrade and live pairing were
+not repeated for this link-only change.
+
+Windows/SDK: the 2.39.9 full SDK and standalone selector archives passed
+Python compile/ZIP checks. The Windows installer and portable build passed
+31 installer checks, 48 packaged dependency checks, 3,315 packaged asset
+comparisons, packaged startup smoke and updater validation. Packaged renderer
+contains the Buy Me a Coffee URL, omits the old donation-page URL and retains
+Mattmab's Ko-fi URL. Packaged latest.json matches source exactly. Twelve
+release assets are listed in SHA256SUMS.txt.
+
+Public release status: pending tag, upload and remote asset verification.
+Full Game, Epic gameplay, guest saved progress and trophy proof remain at
+their v2.39.8 evidence level; no new game behavior is claimed here.
