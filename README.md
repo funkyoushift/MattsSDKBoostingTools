@@ -1,12 +1,12 @@
-<!-- v2.39.8 Full Game recovery repair -->
+<!-- v2.39.9 support and settings repair -->
 
-> **Android 1.6.5 pairing repair:** Save Setup now preserves Remote AFK pairing. If an older setup lost its credentials, scan the Remote AFK QR again in Windows → Mobile Pairing. The repair explains that recovery instead of trying to use the Remote AFK label as a computer address.
+> **Android 1.6.6:** The Support button opens FunkYouSHiFT's Buy Me a Coffee page. Save Setup continues to preserve Remote AFK pairing; if an older setup lost its credentials, scan the Remote AFK QR again in Windows → Mobile Pairing.
 
-> **v2.39.8 — Full Game recovery repair.** A Steam lobby run reached all nine stages without stalling; unresolved missions and challenges were reported as partial. The run can continue past a failed independent mission and can close or restart its own interrupted receipt without repeating an uncertain native callback. [Release notes](docs/releases/RELEASE_NOTES_v2.39.8.md).
+> **v2.39.9 — Support links and saved choices.** FunkYouSHiFT development support now opens [Buy Me a Coffee](https://buymeacoffee.com/funkyoushift). The desktop app tour and mobile announcement honor their “don't show again” choices across restarts. The Full Game recovery from v2.39.8 remains included. [Release notes](docs/releases/RELEASE_NOTES_v2.39.9.md).
 
 > **Qualification limits:** Epic's current executable has exact source-qualified card, mission, loader and dialogue profiles but was not launched. Steam host-to-guest item delivery appeared in the joined player's backpack; their save after rejoining was not checked. Joined-client-local inventory remains gated. Full Game uses a game 1.10 catalog, so 1.11 coverage is incomplete. Abandoned Post was already Claimed/discovered when its map entry unlocked after reload; the safehouse repair's causal effect is unproven.
 
-> **Android 1.6.5** remains unchanged. Update Windows to **2.39.8**; save files and backups stay on your PC. Replay requires a solo lobby and a second existing character. Generated encounters remain experimental.
+> **Android 1.6.6** and Windows **2.39.9** are available; save files and backups stay on your PC. Replay requires a solo lobby and a second existing character. Generated encounters remain experimental.
 
 The existing mission tools combine selection and replay under **Mission replay**: choose a campaign, a numbered mission in dependency order, and its beginning or a main objective. Experimental generated progress edits now cover 39 story/DLC missions and 126 main sections, including missions not yet reached by the current character. They create prerequisite records, clear dependent future mission records and reload the selected state. Parallel branches are retained; numbering gives a stable playable order, not a unique chronology for those branches. Mudmouth and Ripper Queen retain their narrower live-tested setup path. Other generated states are progress overrides, not captured gameplay snapshots; completing earlier objectives does not reproduce every authored branch outcome, and world facts/encounters may need further fixes. These wider states have offline checks and still need live gameplay tests.
 
@@ -14,7 +14,7 @@ Save-backed replay is solo-host only. It backs up and edits the inactive origina
 
 **Mission-state bookmarks — experimental.** Stand on foot at the point you want to practice and save a bookmark. New bookmarks store your exact XYZ position and saved mission/world state, including smaller internal steps. Loading restores that timeline and position while keeping your current equipment and levels. Older bookmarks marked “spawn station” retain their original loading behavior. Bookmarks stay on this PC and require matching game/catalog data.
 
-> **Mission tools remain experimental in v2.39.8.** Amber labels identify mission selection and bulk progress that may stop or leave NPCs, doors or encounters unready. Mission opening, selected-objective completion and native objective rewind have host test evidence; all-mission playability and guest save persistence are not verified. A finished full-game run does not guarantee saved 100% completion.
+> **Mission tools remain experimental in v2.39.9.** Amber labels identify mission selection and bulk progress that may stop or leave NPCs, doors or encounters unready. Mission opening, selected-objective completion and native objective rewind have host test evidence; all-mission playability and guest save persistence are not verified. A finished full-game run does not guarantee saved 100% completion.
 
 Mission tools now support one-objective advancement, authored checkpoint replay, mission reopening and campaign reset that retains character equipment and progression. Host save retention and opening NPC behavior were verified; guest-save and exhaustive world-effect coverage remain limited. See [v2.38.0 release notes](docs/releases/RELEASE_NOTES_v2.38.0.md).
 
@@ -28,8 +28,8 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.39.8.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.39.8.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.39.8-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.39.8-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.39.9.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.39.9.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.39.9-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.39.9-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
 
 [Download the standalone Mission Selector SDK](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/BL4MissionSelector.sdkmod) · [Console menu and installation](standalone_mission_selector/README.md)
@@ -44,7 +44,7 @@ Mission profiles are selected by exact game executable identity. Steam build 260
 
 The run refreshes visitors’ real game access before starting. It retains the original bulk mission callbacks, completes available work, and reports blocked content without stopping the rest of the run. It does not grant DLC ownership. The three-player test included a visitor with only bounty packs: all stages finished or reported their specific limits, all three had 59/59 SDU upgrades verified, and both visitors confirmed story completion and UVHM 7. Native challenge readback found 2,574 complete, zero incomplete and 261 unavailable definitions; 60 current vault-card challenges were verified. Own-game save/rejoin verification remains separate.
 
-Blocked DLC, absent definitions and unsupported cosmetic/vehicle unlocks remain visible. The broken teleporting fog-reveal tour is excluded. “Run finished” does not guarantee every collectible, achievement or saved 100% character. Android 1.6.5 includes the current mission interface and paired-PC replay/bookmark controls. Update the Windows app to 2.39.8 as well; saves and backups remain on the PC. Solo replay still requires a second existing character.
+Blocked DLC, absent definitions and unsupported cosmetic/vehicle unlocks remain visible. The broken teleporting fog-reveal tour is excluded. “Run finished” does not guarantee every collectible, achievement or saved 100% character. Android 1.6.6 includes the current mission interface and paired-PC replay/bookmark controls. Update the Windows app to 2.39.9 as well; saves and backups remain on the PC. Solo replay still requires a second existing character.
 
 Earlier v2.36.0 testing confirmed saved completion for both visitors after a 200-mission run; see its [release notes](docs/releases/RELEASE_NOTES_v2.36.0.md). That historical result does not replace verification for the new replay workflow.
 

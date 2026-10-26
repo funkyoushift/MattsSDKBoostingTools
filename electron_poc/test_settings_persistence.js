@@ -57,15 +57,52 @@ app.whenReady().then(async () => {
       await endWalkthrough({skipped:true});
       state.versionInfo = {appVersion:"test-v2"};
       await maybeStartWalkthrough();
-      return {before,afterFirst,afterPoll,afterChange,dismissed,restored,replay,update:walkthroughState.active};
+      const update = walkthroughState.active;
+      walkthroughNodes().dontShow.checked = false;
+      await endWalkthrough({skipped:true});
+      const optedBackIn = saved.dontShowAgain === false;
+      await maybeStartWalkthrough();
+      const tourReturns = walkthroughState.active;
+      await endWalkthrough({skipped:true});
+      setMobileAnnounceDismissed(false);
+      await showMobileAnnounceModal({force:true});
+      els.mobileAnnounceDontShow.checked = true;
+      openMobileGatewayPanel();
+      const mobileDismissed = isMobileAnnounceDismissed();
+      await showMobileAnnounceModal();
+      const mobileStaysHidden = els.mobileAnnounceModal.classList.contains("hidden");
+      await showMobileAnnounceModal({force:true});
+      const mobileChoiceRestored = els.mobileAnnounceDontShow.checked;
+      els.mobileAnnounceDontShow.checked = false;
+      els.mobileAnnounceDismissBtn.click();
+      const mobileOptedBackIn = !isMobileAnnounceDismissed();
+      return {before,afterFirst,afterPoll,afterChange,dismissed,restored,replay,update,optedBackIn,tourReturns,mobileDismissed,mobileStaysHidden,mobileChoiceRestored,mobileOptedBackIn};
     })()`);
     assert.strictEqual(result.before.legendary, 37);
     assert.strictEqual(result.afterFirst.legendary, 37);
     assert.strictEqual(result.afterPoll.legendary, 37);
     assert.strictEqual(result.afterChange.legendary, 50);
-    for (const key of ["dismissed", "restored", "replay", "update"]) assert.strictEqual(result[key], true, key);
+    for (const key of ["dismissed", "restored", "replay", "update", "optedBackIn", "tourReturns", "mobileDismissed", "mobileStaysHidden", "mobileChoiceRestored", "mobileOptedBackIn"]) assert.strictEqual(result[key], true, key);
+    await win.loadFile(path.join(__dirname, "renderer.html"));
+    const bootChoice = await win.webContents.executeJavaScript(`(async () => {
+      const splash = document.getElementById("msbtBootSplash");
+      const shown = Boolean(splash && !splash.classList.contains("is-done"));
+      document.getElementById("bootWelcomeDontShow").checked = true;
+      document.getElementById("bootWelcomeCloseBtn").click();
+      await new Promise(resolve => setTimeout(resolve, 320));
+      return {shown, saved:isBootWelcomeDismissed()};
+    })()`);
+    assert.strictEqual(bootChoice.shown, true, "boot welcome must be visible before opt-out");
+    assert.strictEqual(bootChoice.saved, true, "boot welcome opt-out must be stored");
+    await win.loadFile(path.join(__dirname, "renderer.html"));
+    const bootRestored = await win.webContents.executeJavaScript(`(async () => {
+      await new Promise(resolve => setTimeout(resolve, 320));
+      const splash = document.getElementById("msbtBootSplash");
+      return isBootWelcomeDismissed() && (!splash || splash.classList.contains("is-done"));
+    })()`);
+    assert.strictEqual(bootRestored, true, "boot welcome opt-out must survive a reload");
     win.destroy();
-    console.log("PASS: concurrent saves, last toggle wins, restored rarity survives polling, tour dismissal/restoration/replay/update");
+    console.log("PASS: concurrent saves, last toggle wins, rarity, tour, announcement and boot opt-out persistence");
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

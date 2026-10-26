@@ -3881,6 +3881,13 @@ function hideMobileAnnounceModal() {
   if (els.mobileAnnounceModal) els.mobileAnnounceModal.classList.add("hidden");
 }
 
+function dismissMobileAnnounceModal() {
+  if (els.mobileAnnounceDontShow) {
+    setMobileAnnounceDismissed(els.mobileAnnounceDontShow.checked);
+  }
+  hideMobileAnnounceModal();
+}
+
 async function showMobileAnnounceModal({ force = false } = {}) {
   if (!els.mobileAnnounceModal) return;
   if (!force && isMobileAnnounceDismissed()) return;
@@ -3895,12 +3902,12 @@ async function showMobileAnnounceModal({ force = false } = {}) {
     return;
   }
   await renderMobileAnnounceQr();
-  if (els.mobileAnnounceDontShow) els.mobileAnnounceDontShow.checked = false;
+  if (els.mobileAnnounceDontShow) els.mobileAnnounceDontShow.checked = isMobileAnnounceDismissed();
   els.mobileAnnounceModal.classList.remove("hidden");
 }
 
 function openMobileGatewayPanel() {
-  hideMobileAnnounceModal();
+  dismissMobileAnnounceModal();
   if (typeof switchTab === "function") {
     switchTab("mobile-gateway");
   } else {
@@ -14005,8 +14012,8 @@ function wireEvents() {
     window.msbt.openExternal("https://github.com/funkyoushift/MattsSDKBoostingTools");
   });
   [
-    ["developmentSupportBtn", "https://www.funkyoushift.com/donate.html"],
-    ["streamlabsBtn", "https://www.funkyoushift.com/donate.html"],
+    ["developmentSupportBtn", "https://buymeacoffee.com/funkyoushift"],
+    ["streamlabsBtn", "https://buymeacoffee.com/funkyoushift"],
     ["mattmabKofiBtn", "https://ko-fi.com/mattmab"],
     ["funkPoweredMark", "https://www.funkyoushift.com"],
     ["funkyoushiftSiteBtn", "https://www.funkyoushift.com"],
@@ -14324,12 +14331,7 @@ function wireEvents() {
     els.mobileGatewayHostSelect.addEventListener("change", () => void refreshMobileGatewayInfo());
   }
   if (els.mobileAnnounceDismissBtn) {
-    els.mobileAnnounceDismissBtn.addEventListener("click", () => {
-      if (els.mobileAnnounceDontShow && els.mobileAnnounceDontShow.checked) {
-        setMobileAnnounceDismissed(true);
-      }
-      hideMobileAnnounceModal();
-    });
+    els.mobileAnnounceDismissBtn.addEventListener("click", dismissMobileAnnounceModal);
   }
   if (els.mobileAnnounceOpenApkBtn) {
     els.mobileAnnounceOpenApkBtn.addEventListener("click", openMobileInstallPage);
@@ -15289,6 +15291,15 @@ function markMainTutorialSeen(version) {
   writeTutorialLocal(TUTORIAL_LS_MAIN_SEEN, ver);
 }
 
+function clearMainTutorialSeen() {
+  try {
+    localStorage.removeItem(TUTORIAL_LS_LAST_SEEN);
+    localStorage.removeItem(TUTORIAL_LS_MAIN_SEEN);
+  } catch {
+    /* continue showing the tour if storage is unavailable */
+  }
+}
+
 function shouldAutoShowMainTutorial() {
   const current = currentAppVersionString();
   const lastSeen = readTutorialLocal(TUTORIAL_LS_LAST_SEEN);
@@ -15297,9 +15308,8 @@ function shouldAutoShowMainTutorial() {
   if (!lastSeen) return true;
   // Updated since last marked version
   if (lastSeen !== current) return true;
-  // Same version already completed/skipped
-  if (mainSeen === current) return false;
-  return false;
+  // Only an explicit "don't show again" choice suppresses this version.
+  return mainSeen !== current;
 }
 
 function clearWalkthroughSpotlight() {
@@ -16077,7 +16087,8 @@ async function endWalkthrough({ skipped = false, quiet = false } = {}) {
   // Quiet end chains into another tour — keep update chrome suppressed.
   if (!quiet) restoreTourCollidingChrome();
   if (wasMain) {
-    markMainTutorialSeen(currentAppVersionString());
+    if (suppressUntilUpdate) markMainTutorialSeen(currentAppVersionString());
+    else clearMainTutorialSeen();
     await persistWalkthroughSettings({
       dismissed: true,
       dontShowAgain: suppressUntilUpdate
@@ -16220,9 +16231,11 @@ async function maybeStartWalkthrough() {
       const saved = result.data;
       walkthroughState.dontShowAgain = Boolean(saved.dontShowAgain);
       // Migrate explicit opt-outs from files written before version tracking.
-      if ((saved.dismissed || saved.dontShowAgain) &&
+      if (saved.dontShowAgain &&
           (saved.appVersion === currentAppVersionString() || (!saved.appVersion && saved.dontShowAgain))) {
         markMainTutorialSeen(currentAppVersionString());
+      } else if (!saved.dontShowAgain) {
+        clearMainTutorialSeen();
       }
     }
   }
@@ -16232,7 +16245,7 @@ async function maybeStartWalkthrough() {
 
 const BOOT_WELCOME_DISMISS_KEY = "msbt.bootWelcome.dismissed.v2";
 const BOOT_WELCOME_DISCORD_URL = "https://discord.gg/wgjX48bksj";
-const BOOT_WELCOME_TIP_URL = "https://www.funkyoushift.com/donate.html";
+const BOOT_WELCOME_TIP_URL = "https://buymeacoffee.com/funkyoushift";
 
 function isBootWelcomeDismissed() {
   try {

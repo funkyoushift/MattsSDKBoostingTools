@@ -1,3 +1,9 @@
+# v2.39.9 — Support destination and saved choices
+
+- Route FunkYouSHiFT development support in Windows, Android and GitHub funding to Buy Me a Coffee while retaining Mattmab's separate Ko-fi credit.
+- Honor the desktop app tour's “don't auto-show” checkbox: leaving it unchecked offers the tour again on the next launch; checking it suppresses the current version until an update.
+- Save the mobile announcement checkbox when the user closes the announcement or opens Mobile Gateway; reopening it lets users change that choice.
+
 # v2.39.8 — Full Game recovery
 
 - Keep an uncertain mission challenge callback attached to its original receipt and allow an interrupted Full Game run to close only its matching mission job.

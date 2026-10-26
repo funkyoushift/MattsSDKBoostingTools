@@ -2656,7 +2656,7 @@ requestUpdateCheck({quiet:true,reason:'launch'});
 if(hasSavedPairing())void connectGateway({quiet:true});
 
 $('supportDevelopmentBtn')?.addEventListener('click',()=>{
-  const url='https://www.funkyoushift.com/donate.html';
+  const url='https://buymeacoffee.com/funkyoushift';
   if(window.MSBTAssets&&typeof window.MSBTAssets.openExternalUrl==='function'){
     window.MSBTAssets.openExternalUrl(url);
   }else{
