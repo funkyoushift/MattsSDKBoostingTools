@@ -122,3 +122,6 @@ electron_poc/vendor/setup/
 /docs/media/
 /docs/releases/discord_media/
 /releases/discord_media/
+
+# Native Linux portable build output
+/dist_linux/

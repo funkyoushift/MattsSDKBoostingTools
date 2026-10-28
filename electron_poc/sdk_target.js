@@ -1,16 +1,32 @@
 const path = require('path');
+const fs = require('fs');
 
-async function selectSdkTarget({ explicit = '', running = [], remembered = '', candidates = [], valid, normalize }) {
+function canonicalLinuxPath(value) {
+  let existing = value;
+  const tail = [];
+  for (;;) {
+    try { return path.join(fs.realpathSync(existing), ...tail); } catch {
+      const parent = path.dirname(existing);
+      if (parent === existing) return value;
+      tail.unshift(path.basename(existing));
+      existing = parent;
+    }
+  }
+}
+
+async function selectSdkTarget({ explicit = '', running = [], remembered = '', candidates = [], valid, normalize, platform = process.platform }) {
+  const normalizedPath = value => platform === 'linux' ? canonicalLinuxPath(normalize(value)) : normalize(value);
+  const key = value => platform === 'win32' ? value.toLowerCase() : value;
   const unique = values => [...new Map(values.filter(Boolean).map(value => {
-    const normalized = normalize(value);
-    return [normalized.toLowerCase(), normalized];
+    const normalized = normalizedPath(value);
+    return [key(normalized), normalized];
   })).values()];
   const active = unique(running);
-  const selected = explicit ? normalize(explicit) : active.length === 1 ? active[0] : remembered ? normalize(remembered) : '';
+  const selected = explicit ? normalizedPath(explicit) : active.length === 1 ? active[0] : remembered ? normalizedPath(remembered) : '';
   if (selected) {
     if (!await valid(selected)) return {ok:false, path:selected, message:'The selected game installation is unavailable. Choose its game folder; another installation will not be substituted.'};
     return {ok:true, path:selected, gameRoot:path.dirname(selected),
-      runningMismatch:active.some(value => value.toLowerCase() !== selected.toLowerCase())};
+      runningMismatch:active.some(value => key(value) !== key(selected))};
   }
   const found = [];
   for (const candidate of unique(candidates)) if (await valid(candidate)) found.push(candidate);

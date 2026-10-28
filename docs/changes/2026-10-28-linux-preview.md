@@ -1,0 +1,37 @@
+# Linux desktop preview and release asset cleanup — 2026-10-28
+
+## Scope and root causes
+
+User explicitly authorized implementation and release overnight. Isolated managed worktree based on published v2.39.9 b20bc1039fb00d5c137c26bbd37bf7370a4b99ba. Original checkout and its 820 dirty entries preserved. New platform capability uses 2.40.0-alpha.1 in Electron, SDK and bundled manifest; Windows stable remains v2.39.9.
+
+GitHub API latest had 13 uploaded assets plus two automatic source archives. Two Android APK names had identical SHA256 803616e53251b00bdb196d0dd5292f971a9656b7b96bab9c38bf6c2f20816a65. Android prefers apkVersionedUrl; simply deleting that alias would break downloads. Publisher now retains that JSON field pointing to the rolling APK and uploads one APK. Windows portable is consumed by Setup; updater JSON/YAML/blockmap remain required. Standalone selector stays outside the main publisher allowlist; historical release files remain intact for existing links. README instructions belong in release notes/package. Linux preview publishes only the native archive, SDK and checksums; no Windows updater metadata is advertised for Linux.
+
+## Behavior and components
+
+main.js/linux_runtime.js: platform-aware Python lookup; Linux Steam/native/Flatpak libraries and Proton processes; uncertain process queries block installation; no Windows updater execution on Linux. Explicit absolute MSBT_SAVE_ROOT required for save replay, never guess a host Documents path. sdk_target.js preserves Linux path case and canonicalizes symlink aliases, including missing sdk_mods under an existing game root; real Steam ~/.steam and ~/.local/share/Steam aliases initially appeared as ambiguous installations and prompted this regression fix. Linux candidate generation excludes fake Windows default roots and supports both Borderlands 4 and Borderlands4 installation names. oak2_install.js uses Python zipfile for Linux ZIP extraction instead of GNU tar. Known Wine C: paths block game writes but are not guessed as native paths.
+
+tools/build_linux.py: Linux x86-64 native Electron archive with pinned/hash-verified standalone CPython 3.12.16 and PyYAML 6.0.3, syntax-checked SDK, stable resource layout, launcher and provenance receipt. docs/LINUX.md covers manual updates and Proton requirements. Python and PyYAML license files retained. No package-path rearrangement, card algorithm changes or BLImGui dependency.
+
+## Validation and limits
+
+45 startup/Quick Menu/bridge and replay boundary/runtime Python tests pass offline with bundled YAML on PYTHONPATH. Initial venv-only collection failed because the development venv lacks YAML; using shipped runtime dependencies resolved it. Linux runtime tests include real ZIP extraction, inaccessible process scan, Proton paths and case-distinct targets. Existing oak2/sdk target and actual Electron SDK-checker integration pass. Basic worker and both renderer control layouts pass. 56 JavaScript replay-service tests also pass. The finder failure on the clean baseline was grenade_cooldown visibility: walkthrough scroll reposition called prepareWalkthroughTarget and reopened its boosting page after search navigation. renderer.js now prepares the walkthrough destination only on initial step positioning, not scroll/resize; unchanged finder assertions pass both layouts. Walkthrough target audit (107 highlights) and workspace walkthrough checks (321 targets, Next/Back/Skip/replay) pass without game actions. Final package/live results are recorded below when complete.
+
+Linux Steam manifest identifies BL4 build 26007962 under the native Steam library; no SDK was installed there at inspection. Packaging/offline tests do not prove live Proton bridge compatibility, gameplay, save persistence or guest trophy outcomes. Existing game qualification limits from v2.39.9 remain. No game/save changes in these checks. Local qwen3:14b provided a bounded release-plan review; it was advisory, not evidence of compatibility or measured savings.
+
+## Deployment and rollback
+
+Linux prerelease only; Windows stable/latest must remain v2.39.9. Extract beside older versions; close the app and run the old directory to roll back. SDK rollback is separate and requires the game closed and the prior archive retained. Do not replace Windows stable updater manifests with Linux preview metadata. Publication and exact artifact hashes will be recorded after verification.
+
+## Publication access blocker
+
+GitHub browser is signed in as repository owner; an empty codex/linux-preview branch was created at the published baseline. Terminal GitHub credentials and gh were unavailable. Browser source/release upload is blocked because Chrome extension Allow access to file URLs is disabled. Explicit permission for that access expansion was requested; it was not silently enabled. No release/tag/assets were published or removed. Windows stable remains unchanged. Continue with source upload plus exact fetched-tree comparison before tagging; do not tag the unchanged remote branch.
+
+## Final local package verification
+
+Final native tarball: 301669149 bytes, SHA256 27b0bbd36217ccafdf5038f57eb296d912a55f59c4c81f06e366546f1777d29a.
+Full SDK: 1912223 bytes, SHA256 3a9e6c5273cac8a58466f44268a4832052c339a12a3156608910085ceb8fa85d.
+Only these two downloads and SHA256SUMS.txt are staged under dist_linux/release-v2.40.0-alpha.1. No duplicate APK, selector, README-only download or Windows updater metadata is staged for this Linux preview.
+
+Relocated tarball extracted into a fresh /tmp directory; launcher run from /tmp with isolated XDG returned exit0, packaged:true, version2.40.0-alpha.1, manual updater. Bundled Python serial helpers/validator and YAML6.0.3 imports pass. Actual packaged main/renderer stayed alive in a10second isolated Xvfb launch; no fatal startup error. Xvfb teardown GPU X connection errors after smoke exit0 were not app failures. Packaged ASAR main/linux_runtime/oak2_install/sdk_target/renderer bytes match final source. Actual host library discovery returns one canonical Steam game root; current-user process scan reports no game and no query failure. No live SDK/game/save test was performed. Original checkout remains820dirty entries.
+
+Publisher regression validation: official PowerShell7.6.9 temporary runtime, 13passed/1skipped (Windows PowerShell5 unavailable). Tests cover one APK, retained compatible alias, rejecting stale alias, complete release preflight and draft publishing with mocked GitHub only. Publisher modifications were completed by parent after worker escalation did not execute. No live GitHub publishing was exercised.

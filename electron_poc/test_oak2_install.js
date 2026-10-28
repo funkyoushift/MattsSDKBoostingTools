@@ -96,7 +96,8 @@ async function testPathHelpers() {
   assert.ok(Array.isArray(roots));
   assert.ok(roots.some((p) => /Borderlands 4$/i.test(p)));
   assert.ok(oak2.bl4SdkModsCandidates().every((p) => path.basename(p).toLowerCase() === "sdk_mods"));
-  const epic = oak2.epicGameRootCandidates();
+  // Explicit Windows roots keep this test portable; Linux must not invent C: defaults.
+  const epic = oak2.epicGameRootCandidates({env:{ProgramFiles:path.resolve("EpicFixture")}});
   assert.ok(epic.some((p) => /Epic Games/i.test(p)));
   assert.ok(epic.some((p) => /Borderlands 4$/i.test(p)), "default Epic candidates must include spaced Borderlands 4");
   assert.ok(epic.some((p) => /Borderlands4$/i.test(p)), "default Epic candidates must include Borderlands4 without a space");

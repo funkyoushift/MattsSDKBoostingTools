@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): isolated Linux archive, safe platform handling and one-APK publisher; offline/package validation and publication status in linked entry.
+
 - [2026-10-26: Buy Me a Coffee support links and saved choices](changes/2026-10-26-buymeacoffee-preferences.md): FunkYouSHiFT donation links moved to one destination, with Mattmab/charity links preserved. Desktop tour and mobile announcement opt-out persistence repaired; Windows/SDK 2.39.9 and Android 1.6.6 release validation is tracked in the linked note.
 - [2026-10-23: v2.39.8 Full Game recovery release](releases/VERIFICATION_v2.39.8.txt): Stable/latest release published with all 13 asset digests verified. A local Steam lobby run reached all nine stages without stalling but reported partial completion; current Epic executable profiles and catalog warning passed offline checks, with Epic gameplay and saved trophy progress unverified.
 - [2026-10-22: Full Game run recovery after stalled mission credit](changes/2026-10-22-full-run-recovery.md): Explicit Run anyway path replaces stale queued work; conflicting native mission-credit counters are deferred per player so other party members and later missions can continue. Issued callbacks must settle before cancellation/recovery. Local and live results are tracked in the linked note; the repair was later released in v2.39.8.

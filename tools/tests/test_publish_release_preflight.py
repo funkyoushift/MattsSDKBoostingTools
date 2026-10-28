@@ -67,7 +67,7 @@ def release_fixture(tmp_path):
     write("dist_mobile/MSBT-Mobile-Controller-1.1.0.apk", b"apk")
     write("docs/releases/mobile-version.json", json.dumps({"versionName": "1.1.0", "versionCode": 24,
           "apkUrl": "https://example.test/MSBT-Mobile-Controller.apk",
-          "apkVersionedUrl": "https://example.test/MSBT-Mobile-Controller-1.1.0.apk"}))
+          "apkVersionedUrl": "https://example.test/MSBT-Mobile-Controller.apk"}))
     driver = write("driver.ps1", r'''
 function global:git {
     $global:LASTEXITCODE = 0
@@ -129,7 +129,7 @@ def test_preflight_rejects_incomplete_or_mismatched_release(release_fixture, bad
     root, run = release_fixture
     if bad == "portable": (root / "dist_electron/MSBT-Portable-v2.11.0-win-x64.zip").unlink()
     elif bad == "sdkmod": (root / "MattsSDKBoostingTools.sdkmod").unlink()
-    elif bad == "mobile": (root / "dist_mobile/MSBT-Mobile-Controller-1.1.0.apk").unlink()
+    elif bad == "mobile": (root / "dist_mobile/MSBT-Mobile-Controller.apk").unlink()
     elif bad == "embedded": (root / "dist_electron/win-unpacked/resources/sdkmod/MattsSDKBoostingTools.sdkmod").write_bytes(b"stale")
     elif bad == "app_update": (root / "dist_electron/win-unpacked/resources/app-update.yml").unlink()
     elif bad in {"size", "sha512"}:
@@ -155,6 +155,18 @@ def test_draft_create_and_edit_keep_badges_and_complete_assets(release_fixture, 
         assert command[command.index("--target") + 1] == COMMIT
     uploaded = next(call for call in calls if call[1] == ("upload" if existing else "create"))
     assert any(str(arg).endswith("MattsSDKBoostingTools.sdkmod") for arg in uploaded)
-    assert sum(str(arg).endswith(".apk") for arg in uploaded) == 2
+    assert sum(str(arg).endswith(".apk") for arg in uploaded) == 1
+    assert not any("BL4MissionSelector" in str(arg) for arg in uploaded)
     notes = Path(command[command.index("--notes-file") + 1]).read_text()
     assert "Installer downloads" in notes and "Portable downloads" in notes and "Android APK downloads" in notes
+
+
+def test_preflight_rejects_removed_apk_alias(release_fixture):
+    root, run = release_fixture
+    path = root / "docs/releases/mobile-version.json"
+    manifest = json.loads(path.read_text())
+    manifest["apkVersionedUrl"] = "https://example.test/MSBT-Mobile-Controller-1.1.0.apk"
+    path.write_text(json.dumps(manifest))
+    result, calls = run()
+    assert result.returncode != 0
+    assert not calls

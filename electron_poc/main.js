@@ -222,8 +222,8 @@ const MOD_DATA_DIR = app.isPackaged
   ? path.join(RESOURCE_ROOT, "sdkmod_data")
   : path.join(SOURCE_ROOT, "mod_extracted", "MattsSDKBoostingTools");
 const ELECTRON_APP_DIR = __dirname;
-const LOCAL_VENV_PYTHON = path.join(SOURCE_ROOT, ".venv", "Scripts", "python.exe");
-const BUNDLED_PYTHON = path.join(RESOURCE_ROOT, "python", "python.exe");
+const linuxRuntime = require("./linux_runtime");
+const {local: LOCAL_VENV_PYTHON, bundled: BUNDLED_PYTHON} = linuxRuntime.pythonPaths(SOURCE_ROOT, RESOURCE_ROOT);
 const MATT_HOST_START_TIMEOUT_MS = 12000;
 const SDK_LOG_CANDIDATES = [
   process.env.MSBT_UNREALSDK_LOG,
@@ -558,6 +558,10 @@ function configureAutoUpdater() {
   if (autoUpdaterConfigured) return Boolean(autoUpdater);
   autoUpdaterConfigured = true;
 
+  if (process.platform === "linux") {
+    updateState({status:"unavailable", message:"Linux updates are installed manually from the GitHub release. Download and extract the Linux archive, then run ./msbt.", error:""});
+    return false;
+  }
   const gate = autoUpdaterGate(app.isPackaged);
   if (!gate.enabled) {
     updateState({
@@ -830,7 +834,7 @@ async function requestSaveReplay(action,payload={}) {
 function localSaveReplay() {
   if(!saveReplayService)saveReplayService=require('./save_replay_service').createSaveReplayService({
     storage:path.join(app.getPath('userData'),'mission-replay'),
-    saveRoot:path.join(app.getPath('documents'),'My Games','Borderlands 4','Saved','SaveGames'),
+    saveRoot:process.platform === 'linux' ? linuxRuntime.replaySaveRoot() : path.join(app.getPath('documents'),'My Games','Borderlands 4','Saved','SaveGames'),
     helper:payload=>runExternalPythonJson('import json,sys\nfrom mission_save_replay import dispatch\nprint(json.dumps(dispatch(json.loads(sys.stdin.read()))))',JSON.stringify(payload),30000),
     codec:(command,value,account)=>new Promise((resolve,reject)=>{
       const child=execFile(process.execPath,[path.join(EXTERNAL_APP_DIR,'matt_editor_blcrypt.js')],
@@ -866,7 +870,8 @@ registerDesktopHandler('app:saveReplay',async(event,action,payload={})=>{
     if(!status?.ok||!status.loaded)return {ok:false,message:status?.message||'Load a solo host character first.'};
     return requestSaveReplay('load_character_late_join',{target_player:0});
   }
-  return localSaveReplay().dispatch(action,payload);
+  try { return await localSaveReplay().dispatch(action,payload); }
+  catch(error) { return {ok:false,message:String(error.message || error)}; }
 });
 
 const catalogCardImages=require('./catalog_card_images').createCatalogCardImages({
@@ -1279,8 +1284,13 @@ async function installedSdkmodInfo(destination, bundledHash = "") {
 }
 
 async function resolveSdkTarget(rawPath = '') {
-  let processes = [], queryFailed = false;
-  if (process.platform === 'win32') {
+  let processes = [], queryFailed = false, linuxRunning = [];
+  if (process.platform === 'linux') {
+    const state = await linuxRuntime.inspectGameProcesses();
+    queryFailed = state.queryFailed;
+    processes = state.processes;
+    linuxRunning = processes.filter(row => row.gameRoot).map(row => path.join(row.gameRoot, 'sdk_mods'));
+  } else if (process.platform === 'win32') {
     try {
       const {stdout} = await execFileAsync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
         "@(Get-CimInstance Win32_Process -Filter \"Name='Borderlands4.exe'\" | Select-Object ExecutablePath) | ConvertTo-Json -Compress"],
@@ -1290,8 +1300,8 @@ async function resolveSdkTarget(rawPath = '') {
     } catch { queryFailed = true; }
   }
   const prefs = await loadMattEditorPrefsData();
-  const running = processes.map(row => row.ExecutablePath).filter(Boolean).map(executable =>
-    path.join(path.dirname(path.dirname(path.dirname(path.dirname(executable)))), 'sdk_mods'));
+  const running = [...linuxRunning, ...processes.map(row => row.ExecutablePath).filter(Boolean).map(executable =>
+    path.join(path.dirname(path.dirname(path.dirname(path.dirname(executable)))), 'sdk_mods'))];
   const target = await require('./sdk_target').selectSdkTarget({explicit:rawPath, running,
     remembered:prefs?.data?.sdkModsPath || '', candidates:bl4SdkModsCandidates(), normalize:normalizeSdkModsPath,
     valid:folder => oak2Install.looksLikeBl4GameRoot(path.dirname(folder))});
@@ -1364,14 +1374,18 @@ async function localVersionInfo(rawPath = '') {
 registerDesktopHandler("app:getVersionInfo", async (_event, rawPath) => localVersionInfo(rawPath));
 
 async function isBorderlandsRunning() {
-  if (process.platform !== "win32") return false;
+  if (process.platform === "linux") {
+    const state = await linuxRuntime.inspectGameProcesses();
+    return state.queryFailed || state.processes.length > 0;
+  }
+  if (process.platform !== "win32") return true;
   try {
     const { stdout } = await execFileAsync("tasklist.exe", ["/FI", "IMAGENAME eq Borderlands4.exe", "/FO", "CSV", "/NH"], {
       windowsHide: true
     });
     return /Borderlands4\.exe/i.test(stdout || "");
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -1470,10 +1484,10 @@ async function installBundledSdkMods(rawPath = "", options = {}) {
   if (!bundledActorScriptDeployer.available) {
     return { ok: false, message: "Bundled ActorScriptDeployer folder was not found in this app build." };
   }
-  const allowGameRunning = Boolean(options && options.allowGameRunning);
+  const allowGameRunning = process.platform === "win32" && Boolean(options && options.allowGameRunning);
   const gameWasRunning = await isBorderlandsRunning();
   if (gameWasRunning && !allowGameRunning) {
-    return { ok: false, message: "Borderlands4.exe is running. Close the game before installing or updating the SDK mod." };
+    return { ok: false, message: "Borderlands 4 is running or its stopped state could not be verified. Close the game before installing or updating the SDK mod." };
   }
   const target = await resolveSdkTarget(rawPath);
   if (!target.ok) return target;
@@ -1554,10 +1568,10 @@ async function detectOak2Status(rawPath = "") {
 }
 
 async function installOak2SdkManager(rawPath = "", options = {}) {
-  const allowGameRunning = Boolean(options && options.allowGameRunning);
+  const allowGameRunning = process.platform === "win32" && Boolean(options && options.allowGameRunning);
   const gameWasRunning = await isBorderlandsRunning();
   if (gameWasRunning && !allowGameRunning) {
-    return { ok: false, message: "Borderlands4.exe is running. Close the game before installing oak2-mod-manager." };
+    return { ok: false, message: "Borderlands 4 is running or its stopped state could not be verified. Close the game before installing oak2-mod-manager." };
   }
   const target = await resolveSdkTarget(rawPath);
   if (!target.ok) return target;
@@ -2671,7 +2685,7 @@ function pythonCandidates() {
   if (process.env.MSBT_PYTHON) out.push(process.env.MSBT_PYTHON);
   const preferred = app.isPackaged ? BUNDLED_PYTHON : LOCAL_VENV_PYTHON;
   if (preferred && fsSync.existsSync(preferred)) out.push(preferred);
-  out.push("python", "py");
+  out.push(...(process.platform === "win32" ? ["python", "py"] : ["python3", "python"]));
   return Array.from(new Set(out.filter(Boolean)));
 }
 
@@ -3068,7 +3082,7 @@ app.whenReady().then(() => {
       }
       const enabled = configureAutoUpdater();
       return {
-        ok: enabled,
+        ok: enabled || process.platform === "linux",
         packaged: true,
         enabled,
         message: latestUpdateState.message,

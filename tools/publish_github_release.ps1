@@ -247,22 +247,18 @@ if ([string]$MobileVersion.versionName -notmatch '^\d+\.\d+\.\d+$' -or [int]$Mob
     throw 'mobile-version.json requires a versionName and positive versionCode.'
 }
 $rollingApkName = 'MSBT-Mobile-Controller.apk'
-$versionedApkName = "MSBT-Mobile-Controller-$($MobileVersion.versionName).apk"
 if ([IO.Path]::GetFileName(([Uri]$MobileVersion.apkUrl).AbsolutePath) -cne $rollingApkName -or
-    [IO.Path]::GetFileName(([Uri]$MobileVersion.apkVersionedUrl).AbsolutePath) -cne $versionedApkName -or
+    [string]$MobileVersion.apkVersionedUrl -cne [string]$MobileVersion.apkUrl -or
     [string]$Manifest.mobile_apk_version -ne [string]$MobileVersion.versionName) {
     throw 'Mobile APK names/version do not match mobile-version.json and packaged latest.json.'
 }
 $ElectronAssets += $MobileVersionJson
 $MobileApkDir = Join-Path $RepoRoot "dist_mobile"
 $rollingApk = Join-Path $MobileApkDir $rollingApkName
-$versionedApk = Join-Path $MobileApkDir $versionedApkName
+# Older Android clients prefer apkVersionedUrl. Keep the field as an alias
+# to the single retained APK before removing duplicate uploads.
 Assert-ReleaseFile $rollingApk
-Assert-ReleaseFile $versionedApk
-if ((Get-ReleaseFileSha256 $rollingApk) -ne (Get-ReleaseFileSha256 $versionedApk)) {
-    throw 'Rolling and versioned Android APKs differ.'
-}
-$ElectronAssets += @($rollingApk, $versionedApk)
+$ElectronAssets += $rollingApk
 $ChecksumFile = Join-Path $RepoRoot 'SHA256SUMS.txt'
 if (Test-Path -LiteralPath $ChecksumFile) { $ElectronAssets += $ChecksumFile }
 

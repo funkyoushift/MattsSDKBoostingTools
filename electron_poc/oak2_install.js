@@ -151,7 +151,7 @@ function parseLegendaryInstalledJson(text) {
 
 function epicManifestDirCandidates(env) {
   return uniquePaths([
-    path.join(env.ProgramData || "C:\\ProgramData", "Epic", "EpicGamesLauncher", "Data", "Manifests"),
+    (env.ProgramData || process.platform === "win32") ? path.join(env.ProgramData || "C:\\ProgramData", "Epic", "EpicGamesLauncher", "Data", "Manifests") : "",
     env.LOCALAPPDATA
       ? path.join(env.LOCALAPPDATA, "EpicGamesLauncher", "Saved", "Manifests")
       : ""
@@ -160,7 +160,7 @@ function epicManifestDirCandidates(env) {
 
 function legendaryInstalledJsonCandidates(env) {
   const home = env.USERPROFILE || env.HOME || os.homedir() || "";
-  const appData = env.APPDATA || (home ? path.join(home, "AppData", "Roaming") : "");
+  const appData = env.APPDATA || (home && process.platform === "win32" ? path.join(home, "AppData", "Roaming") : "");
   return uniquePaths([
     home ? path.join(home, ".config", "legendary", "installed.json") : "",
     appData ? path.join(appData, "legendary", "installed.json") : "",
@@ -208,8 +208,8 @@ function collectLegendaryInstallRoots(options = {}) {
 
 function epicDefaultFolderCandidates(env) {
   const programFiles = uniquePaths([
-    env.ProgramFiles || "C:\\Program Files",
-    env["ProgramFiles(x86)"] || "C:\\Program Files (x86)"
+    env.ProgramFiles || (process.platform === "win32" ? "C:\\Program Files" : ""),
+    env["ProgramFiles(x86)"] || (process.platform === "win32" ? "C:\\Program Files (x86)" : "")
   ]);
   const roots = [];
   for (const pf of programFiles) {
@@ -222,8 +222,9 @@ function epicDefaultFolderCandidates(env) {
 function steamRootCandidates(options = {}) {
   const env = ioFromOptions(options).env;
   return uniquePaths([
-    path.join(env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam"),
-    path.join(env.ProgramFiles || "C:\\Program Files", "Steam")
+    ...(process.platform === "linux" ? require("./linux_runtime").steamRoots(env) : []),
+    (env["ProgramFiles(x86)"] || process.platform === "win32") ? path.join(env["ProgramFiles(x86)"] || "C:\\Program Files (x86)", "Steam") : "",
+    (env.ProgramFiles || process.platform === "win32") ? path.join(env.ProgramFiles || "C:\\Program Files", "Steam") : ""
   ]);
 }
 
@@ -256,8 +257,10 @@ function bl4GameRootCandidates(options = {}) {
   const io = ioFromOptions(options);
   const candidates = [...epicGameRootCandidates(options)];
   for (const libraryRoot of steamLibraryRoots(options)) {
-    candidates.push(path.join(libraryRoot, "steamapps", "common", "Borderlands 4"));
-    candidates.push(path.join(libraryRoot, "common", "Borderlands 4"));
+    for (const folder of ["Borderlands 4", "Borderlands4"]) {
+      candidates.push(path.join(libraryRoot, "steamapps", "common", folder));
+      candidates.push(path.join(libraryRoot, "common", folder));
+    }
   }
   candidates.push(...io.extraRoots);
   return uniquePaths(candidates);
@@ -607,10 +610,15 @@ async function ensureOak2ZipCached(userDataPath, options = {}) {
 async function extractZip(zipPath, destinationDir) {
   await fs.rm(destinationDir, { recursive: true, force: true });
   await fs.mkdir(destinationDir, { recursive: true });
-  // Windows 10+ ships tar.exe which extracts zip archives.
-  await execFileAsync("tar", ["-xf", zipPath, "-C", destinationDir], {
-    windowsHide: true
-  });
+  // Windows tar supports ZIP; Linux GNU tar does not. Use the packaged Python
+  // runtime on Linux (also used by the serial helper), avoiding a system unzip dependency.
+  if (process.platform === "linux") {
+    const bundled = path.join(process.resourcesPath || __dirname, 'python', 'bin', 'python3');
+    const python = process.env.MSBT_PYTHON || (fsSync.existsSync(bundled) ? bundled : 'python3');
+    await execFileAsync(python, ['-m', 'zipfile', '-e', zipPath, destinationDir]);
+  } else {
+    await execFileAsync("tar", ["-xf", zipPath, "-C", destinationDir], {windowsHide: true});
+  }
   const oakGame = path.join(destinationDir, "OakGame");
   const sdkMods = path.join(destinationDir, "sdk_mods");
   if (!(await fileExists(oakGame)) || !(await fileExists(sdkMods))) {

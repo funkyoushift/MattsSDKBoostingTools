@@ -15818,7 +15818,9 @@ function placeWalkthroughSpotlight(step, { skipScroll = false } = {}) {
     window.clearTimeout(walkthroughState._spotlightTimer);
     walkthroughState._spotlightTimer = null;
   }
-  prepareWalkthroughTarget(step);
+  // Resize/scroll only repositions the current highlight. Reopening the tour
+  // destination here steals navigation from search and other user controls.
+  if (!skipScroll) prepareWalkthroughTarget(step);
   const target = resolveWalkthroughTarget(step);
   if (!target) {
     clearWalkthroughSpotlight();
