@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): four binaries plus GitHub source archives, platform-aware verified updates, retained launch paths and rollback; Windows CI/package and publication receipts in linked entry.
+- [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): Published stable2.40.0 with exactly six public links; Windows native/installer CI, Linux packages and public updater downloads verified. Platform-aware routing and retained launch paths; AppImage prerequisite limits in linked entry.
 
 - [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): Published Linux alpha with three uploaded files and all public hashes verified; offline/package checks, live Proton bridge/camera and user acceptance passed. Windows stable2.39.9 preserved; broader compatibility limits in linked entry.
 

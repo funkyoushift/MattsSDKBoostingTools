@@ -7,13 +7,23 @@ One release now includes both desktop platforms. The app selects Windows or Linu
 | Platform | Installer / single app | Portable folder | Source |
 |---|---|---|---|
 | Windows x64 | MSBT-Installer-v2.40.0.exe | MSBT-Portable-v2.40.0-win-x64.zip | GitHub Source code ZIP |
-| Linux x64 | MSBT-Installer-v2.40.0-linux-x64.AppImage | MSBT-Portable-v2.40.0-linux-x64.tar.gz | GitHub Source code TAR.GZ |
+| Linux x64 | Single-file app: MSBT-Installer-v2.40.0-linux-x64.AppImage | Portable folder: MSBT-Portable-v2.40.0-linux-x64.tar.gz | GitHub Source code TAR.GZ |
 
 The two source archives contain the same cross-platform source in different formats; source is not a ready-to-run app. Exactly four binaries are uploaded; GitHub adds its two source links. Updater metadata, build logs and separate SDK files are not extra downloads: the full SDK and runtime are bundled in each app. Android 1.6.6 and the standalone selector remain available from [v2.39.9](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.9).
 
 ## Install and update
 
-Windows: run the EXE or extract the ZIP. Linux: mark the AppImage executable and launch it, or extract the TAR.GZ and run ./msbt. If FUSE mounting is unavailable, use AppImage --appimage-extract-and-run. See the included Linux README for Proton SDK loading and MSBT_SAVE_ROOT.
+**Windows:** run the EXE installer, or extract the ZIP and launch the app.
+
+**Linux — easiest option: single-file app (AppImage)**
+
+1. Download `MSBT-Installer-v2.40.0-linux-x64.AppImage`.
+2. Right-click it → **Properties → Permissions → Allow executing as a program** (wording varies by desktop).
+3. Double-click it to run. Keep the file somewhere permanent, such as an Applications folder.
+
+AppImage bundles the app and its runtime into one executable file. It runs directly; it does not use your distribution’s package manager. If your desktop cannot mount it, run it from a terminal with `--appimage-extract-and-run`.
+
+**Linux — portable folder:** download the `.tar.gz`, extract it, and run `msbt` inside the extracted folder. Node.js and Python are included in both Linux options. See the included Linux README for Proton SDK loading and `MSBT_SAVE_ROOT`.
 
 Close Borderlands 4 before replacing its SDK files or applying a desktop update that also installs game components. Linux alpha users install this unified build once; subsequent updates use the new platform-aware updater. Very old Windows clients using the retired electron-updater metadata path should install this EXE once; older bundled Setup clients select the Windows ZIP directly, but custom-location users should run the new installer once to avoid the old helper’s separate installation location.
 
