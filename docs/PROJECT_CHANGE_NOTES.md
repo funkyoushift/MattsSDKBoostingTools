@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): four binaries plus GitHub source archives, platform-aware verified updates, retained launch paths and rollback; Windows CI/package and publication receipts in linked entry.
+
 - [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): Published Linux alpha with three uploaded files and all public hashes verified; offline/package checks, live Proton bridge/camera and user acceptance passed. Windows stable2.39.9 preserved; broader compatibility limits in linked entry.
 
 - [2026-10-26: Buy Me a Coffee support links and saved choices](changes/2026-10-26-buymeacoffee-preferences.md): FunkYouSHiFT donation links moved to one destination, with Mattmab/charity links preserved. Desktop tour and mobile announcement opt-out persistence repaired; Windows/SDK 2.39.9 and Android 1.6.6 release validation is tracked in the linked note.

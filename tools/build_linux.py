@@ -1,4 +1,4 @@
-"""Build the Linux x86-64 portable desktop without Windows build tools.
+"""Build the Linux x86-64 AppImage and portable desktop without Windows build tools.
 
 Run with Python 3.12+ and Node 24/npm on PATH. Downloads are pinned and verified.
 Nothing is installed into a game folder and electron-builder publishing is disabled.
@@ -13,6 +13,7 @@ from pathlib import Path
 import platform
 import shutil
 import subprocess
+import struct
 import tarfile
 import urllib.request
 import zipfile
@@ -77,7 +78,21 @@ def main():
     config = dict(pkg['build'])
     config['extraResources'] = resources
     config['directories'] = {'output': str(ROOT / 'dist_linux')}
-    config['linux'] = {'target': ['dir'], 'category': 'Utility'}
+    # Reuse the existing 256px PNG stored inside the Windows ICO unchanged.
+    ico = (ROOT / 'external_app/v22_parts_codes_fixed/resources/app_icon_electron.ico').read_bytes()
+    images = [struct.unpack_from('<BBBBHHII', ico, 6 + 16 * index)
+              for index in range(struct.unpack_from('<H', ico, 4)[0])]
+    largest = max(images, key=lambda entry: (entry[0] or 256) * (entry[1] or 256))
+    png = ico[largest[7]:largest[7] + largest[6]]
+    if not png.startswith(b'\x89PNG\r\n\x1a\n'):
+        raise SystemExit('Expected existing PNG icon in ICO container.')
+    icon = build / 'icon.png'
+    icon.write_bytes(png)
+    config['linux'] = {'target': ['AppImage'], 'category': 'Utility',
+                       'icon': str(icon),
+                       'artifactName': 'MSBT-Installer-v${version}-linux-x64.${ext}'}
+    # Static runtime uses bundled FUSE3 tooling instead of requiring libfuse2.
+    config['toolsets'] = dict(config.get('toolsets', {}), appimage='1.0.3')
     config['files'] = list(config['files']) + ['!vendor/linux-python/**']
     config_path = build / 'electron-builder.json'
     config_path.write_text(json.dumps(config, indent=2) + '\n')
@@ -88,6 +103,14 @@ def main():
     launcher.chmod(0o755)
     shutil.copy2(ROOT / 'docs/LINUX.md', unpacked / 'LINUX-README.md')
     (unpacked / 'LINUX-PYTHON-PROVENANCE.json').write_text(json.dumps({'python': {'url': PYTHON_URL, 'sha256': PYTHON_SHA256}, 'pyyaml': {'url': PYYAML_URL, 'sha256': PYYAML_SHA256}}, indent=2) + '\n')
+    # Package the same staged application and resources as a single executable.
+    run('npx', '--no-install', 'electron-builder', '--linux', 'AppImage', '--x64',
+        '--prepackaged', str(unpacked), '--publish', 'never', '--config',
+        str(config_path), cwd=electron)
+    appimage = ROOT / f'dist_linux/MSBT-Installer-v{version}-linux-x64.AppImage'
+    if not appimage.is_file():
+        raise SystemExit(f'AppImage missing: {appimage}')
+    print(f'Built {appimage}\nSHA256 {hashlib.sha256(appimage.read_bytes()).hexdigest()}')
     # archive includes executable bits and native symlinks; ZIP would lose these.
     target = ROOT / f'dist_linux/MSBT-Portable-v{version}-linux-x64.tar.gz'
     with tarfile.open(target, 'w:gz') as tf:

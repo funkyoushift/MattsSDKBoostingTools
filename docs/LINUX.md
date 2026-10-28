@@ -1,6 +1,11 @@
 # Linux desktop (x86-64)
 
-Extract `MSBT-Portable-vVERSION-linux-x64.tar.gz` into a user-owned directory and
+Download the Linux AppImage for a single executable: mark
+`MSBT-Installer-vVERSION-linux-x64.AppImage` executable and launch it. This is
+a self-contained app; it does not require a system-wide installation. If your
+system blocks FUSE mounts, launch it with `--appimage-extract-and-run`.
+
+For a portable folder, extract `MSBT-Portable-vVERSION-linux-x64.tar.gz` into a user-owned directory and
 run `./msbt` inside it. The archive includes Electron and a pinned Python 3.12
 runtime and PyYAML 6.0.3; no Python, Node.js or Wine installation is needed for the desktop app.
 Install your distribution's normal Electron desktop libraries (GTK 3, NSS, ALSA,
@@ -27,8 +32,10 @@ save directory on Linux.
 
 Native item-card executable profiles retain their existing exact-build gates.
 
-The Linux tarball is updated manually: download and extract the next version
-alongside the old one. Windows updater executables must not run on Linux.
+Use the app update controls to download the matching Linux package. Keep the
+previous package until the update succeeds. You can also replace an AppImage or
+extract a new portable folder manually. Windows updater executables do not run
+on Linux.
 App settings remain under Electron's normal per-user Linux configuration folder.
 The standalone Mission Selector is separate; do not install it alongside the full
 MSBT SDK. Linux game/Proton compatibility and guest-save proof require separate
@@ -42,6 +49,9 @@ checks Python syntax before packaging the SDK and verifies the official SDK and
 pinned standalone Python SHA-256 hashes. It does not publish or install into a
 game directory. Build products include Python's licenses inside `resources/python`;
 `LINUX-PYTHON-PROVENANCE.json` records its upstream archive and checksum.
+Both AppImage and portable TAR contain the same application and bundled
+runtime. Only the two application packages are public Linux assets; build
+metadata and development files remain local.
 
 To roll back, close MSBT and run the preceding extracted version. SDK rollback is
 a separate operation performed while the game is closed; retain the prior SDK

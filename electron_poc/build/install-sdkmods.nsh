@@ -65,7 +65,7 @@ FunctionEnd
   ExecWait '"$INSTDIR\MattsSDKBoostingTools.exe" --install-sdkmods-and-exit' $0
   DetailPrint "MSBT SDK mod installer helper exited with code $0."
   ${If} $0 != 0
-    MessageBox MB_OK|MB_ICONEXCLAMATION "Borderlands 4 Modding Tools was installed, but game integration could not finish. Close Borderlands 4 and use Settings > Install / update SDK mod in the desktop app. Existing SDK/mod-manager files were preserved."
+    MessageBox MB_OK|MB_ICONEXCLAMATION "Borderlands 4 Modding Tools was installed, but game integration could not finish. Close Borderlands 4 and use Settings > Install / update SDK mod in the desktop app. Existing SDK/mod-manager files were preserved." /SD IDOK
   ${EndIf}
   ${If} $MSBTReportChoice == "true"
     StrCpy $1 "--set-failure-reporting=logs"

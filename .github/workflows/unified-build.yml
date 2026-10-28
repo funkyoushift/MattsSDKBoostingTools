@@ -1,0 +1,65 @@
+name: Unified desktop artifacts
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: Stable source version
+        required: true
+        default: '2.40.0'
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 60
+    env:
+      EXPECTED_VERSION: ${{ inputs.expected_version }}
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: electron_poc/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Install locked dependencies
+        shell: pwsh
+        run: |
+          npm --prefix electron_poc ci
+          if ($LASTEXITCODE -ne 0) { throw 'npm ci failed' }
+          python -m pip install pytest==9.2.0 PyYAML==6.0.3
+          if ($LASTEXITCODE -ne 0) { throw 'Python dependencies failed' }
+      - name: Python syntax and startup before SDK packaging
+        shell: pwsh
+        run: |
+          python -m compileall -q mod_extracted/MattsSDKBoostingTools external_app/v22_parts_codes_fixed
+          if ($LASTEXITCODE -ne 0) { throw 'Syntax check failed' }
+          $env:PYTHONPATH = Join-Path $PWD 'tools'
+          python -m pytest tools/tests/test_quick_menu_no_blimgui.py tools/tests/test_release_sdk_imports.py tools/tests/test_pack_sdkmod_zip.py -q
+          if ($LASTEXITCODE -ne 0) { throw 'Offline import/startup checks failed' }
+      - name: Build and audit Windows packages
+        shell: pwsh
+        run: |
+          $version = (Get-Content -Raw electron_poc/package.json | ConvertFrom-Json).version
+          if ($version -cne $env:EXPECTED_VERSION -or $version -notmatch '^\d+\.\d+\.\d+$') { throw 'Unexpected source version' }
+          ./tools/build_electron_beta.ps1 -Installer
+      - name: Test actual installed payload
+        shell: pwsh
+        run: ./tools/verify_windows_release.ps1 -Version $env:EXPECTED_VERSION
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msbt-windows-${{ inputs.expected_version }}
+          path: |
+            dist_electron/MSBT-Installer-v${{ inputs.expected_version }}.exe
+            dist_electron/MSBT-Portable-v${{ inputs.expected_version }}-win-x64.zip
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

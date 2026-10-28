@@ -176,8 +176,6 @@ const mobileGateway = createMobileGateway({
     }
   }
 });
-const LATEST_MANIFEST_URL = "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json";
-const FALLBACK_LATEST_MANIFEST_URL = "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json";
 const CODES_API = "https://save-editor.be/GZO/Borderlands4/codes/api.php";
 const SMOKE_MODE = process.argv.includes("--smoke");
 const FORCE_TOUR = process.argv.includes("--force-tour");
@@ -558,10 +556,6 @@ function configureAutoUpdater() {
   if (autoUpdaterConfigured) return Boolean(autoUpdater);
   autoUpdaterConfigured = true;
 
-  if (process.platform === "linux") {
-    updateState({status:"unavailable", message:"Linux updates are installed manually from the GitHub release. Download and extract the Linux archive, then run ./msbt.", error:""});
-    return false;
-  }
   const gate = autoUpdaterGate(app.isPackaged);
   if (!gate.enabled) {
     updateState({
@@ -574,18 +568,16 @@ function configureAutoUpdater() {
 
   let updaterModule = null;
   try {
-    const { PersistentUpdater, findSetup } = require("./persistent_updater");
-    const setupPath = findSetup(process.resourcesPath);
-    updaterModule = setupPath
-      ? { autoUpdater: new PersistentUpdater({ setupPath, app, isNewer: isNewerPublicVersion,
-          installedVersions: () => {
-            try {
-              const manifest = JSON.parse(fsSync.readFileSync(LOCAL_MANIFEST_PATH, 'utf8'));
-              return [app.getVersion(), manifest.package_version, manifest.resources_version].filter(version => /^\d+\.\d+\.\d+(?:\.\d+)?$/.test(String(version || '')));
-            } catch (_) { return [app.getVersion()]; }
-          }
-        }) }
-      : require("electron-updater");
+    if (process.platform === 'linux') {
+      const {LinuxReleaseUpdater} = require('./platform_release_updater');
+      updaterModule = {autoUpdater:new LinuxReleaseUpdater({app,isNewer:isNewerPublicVersion})};
+    } else if (process.platform === 'win32') {
+      const {PersistentUpdater,findSetup} = require('./persistent_updater');
+      const setupPath = findSetup(process.resourcesPath);
+      if (!setupPath) throw Error('Bundled Windows setup helper is missing. Reinstall the Windows release package.');
+      updaterModule = {autoUpdater:new PersistentUpdater({setupPath,app,isNewer:isNewerPublicVersion,
+        installedVersions:()=>[app.getVersion()]})};
+    } else throw Error('No MSBT update package is available for this platform.');
   } catch (error) {
     const failure = packagedLoadFailure(error);
     updateState({
@@ -623,7 +615,7 @@ function configureAutoUpdater() {
     updateState({ status: "progress", message: "Downloading Electron update...", progress, error: "" });
   });
   autoUpdater.on("update-downloaded", (info) => {
-    updateState({ status: "downloaded", message: "Electron update downloaded. Restart when ready to install.", updateInfo: info, error: "" });
+    updateState({ status: "downloaded", message: "Verified update downloaded. Restart to install; the previous Linux package will be retained for rollback.", updateInfo: info, error: "" });
   });
   autoUpdater.on("error", (error) => {
     updateState({ status: "error", message: "Electron update check failed.", error: String(error && error.message ? error.message : error) });
@@ -703,23 +695,9 @@ function manifestMetadataChanged(local, remote) {
 }
 
 async function fetchLatestManifest() {
-  const urls = [LATEST_MANIFEST_URL, FALLBACK_LATEST_MANIFEST_URL];
-  let lastError = null;
-  for (const url of urls) {
-    try {
-      const response = await fetch(url, { cache: "no-store" });
-      const text = await response.text();
-      if (!response.ok) {
-        lastError = new Error(`Update manifest request failed (${response.status}) from ${url}`);
-        continue;
-      }
-      const manifest = text ? JSON.parse(text) : {};
-      return { response, manifest, url };
-    } catch (error) {
-      lastError = error;
-    }
-  }
-  throw lastError || new Error("Update manifest could not be loaded.");
+  const release = require('./platform_release_updater');
+  const info = await release.fetchRelease();
+  return {response:{ok:true},manifest:release.asManifest(info),url:release.API_URL};
 }
 
 function createWindow() {
@@ -2940,7 +2918,7 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
     const remoteVersion = normalizeManifestVersion(remote.package_version);
     const localAppVersion = normalizeManifestVersion(versionInfo.appVersion);
     const remoteElectronVersion = normalizeManifestVersion(remote.electron_version || remote.app_version || remote.package_version);
-    const packageVersionChanged = Boolean(remoteVersion && localVersion && remoteVersion !== localVersion);
+    const packageVersionChanged = Boolean(remoteVersion && localVersion && isNewerPublicVersion(remoteVersion, localVersion));
     const packageBuildChanged = Boolean(remoteVersion && localVersion && remoteVersion === localVersion && manifestMetadataChanged(local, remote));
     const packageUpdateAvailable = packageVersionChanged || packageBuildChanged;
     const electronUpdateAvailable = Boolean(remoteElectronVersion && localAppVersion && isNewerPublicVersion(remoteElectronVersion, localAppVersion));
@@ -3036,10 +3014,14 @@ registerDesktopHandler("app:quitAndInstallUpdate", async (_event, rawPath) => {
     return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
   try {
-    const target = await resolveSdkTarget(rawPath);
-    if (!target.ok) return target;
-    if (target.running) return {ok:false, message:'Close Borderlands 4 before updating so the desktop and selected game files can be updated together.'};
-    autoUpdater.gameRoot = target.gameRoot;
+    if (process.platform === 'linux') {
+      if (await isBorderlandsRunning()) return {ok:false,message:'Close Borderlands 4 before installing the desktop update.'};
+    } else {
+      const target = await resolveSdkTarget(rawPath);
+      if (!target.ok) return target;
+      if (target.running) return {ok:false, message:'Close Borderlands 4 before updating so the desktop and selected game files can be updated together.'};
+      autoUpdater.gameRoot = target.gameRoot;
+    }
     await autoUpdater.quitAndInstall(false, true);
     return { ok: true, message: "Restarting to install update." };
   } catch (error) {

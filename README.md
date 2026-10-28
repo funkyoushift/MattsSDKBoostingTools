@@ -1,3 +1,5 @@
+> **Windows and Linux:** v2.40.0 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.40.0).
+
 <!-- v2.39.9 support and settings repair -->
 
 > **Android 1.6.6:** The Support button opens FunkYouSHiFT's Buy Me a Coffee page. Save Setup continues to preserve Remote AFK pairing; if an older setup lost its credentials, scan the Remote AFK QR again in Windows → Mobile Pairing.
