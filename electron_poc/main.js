@@ -1,6 +1,16 @@
 const { app, BrowserWindow, dialog, ipcMain, screen, shell, Menu, nativeTheme, protocol, safeStorage, Tray, nativeImage, powerSaveBlocker, powerMonitor } = require("electron");
 const { PRODUCT_NAME, applyProductIdentity } = require("./product_identity");
 applyProductIdentity(app);
+// AppImage setup owns its own window and IPC; normal panel initialization is
+// skipped so no live bridge or background panel services start in the wizard.
+if (process.platform === 'linux' && require('./linux_setup').shouldRunSetup()) {
+  require('./linux_setup').runSetup().catch(error => {
+    dialog.showErrorBox('MSBT setup could not start', String(error.message || error));
+    app.quit();
+  });
+  return;
+}
+
 const {registerNativeCardSchemes,installNativeCardProtocol} = require("./native_card_protocol");
 registerNativeCardSchemes(protocol);
 

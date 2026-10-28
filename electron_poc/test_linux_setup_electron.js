@@ -1,0 +1,38 @@
+'use strict';
+const assert=require('assert/strict'),fs=require('fs/promises'),os=require('os'),path=require('path');
+const electron=require('electron');const {runSetup}=require('./linux_setup');const {app,ipcMain}=electron;
+app.commandLine.appendSwitch('disable-gpu');
+let installs=0,launched=0,quitCalls=0;
+app.quit=()=>{quitCalls++;};
+const handlers=new Map(),original=ipcMain.handle.bind(ipcMain);
+ipcMain.handle=(channel,fn)=>{handlers.set(channel,fn);original(channel,fn);};
+const poll=async(win,expression)=>{for(let i=0;i<100;i++){if(await win.webContents.executeJavaScript(expression))return;await new Promise(r=>setTimeout(r,25));}throw Error('Timed out: '+expression);};
+(async()=>{
+  const home=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-wizard-ui-'));app.setPath('userData',path.join(home,'userdata'));
+  const service={inspect:async()=>({version:'2.40.1',installRoot:'/home/player/.local/share/msbt',gameCandidates:[{root:'/games/BL4',label:'Borderlands 4 · Steam'}],gameRunning:true}),
+    install:async options=>{installs++;assert.equal(options.gameRoot,'/games/BL4');assert.equal(options.setupGame,true);options.onProgress({message:'Installing desktop app…',percent:40});return {ok:true,message:'Desktop app and applications-menu shortcut installed.',game:installs===1?{state:'pending',message:'Game integration is pending until Borderlands 4 is closed.'}:{state:'installed',message:'Game integration installed and verified.'}};},launchInstalled:async()=>{launched++;}};
+  const win=await runSetup({electron:{...electron,dialog:{showOpenDialog:async()=>({canceled:false,filePaths:['/games/BL4']})}},service,resources:'/fixture/resources',imagePath:'/fixture/MSBT.AppImage',home});
+  await poll(win,"!document.getElementById('options').hidden");assert.equal(installs,0,'loading the wizard must not install anything');
+  const initial=await win.webContents.executeJavaScript("({path:document.getElementById('installPath').textContent,running:document.getElementById('gameStatus').textContent,checked:document.getElementById('setupGame').checked,hasNode:typeof require})");
+  assert.equal(initial.path,'/home/player/.local/share/msbt');assert.match(initial.running,/will wait/);assert.equal(initial.checked,true);assert.equal(initial.hasNode,'undefined');
+  await new Promise(r=>setTimeout(r,300));
+  await fs.writeFile('/tmp/msbt-linux-setup-initial.png',(await win.webContents.capturePage()).toPNG());
+  await assert.rejects(handlers.get('linuxSetup:install')({sender:{},senderFrame:{}},{gameRoot:'/bad',setupGame:true}),/installer window/);
+  await win.webContents.executeJavaScript("document.getElementById('install').click()");await poll(win,"!document.getElementById('launch').hidden");assert.equal(installs,1);assert.equal(launched,0);
+  assert.match(await win.webContents.executeJavaScript("document.getElementById('gameResult').textContent"),/pending/);
+  await new Promise(r=>setTimeout(r,100));
+  await fs.writeFile('/tmp/msbt-linux-setup-success.png',(await win.webContents.capturePage()).toPNG());
+  assert.equal(await win.webContents.executeJavaScript("document.getElementById('finishGame').hidden"),false);
+  await fs.writeFile('/tmp/msbt-linux-setup-pending.png',(await win.webContents.capturePage()).toPNG());
+  assert.equal(installs,1,'pending game setup must not retry automatically');
+  await win.webContents.executeJavaScript("document.getElementById('finishGame').click()");
+  await poll(win,"document.getElementById('finishGame').hidden");
+  assert.equal(installs,2);
+  assert.match(await win.webContents.executeJavaScript("document.getElementById('gameResult').textContent"),/installed and verified/);
+  await new Promise(r=>setTimeout(r,100));
+  await fs.writeFile('/tmp/msbt-linux-setup-final.png',(await win.webContents.capturePage()).toPNG());
+  await win.webContents.executeJavaScript("document.getElementById('launch').click()");
+  await poll(win,"document.getElementById('launch').disabled");
+  await new Promise(r=>setTimeout(r,30));assert.equal(launched,1);assert.equal(quitCalls,1);
+  console.log('PASS real installer window/preload IPC, explicit install only, sender isolation, progress, pending-game success and launch button');app.exit(0);
+})().catch(error=>{console.error(error);app.exit(1);});

@@ -5,7 +5,7 @@ on:
       expected_version:
         description: Stable source version
         required: true
-        default: '2.40.0'
+        default: '2.40.1'
 permissions:
   contents: read
 jobs:

@@ -1,0 +1,11 @@
+# Guided Linux installer — 2026-10-28
+
+User required an easy installer rather than a single-file launcher. Version 2.40.1 adds an early Linux setup gate, isolated installer window and service, first-launch/receipt routing, per-user app and two menu shortcuts, optional SDK/Proton setup and a visible pending/retry result. Portable launch remains direct. The downloaded AppImage installs to ~/.local/share/msbt/MSBT.AppImage and retains backups when replacing files.
+
+AppRun invokes bundled Python before Electron, probing required shared libraries. Allowlisted APT/DNF repairs and APT index refresh are separately consented; only package-manager commands elevate. No host libc upgrade is attempted. Interactive protontricks runtime setup runs as the user with STEAM_COMPAT_DATA_PATH and WINEPREFIX bound to the selected prefix. Existing SDKs/settings are preserved or backed up; active/unknown game and busy prefix block game changes. No game/model is stopped.
+
+Astra review identified loose OakGame detection, symlink PAK overwrite and ambiguous Proton prefix targeting. All repaired with regressions: require actual Borderlands4.exe, reject symlink destinations, explicitly bind the selected Steam prefix. UI tests cover pending retry and main-frame IPC. Bootstrap has 18 deterministic fake-command tests. Actual installer E2E uses a temporary HOME, real AppImage copy, receipt/menu entries and installed-launcher runtime smoke. Direct and extract-and-run AppImage and relocated TAR startup pass. No real user game files, save data or host package manager were changed by these checks.
+
+Local AI policy was consulted. Broad documentation draft request escalated for narrowing; narrowed exact-source Linux documentation request escalated with ValueError. No local candidate was used or savings claimed. Hosted workers handled implementation/review; deterministic tests and exact source matching supplied evidence.
+
+The release retains four binaries plus GitHub automatic shared-source ZIP/TAR. Windows build/NSIS installation verification and final publication receipts are appended after completion. Previous v2.40.0 and alpha remain historical; original dirty Windows-source workspace remains preserved.

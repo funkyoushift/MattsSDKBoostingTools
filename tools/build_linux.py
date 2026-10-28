@@ -74,6 +74,7 @@ def main():
     run('node', 'tools/prepare_game_bundle.js')
     resources = [r for r in pkg['build']['extraResources'] if r['from'] not in ('vendor/python', 'vendor/setup/MSBT-Setup.exe')]
     resources.append({'from': str(runtime / 'python'), 'to': 'python'})
+    resources.append({'from': str(ROOT / 'tools/linux_bootstrap.py'), 'to': 'linux_bootstrap.py'})
     # Full override keeps established resource paths while excluding Windows setup/Python.
     config = dict(pkg['build'])
     config['extraResources'] = resources
@@ -88,6 +89,7 @@ def main():
         raise SystemExit('Expected existing PNG icon in ICO container.')
     icon = build / 'icon.png'
     icon.write_bytes(png)
+    resources.append({'from': str(icon), 'to': 'linux-setup/icon.png'})
     config['linux'] = {'target': ['AppImage'], 'category': 'Utility',
                        'icon': str(icon),
                        'artifactName': 'MSBT-Installer-v${version}-linux-x64.${ext}'}
@@ -103,6 +105,10 @@ def main():
     launcher.chmod(0o755)
     shutil.copy2(ROOT / 'docs/LINUX.md', unpacked / 'LINUX-README.md')
     (unpacked / 'LINUX-PYTHON-PROVENANCE.json').write_text(json.dumps({'python': {'url': PYTHON_URL, 'sha256': PYTHON_SHA256}, 'pyyaml': {'url': PYYAML_URL, 'sha256': PYYAML_SHA256}}, indent=2) + '\n')
+    # app-builder copies appOutDir after generating its AppRun, so this entry
+    # point deliberately replaces the default and runs before Electron.
+    shutil.copy2(ROOT / 'tools/linux_AppRun.sh', unpacked / 'AppRun')
+    (unpacked / 'AppRun').chmod(0o755)
     # Package the same staged application and resources as a single executable.
     run('npx', '--no-install', 'electron-builder', '--linux', 'AppImage', '--x64',
         '--prepackaged', str(unpacked), '--publish', 'never', '--config',

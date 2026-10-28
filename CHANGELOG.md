@@ -1,3 +1,9 @@
+# v2.40.1 — Guided Linux installer
+
+- Add requirement checks, per-user installation, app-menu shortcuts and optional Steam/Proton game setup with clear pending/retry handling.
+- Retain Windows installer/portable and Linux installer/portable downloads plus two shared-source formats.
+- [Implementation and validation](docs/changes/2026-10-28-linux-installer.md) · [Release notes](docs/releases/RELEASE_NOTES_v2.40.1.md).
+
 # v2.39.9 — Support destination and saved choices
 
 - Route FunkYouSHiFT development support in Windows, Android and GitHub funding to Buy Me a Coffee while retaining Mattmab's separate Ko-fi credit.
