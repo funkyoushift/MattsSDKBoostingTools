@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): isolated Linux archive, safe platform handling and one-APK publisher; offline/package and basic live Proton bridge/camera validation; user visual acceptance and publication status in linked entry.
+- [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): Published Linux alpha with three uploaded files and all public hashes verified; offline/package checks, live Proton bridge/camera and user acceptance passed. Windows stable2.39.9 preserved; broader compatibility limits in linked entry.
 
 - [2026-10-26: Buy Me a Coffee support links and saved choices](changes/2026-10-26-buymeacoffee-preferences.md): FunkYouSHiFT donation links moved to one destination, with Mattmab/charity links preserved. Desktop tour and mobile announcement opt-out persistence repaired; Windows/SDK 2.39.9 and Android 1.6.6 release validation is tracked in the linked note.
 - [2026-10-23: v2.39.8 Full Game recovery release](releases/VERIFICATION_v2.39.8.txt): Stable/latest release published with all 13 asset digests verified. A local Steam lobby run reached all nine stages without stalling but reported partial completion; current Epic executable profiles and catalog warning passed offline checks, with Epic gameplay and saved trophy progress unverified.
