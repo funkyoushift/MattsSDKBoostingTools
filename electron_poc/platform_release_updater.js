@@ -72,8 +72,11 @@ class LinuxReleaseUpdater extends EventEmitter {
     super();Object.assign(this,{app,isNewer,fetcher,start,execute,appImage,executable,appImagePath});this.ready=false;this.busy=false;
   }
   async checkForUpdates() {
+    if(this.busy) return {updateInfo:this.info};
+    const revision=this.revision || 0;
     this.emit('checking-for-update');
-    const next = await fetchRelease({fetcher:this.fetcher,platform:'linux',appImage:this.appImage});
+    const next = await fetchRelease({fetcher:this.fetcher,platform:this.platform || 'linux',appImage:this.appImage});
+    if(this.busy || revision !== (this.revision || 0)) return {updateInfo:this.info};
     if(this.info?.version !== next.version) this.ready=false;
     this.info=next;
     this.emit(this.ready?'update-downloaded':this.isNewer(next.version,this.app.getVersion())?'update-available':'update-not-available',next);
@@ -81,12 +84,12 @@ class LinuxReleaseUpdater extends EventEmitter {
   }
   async downloadUpdate() {
     if(this.busy) throw Error('An update is already downloading.');
-    this.busy=true;this.ready=false;
+    this.busy=true;this.ready=false;this.revision=(this.revision || 0)+1;
     try {
-      if(!this.info) await this.checkForUpdates();
-      if(!this.isNewer(this.info.version,this.app.getVersion())) throw Error('No newer Linux release is available.');
+      const info=this.info || await fetchRelease({fetcher:this.fetcher,platform:'linux',appImage:this.appImage});
+      if(!this.isNewer(info.version,this.app.getVersion())) throw Error('No newer Linux release is available.');
       const folder=path.join(this.app.getPath('userData'),'updates');
-      const downloaded=await downloadVerified(this.info.selected,folder,{fetcher:this.fetcher,onProgress:p=>this.emit('download-progress',p)});
+      const downloaded=await downloadVerified(info.selected,folder,{fetcher:this.fetcher,onProgress:p=>this.emit('download-progress',p)});
       this.target=await fs.realpath(this.appImage ? this.appImagePath : path.dirname(await fs.realpath(this.executable)));
       const parent=path.dirname(this.target);
       if(parent==='/' || this.target==='/' || this.target==='/usr' || this.target==='/opt') throw Error('Unsafe Linux update installation path.');
@@ -100,7 +103,7 @@ class LinuxReleaseUpdater extends EventEmitter {
         await fs.access(path.join(this.target,'LINUX-PYTHON-PROVENANCE.json'));
         if(path.basename(this.executable)!=='MattsSDKBoostingTools') throw Error('This is not an MSBT portable application directory.');
         const entries=(await this.execute('tar',['-tzf',downloaded],{maxBuffer:16*1024*1024})).stdout.split('\n').filter(Boolean);
-        const root=`MSBT-Portable-${this.info.tag}-linux-x64`;
+        const root=`MSBT-Portable-${info.tag}-linux-x64`;
         if(!entries.length || entries.some(name=>name.startsWith('/') || name.split('/').includes('..') || name.split('/')[0]!==root)) throw Error('Linux update archive has an unexpected layout.');
         const extracted=await fs.mkdtemp(path.join(folder,'installed-'));
         await this.execute('tar',['-xzf',downloaded,'--no-same-owner','-C',extracted],{timeout:120000});
@@ -108,7 +111,7 @@ class LinuxReleaseUpdater extends EventEmitter {
         this.stage=path.join(stageRoot,root);await fs.rename(path.join(extracted,root),this.stage).catch(async error=>{if(error.code!=='EXDEV')throw error;await fs.cp(path.join(extracted,root),this.stage,{recursive:true});});
         this.launch=path.join(this.target,'msbt');
       }
-      this.info={...this.info,installPath:this.launch};this.ready=true;
+      this.info={...info,installPath:this.launch};this.ready=true;
       this.emit('update-downloaded',this.info);return [this.launch];
     } finally {this.busy=false;}
   }
@@ -127,6 +130,65 @@ class LinuxReleaseUpdater extends EventEmitter {
     this.app.quit();
   }
 }
+// Run the NSIS installer against the directory owning the running executable.
+// Only the installer is elevated; the handoff runner and restarted app remain
+// in the original user's session. Values travel as base64 JSON, never script code.
+const WINDOWS_HANDOFF_SCRIPT = `
+$ErrorActionPreference = 'Stop'
+$data = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0])) | ConvertFrom-Json
+Wait-Process -Id $data.waitPid -ErrorAction SilentlyContinue
+$failure = $null
+try {
+  $params = @{ FilePath = $data.installer; ArgumentList = $data.arguments; Wait = $true; PassThru = $true }
+  if ($data.elevate) { $params.Verb = 'RunAs' }
+  $installed = Start-Process @params
+  if ($installed.ExitCode -ne 0) { throw ('Installer exited with code ' + $installed.ExitCode) }
+  if (!(Test-Path -LiteralPath $data.executable -PathType Leaf)) { throw 'Updated executable is missing' }
+} catch {
+  $failure = $_.Exception.Message
+  $failure | Set-Content -LiteralPath $data.errorLog -Encoding UTF8
+}
+# Cancellation or failure leaves the current installation available to reopen.
+if (Test-Path -LiteralPath $data.executable -PathType Leaf) {
+  Start-Process -FilePath $data.executable -WorkingDirectory $data.target
+}
+if ($failure) { exit 1 }
+`;
+function windowsHandoffPayload({installer,executable,target,waitPid,errorLog}) {
+  if(!path.win32.isAbsolute(target) || /["\r\n]/.test(target)) throw Error('Invalid Windows installation directory.');
+  return {installer,executable,target,waitPid,errorLog,elevate:true,arguments:'/S /D='+target};
+}
+class WindowsReleaseUpdater extends LinuxReleaseUpdater {
+  constructor(options) {super(options);this.platform='win32';}
+  async downloadUpdate() {
+    if(this.busy) throw Error('An update is already downloading.');
+    this.busy=true;this.ready=false;this.revision=(this.revision || 0)+1;
+    try {
+      const info=this.info || await fetchRelease({fetcher:this.fetcher,platform:'win32'});
+      if(!this.isNewer(info.version,this.app.getVersion())) throw Error('No newer Windows release is available.');
+      const folder=path.join(this.app.getPath('userData'),'updates');
+      this.downloaded=await downloadVerified(info.installer,folder,{fetcher:this.fetcher,onProgress:p=>this.emit('download-progress',p)});
+      this.info=info;this.ready=true;this.emit('update-downloaded',info);return [this.downloaded];
+    } finally {this.busy=false;}
+  }
+  async quitAndInstall() {
+    if(!this.ready || !this.downloaded) throw Error('Download and verify the update first.');
+    const executable=await fs.realpath(this.executable);
+    const target=path.win32.dirname(executable);
+    await fs.access(path.join(target,'resources','app.asar'));
+    const folder=await fs.mkdtemp(path.join(this.app.getPath('userData'),'update-handoff-'));
+    const script=path.join(folder,'install-update.ps1');
+    await fs.writeFile(script,WINDOWS_HANDOFF_SCRIPT);
+    const payload=windowsHandoffPayload({installer:this.downloaded,executable,target,waitPid:process.pid,errorLog:path.join(folder,'install-error.txt')});
+    const encoded=Buffer.from(JSON.stringify(payload)).toString('base64');
+    await new Promise((resolve,reject)=>{
+      const child=this.start('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',script,encoded],
+        {cwd:folder,detached:true,windowsHide:true,stdio:'ignore'});
+      child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});
+    });
+    this.app.quit();
+  }
+}
 const HANDOFF_SCRIPT = `#!/bin/sh
 while kill -0 "$1" 2>/dev/null; do sleep 1; done
 # Never overwrite a retained backup; all paths are passed as arguments.
@@ -135,4 +197,4 @@ mv -- "$2" "$4" || exit 1
 if ! mv -- "$3" "$2"; then mv -- "$4" "$2"; exit 1; fi
 "$5" || { mv -- "$2" "$2.failed-$$"; mv -- "$4" "$2"; exec "$5"; }
 `;
-module.exports={HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};
+module.exports={WindowsReleaseUpdater,WINDOWS_HANDOFF_SCRIPT,windowsHandoffPayload,HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};

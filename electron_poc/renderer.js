@@ -13397,6 +13397,9 @@ function renderElectronAppFinder(query) {
 }
 
 function jumpElectronAppFinder(entry) {
+  // Startup loads asynchronously; an automatic tour must not replace a
+  // destination the user has already chosen during this session.
+  walkthroughState.finderNavigated = true;
   const input = document.getElementById("appFinderInput");
   const box = document.getElementById("appFinderResults");
   if (input) input.blur();
@@ -14605,7 +14608,9 @@ const TUTORIAL_TOURS = {
       title: "Stack panels (center drop)",
       body: "Drop a panel onto the center of another (dashed highlight) to stack them as tabs inside one frame. Switch with the stack tab buttons.",
       tab: "boosting",
-      targetSel: "#tab-boosting .msbt-layout-hint"
+      // The hint is intentionally hidden on narrow windows; highlight its
+      // always-visible toolbar so this step works at every supported width.
+      targetSel: "#tab-boosting .msbt-layout-toolbar"
     },
     {
       title: "Detach a stacked panel",
@@ -15301,6 +15306,7 @@ function clearMainTutorialSeen() {
 }
 
 function shouldAutoShowMainTutorial() {
+  if (walkthroughState.finderNavigated) return false;
   const current = currentAppVersionString();
   const lastSeen = readTutorialLocal(TUTORIAL_LS_LAST_SEEN);
   const mainSeen = readTutorialLocal(TUTORIAL_LS_MAIN_SEEN);

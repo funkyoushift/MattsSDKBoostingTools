@@ -1,6 +1,6 @@
 # MSBT 2.40.0 — Windows and Linux
 
-One release now includes both desktop platforms. The app selects Windows or Linux downloads using GitHub release metadata and verifies update packages before installation. Linux AppImage updates replace the same executable; portable-folder updates keep the same launcher path and retain a previous-version backup. Windows keeps its bundled Setup updater and verified Windows portable payload.
+One release now includes both desktop platforms. The app selects Windows or Linux downloads using GitHub release metadata and verifies update packages before installation. Linux AppImage updates replace the same executable; portable-folder updates keep the same launcher path and retain a previous-version backup. Windows downloads the verified matching NSIS installer and installs into the running application’s existing directory, including custom and portable locations; Windows may request administrator approval.
 
 ## Six release items
 
@@ -15,7 +15,7 @@ The two source archives contain the same cross-platform source in different form
 
 Windows: run the EXE or extract the ZIP. Linux: mark the AppImage executable and launch it, or extract the TAR.GZ and run ./msbt. If FUSE mounting is unavailable, use AppImage --appimage-extract-and-run. See the included Linux README for Proton SDK loading and MSBT_SAVE_ROOT.
 
-Close Borderlands 4 before replacing its SDK files or applying a desktop update that also installs game components. Linux alpha users install this unified build once; subsequent updates use the new platform-aware updater. Very old Windows clients using the retired electron-updater metadata path should install this EXE once; current bundled Setup clients select the Windows ZIP directly.
+Close Borderlands 4 before replacing its SDK files or applying a desktop update that also installs game components. Linux alpha users install this unified build once; subsequent updates use the new platform-aware updater. Very old Windows clients using the retired electron-updater metadata path should install this EXE once; older bundled Setup clients select the Windows ZIP directly, but custom-location users should run the new installer once to avoid the old helper’s separate installation location.
 
 ## Validation and limits
 

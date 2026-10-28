@@ -37,10 +37,11 @@ app.whenReady().then(async () => {
       jumpElectronAppFinder(repair);await new Promise(r=>setTimeout(r,90));
       const repairVisible=document.getElementById("combatRepairCooldown").getBoundingClientRect().height>0;
       renderElectronAppFinder("unmatched-zzzzzz");
-      return {offlineFeatures,routes,matches,repairVisible,actions,entryCount:indexed.length,
+      return {offlineFeatures,routes,matches,repairVisible,actions,startupTourDeferred:!shouldAutoShowMainTutorial(),entryCount:indexed.length,
         emptyHidden:document.getElementById("appFinderResults").hidden};
     })()`);
     assert(result.offlineFeatures,"All 14 lab features are searchable without game status");
+    assert(result.startupTourDeferred,"A late automatic startup tour must not replace a chosen search destination");
     assert(result.routes.every(r=>r.exact&&r.visible&&r.flashed),JSON.stringify(result.routes));
     assert(result.matches.every(m=>m.titles.length),JSON.stringify(result.matches));
     assert(result.matches.find(m=>m.query==="godmode").titles[0]==="God Mode");

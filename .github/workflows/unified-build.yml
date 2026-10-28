@@ -45,6 +45,9 @@ jobs:
           $env:PYTHONPATH = Join-Path $PWD 'tools'
           python -m pytest tools/tests/test_quick_menu_no_blimgui.py tools/tests/test_release_sdk_imports.py tools/tests/test_pack_sdkmod_zip.py -q
           if ($LASTEXITCODE -ne 0) { throw 'Offline import/startup checks failed' }
+      - name: Verify Windows update handoff
+        shell: pwsh
+        run: node electron_poc/test_windows_update_handoff.js
       - name: Build and audit Windows packages
         shell: pwsh
         run: |

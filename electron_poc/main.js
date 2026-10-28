@@ -572,11 +572,8 @@ function configureAutoUpdater() {
       const {LinuxReleaseUpdater} = require('./platform_release_updater');
       updaterModule = {autoUpdater:new LinuxReleaseUpdater({app,isNewer:isNewerPublicVersion})};
     } else if (process.platform === 'win32') {
-      const {PersistentUpdater,findSetup} = require('./persistent_updater');
-      const setupPath = findSetup(process.resourcesPath);
-      if (!setupPath) throw Error('Bundled Windows setup helper is missing. Reinstall the Windows release package.');
-      updaterModule = {autoUpdater:new PersistentUpdater({setupPath,app,isNewer:isNewerPublicVersion,
-        installedVersions:()=>[app.getVersion()]})};
+      const {WindowsReleaseUpdater} = require('./platform_release_updater');
+      updaterModule = {autoUpdater:new WindowsReleaseUpdater({app,isNewer:isNewerPublicVersion})};
     } else throw Error('No MSBT update package is available for this platform.');
   } catch (error) {
     const failure = packagedLoadFailure(error);
@@ -615,7 +612,7 @@ function configureAutoUpdater() {
     updateState({ status: "progress", message: "Downloading Electron update...", progress, error: "" });
   });
   autoUpdater.on("update-downloaded", (info) => {
-    updateState({ status: "downloaded", message: "Verified update downloaded. Restart to install; the previous Linux package will be retained for rollback.", updateInfo: info, error: "" });
+    updateState({ status: "downloaded", message: "Verified update downloaded. Restart to install in the current application location.", updateInfo: info, error: "" });
   });
   autoUpdater.on("error", (error) => {
     updateState({ status: "error", message: "Electron update check failed.", error: String(error && error.message ? error.message : error) });
@@ -3014,14 +3011,7 @@ registerDesktopHandler("app:quitAndInstallUpdate", async (_event, rawPath) => {
     return { ok: false, message: latestUpdateState.message || "Electron updater failed to load.", state: latestUpdateState };
   }
   try {
-    if (process.platform === 'linux') {
-      if (await isBorderlandsRunning()) return {ok:false,message:'Close Borderlands 4 before installing the desktop update.'};
-    } else {
-      const target = await resolveSdkTarget(rawPath);
-      if (!target.ok) return target;
-      if (target.running) return {ok:false, message:'Close Borderlands 4 before updating so the desktop and selected game files can be updated together.'};
-      autoUpdater.gameRoot = target.gameRoot;
-    }
+    if (await isBorderlandsRunning()) return {ok:false,message:'Close Borderlands 4 before installing the desktop update.'};
     await autoUpdater.quitAndInstall(false, true);
     return { ok: true, message: "Restarting to install update." };
   } catch (error) {

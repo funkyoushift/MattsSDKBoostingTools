@@ -6,7 +6,7 @@ const path=require('path');
 const {createHash}=require('crypto');
 const {execFile}=require('child_process');
 const exec=require('util').promisify(execFile);
-const {releaseInfo,asManifest,downloadVerified,HANDOFF_SCRIPT,LinuxReleaseUpdater}=require('./platform_release_updater');
+const {releaseInfo,asManifest,downloadVerified,HANDOFF_SCRIPT,LinuxReleaseUpdater,WindowsReleaseUpdater,windowsHandoffPayload}=require('./platform_release_updater');
 const payload=Buffer.from('verified release');
 const digest='sha256:'+createHash('sha256').update(payload).digest('hex');
 const version='2.40.0',tag='v'+version;
@@ -33,6 +33,33 @@ const release={tag_name:tag,assets};
     const updater=new LinuxReleaseUpdater({app,isNewer:(a,b)=>a!==b,fetcher:async()=>({ok:true,json:async()=>release}),appImage:true});
     const events=[];updater.on('update-available',info=>events.push(info));
     await updater.checkForUpdates();assert.equal(events[0].selected.name,names[2]);
+    const winPayload=windowsHandoffPayload({installer:'C:\\cache\\update.exe',executable:"C:\\Custom O'Brien & $cash\\MSBT.exe",target:"C:\\Custom O'Brien & $cash",waitPid:123,errorLog:'C:\\cache\\error.txt'});
+    assert.equal(winPayload.arguments,"/S /D=C:\\Custom O'Brien & $cash");
+    assert.equal(winPayload.elevate,true);
+    assert.throws(()=>windowsHandoffPayload({target:'C:\\bad"dir'}),/Invalid/);
+    const windowsUpdater=new WindowsReleaseUpdater({app,isNewer:(a,b)=>a!==b,fetcher:async url=>url.includes('/api.') ? ({ok:true,json:async()=>release}) : ({ok:true,body:(async function*(){yield payload;})()})});
+    windowsUpdater.info=releaseInfo(release,'win32');
+    await windowsUpdater.downloadUpdate();assert.equal(windowsUpdater.ready,true);assert(windowsUpdater.downloaded.endsWith('.exe'));
+    // A check issued during download cannot switch the asset/tag under extraction.
+    const original=path.join(temp,'Current.AppImage');await fs.writeFile(original,'original');
+    let resumeDownload;let apiCalls=0;
+    const raceUpdater=new LinuxReleaseUpdater({app,isNewer:(a,b)=>a!==b,appImage:true,appImagePath:original,fetcher:async url=>{
+      if(url.includes('api.github.com')) {apiCalls++;return {ok:true,json:async()=>release};}
+      return new Promise(resolve=>{resumeDownload=()=>resolve({ok:true,body:(async function*(){yield payload;})()});});
+    }});
+    await raceUpdater.checkForUpdates();
+    const downloading=raceUpdater.downloadUpdate();
+    while(!resumeDownload) await new Promise(resolve=>setImmediate(resolve));
+    const during=await raceUpdater.checkForUpdates();assert.equal(apiCalls,1);assert.equal(during.updateInfo.version,version);
+    resumeDownload();await downloading;assert.equal(raceUpdater.info.version,version);assert.equal(raceUpdater.ready,true);
+    // A metadata check started BEFORE download also cannot invalidate its receipt.
+    let resumeMetadata;
+    raceUpdater.fetcher=async url=>url.includes('api.github.com') ? new Promise(resolve=>{resumeMetadata=()=>resolve({ok:true,json:async()=>({...release,tag_name:'v9.0.0',assets:assets.map(a=>({...a,name:a.name.replace(tag,'v9.0.0'),browser_download_url:a.browser_download_url.replaceAll(tag,'v9.0.0')}))})});}) : ({ok:true,body:(async function*(){yield payload;})()});
+    const oldCheck=raceUpdater.checkForUpdates();
+    while(!resumeMetadata) await new Promise(resolve=>setImmediate(resolve));
+    await raceUpdater.downloadUpdate();resumeMetadata();await oldCheck;
+    assert.equal(raceUpdater.info.version,version);assert.equal(raceUpdater.ready,true);
+    if(process.platform === 'win32') {console.log('PASS platform metadata, verified downloads and concurrent-check guards; POSIX handoff covered on Linux');return;}
     // Run the real detached handoff script against disposable installation fixtures.
     const runner=path.join(temp,'handoff.sh');await fs.writeFile(runner,HANDOFF_SCRIPT);
     const target=path.join(temp,'portable'),stage=path.join(temp,'stage'),backup=path.join(temp,'previous');

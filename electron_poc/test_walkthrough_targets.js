@@ -184,6 +184,24 @@ async function auditWalkthroughs() {
     `panel widths must match their column span:\n${JSON.stringify(result.grid.widthErrors, null, 2)}`
   );
   console.log(`walkthrough target audit passed (${result.checked} highlighted steps)`);
+  // Windows desktops may constrain a requested large window below the 1080px
+  // breakpoint. Every layout-tour step must still highlight a visible target.
+  win.setSize(1000, 768);
+  const compact = await win.webContents.executeJavaScript(`(() => {
+    const hidden = [];
+    TUTORIAL_TOURS.layout.forEach((step, index) => {
+      switchTab(step.tab);
+      prepareWalkthroughTarget(step);
+      const target = resolveWalkthroughTarget(step);
+      const rect = target && target.getBoundingClientRect();
+      if (!rect || rect.width < 1 || rect.height < 1) hidden.push({index, title:step.title});
+    });
+    return {width:innerWidth, hidden};
+  })()`, true);
+  assert(compact.width <= 1080, "compact layout regression must exercise the narrow breakpoint");
+  assert.deepStrictEqual(compact.hidden, [], "layout walkthrough must remain visible on narrow windows");
+  win.setSize(1800, 900);
+
   await win.loadFile(path.join(__dirname, "renderer.html"), { query: { nosplash: "1" } });
   await new Promise(resolve => setTimeout(resolve, 750));
   const afk = await win.webContents.executeJavaScript(`(async () => {
