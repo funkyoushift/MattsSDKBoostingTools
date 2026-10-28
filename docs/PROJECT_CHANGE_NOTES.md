@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-10-28: Guided Linux installer](changes/2026-10-28-linux-installer.md): Requirement repair, per-user app/menu installation and optional Steam/Proton integration with pending/retry handling; actual temporary-home installation and runtime launch verified.
+
 - [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): Published stable2.40.0 with exactly six public links; Windows native/installer CI, Linux packages and public updater downloads verified. Platform-aware routing and retained launch paths; AppImage prerequisite limits in linked entry.
 
 - [2026-10-28: Linux desktop preview and release cleanup](changes/2026-10-28-linux-preview.md): Published Linux alpha with three uploaded files and all public hashes verified; offline/package checks, live Proton bridge/camera and user acceptance passed. Windows stable2.39.9 preserved; broader compatibility limits in linked entry.
