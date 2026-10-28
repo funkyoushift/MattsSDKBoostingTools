@@ -13,7 +13,7 @@ GitHub adds **Source code (zip)** and **Source code (tar.gz)**. Both contain the
 
 ## Linux: download, open, install
 
-1. Download the Linux installer above.
+1. Download the Linux installer above. In your browser, choose **Show in folder**, then open it from your file manager; the browser’s **Open** action may be blocked by KDE.
 2. Right-click → **Properties → Permissions → Allow executing as a program** (wording varies by desktop).
 3. Open it and click **Install MSBT**. Launch MSBT from the final screen or your applications menu.
 
