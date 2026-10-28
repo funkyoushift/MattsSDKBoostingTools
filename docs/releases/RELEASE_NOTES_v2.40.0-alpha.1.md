@@ -2,7 +2,7 @@
 
 Native Linux x86-64 desktop with bundled Python and PyYAML. Extract the tar.gz and run ./msbt. No Node/Python installation needed. Linux Steam library discovery, Proton game-running protection, ZIP extraction and Python paths are supported. Updates use manual archive replacement. Search now keeps the selected control visible when walkthrough highlights reposition on scrolling.
 
-**Experimental: live Proton SDK/bridge gameplay has not been verified.** Borderlands 4 and the SDK still run as Windows software under Proton. Close the game before installing SDK components. Save replay requires an explicit MSBT_SAVE_ROOT; see the included LINUX-README.md. Existing v2.39.9 game/save/trophy limitations remain.
+**Experimental:** solo Proton startup, exact SDK identity, live bridge communication and a reversible third-person on/off command passed on Steam build26007962. Broad gameplay, multiplayer and save persistence remain unverified. Borderlands 4 and the SDK still run as Windows software under Proton. Close the game before installing SDK components. Save replay requires an explicit MSBT_SAVE_ROOT; see the included LINUX-README.md. Existing v2.39.9 game/save/trophy limitations remain.
 
 ## Download
 
