@@ -122,6 +122,11 @@ if ($Repository -notmatch '^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$') {
 }
 
 $PackageVersion = Get-PublicReleaseVersion
+# Legacy Windows-only publisher must not recreate metadata/APK clutter in a
+# unified desktop release. Coordinated builds publish four application assets.
+if ($PackageVersion -match '^(\d+)\.(\d+)\.' -and ([int]$Matches[1] -gt 2 -or ([int]$Matches[1] -eq 2 -and [int]$Matches[2] -ge 40))) {
+    throw 'Use the unified Windows/Linux release process: four application files plus GitHub source ZIP/TAR.'
+}
 $ElectronSemver = Get-ElectronSemverVersion
 $ExpectedTagName = "v$PackageVersion"
 $Prerelease = Test-PrereleaseVersion $PackageVersion

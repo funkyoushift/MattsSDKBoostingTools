@@ -125,3 +125,6 @@ electron_poc/vendor/setup/
 
 # Native Linux portable build output
 /dist_linux/
+
+# Coordinated release staging and verification receipts
+/dist_unified/

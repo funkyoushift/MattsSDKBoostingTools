@@ -1,198 +1,27 @@
-name: Electron Release
-
+name: Release tag verification
 on:
   push:
     tags:
-      - "v*"
-
+      - 'v*'
 permissions:
-  contents: write
-
+  contents: read
 jobs:
-  release-policy:
+  verify:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      skip_release_ci: ${{ steps.policy.outputs.skip_release_ci }}
     steps:
-      - name: Check out tagged commit
-        uses: actions/checkout@v4
-      - name: Check for a manually built release
-        id: policy
-        shell: bash
-        run: |
-          # Inspect the tag's commit; push.head_commit can be absent for tags.
-          if git log -1 --format=%B | grep -Fq '[skip release ci]'; then
-            echo "skip_release_ci=true" >> "$GITHUB_OUTPUT"
-            echo "This tag uses reviewed local artifacts; CI will not publish it."
-          else
-            echo "skip_release_ci=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  build-release:
-    needs: release-policy
-    if: needs.release-policy.outputs.skip_release_ci != 'true'
-    runs-on: windows-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: electron_poc/package-lock.json
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Set up installer build tools
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "8.0.x"
-
-      - name: Install Electron dependencies
-        working-directory: electron_poc
-        run: npm ci
-
-      - name: Validate release tag and package version
-        shell: pwsh
-        run: |
-          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
-          if ($version -notmatch '^\d+\.\d+\.\d+(-(?:alpha|beta)\.\d+)?$') {
-            throw "Invalid package version: $version"
-          }
-          $expectedTag = "v$version"
-          $actualTag = "${env:GITHUB_REF_NAME}"
-          if ($actualTag -ne $expectedTag) {
-            throw "Tag '$actualTag' does not match package version '$expectedTag'."
-          }
-
-      - name: Build Electron installer
-        shell: pwsh
-        run: .\tools\build_electron_beta.ps1 -Installer
-
-      - name: Validate release assets
-        shell: pwsh
-        run: |
-          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
-          $required = @(
-            ".\dist_setup\MSBT-Setup.exe",
-            ".\dist_electron\MSBT-Installer-v$version.exe",
-            ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
-            ".\dist_electron\latest.yml",
-            ".\docs\releases\latest.json",
-            ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
-          )
-          foreach ($path in $required) {
-            if (-not (Test-Path $path)) {
-              throw "Required release asset missing: $path"
-            }
-          }
-          $latest = Get-Content -Raw ".\dist_electron\latest.yml"
-          if ($latest -notmatch "(?m)^version:\s*$([regex]::Escape($version))\s*$") {
-            throw "latest.yml version does not match package version $version."
-          }
-
-      - name: Publish GitHub Release
-        shell: pwsh
+      - uses: actions/checkout@v4
+      - name: Validate coordinated release tag
         env:
-          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          $version = (Get-Content -Raw .\electron_poc\package.json | ConvertFrom-Json).version
-          $tag = "v$version"
-          # Public beta builds still count as latest so old app versions can read
-          # /releases/latest/download/latest.json.
-          $isPrerelease = $version -match '-alpha\.\d+$'
-          if ($version -match '^(\d+\.\d+\.\d+)-beta\.(\d+)$') {
-            $title = "Borderlands 4 Modding Tools v$($Matches[1]) Beta $($Matches[2]) — Powered by Funk"
-          } elseif ($version -match '^(\d+\.\d+\.\d+)-alpha\.(\d+)$') {
-            $title = "Borderlands 4 Modding Tools v$($Matches[1]) Alpha $($Matches[2]) — Powered by Funk"
-          } else {
-            $title = "Borderlands 4 Modding Tools v$version — Powered by Funk"
-          }
-          $buildDate = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-          $notesFile = ".\docs\releases\RELEASE_NOTES_v$version.md"
-          if (Test-Path $notesFile) {
-            $notesBody = (Get-Content -Raw $notesFile).TrimEnd()
-          } else {
-            $notesBody = @"
-          ### What's new
-
-          Electron release built from semantic tag ``$tag``.
-
-          ### Fixed
-
-          See commit history for fixes included in this build.
-          "@
-          }
-          $badgeBlock = @"
-
-          ### Download: pick ONE
-
-          [![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Installer-v$version.exe?label=Installer%20downloads&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Installer-v$version.exe)
-          [![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/$tag/MSBT-Portable-v$version-win-x64.zip?label=Portable%20downloads&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/$tag/MSBT-Portable-v$version-win-x64.zip)
-
-          Counts track the installer and portable ZIP only (not update-check files).
-
-          **Recommended for almost everyone**
-
-          Download and run:
-          ``MSBT-Installer-v$version.exe``
-
-          This is the Windows installer. It installs the Electron app, adds shortcuts, and includes the bundled SDK mod/update resources.
-
-          **Manual install / portable Electron app**
-
-          Download and extract:
-          ``MSBT-Portable-v$version-win-x64.zip``
-
-          Use this if you want the Electron app without running the installer. It contains the Electron app files plus bundled SDK mod/update resources.
-
-          **Do not manually download these unless you know why**
-
-          ``latest.json``, ``latest.yml``, ``*.blockmap`` are update-system files used by the app/installer.
-
-          **Source code**
-
-          GitHub's automatic ``Source code`` ZIP/TAR files are for developers. They are not the ready-to-run app.
-
-          ### Upgrade notes
-
-          Requires SDK 03 / oak2-mod-manager v0.3:
-          https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3
-
-          ### Build information
-
-          - Version: $version
-          - Commit: ${env:GITHUB_SHA}
-          - Build date: $buildDate
-          "@
-          # Prefer committed notes; always ensure badge footer exists (never notes-only).
-          if ($notesBody -match 'Installer%20downloads') {
-            $notes = $notesBody
-          } else {
-            $notes = ($notesBody.TrimEnd() + [Environment]::NewLine + $badgeBlock).TrimEnd() + [Environment]::NewLine
-          }
-          $notesPath = Join-Path $env:RUNNER_TEMP "msbt_release_notes.md"
-          Set-Content -Path $notesPath -Value $notes -Encoding UTF8
-          $assets = @(
-            ".\dist_setup\MSBT-Setup.exe",
-            ".\dist_electron\MSBT-Installer-v$version.exe",
-            ".\dist_electron\MSBT-Installer-v$version.exe.blockmap",
-            ".\dist_electron\latest.yml",
-            ".\docs\releases\latest.json",
-            ".\dist_electron\MSBT-Portable-v$version-win-x64.zip"
-          )
-          $args = @("release", "create", $tag) + $assets + @("--title", $title, "--notes-file", $notesPath, "--verify-tag")
-          if ($isPrerelease) {
-            $args += "--prerelease"
-          } else {
-            $args += "--latest"
-          }
-          gh @args
+          python3 - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          package=json.loads(Path('electron_poc/package.json').read_text())
+          manifest=json.loads(Path('docs/releases/latest.json').read_text())
+          assert os.environ['RELEASE_TAG']=='v'+package['version']
+          assert manifest['package_version']==package['version']
+          assert set(manifest['platforms'])=={'win32','linux'}
+          print('Tag verified. Artifact builds use unified-build.yml and tools/build_linux.py.')
+          print('Publish only the four application files; GitHub adds two source archives.')
+          PYCODE
