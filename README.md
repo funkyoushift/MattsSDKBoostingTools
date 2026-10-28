@@ -1,4 +1,6 @@
-[Linux AppImage](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-linux-x64.tar.gz)
+[Linux — single-file app (AppImage)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-linux-x64.tar.gz)
+
+> **Linux single-file app:** download the AppImage, allow executing it in Properties → Permissions, then double-click it. It bundles the app runtime; Linux desktop libraries and Proton configuration are prerequisites.
 
 > **Windows and Linux:** v2.40.0 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.40.0).
 
