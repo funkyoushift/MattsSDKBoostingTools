@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-10-28: Guided Linux installer](changes/2026-10-28-linux-installer.md): Requirement repair, per-user app/menu installation and optional Steam/Proton integration with pending/retry handling; actual temporary-home installation and runtime launch verified.
+- [2026-10-28: Guided Linux installer](changes/2026-10-28-linux-installer.md): Published stable/latest 2.40.1: guided requirement repair, per-user app/menu installation and optional Steam/Proton setup. Windows NSIS CI, real local installation, all four public downloads and six release links verified. Running game preserved; game setup pending.
 
 - [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): Published stable2.40.0 with exactly six public links; Windows native/installer CI, Linux packages and public updater downloads verified. Platform-aware routing and retained launch paths; AppImage prerequisite limits in linked entry.
 
