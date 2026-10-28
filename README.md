@@ -1,3 +1,7 @@
+[Linux AppImage](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-linux-x64.tar.gz)
+
+> **Windows and Linux:** v2.40.0 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.40.0).
+
 <!-- v2.39.9 support and settings repair -->
 
 > **Android 1.6.6:** The Support button opens FunkYouSHiFT's Buy Me a Coffee page. Save Setup continues to preserve Remote AFK pairing; if an older setup lost its credentials, scan the Remote AFK QR again in Windows → Mobile Pairing.
@@ -28,11 +32,11 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Installer-v2.39.9.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Installer-v2.39.9.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Portable-v2.39.9-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Portable-v2.39.9-win-x64.zip)
-[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/latest/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.40.0/MSBT-Installer-v2.40.0.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.40.0/MSBT-Portable-v2.40.0-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-win-x64.zip)
+[![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.39.9/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Mobile-Controller.apk)
 
-[Download the standalone Mission Selector SDK](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/BL4MissionSelector.sdkmod) · [Console menu and installation](standalone_mission_selector/README.md)
+[Download the standalone Mission Selector SDK](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/BL4MissionSelector.sdkmod) · [Console menu and installation](standalone_mission_selector/README.md)
 
 The standalone mod runs without the desktop app. Use it instead of the full MSBT SDK: move the full mod out of `sdk_mods` before installing the selector.
 

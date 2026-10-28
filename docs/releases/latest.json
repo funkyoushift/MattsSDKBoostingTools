@@ -1,22 +1,36 @@
 {
-  "package_version": "2.39.9",
-  "app_version": "2.39.9",
-  "sdkmod_version": "2.39.9",
-  "resources_version": "2.39.9",
-  "electron_version": "2.39.9",
-  "git_commit": "713733c9d8bd9222ea3831470c562e571feac6ce",
-  "built_at_utc": "2026-10-26T15:34:44Z",
+  "package_version": "2.40.0",
+  "app_version": "2.40.0",
+  "sdkmod_version": "2.40.0",
+  "resources_version": "2.40.0",
+  "electron_version": "2.40.0",
+  "git_commit": "b20bc1039fb00d5c137c26bbd37bf7370a4b99ba",
+  "built_at_utc": "2026-10-28T15:15:43.480600+00:00",
   "sdk_required": "oak2-mod-manager v0.3",
   "sdk_required_url": "https://bl-sdk.github.io/oak2-mod-db/",
-  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Portable-v2.39.9-win-x64.zip",
-  "manual_zip_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Portable-v2.39.9-win-x64.zip",
-  "electron_installer_name": "MSBT-Installer-v2.39.9.exe",
-  "electron_installer_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Installer-v2.39.9.exe",
-  "electron_updater_manifest_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/latest.yml",
-  "release_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.39.9",
+  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-win-x64.zip",
+  "manual_zip_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-win-x64.zip",
+  "electron_installer_name": "MSBT-Installer-v2.40.0.exe",
+  "electron_installer_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0.exe",
+  "electron_updater_manifest_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.yml",
+  "release_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.40.0",
   "latest_manifest_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/latest.json",
   "mobile_apk_name": "MSBT-Mobile-Controller.apk",
   "mobile_apk_version": "1.6.6",
   "mobile_apk_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest/download/MSBT-Mobile-Controller.apk",
-  "mobile_install_url": "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html"
+  "mobile_install_url": "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html",
+  "linux_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-linux-x64.tar.gz",
+  "release_channel": "stable",
+  "linux_gameplay_verified": true,
+  "source_base_commit": "b20bc1039fb00d5c137c26bbd37bf7370a4b99ba",
+  "platforms": {
+    "win32": {
+      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0.exe",
+      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-win-x64.zip"
+    },
+    "linux": {
+      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Installer-v2.40.0-linux-x64.AppImage",
+      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.0/MSBT-Portable-v2.40.0-linux-x64.tar.gz"
+    }
+  }
 }
