@@ -16,6 +16,12 @@ app.whenReady().then(async () => {
       return {ok:true,data:{ok:true,afk_lobby:{enabled:action==='afk_lobby_start',message:action==='afk_lobby_start'?'Running':'Stopped',config:payload,history:[]}}};
     };
     bridgeStatus = async () => {};
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:true,state:'active'}}});
+    if (!document.getElementById('afkShiftStatus').textContent.includes('Background active') || document.getElementById('afkShiftStatus').textContent.includes('not connected')) throw Error('Active companion was reported disconnected');
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:true,state:'foreground'}}});
+    if (!document.getElementById('afkShiftStatus').textContent.includes('companion available')) throw Error('Foreground companion was reported disconnected');
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:false,state:'unsupported'}}});
+    if (!document.getElementById('afkShiftStatus').textContent.includes('not connected')) throw Error('Missing companion status was hidden');
     window.msbtAfkRender({afk_lobby:{enabled:false,host_test_supported:true,message:'Stopped'}});
     document.querySelector('[data-afk-boost="loot"]').checked = true;
     document.getElementById('afkCodes').value = '';
@@ -53,6 +59,7 @@ app.whenReady().then(async () => {
     document.getElementById('afkCleanupRewards').checked = true;
     const lootMode = document.getElementById('afkLootMode');
     const unlimitedDefault = lootMode.value === 'all';
+    if (document.getElementById('afkGodMode').checked) throw Error('AFK God Mode must default off');
     if (document.getElementById('afkItemLevelOverride').checked) throw Error('Override must default off');
     document.getElementById('afkItemLevelOverride').checked = true;
     document.getElementById('afkItemLevel').value = '35';
@@ -63,7 +70,8 @@ app.whenReady().then(async () => {
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const oldSdkBlocked = calls.length === 0 && document.getElementById('afkStatus').textContent.includes('updated SDK');
-    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
+    document.getElementById('afkGodMode').checked = true;
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',god_mode_supported:true,boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkStart').click();
     await new Promise(resolve=>setTimeout(resolve,30));
     const locked = document.getElementById('afkCodes').disabled && lootMode.disabled && document.getElementById('afkGuaranteedCodes').disabled;
@@ -90,6 +98,7 @@ app.whenReady().then(async () => {
       if (Number(number.value) !== value) throw Error('Slider did not update exact amount: '+key);
       number.dispatchEvent(new Event('change', {bubbles:true}));
     }
+    document.getElementById('afkGodMode').checked = false;
     document.getElementById('afkStart').click();
     await new Promise(resolve => setTimeout(resolve, 30));
     if (calls.length !== 3 || !document.getElementById('afkStatus').textContent.includes('custom AFK boost amounts')) throw Error('Old SDK accepted custom amounts');
@@ -99,11 +108,18 @@ app.whenReady().then(async () => {
     await window.msbtAfkConfigStore.save(savedAmounts);
     const durableAmounts = await window.msbtAfkConfigStore.load();
     for (const [key, value] of Object.entries(amounts)) if(durableAmounts[key+'_amount'] !== value) throw Error('Amount lost in durable store: '+key);
-    window.msbtAfkRender({afk_lobby:{enabled:false,boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
+    window.msbtAfkRender({afk_lobby:{enabled:false,god_mode_supported:true,boost_amounts_supported:true,kick_exempt_names_supported:true,vault_card_levels_supported:true,mayhem_supported:true,host_test_supported:true,cleanup_rewards_supported:true,loot_modes:['all','random70'],guaranteed_loot_supported:true,item_level_override_supported:true,history:[]}});
     document.getElementById('afkTestHost').click();
     await new Promise(resolve => setTimeout(resolve, 30));
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
-    return {guaranteedCodes,oldSdkBlocked,unlimitedDefault,savedMode,calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
+    window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',shift_background:{available:true,state:'error',reason:'Restore needs attention'}}});
+    if (!document.getElementById('afkBackgroundStatus').textContent.includes('error · Restore needs attention')) throw Error('Background error not displayed');
+    const backgroundStart = calls.length;
+    for (const id of ['afkBackgroundStart','afkBackgroundShow','afkBackgroundStop']) {
+      document.getElementById(id).click(); await new Promise(resolve => setTimeout(resolve, 30));
+    }
+    const backgroundCalls = calls.slice(backgroundStart);
+    return {backgroundCalls,guaranteedCodes,oldSdkBlocked,unlimitedDefault,savedMode,calls,codes,catalogCodes,savedCodes,kickDefaultOff,newDefaultsOff,unchangedWhileRunning,locked,unlocked,stopEnabled,hasSduLabel:panel.textContent.includes('3,225')};
   })()`);
   assert.equal(results.codes, "@Ufixture");
   assert.equal(results.catalogCodes, "@Ufixture\n@UCatalogAlpha\n@UCatalogBeta\n@UCatalogAlpha");
@@ -115,6 +131,7 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[0].payload.sdu, true);
   assert.equal(results.calls[0].payload.loot, true);
   assert.equal(results.calls[0].payload.auto_accept, true);
+  assert.equal(results.calls[0].payload.god_mode, true);
   assert(results.kickDefaultOff);
   assert(results.newDefaultsOff);
   assert(results.unlimitedDefault);
@@ -134,6 +151,7 @@ app.whenReady().then(async () => {
   assert.equal(results.calls[1].action, "afk_lobby_stop");
   assert.equal(results.calls[2].action, "shift_overlay_control");
   assert.equal(results.calls[2].payload.mode, "close");
+  assert.deepEqual(results.backgroundCalls.map(c => [c.action,c.payload.mode]), [["shift_overlay_control","background_start"],["shift_overlay_control","background_show"],["shift_overlay_control","background_stop"]]);
   assert.equal(results.calls[3].action, 'afk_lobby_start');
   assert.equal(results.calls[3].payload.test_host, true);
   for (const [key,value] of Object.entries({level:30,spec:50,cash:1250,eridium:100,keys:5})) assert.equal(results.calls[3].payload[key+'_amount'], value);
@@ -142,7 +160,7 @@ app.whenReady().then(async () => {
   assert(results.locked && results.unlocked && results.stopEnabled && results.hasSduLabel);
   const out = path.join(__dirname, "../output/afk-lobby");
   fs.mkdirSync(out, { recursive: true });
-  win.show();
+  if (!process.env.MSBT_TEST_HIDDEN) win.show();
   await new Promise(resolve => setTimeout(resolve, 600));
   await win.webContents.executeJavaScript(`document.getElementById('walkthroughModal')?.remove(); document.getElementById('walkthroughCard')?.remove(); document.getElementById('msbtBootSplash')?.remove(); document.getElementById('afkLobbyPanel').scrollIntoView();`);
   await new Promise(resolve => setTimeout(resolve, 200));

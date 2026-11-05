@@ -368,6 +368,7 @@ for _feature, (_label, _scope) in _FARMING_FEATURES.items():
     for _mode in ("on", "off"):
         ACTION_CATALOG[f"farming_{_feature}_{_mode}"] = {"basic":f"Farming: {_label} {_mode.title()}"}
 ACTION_CATALOG["farming_all_off"] = {"basic":"Turn All Farming Controls Off"}
+ACTION_CATALOG["afk_god_mode_toggle"] = {"basic":"AFK Host God Mode Toggle"}
 
 ASSIGNABLE_ACTIONS: tuple[str, ...] = tuple(sorted(ACTION_CATALOG.keys()))
 

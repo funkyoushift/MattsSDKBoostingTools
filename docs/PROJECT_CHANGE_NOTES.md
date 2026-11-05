@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-11-05: SHiFT background accepting candidate](changes/2026-11-05-shift-background-candidate.md): Isolated v2.40.1-based candidate, offline checks and outstanding native gameplay verification.
+
 - [2026-10-28: Guided Linux installer](changes/2026-10-28-linux-installer.md): Requirement repair, per-user app/menu installation and optional Steam/Proton integration with pending/retry handling; actual temporary-home installation and runtime launch verified.
 
 - [2026-10-28: Unified Windows/Linux release and updater](changes/2026-10-28-unified-release.md): Published stable2.40.0 with exactly six public links; Windows native/installer CI, Linux packages and public updater downloads verified. Platform-aware routing and retained launch paths; AppImage prerequisite limits in linked entry.

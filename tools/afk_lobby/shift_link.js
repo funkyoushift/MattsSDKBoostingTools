@@ -36,7 +36,18 @@
                 report.send(JSON.stringify({ running: ShiftFriendAutomation.isRunning() }));
             } catch (error) { /* Keep the existing SHiFT controls usable. */ }
         };
-        request.onloadend = function () { if (!verified) portIndex = (portIndex + 1) % ports.length; window.setTimeout(poll, 2000); };
+        request.onloadend = function () {
+            if (!verified) {
+                // An old AFK acknowledgement is not permission to keep processing
+                // friends/invites after the owning bridge disappears.
+                if (controlled && window.ShiftFriendAutomation) {
+                    if (ShiftFriendAutomation.setAfkManaged) ShiftFriendAutomation.setAfkManaged(false);
+                    ShiftFriendAutomation.stopAutoAccept({ silent: true });
+                }
+                portIndex = (portIndex + 1) % ports.length;
+            }
+            window.setTimeout(poll, 2000);
+        };
         request.send();
     }
     window.setTimeout(poll, 1000);

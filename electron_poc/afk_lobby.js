@@ -45,6 +45,7 @@
     return Object.fromEntries([
       ...options.map((node) => [node.dataset.afkBoost, node.checked]),
       ...Object.entries(amountInputs).map(([key, {number}]) => [key + '_amount', Number(number.value)]),
+      ["god_mode", byId("afkGodMode").checked],
       ["auto_accept", byId("afkAutoAccept").checked],
       ["auto_kick", byId("afkAutoKick").checked],
       ["kick_exempt_names", byId("afkKickExemptNames").value],
@@ -72,6 +73,7 @@
       slider.value = number.value = config[key + '_amount'] ?? amountLimits[key];
     }
     options.forEach((node) => { node.checked = config[node.dataset.afkBoost] === true; });
+    byId("afkGodMode").checked = config.god_mode === true;
     byId("afkAutoAccept").checked = config.auto_accept !== false;
     byId("afkAutoKick").checked = config.auto_kick === true;
     byId("afkKickExemptNames").value = config.kick_exempt_names || "";
@@ -102,12 +104,18 @@
     if (running && afk.config) apply(afk.config);
     byId("afkStart").disabled = busy || running || !afk;
     byId("afkTestHost").disabled = busy || running || !afk?.host_test_supported;
-    byId("afkStop").disabled = busy || !running;
+    byId("afkStop").disabled = busy || (!running && !afk?.god_mode_restore_pending);
     panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running || busy; });
     byId("afkStatus").textContent = commandError || (afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.");
+    const background = afk?.shift_background;
     byId("afkShiftStatus").textContent = afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
-      : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
+      : background?.available
+        ? `SHiFT companion available${background.state === "active" ? " · Background active" : ""} · AFK lobby link waiting`
+        : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
+    const backgroundState = background?.state || "unavailable";
+    const backgroundReason = background?.reason || "";
+    byId("afkBackgroundStatus").textContent = `SHiFT background: ${backgroundState}${backgroundReason ? ` · ${backgroundReason}` : ""}`;
     guestProgress.replaceChildren();
     const mode = document.createElement('div');
     mode.textContent = !running ? 'AFK stopped' : afk.config?.concurrent_guests
@@ -161,6 +169,7 @@
     busy = true;
     render({ afk_lobby: lastStatus });
     try {
+      if (action === 'afk_lobby_start' && payload.god_mode && !lastStatus?.god_mode_supported) throw new Error('Install the updated SDK mod before using AFK God Mode.');
       if (action === 'afk_lobby_start') {
         if (payload.loot && !payload.codes?.trim() && !payload.guaranteed_codes?.trim()) {
           throw new Error('Send selected loot is checked, but both loot lists are empty. Add items below or uncheck Send selected loot, then try again. No boosts have started.');
@@ -226,7 +235,7 @@
       busy = false;
       byId("afkStart").disabled = running || !lastStatus;
       byId("afkTestHost").disabled = running || !lastStatus?.host_test_supported;
-      byId("afkStop").disabled = !running;
+      byId("afkStop").disabled = !running && !lastStatus?.god_mode_restore_pending;
       panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running; });
     }
   }
@@ -234,6 +243,9 @@
   byId("afkTestHost").addEventListener("click", () => run("afk_lobby_start", {...selection(), test_host: true}));
   byId("afkStop").addEventListener("click", () => run("afk_lobby_stop"));
   byId("afkCloseShift").addEventListener("click", () => run("shift_overlay_control", { mode: "close" }));
+  for (const [id, mode] of [["afkBackgroundStart", "background_start"], ["afkBackgroundShow", "background_show"], ["afkBackgroundStop", "background_stop"]]) {
+    byId(id).addEventListener("click", () => run("shift_overlay_control", { mode }));
+  }
   let bookmarkRows = [];
   function folderRows() {
     const folder = byId('afkBookmarkFolder').value;

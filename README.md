@@ -184,6 +184,12 @@ If we have missed you or described your contribution incorrectly, please [open a
 
 The toolkit includes boosting, item and serial workflows, save/editor tools, inventory browsing, movement, travel, spawning, AFK lobby controls, and an Android companion. Feature availability depends on the installed version and game compatibility.
 
+## SHiFT background accepting
+
+MSBT 2.41.0 adds a compact, visible SHiFT companion with controls to start accepting friends while playing, show SHiFT again, and stop accepting. Review and save the protected-player list before starting. The bundled PAK and companion install together; close the game before updating its files.
+
+The native background path is limited to the verified Steam executable build with SHA-256 `ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a`. Other game builds fail closed for this path. The compact SHiFT view stays visible; this feature is not invisible mode.
+
 ## Development and license
 
 [Desktop source](electron_poc/) · [SDK source](mod_extracted/MattsSDKBoostingTools/) · [Build tools](tools/)

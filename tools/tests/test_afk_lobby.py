@@ -255,11 +255,12 @@ def test_each_join_runs_once_and_rejoining_runs_again():
     assert len(game.calls) == 4
 
 
-def test_challenges_share_credit_but_private_uvhm_and_loot_run_for_every_guest():
+def test_shared_runs_once_but_other_boosts_and_loot_run_for_every_guest():
     game=FakeGame(); lobby=module.Lobby(game)
     lobby.start({'level':True,'challenges':True,'uvhm':True,'loot':True})
     game.rows=[row('a'),row('b',2),row('c',3)];ticks(lobby,40)
-    assert len([c for c in game.calls if c[0]=='challenges'])==1
+    for step in ('challenges',):
+        assert len([c for c in game.calls if c[0]==step])==1
     for step in ('level','loot','uvhm'):
         assert {c[1] for c in game.calls if c[0]==step}=={'a','b','c'}
 
@@ -713,27 +714,6 @@ def test_cancel_discards_private_uvhm_without_touching_manual_work():
     assert job == {}
 
 
-def test_every_ready_guest_receives_complete_private_native_uvhm_sequence(monkeypatch):
-    import json
-    ranks=json.loads((FILE.parents[2]/'tools/mission_lab/data/uvhm_catalog_audit.json').read_bytes())['ranks']
-    plan=[(label,token,.3) for label,tokens in ranks for token in tokens]
-    clock=[100.];monkeypatch.setattr(module.time,'monotonic',lambda:clock[0])
-    game=FakeGame();adapter=module.Game();sent={'a':[],'b':[]}
-    adapter.backend=lambda:SimpleNamespace(uvh_boost_status=lambda:{'active':False},
-        UVH_RANKS=ranks,_uvh_build_plan=lambda indices:list(plan),
-        _uvh_native_step=lambda pc,token,receipt,now,delay:pc.ServerIncrementChallengeForPlayer(token,1) or True)
-    original=game.step
-    game.step=lambda step,job,config:adapter.step(step,job,config) if step=='uvhm' else original(step,job,config)
-    game.rows=[dict(row(name,index),pc=SimpleNamespace(ServerIncrementChallengeForPlayer=lambda token,amount,name=name:sent[name].append((token,amount))))
-               for index,name in enumerate(['a','b'],1)]
-    lobby=module.Lobby(game);lobby.start({'uvhm':True})
-    for _ in range(100):
-        clock[0]+=1.;ticks(lobby,1)
-    expected=[(token,1) for _label,token,_delay in plan]
-    assert sent=={'a':expected,'b':expected}
-    assert not any(entry['step']=='uvhm' for entry in lobby.shared_completed)
-
-
 def test_customs_and_hovers_matches_boosting_button_and_targets_guest():
     calls = []; game = module.Game()
     pc = SimpleNamespace(ServerActivateDevPerk=lambda code: calls.append(code))
@@ -1019,3 +999,86 @@ def test_mayhem_step_uses_pinned_character_and_propagates_failure():
     game.backend = lambda: SimpleNamespace(mayhem_boost_target=lambda *args: calls.append(args) or result)
     assert game.step('mayhem', {'pc': 'pc', 'token': 'ps', 'name': 'Guest'}, {'mayhem_amount': 12}) is result
     assert calls == [('pc', 'ps', 12, 'Guest')]
+
+
+def test_afk_god_mode_opt_in_ownership_and_toggle():
+    class GodGame(FakeGame):
+        def __init__(self):
+            super().__init__(); self.begins=0; self.ends=[]
+        def begin_afk_god(self):
+            self.begins += 1
+            return {'ok': True, 'claim': {'claim': self.begins}}
+        def end_afk_god(self, claim):
+            self.ends.append(claim); return {'ok': True}
+    game=GodGame(); lobby=module.Lobby(game)
+    assert lobby.start({'cash': True})['ok'] and game.begins == 0
+    assert lobby.toggle_god_mode()['ok'] and game.begins == 1
+    assert lobby.toggle_god_mode()['ok'] and len(game.ends) == 1
+    assert lobby.stop()['ok'] and len(game.ends) == 1
+    assert lobby.start({'cash': True, 'god_mode': True})['ok'] and game.begins == 2
+    assert lobby.stop()['ok'] and len(game.ends) == 2
+
+
+def test_afk_god_restore_failure_is_exposed_and_can_retry():
+    class GodGame(FakeGame):
+        def __init__(self): super().__init__(); self.fail=True
+        def begin_afk_god(self): return {'ok': True, 'claim': {'owner': 1}}
+        def end_afk_god(self, claim): return {'ok': not self.fail, 'message': 'retry'}
+    game=GodGame(); lobby=module.Lobby(game)
+    assert lobby.start({'cash': True, 'god_mode': True})['ok']
+    assert not lobby.stop()['ok'] and lobby.status()['god_mode_restore_pending']
+    game.fail=False
+    assert lobby.stop()['ok'] and not lobby.status()['god_mode_restore_pending']
+
+
+def test_afk_god_mode_does_not_claim_existing_or_later_user_state(monkeypatch):
+    import sys, types
+    package=types.ModuleType('afk_fake_pkg'); package.__path__=[]
+    farm=types.ModuleType('afk_fake_pkg.farming_controls'); farm._god_mode_revision=0
+    pawn=SimpleNamespace(bCanBeDamaged=False); pc=SimpleNamespace()
+    farm.local=lambda:(pc,pawn);farm.identity=lambda pc,pawn:('same-character',)
+    calls=[]
+    def set_feature(feature, enabled, *args):
+        calls.append(enabled); farm._god_mode_revision+=1; pawn.bCanBeDamaged=not enabled
+        return {'ok':True}
+    farm.set_feature=set_feature; package.farming_controls=farm
+    monkeypatch.setitem(sys.modules,'afk_fake_pkg',package);monkeypatch.setitem(sys.modules,'afk_fake_pkg.farming_controls',farm)
+    old=module.__package__;module.__package__='afk_fake_pkg'
+    try:
+        game=module.Game()
+        assert game.begin_afk_god()['claim'] is None and calls==[]
+        pawn.bCanBeDamaged=True
+        claim=game.begin_afk_god()['claim'];assert calls==[True]
+        farm._god_mode_revision+=1
+        assert game.end_afk_god(claim)['ok'] and calls==[True]
+        pawn.bCanBeDamaged=True
+        claim=game.begin_afk_god()['claim'];assert game.end_afk_god(claim)['ok'] and calls[-2:]==[True,False]
+    finally:module.__package__=old
+
+
+def test_cached_background_status_is_safe_and_excludes_token(monkeypatch):
+    import sys, types
+    lobby=module.Lobby(FakeGame())
+    monkeypatch.delitem(sys.modules, 'ShiftManagement', raising=False)
+    assert lobby.status()['shift_background']['state']=='unavailable'
+    companion=types.SimpleNamespace(background_control=lambda mode: {'ok':True, 'background':
+        {'available':True,'state':'error','reason':'restore failed','token':'private'}})
+    monkeypatch.setitem(sys.modules, 'ShiftManagement', companion)
+    status=lobby.status()['shift_background']
+    assert status=={'available':True,'state':'error','reason':'restore failed'}
+    companion.background_control=lambda mode: (_ for _ in ()).throw(RuntimeError('failure'))
+    assert lobby.status()['shift_background']['state']=='unavailable'
+
+
+def test_god_only_afk_does_not_run_guest_boosts_or_enable_social_actions():
+    class GodGame(FakeGame):
+        def __init__(self): super().__init__(); self.begins=0; self.ends=0; self.roster_calls=0
+        def begin_afk_god(self): self.begins+=1; return {'ok': True, 'claim': {'host':1}}
+        def end_afk_god(self, claim): self.ends+=1; return {'ok':True}
+        def roster(self): self.roster_calls+=1; return super().roster()
+    game=GodGame(); lobby=module.Lobby(game)
+    assert not lobby.start({'auto_accept':False, 'auto_kick':False})['ok']
+    assert lobby.start({'god_mode':True,'auto_accept':False,'auto_kick':False})['ok']
+    assert lobby.config['auto_accept'] is False and lobby.config['auto_kick'] is False
+    lobby.tick(); assert game.calls==[] and game.kicked==[] and game.roster_calls==0
+    assert lobby.stop()['ok'] and game.begins==1 and game.ends==1

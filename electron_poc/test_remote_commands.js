@@ -27,6 +27,11 @@ const {createRemoteAfk}=require('./remote_afk'),{ACTIONS}=require('./remote_comm
   assert.equal(blocked.data.ok,false,'SDK busy rejection must pass through');
   assert.equal(JSON.stringify(afk),before,'manual commands changed AFK config or progress');
   assert.equal(calls.some(c=>/^afk_lobby_(start|stop)$/.test(c.payload?.action)),false);
+  for (const mode of ['background_start','background_stop','background_show','background_status']) {
+    assert.equal((await req('/action',{action:'shift_overlay_control',payload:{mode}})).data.ok,true);
+    assert.equal(calls.at(-1).payload.action,'shift_overlay_control');
+    assert.equal(calls.at(-1).payload.payload.mode,mode);
+  }
   const count=calls.length;
   for(const [route,payload] of [['/action',{action:'empty_backpack'}],['/action',{action:'movement_apply_all',payload:[]}],['/action',{action:'shift_overlay_control',payload:{mode:'exec'}}],['/admin'],['/quick_menu?other=1']])await assert.rejects(req(route,payload));
   assert.equal(calls.length,count,'invalid requests reached SDK');

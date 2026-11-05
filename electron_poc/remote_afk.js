@@ -40,7 +40,7 @@ function createRemoteAfk({load,save,bridge,getSerialBookmarks,desktopRequest,rel
     if(request.route!=='/action'||!ALLOWED.has(request.payload?.action))throw Error('This command is not supported by the remote phone controller');
     const payload=request.payload.payload||{};
     if(typeof payload!=='object'||Array.isArray(payload))throw Error('Invalid command payload');
-    if(request.payload.action==='shift_overlay_control'&&!['open','close'].includes(payload.mode))throw Error('Unsupported SHiFT command');
+    if(request.payload.action==='shift_overlay_control'&&!['open','close','background_start','background_stop','background_show','background_status'].includes(payload.mode))throw Error('Unsupported SHiFT command');
     return bridge('/action',{action:request.payload.action,payload,timeout:8});
   }
   function cancelConnection(){

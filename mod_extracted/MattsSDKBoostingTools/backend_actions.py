@@ -2115,6 +2115,9 @@ def run_quick_menu_action(
         result = complete_challenges_cancel()
     elif key == "complete_challenges_status":
         result = complete_challenges_status()
+    elif key == "afk_god_mode_toggle":
+        from .afk_lobby import lobby
+        result = lobby.toggle_god_mode()
     elif key.startswith("farming_"):
         if key == "farming_all_off":
             result = farming_lab_action({"op":"off"})
@@ -8126,5 +8129,14 @@ def afk_social_probe():
 
 
 def shift_overlay_control(payload):
+    mode = str(payload.get("mode", "toggle"))
+    background_modes = {"background_start": "start", "background_stop": "stop",
+                        "background_show": "show", "background_status": "status"}
+    if mode in background_modes:
+        try:
+            import ShiftManagement
+            return ShiftManagement.background_control(background_modes[mode])
+        except (ImportError, AttributeError):
+            return {"ok": False, "message": "Install and enable the current SHiFT companion, then restart the game."}
     from .shift_overlay import control
-    return control(str(payload.get("mode", "toggle")))
+    return control(mode)

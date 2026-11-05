@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import time
+import sys
 import random
 import hmac
 import hashlib
@@ -45,8 +46,14 @@ class Lobby:
         self.next_tick = 0.0
         self.message = "Stopped."
         self.shared_completed = []
+        self.god_claim = None
 
     def stop(self):
+        god_result = {'ok': True}
+        if self.god_claim is not None:
+            god_result = self.game.end_afk_god(self.god_claim)
+            if god_result.get('ok'):
+                self.god_claim = None
         if self.current:
             self._interrupt_job(self.current, 'Operator stopped AFK; unfinished work saved for review.')
         for job in self.queue:
@@ -58,13 +65,14 @@ class Lobby:
         self.completed.clear()
         self.seen.clear()
         self.shared_completed.clear()
-        self.message = "Stopped. Already applied boosts are kept."
-        return {"ok": True, "message": self.message, "afk_lobby": self.status()}
+        self.message = "Stopped. Already applied boosts are kept." if god_result.get("ok") else "Stopped; AFK god-mode restoration needs attention: " + str(god_result.get("message", "unknown error"))
+        return {"ok": bool(god_result.get("ok")), "message": self.message, "afk_lobby": self.status()}
 
     def start(self, payload):
         if self.enabled:
             return {"ok": False, "message": "Stop AFK Lobby before changing its selections."}
         config = {key: payload.get(key) is True for key in BOOSTS}
+        config['god_mode'] = payload.get('god_mode') is True
         config['test_host'] = payload.get('test_host') is True
         config["auto_accept"] = payload.get("auto_accept", True) is True
         config["auto_kick"] = payload.get("auto_kick", False) is True
@@ -85,8 +93,8 @@ class Lobby:
         config["loot_mode"] = payload.get("loot_mode", "all")
         if config["loot_mode"] not in ("all", "random70"):
             return {"ok": False, "message": "Choose all loot or a random selection."}
-        if not any(config[key] for key in BOOSTS):
-            return {"ok": False, "message": "Select at least one boost."}
+        if not any(config[key] for key in BOOSTS) and not config['god_mode']:
+            return {"ok": False, "message": "Select at least one boost or God Mode."}
         try:
             names = payload.get("kick_exempt_names", "")
             if not isinstance(names, str) or len(names) > 8192:
@@ -127,7 +135,17 @@ class Lobby:
                 raise ValueError("Load your character and host the lobby first.")
         except Exception as exc:
             return {"ok": False, "message": str(exc)}
-        self.stop()
+        stopped = self.stop()
+        if not stopped.get('ok'):
+            return stopped
+        if config['god_mode']:
+            try:
+                result = self.game.begin_afk_god()
+            except Exception as exc:
+                return {'ok': False, 'message': 'AFK god mode could not start: ' + str(exc)}
+            if not result.get('ok'):
+                return result
+            self.god_claim = result.get('claim')
         self.config = config
         self.game.test_host = config['test_host']
         self.session_joins = 0
@@ -140,6 +158,27 @@ class Lobby:
         self.message = "Host test: waiting for your character." if config['test_host'] else "Running. Waiting for guests."
         return {"ok": True, "message": self.message, "afk_lobby": self.status()}
 
+    def toggle_god_mode(self):
+        if not self.enabled:
+            return {'ok': False, 'message': 'Start AFK Lobby before changing AFK God Mode.'}
+        if self.config.get('god_mode'):
+            if self.god_claim is not None:
+                result = self.game.end_afk_god(self.god_claim)
+                if not result.get('ok'):
+                    return result
+                self.god_claim = None
+            self.config['god_mode'] = False
+            return {'ok': True, 'message': 'AFK God Mode off; prior state preserved.'}
+        try:
+            result = self.game.begin_afk_god()
+        except Exception as exc:
+            return {'ok': False, 'message': 'AFK God Mode could not start: ' + str(exc)}
+        if not result.get('ok'):
+            return result
+        self.god_claim = result.get('claim')
+        self.config['god_mode'] = True
+        return {'ok': True, 'message': 'AFK God Mode on for the host.'}
+
     def _load_counter(self):
         if self.lifetime_joins is None and not self.counter_error:
             try:
@@ -149,7 +188,19 @@ class Lobby:
     def status(self):
         self._load_counter()
         current = self.current
-        return {"enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),
+        background = {'available': False, 'state': 'unavailable', 'reason': 'SHiFT companion not connected.'}
+        companion = sys.modules.get('ShiftManagement')
+        if companion is not None:
+            try:
+                result = companion.background_control('status')
+                cached = result.get('background') if isinstance(result, dict) else None
+                if isinstance(cached, dict):
+                    background = {'available': cached.get('available') is True,
+                                  'state': str(cached.get('state') or 'unavailable')[:40],
+                                  'reason': str(cached.get('reason') or '')[:300]}
+            except Exception:
+                background['reason'] = 'SHiFT background status unavailable.'
+        return {"shift_background": background, "enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),
                 "message": self.message, "queued": [row["name"] for row in self.queue],
                 "current": {"name": current["name"], "step": current.get("step", "Waiting for character")} if current else None,
                 "active_guests": [{"name": job['name'], "step": job.get('step', 'Starting'),
@@ -163,6 +214,7 @@ class Lobby:
                 "loot_modes": ["all", "random70"], "bulk_loot_password_required": True, "random_count_supported": True, "guaranteed_loot_supported": True,
                 'cleanup_rewards_supported':True, 'host_test_supported':True,
                 'config_upload_supported': True, 'item_level_override_supported': True,
+                'god_mode_supported': True, 'god_mode_restore_pending': self.god_claim is not None and not self.enabled,
                 'boost_amounts_supported': True, 'kick_exempt_names_supported': True, 'vault_card_levels_supported': True, 'mayhem_supported': True}
 
     def tick(self):
@@ -170,6 +222,9 @@ class Lobby:
         if not self.enabled or now < self.next_tick:
             return
         self.next_tick = now + 0.25
+        if not any(self.config.get(key) for key in BOOSTS):
+            self.message = "God Mode active. No guest boosts selected."
+            return
         concurrent = self.config.get('concurrent_guests') and not self.config.get('cleanup_rewards')
         advanced = set()
         for _ in range(3 if concurrent else 1):
@@ -458,6 +513,35 @@ class Game:
     def __init__(self):
         self.ready_since = {}
         self.ready_world = None
+
+    def begin_afk_god(self):
+        from . import farming_controls as farming
+        pc, pawn = farming.local()
+        if type(pawn.bCanBeDamaged) is not bool:
+            raise RuntimeError('God-mode readback unavailable')
+        if not pawn.bCanBeDamaged:
+            return {'ok': True, 'claim': None}
+        key = farming.identity(pc, pawn)
+        result = farming.set_feature('god_mode', True, pc, pawn, 'Local')
+        if not result.get('ok'):
+            return {'ok': False, 'message': 'AFK god mode failed: ' + str(result.get('error', result))}
+        return {'ok': True, 'claim': {'identity': key, 'revision': farming._god_mode_revision}}
+
+    def end_afk_god(self, claim):
+        from . import farming_controls as farming
+        if farming._god_mode_revision != claim['revision']:
+            return {'ok': True, 'message': 'God mode changed independently; AFK left it alone.'}
+        try:
+            pc, pawn = farming.local()
+            if farming.identity(pc, pawn) != claim['identity']:
+                return {'ok': True, 'message': 'Original AFK character is no longer present.'}
+            result = farming.set_feature('god_mode', False, pc, pawn, 'Local')
+            if not result.get('ok'):
+                claim['revision'] = farming._god_mode_revision
+                return {'ok': False, 'message': str(result)}
+            return {'ok': True}
+        except Exception as exc:
+            return {'ok': False, 'message': str(exc)}
 
     def load_join_count(self):
         from .afk_join_stats import JoinStats

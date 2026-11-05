@@ -14,7 +14,7 @@
             '#msbt-shift-float-status{display:inline-block;margin-left:8px;}';
         document.head.appendChild(style);
         var bar = document.createElement('div'); bar.id = 'msbt-shift-float-bar';
-        bar.innerHTML = '<span id="msbt-shift-float-drag">SHiFT • drag here</span><span id="msbt-shift-float-status"></span><button id="msbt-shift-float-accept">Start accepter</button><label for="msbt-shift-size"> Size </label><select id="msbt-shift-size"><option value="0.42">Compact</option><option value="0.7">Medium</option><option value="1">Regular</option></select><button id="msbt-shift-float-toggle">Regular size</button>';
+        bar.innerHTML = '<span id="msbt-shift-float-drag">SHiFT • drag here</span><span id="msbt-shift-float-status"></span><button id="msbt-shift-float-accept">Start accepter</button><span> Size </span><button id="msbt-shift-size-compact">Compact</button><button id="msbt-shift-size-medium">Medium</button><button id="msbt-shift-size-regular">Regular</button><button id="msbt-shift-float-toggle">Regular size</button>';
         document.body.appendChild(bar);
         // Mini Panel owns its own visibility and remains usable in either layout.
         if (window.ShiftMiniPanel) {
@@ -23,16 +23,27 @@
             manage.onclick = function () { window.ShiftMiniPanel.show(); };
             bar.appendChild(manage);
         }
+        // Gameface builds may expose CSS properties without CSSStyleDeclaration methods.
+        function setStyle(element, key, value) {
+            var style = element.style;
+            if (typeof style.setProperty === 'function') style.setProperty(key, value, 'important');
+            else style[key] = value;
+        }
+        function clearStyle(element, key) {
+            var style = element.style;
+            if (typeof style.removeProperty === 'function') style.removeProperty(key);
+            else style[key] = '';
+        }
         var scale = .42;
         try { var saved = Number(localStorage.getItem('msbt.shift.size')); if ([.42,.7,1].indexOf(saved) >= 0) scale = saved; } catch (_) {}
         var floating = scale < 1, x = 12, y = 70, drag = null;
-        var size = document.getElementById('msbt-shift-size');
+        var sizes = [{id:'compact', value:.42}, {id:'medium', value:.7}, {id:'regular', value:1}];
         function place() {
             x = Math.max(0, Math.min(x, window.innerWidth * (1-scale)));
             y = Math.max(50, Math.min(y, window.innerHeight * (1-scale)));
             // Inline important properties avoid depending on CSS variable support in Cohtml.
-            root.style.setProperty('left', x + 'px', 'important');
-            root.style.setProperty('top', y + 'px', 'important');
+            setStyle(root, 'left', x + 'px');
+            setStyle(root, 'top', y + 'px');
             style.textContent = style.textContent.replace(/left:var\(--msbt-float-x\)/, 'left:' + x + 'px').replace(/top:var\(--msbt-float-y\)/, 'top:' + y + 'px');
             bar.style.left = floating ? x + 'px' : '';
             bar.style.top = floating ? Math.max(0, y - 58) + 'px' : '12px';
@@ -40,17 +51,23 @@
         }
         function apply() {
             floating = scale < 1;
-            size.value = String(scale);
+            // Keep the stylesheet's important rule in sync even where inline priorities are unavailable.
+            style.textContent = style.textContent.replace(/transform:scale\([^)]*\)!important/, 'transform:scale(' + scale + ')!important');
+            sizes.forEach(function (size) {
+                document.getElementById('msbt-shift-size-' + size.id).setAttribute('aria-pressed', String(scale === size.value));
+            });
             try { localStorage.setItem('msbt.shift.size', String(scale)); } catch (_) {}
             document.documentElement.classList.toggle('msbt-shift-floating', floating);
-            if (floating) root.style.setProperty('transform', 'scale('+scale+')', 'important');
-            else root.style.removeProperty('transform');
+            if (floating) setStyle(root, 'transform', 'scale('+scale+')');
+            else clearStyle(root, 'transform');
             document.getElementById('msbt-shift-float-toggle').textContent = floating ? 'Regular size' : 'Compact size';
             if (floating) place();
-            else { root.style.removeProperty('left'); root.style.removeProperty('top'); bar.style.left='';bar.style.top='12px';bar.style.right='12px'; }
+            else { clearStyle(root, 'left'); clearStyle(root, 'top'); bar.style.left='';bar.style.top='12px';bar.style.right='12px'; }
         }
         document.getElementById('msbt-shift-float-toggle').onclick = function () { scale = floating ? 1 : .42; apply(); };
-        size.onchange = function () { scale = Number(size.value); apply(); };
+        sizes.forEach(function (size) {
+            document.getElementById('msbt-shift-size-' + size.id).onclick = function () { scale = size.value; apply(); };
+        });
         document.getElementById('msbt-shift-float-accept').onclick = function () {
             var a = window.ShiftFriendAutomation;
             if (!a) return;

@@ -28,3 +28,26 @@ timers.shift()(); const unrelated=pending.shift();unrelated.status=200;unrelated
 timers.shift()();const fallback=pending.shift();assert.ok(fallback.url.includes(':27874/'));fallback.onloadend();
 timers.shift()();assert.ok(pending.shift().url.includes(':27875/'));
 console.log('PASS port rotation and no acknowledgements to unrelated servers.');
+
+// A lost AFK bridge stops only bridge-owned automation, then can reconnect.
+function lossScenario(managed) {
+  const requests=[], timeouts=[], storage=new Map();let active=true, policy=false;
+  class Request {
+    open(method,url){this.method=method;this.url=url;}
+    setRequestHeader(){}
+    send(body){this.body=body;requests.push(this);}
+  }
+  const automation={isRunning:()=>active,startAutoAccept:()=>active=true,stopAutoAccept:()=>active=false,setAfkManaged:v=>policy=v};
+  const win={ShiftFriendAutomation:automation,setTimeout:fn=>timeouts.push(fn),localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)}};
+  vm.runInNewContext(fs.readFileSync(require('path').join(__dirname,'shift_link.js'),'utf8'),{window:win,ShiftFriendAutomation:automation,XMLHttpRequest:Request});
+  function response(value) {
+    timeouts.shift()();const r=requests.shift();
+    if(value!==null){r.status=200;r.responseText=JSON.stringify({ok:true,auto_accept:value,service:'msbt-sdk-bridge',instance:'b'.repeat(32)});r.onload();requests.shift();}
+    r.onloadend();
+  }
+  if(managed){response(true);assert(active&&policy);}
+  response(null);assert.equal(active,!managed);assert.equal(policy,false);
+  if(managed){response(true);assert(active&&policy);response(false);assert(!active&&!policy);assert(!storage.has('msbt_afk_managed'));}
+}
+lossScenario(false);lossScenario(true);
+console.log('PASS lost bridge: managed automation stops, manual automation survives, reconnect and release work.');

@@ -5,7 +5,7 @@ on:
       expected_version:
         description: Stable source version
         required: true
-        default: '2.40.1'
+        default: '2.41.0'
 permissions:
   contents: read
 jobs:
@@ -63,6 +63,35 @@ jobs:
           path: |
             dist_electron/MSBT-Installer-v${{ inputs.expected_version }}.exe
             dist_electron/MSBT-Portable-v${{ inputs.expected_version }}-win-x64.zip
+            MattsSDKBoostingTools.sdkmod
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: electron_poc/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install locked dependencies
+        run: npm --prefix electron_poc ci
+      - name: Build Linux installer and portable archive
+        run: python tools/build_linux.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: msbt-linux-${{ inputs.expected_version }}
+          path: |
+            dist_linux/MSBT-Installer-v${{ inputs.expected_version }}-linux-x64.AppImage
+            dist_linux/MSBT-Portable-v${{ inputs.expected_version }}-linux-x64.tar.gz
           if-no-files-found: error
           compression-level: 0
           retention-days: 14

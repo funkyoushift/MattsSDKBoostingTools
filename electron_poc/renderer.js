@@ -14457,7 +14457,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Run the SHiFT auto-accepter",
-    "body": "Enable this option and leave the in-game SHiFT menu open. After Start, check that the status says connected and running. The accepter also declines incoming game invites. SHiFT captures gameplay controls while open; background acceptance while playing is not supported.",
+    "body": "Enable this option and open the in-game SHiFT menu. Check that the status says connected and running. Review and save your protected list, then choose Accept friends while playing to keep a small SHiFT view active while you play. Friend requests and game invites follow your selected settings.",
     "tab": "boosting",
     "target": "afkAutoAccept",
     "revealPanels": [
@@ -14493,7 +14493,7 @@ const TUTORIAL_TOURS = {
   },
   {
     "title": "Return to playing",
-    "body": "Close SHiFT / restore controls closes the native SHiFT menu so you can control the game. Closing SHiFT stops its accepter. To end the whole AFK session, also use Stop AFK Lobby. Replay this guide anytime with the AFK Lobby walkthrough button.",
+    "body": "Show SHiFT returns to the interactive menu. Stop accepting friends stops the accepter. To end the whole AFK session, also use Stop AFK Lobby. Replay this guide anytime with the AFK Lobby walkthrough button.",
     "tab": "boosting",
     "target": "afkCloseShift",
     "revealPanels": [

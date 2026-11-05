@@ -9,6 +9,8 @@ import zipfile
 import zlib
 
 from pak_v3 import parse_pak, extract_payload
+from repair_azalea_controller import repair_controller
+from build_shift_storage_companion import build as build_storage_companion
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTROLLER = 'js/dashboard/dashboard_controller.js'
@@ -35,7 +37,7 @@ def controller_patch(data):
         assert text.count(before) == 1, before
         text = text.replace(before, after)
     assert 'window.MsbtAfkShiftLink' not in text
-    return text.encode('utf-8') + b'\n' + (ROOT / 'tools/afk_lobby/shift_link.js').read_bytes() + b'\n' + (ROOT / 'tools/afk_lobby/shift_float.js').read_bytes()
+    return repair_controller(text).encode('utf-8') + b'\n' + (ROOT / 'tools/afk_lobby/shift_link.js').read_bytes() + b'\n' + (ROOT / 'tools/afk_lobby/shift_float.js').read_bytes() + b'\n' + (ROOT / 'tools/afk_lobby/shift_background.js').read_bytes()
 
 
 def fstring(value):
@@ -43,7 +45,7 @@ def fstring(value):
     return struct.pack('<i', len(raw)) + raw
 
 
-def build(archive, output):
+def build(archive, output, payload_transform=None):
     with zipfile.ZipFile(archive) as z:
         files = {}
         for info in z.infolist():
@@ -67,6 +69,8 @@ def build(archive, output):
     files[notification] = files[notification].replace(
         b'            ShiftAutoAcceptBackground.init()',
         b'            // MSBT: dashboard owns automation; experimental second poller disabled.')
+    if payload_transform is not None:
+        files = payload_transform(files)
     payload = bytearray()
     index_entries = []
     for name, data in sorted(files.items()):
@@ -97,11 +101,22 @@ def build(archive, output):
         packed = b''.join(result[a:b] for a, b in entry['blocks'])
         assert hashlib.sha1(packed).hexdigest() == entry['hash']
     (output / 'dashboard_controller.js').write_bytes(files[CONTROLLER])
+    companion = build_storage_companion(output, write_manifest=False)
     receipt = {'sha256': sha(result), 'source': 'Azalea SHiFT v4.4 UX source with MSBT AFK policy and floating controls',
                'source_archive_sha256': sha(archive.read_bytes()), 'entries_verified': len(files),
                'source_payload_sha256': source_hashes, 'modified_entries': [CONTROLLER, notification],
                'renamed_entries': {'libs/jquery-3.4': 'libs/jquery-3.4.1.min.js'},
-               'optional_sdk_installed': False, 'validation': 'Offline payload round-trip; live game pending'}
+               'optional_sdk_installed': False, 'validation': 'Offline payload round-trip; live game pending',
+               'controller_repairs': '2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons',
+               'bridge_ports': [47991, 47992, 47993]}
+    receipt.update(companion_sha256=companion['companion_sha256'],
+                   companion_archive=companion['archive'],
+                   companion_source_sha256=companion['source_sha256'],
+                   companion_peer_source_sha256=companion['peer_source_sha256'],
+                   companion_background_source_sha256=companion['background_source_sha256'],
+                   companion_background_native_source_sha256=companion['background_native_source_sha256'],
+                   background_client_source_sha256=sha((ROOT / 'tools/afk_lobby/shift_background.js').read_bytes()),
+                   companion_validation=companion['status'])
     (output / 'manifest.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')
     print(json.dumps({k: v for k, v in receipt.items() if k != 'source_payload_sha256'}))
 

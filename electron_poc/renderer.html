@@ -203,7 +203,7 @@
       <section id="afkLobbyPanel" class="panel cyan" data-msbt-panel="afk-lobby" data-msbt-span="12" data-msbt-title="AFK Boost Lobby">
         <h2>AFK Boost Lobby</h2>
         <button id="afkWalkthroughBtn" type="button" class="secondary">AFK Lobby walkthrough</button>
-        <p>Host a joinable lobby and leave the SHiFT menu open. Auto-accept requires this menu and captures game controls; close SHiFT to resume playing. Boosts begin after the guest character and progression data stay loaded for 20 seconds, including guests already present when you press Start. Rejoining runs them again.</p>
+        <p>Host a joinable lobby and open the SHiFT menu. The normal menu captures game controls. Choose Accept friends while playing to keep a small SHiFT view active while you play. Boosts begin after the guest character and progression data stay loaded for 20 seconds, including guests already present when you press Start. Rejoining runs them again.</p>
         <div class="button-row wrap">
           <label><input type="checkbox" data-afk-boost="level" checked> Max level</label>
           <label><input type="checkbox" data-afk-boost="spec" checked> Max specialization</label>
@@ -228,6 +228,8 @@
           <option value="random70">Guaranteed items + random fill</option>
         </select>
         <p class="muted-line">Random mode sends all guaranteed items first, then fills remaining slots up to your selected delivery size from your loot pool. In Item Catalog, filter and select your items, then use Add to AFK. Smaller pools send the available entries. This limits items sent per join, not the guest’s total backpack contents. Rejoining draws again. Class mods are limited to the guest’s character in both modes; random mode includes at least one matching class mod when the pool has one.</p>
+        <label><input id="afkGodMode" type="checkbox"> Protect my host character with God Mode while AFK</label>
+        <p class="muted-line">Off by default. AFK restores the prior host God Mode when it stops, unless it was changed independently.</p>
         <label><input id="afkAutoAccept" type="checkbox" checked> Auto-accept SHiFT friends while running</label>
           <label>Random delivery size <input id="afkRandomCount" type="number" min="1" step="1" value="70"></label>
           <p class="muted-line">Guaranteed items count toward this total. If they exceed it, all guaranteed items still arrive. More than 70 requires the password.</p>
@@ -265,8 +267,15 @@
           <button id="afkStop" type="button" class="danger" disabled>Stop AFK Lobby</button>
           <button id="afkCloseShift" type="button">Close SHiFT / restore controls</button>
         </div>
+        <div class="button-row wrap" aria-label="Background friend accepter">
+          <button id="afkBackgroundStart" type="button">Accept friends while playing</button>
+          <button id="afkBackgroundShow" type="button">Show SHiFT</button>
+          <button id="afkBackgroundStop" type="button">Stop accepting friends</button>
+        </div>
+        <p class="muted-line">Background accepting keeps a tiny SHiFT view running while you play. Review and save your protected list in SHiFT first. Show SHiFT restores its controls; Stop accepting ends automation.</p>
         <div id="afkStatus" class="status-line" role="status">Connecting to the game…</div>
         <div id="afkShiftStatus" class="muted-line"></div>
+        <div id="afkBackgroundStatus" class="muted-line" role="status" aria-live="polite"></div>
         <div id="afkQueue" class="muted-line"></div>
         <div id="afkJoinCounts" class="muted-line"></div>
         <pre id="afkLog" style="max-height:240px;overflow:auto;white-space:pre-wrap"></pre>

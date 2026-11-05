@@ -4,19 +4,38 @@ const fs = require('fs');
 const path = require('path');
 const {pathToFileURL} = require('url');
 const assert = require('assert');
+app.disableHardwareAcceleration();
 app.whenReady().then(async () => {
   const ux = path.resolve(process.argv[2]);
   const controller = fs.readFileSync(process.argv[3], 'utf8');
-  const fixture = path.resolve('../output/azalea-review/build/mini-panel-fixture.html');
+  const fixture = path.resolve(process.argv[4] || '../output/azalea-review/build', 'mini-panel-fixture.html');
+  fs.mkdirSync(path.dirname(fixture), {recursive:true});
   const html = fs.readFileSync(path.join(ux, 'dashboard.html'), 'utf8')
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
     .replace('<head>', `<head><base href="${pathToFileURL(ux + path.sep).href}">`);
   fs.writeFileSync(fixture, html);
-  const win = new BrowserWindow({show:false, width:1600, height:900, webPreferences:{contextIsolation:true}});
+  const win = new BrowserWindow({show:false, width:1600, height:900, webPreferences:{contextIsolation:true,partition:'msbt-shift-test-'+process.pid}});
+  const execute = win.webContents.executeJavaScript.bind(win.webContents);
+  win.webContents.executeJavaScript = code => execute(`(() => {try {return eval(${JSON.stringify(code)});} catch(e) {return {testError:String(e),stack:e.stack};}})()`).then(value => {
+    if(value && value.testError)throw Error(value.stack || value.testError);
+    return value;
+  });
   await win.loadFile(fixture);
-  await win.webContents.executeJavaScript(fs.readFileSync(path.join(ux,'libs/jquery-3.4'),'utf8') + ';void 0;');
+  const jquery = fs.existsSync(path.join(ux,'libs/jquery-3.4.1.min.js')) ? 'libs/jquery-3.4.1.min.js' : 'libs/jquery-3.4';
+  await win.webContents.executeJavaScript(fs.readFileSync(path.join(ux,jquery),'utf8') + ';void 0;');
   await win.webContents.executeJavaScript(`
     window.engine={on:()=>{},off:()=>{},call:()=>{},trigger:()=>{}};
+    window.testShiftRequests=[];
+    window.testShiftStorage={ok:true,service:'msbt-shift-storage',protocol:1,instance:'a'.repeat(32),storageValid:false,storageState:'missing'};
+    window.XMLHttpRequest=class {
+      open(method,url){this.method=method;this.url=url;this.headers={};}
+      setRequestHeader(name,value){this.headers[name]=value;}
+      send(body){
+        testShiftRequests.push({request:this,body:body?JSON.parse(body):null});
+        if(this.method==='GET')this.respond(testShiftStorage);
+      }
+      respond(data){this.status=200;this.responseText=JSON.stringify(data);if(this.onload)this.onload();if(this.onloadend)this.onloadend();}
+    };
     window.friends_model={receivedRequestsList:[],allInvites:[]};
     window.friends_controller={showSuccessMessage:()=>{},hideSuccessMessage:()=>{}};
     for(const key of ['FRIENDS_LOAD_REQUEST_LIST_RESPONSE','FRIENDS_LOAD_REQUEST_LIST_CALL']) window[key]=key;
@@ -52,8 +71,35 @@ app.whenReady().then(async () => {
     check('Manage preserves floating layout',document.documentElement.classList.contains('msbt-shift-floating'));
     return checks;
   })()`);
-  fs.writeFileSync(path.join(path.dirname(fixture),'mini-panel-test.json'),JSON.stringify(result,null,2));
-  console.log('PASS '+result.length+' Mini Panel DOM checks using actual upstream panel code, HTML and floating wrapper. Native Cohtml remains a live test.');
+  await win.webContents.executeJavaScript(`
+    ShiftMiniPanel.setStorageMode('sdk');
+    ShiftMiniPanel.openSettings();
+    ShiftMiniPanel.requestSDKSettings();
+    testShiftRequests.length=0;
+    ShiftMiniPanel.saveSettingsNow();
+    if(testShiftRequests.some(r=>r.request.method==='POST'))throw Error('Unreviewed first-run save transmitted a write');
+    var review=document.getElementById('shift_protection_review');
+    if(!review || !review.getBoundingClientRect().height)throw Error('Review control is not visible');
+    review.click();
+    ShiftMiniPanel.saveSettingsNow();
+  `);
+  await new Promise(resolve=>setTimeout(resolve,500));
+  const storage = await win.webContents.executeJavaScript(`(() => {
+    const writes=testShiftRequests.filter(r=>r.request.method==='POST');
+    if(writes.length!==1)throw Error('Expected exactly one explicit storage write');
+    const payload=writes[0].body;
+    if(payload.initialize!==true || payload.reviewed!==true)throw Error('Reviewed first-run intent missing');
+    if(ShiftMiniPanel.protectionReady())throw Error('Protection ready before save acknowledgement');
+    testShiftStorage=Object.assign({},testShiftStorage,{protectedPlayers:payload.n,reviewed:true,storageValid:true,storageState:'valid',settings:{}});
+    writes[0].request.respond(Object.assign({},testShiftStorage,{saved:true}));
+    if(!ShiftMiniPanel.protectionReady())throw Error('Matching reviewed save did not enable protection');
+    ShiftFriendAutomation.addProtectedName('DOM-regression-example');
+    if(ShiftMiniPanel.protectionReady())throw Error('Unsaved edit left bulk removal enabled');
+    if(document.getElementById('shift_protection_review').getAttribute('aria-pressed')!=='false')throw Error('Edit did not reset review');
+    return {uncheckedSaveBlocked:true,reviewControlVisible:true,explicitInitialization:true,readbackRequired:true,editsResetReview:true};
+  })()`);
+  fs.writeFileSync(path.join(path.dirname(fixture),'mini-panel-test.json'),JSON.stringify({checks:result,storage},null,2));
+  console.log('PASS '+result.length+' Mini Panel DOM checks and 5 protected-list setup/save checks. Native Cohtml remains a live test.');
   win.destroy(); app.quit();
 }).catch(e=>{console.error(e);app.exit(1);});
 

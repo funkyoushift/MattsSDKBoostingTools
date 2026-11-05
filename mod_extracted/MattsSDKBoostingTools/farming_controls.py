@@ -18,6 +18,7 @@ _sessions={}
 _editing_owner=None
 _world=None
 _changed=False
+_god_mode_revision=0
 GLOBAL_FEATURES=frozenset(('vendor_refresh','legendary_roll'))
 
 def local():
@@ -219,6 +220,8 @@ def session_for(pc,pawn,label,index=None,global_scope=False):
 
 
 def disable_feature(session,feature):
+    global _god_mode_revision
+    if feature == 'god_mode': _god_mode_revision += 1
     session['enabled'].discard(feature);session['reads'].pop(feature,None)
     result=restore(feature,session['key'])
     notify_network(session)
@@ -231,7 +234,8 @@ def disable_feature(session,feature):
 
 
 def set_feature(feature,enabled,pc=None,pawn=None,label='Local',index=None):
-    global _world
+    global _world, _god_mode_revision
+    if feature == 'god_mode' and enabled is True: _god_mode_revision += 1
     if feature not in FEATURES or type(enabled) is not bool:raise ValueError('Unknown feature or invalid enabled value')
     if pc is None:pc,pawn=local()
     if feature in GLOBAL_FEATURES:pc,pawn=local();label='Whole lobby';index=None
