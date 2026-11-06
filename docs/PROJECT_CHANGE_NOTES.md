@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-11-05: SHiFT background accepting candidate](changes/2026-11-05-shift-background-candidate.md): Isolated v2.40.1-based candidate, offline checks and outstanding native gameplay verification.
+- [v2.41.0 SHiFT background release](releases/VERIFICATION_v2.41.0.txt): Published Windows/Linux packages after green CI and embedded PAK/companion digest checks; Linux runtime and main-branch metadata promotion remain separately unverified/pending. [Candidate evidence](changes/2026-11-05-shift-background-candidate.md).
 
 - [2026-10-28: Guided Linux installer](changes/2026-10-28-linux-installer.md): Requirement repair, per-user app/menu installation and optional Steam/Proton integration with pending/retry handling; actual temporary-home installation and runtime launch verified.
 

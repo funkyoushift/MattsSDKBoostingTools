@@ -25,4 +25,4 @@ An earlier supervised God Mode-only AFK test confirmed host invulnerability whil
 
 ### Release preparation — v2.41.0
 
-The feature candidate is now versioned as v2.41.0 across the Electron package, SDK metadata and update manifest. The rebuilt standalone SDK archive contains the same 156 unique files as the v2.40.1 baseline; its SHA-256 is `536ff5e06acba0ceb31b7971c4b96cf2a8388f83e37597cc9debbcfb8440069d`. Martin installed the rebuilt SDK and confirmed its hash; the game remains closed. Focused offline release checks passed. Windows and Linux release artifacts and publication checks are pending.
+The feature was released as v2.41.0. Windows and Linux artifact jobs passed in CI, the installed Windows payload check passed, and the Windows/Linux portable archives contain the exact reviewed PAK and companion hashes. Martin installed the rebuilt SDK and confirmed its hash; the game remains closed. Full package digests and verification limits are recorded in [the release receipt](../releases/VERIFICATION_v2.41.0.txt). The main-branch update manifest is prepared in PR #18 and is not live until merged.

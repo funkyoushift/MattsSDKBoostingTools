@@ -1,0 +1,38 @@
+MSBT v2.41.0 — release verification
+===================================
+
+Release: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.0
+Source commit: bc2f991079780846ce07ae04e0fe41c6a76b0387
+Windows/Linux artifact CI: https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/42125919836 (both jobs passed)
+Tag metadata CI: https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/42127820918 (passed)
+
+Published application assets and SHA-256
+----------------------------------------
+
+00f5f5a767bd4f796f40e350c28a7fbb179b8ba9f07d54bb27c2401caeff6065  MSBT-Installer-v2.41.0.exe
+114a21ab101d37c1408a13ea0beb1b995c0d0d1558cdbc17c243ab3160388850  MSBT-Portable-v2.41.0-win-x64.zip
+5e8888bd2ef664ceb1fab218ef1e4d4c82131ae8d765694497bd50bcc9064133  MSBT-Installer-v2.41.0-linux-x64.AppImage
+aea0df48f0da1127672f6c18add28a041768a143d09a80b747faed1101cc3986  MSBT-Portable-v2.41.0-linux-x64.tar.gz
+
+Payload hashes and SDK archive
+------------------------------
+
+cd8ba9c601f0ffcea6efb48f460263c9a091ba237634a5dba87a567f39922b41  pakchunk90-Windows_90_P.pak
+48e6998c6d9013e16a1ccc80e479c4b6598898ec3305397dc801cfc6aad36382  ShiftManagement.sdkmod
+536ff5e06acba0ceb31b7971c4b96cf2a8388f83e37597cc9debbcfb8440069d  locally built and installed MattsSDKBoostingTools.sdkmod (156 members)
+
+Both portable archives contain the exact PAK and companion hashes above. Their embedded SDK archives each have 156 members. The Windows CI SDK member contents match the installed local SDK archive exactly. The Linux SDK member payloads differ from Windows only by LF versus CRLF text line endings; binary members are unchanged. The standalone SDK artifact was built and installed locally; the four-asset public release follows the existing release asset policy.
+
+Checks and evidence
+-------------------
+
+- Focused Python background/AFK checks: 131 passed. Quick Menu/no-BLImGui, release import, and SDK ZIP checks: 11 passed. JavaScript lease, compatibility, and companion installation checks passed.
+- Windows CI ran the repository release build, package audits, silent installer/payload hash verification, bundled Python/YAML check, and installed application smoke successfully.
+- Linux CI built the AppImage and portable TAR successfully. Linux installation and live runtime were not tested in this release run.
+- Bounded native Steam-profile observation: 31 active samples over 60 seconds, 22 polls, 42 responses, zero errors. Martin confirmed normal walking/mouse look with a compact, visible SHiFT view and hidden cursor. The view is not invisible. Other game executable builds fail closed for the native path.
+- AFK God Mode start/stop restored normal damage behavior. The final SHiFT Show restoration completed without an error. Protected-list save/reload was verified. No guest-save proof is claimed.
+
+Updater feed
+------------
+
+The v2.41.0 release API reports the four assets and their SHA-256 digests. Main still points to v2.40.1 until metadata-only PR #18 is merged: https://github.com/funkyoushift/MattsSDKBoostingTools/pull/18. No main-branch file was changed directly.
