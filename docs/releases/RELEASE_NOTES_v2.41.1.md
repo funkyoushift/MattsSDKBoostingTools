@@ -1,13 +1,17 @@
-# MSBT v2.41.1 — updater and SHiFT repairs
+## Fixes
 
-This patch combines three repairs:
+- Fixed the updater's false `app.asar` ENOENT error before installer launch.
+- Registered SHiFT F10/F11 controls at SDK startup so they no longer depend on a desktop UI tick.
+- Fixed "Play while accepting" being blocked by an unsaved/unreviewed protection list. Incoming acceptance can start immediately; **Remove all still requires reviewed, saved protection settings**.
 
-- Electron updater checks use `original-fs` to verify the physical ASAR archive. In an Electron 44.3.0 fixture, `fs/promises.access(app.asar)` returned `ENOENT` while `original-fs.promises.access(app.asar)` succeeded. Existing v2.41.0 installs need one manual update to receive the fixed updater.
-- SHiFT F10/F11 bindings register at SDK startup, with idempotent fallback and rollback if binding setup is partial. Martin confirmed F10 opens SHiFT in a fresh session.
-- Ordinary incoming acceptance no longer waits for a reviewed protected-list prerequisite. The existing Remove All guard remains.
+## Background play
 
-The native controller-input path is unchanged. Martin reported that Play while accepting blocked movement and mouse look from the pause menu; that live behavior remains unresolved and publication is held pending a supervised check. No social action was issued by tools.
+Return to normal gameplay, close other menus, press **F10**, then select **Play while accepting**. SHiFT shrinks while walking and normal mouse look remain available. Use the existing Show/Stop controls to return to the menu or stop accepting. Pause-menu entry is not qualified for background play.
 
-The candidate PAK SHA-256 is `728165a795f7543b9a109604b60a8ae54f70de2c6cf92f4a37c231982a5e617f`; the companion SDK archive SHA-256 is `9fc2a823605f1035cf3df8b53ff20b753b2db8798d51b15fbe6fb00f941c8c02`. Android remains at 1.6.6/build 39 and is unchanged.
+The updated local install passed a user control check and 30 consecutive active status samples after activation through 60 seconds. The native background path remains limited to its supported game executable profile; other builds fail closed. Linux packages were built and inspected, but Linux live gameplay was not retested.
 
-Validation recorded so far: 38 focused Python background/storage tests and JavaScript background/protection/automation checks passed; updater Electron ASAR source and synthetic-package regression passed. Windows installed-package CI, Windows/Linux artifact builds, full package hashes, and all release asset checks are pending. No live game/device qualification is claimed.
+## Updating
+
+If the old updater reports ENOENT, close MSBT and BL4, then run the Windows installer below once. That installs the repaired updater for future updates. Install the bundled game files through MSBT with BL4 closed.
+
+Windows/Linux CI passed. Windows validation includes an actual installer install and an Electron regression against the installed updater. Both portable payloads were checked for SDK identity and exact SHiFT PAK/companion hashes. Android is unchanged.

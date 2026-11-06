@@ -1,5 +1,7 @@
 # Updater repair and v2.41.1 preparation — 2026-11-05
 
+**Final status:** v2.41.1 published. The later F10 and first-use background fixes passed Martin's controls check, 30 consecutive active samples after activation, Windows/Linux CI, installed updater regression and all four uploaded digest comparisons. [Final release receipt](../releases/VERIFICATION_v2.41.1.txt) supersedes the pending/held statuses below. Pause-menu entry remains unqualified; direct F10 entry is documented. PR #18 promotes download metadata separately.
+
 The desktop updater's packaged-file check is being repaired after an Electron 44.3.0 ASAR fixture showed that `fs/promises.access(app.asar)` returned `ENOENT` while `original-fs.promises.access(app.asar)` succeeded. The repair uses `original-fs` for the physical ASAR checks in Windows update handoff and Linux portable download validation. Existing v2.41.0 installs need one manual update to receive the fixed updater. The repair and regression coverage target Windows and Linux. This is fixture-level evidence; reproduction of the reported end-user failure remains pending. No Android build/version change and no live game/device trial are in scope.
 
 Release metadata is prepared at v2.41.1 across Electron, SDK metadata and the bundled release manifest. Release CI/package validation, four asset hashes, publication status and updater behavior remain pending. See [release notes](../releases/RELEASE_NOTES_v2.41.1.md).

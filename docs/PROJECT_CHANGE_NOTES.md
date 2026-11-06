@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [v2.41.1 updater and SHiFT repairs](releases/VERIFICATION_v2.41.1.txt): Published after Windows/Linux CI, installed updater regression, user-confirmed F10/background controls and four uploaded hash comparisons. Protection review still gates Remove all. Pause-menu entry and Linux live gameplay remain unqualified; download metadata PR #18 is pending.
+
 - [2026-11-05: Updater repair and v2.41.1 preparation](changes/2026-11-05-updater-repair-v2.41.1.md): ASAR access fix, SDK startup registration for SHiFT F10/F11, and first-use acceptance without reviewed protected-list prerequisite; 38 focused Python tests and JS checks reported passing. F10 confirmed, while Play-while-accepting movement/mouse behavior remains unresolved and publication is held. Windows/Linux CI, four asset hashes and release checks remain pending. Android unchanged. See [release notes](releases/RELEASE_NOTES_v2.41.1.md).
 
 - [v2.41.0 SHiFT background release](releases/VERIFICATION_v2.41.0.txt): Published Windows/Linux packages after green CI and embedded PAK/companion digest checks; Linux runtime and main-branch metadata promotion remain separately unverified/pending. [Candidate evidence](changes/2026-11-05-shift-background-candidate.md).

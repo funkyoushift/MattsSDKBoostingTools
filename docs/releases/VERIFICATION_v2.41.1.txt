@@ -1,0 +1,32 @@
+MSBT v2.41.1 release verification — 2026-11-05
+
+Published stable/latest: https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.1
+Tested/tagged source: 76a841e86453233850dfdcafc5acadd9c91f6f36
+Windows/Linux build and actual Windows install: https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/42140648343 — both passed.
+Tag verification: https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/42141932494 — passed.
+
+All four uploaded asset sizes and GitHub SHA-256 digests match downloaded CI artifacts:
+0cee6605cbbe132256caa034dee3e0500aa5a6645ee8d3065fc388a358f9173e  MSBT-Installer-v2.41.1.exe
+f5a0acd777b4c60518254b3a34f047976de0c115abdbf4258f2eed2c2d5b298f  MSBT-Portable-v2.41.1-win-x64.zip
+ae047770a71143f328c4afa630e82fb35802a4b85d41aab3a81df7e6a1166ae8  MSBT-Installer-v2.41.1-linux-x64.AppImage
+01d1055334d6a2d90d0d0c11438460c6b10435a206794a0fdaaa72dc628608fc  MSBT-Portable-v2.41.1-linux-x64.tar.gz
+
+Both portable payloads contain the exact reviewed PAK and companion:
+728165a795f7543b9a109604b60a8ae54f70de2c6cf92f4a37c231982a5e617f  pakchunk90-Windows_90_P.pak
+9fc2a823605f1035cf3df8b53ff20b753b2db8798d51b15fbe6fb00f941c8c02  ShiftManagement.sdkmod
+Their SDK archives each contain 156 unique members matching the local tested SDK after CRLF/LF normalization. All five bundled version fields are 2.41.1.
+
+Observed fixes and limits:
+- Electron's patched fs/promises.access returned false ENOENT on the ASAR root. original-fs accesses the physical archive. Source fixture, Windows handoff, installed archive regression, silent installation and app smoke passed.
+- F10/F11 now register at SDK startup. Martin confirmed F10 opens SHiFT in a fresh session.
+- First-use Play while accepting no longer requires protection review. Screenshot established the previous blocked-start message; ordinary accepter already worked without review. Remove all guards remain intact. 38 Python background/storage checks, 21 startup/ZIP checks, JS protection/automation/link checks and 25 actual-dashboard lifecycle checks passed locally; relevant checks repeated in CI.
+- Martin confirmed normal walking/mouse look, compact SHiFT and hidden cursor with the installed fixed PAK/companion. Status receipt contains foreground at t=0, then 30 active samples from t=2.001 through t=60 seconds, with no read errors. This is lifecycle/control evidence, not a new count of completed friend transactions.
+- Supported entry route: close other menus, return to gameplay, F10, then Play while accepting. Pause-menu entry remains unqualified. Martin briefly reported pause-menu control trouble after publication, then immediately clarified he could click; no confirmed new failure or additional native change.
+- Native executable profile remains pinned; other builds fail closed. No new Linux live gameplay or guest-save qualification. Android unchanged.
+
+Local installation: candidate SDK SHA-256 37da08bbf16428dd08e943e15622b0432ab3c3823c40578ee306ad42757f52f3, plus PAK/companion above. Protected-list settings unchanged; PAK overwritten in place to preserve aliases. SDK/PAK/companion backups are in C:/src/MSBT-Workspace/local/shift-friends-audit-20261105/v2411-startup-trial. Rollback only with game closed; never restore the original broken PAK.
+
+Main download metadata remains in PR #18, updated to 2.41.1: https://github.com/funkyoushift/MattsSDKBoostingTools/pull/18. No direct main write or merge bypassed the previous automatic approval rejection. The custom desktop updater reads GitHub latest release independently. Old broken updater installs require a manual installer bootstrap.
+
+Detailed local hash receipt: C:/src/MSBT-Workspace/local/v2411-ci-artifacts/verified-artifacts.json
+Live status receipt: C:/src/MSBT-Workspace/local/shift-friends-audit-20261105/v2411-startup-trial/background-active-receipt.jsonl
