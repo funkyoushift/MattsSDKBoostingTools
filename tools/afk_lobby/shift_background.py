@@ -45,7 +45,7 @@ class BackgroundController:
     def _owned(self):
         return bool(self.native is not None and self.native.owned)
 
-    def request(self, payload, protection_ready):
+    def request(self, payload):
         if not isinstance(payload, dict) or set(payload) != {'mode', 'token'}:
             return {'ok': False, 'error': 'Invalid request.'}
         mode, token = payload['mode'], payload['token']
@@ -62,8 +62,8 @@ class BackgroundController:
                     return {'ok': True, **self.status()}
                 if self._state in ('pending', 'active', 'stopping') or self._ownership or self._closing:
                     return {'ok': False, 'error': 'Previous background session is stopping.'}
-                if not protection_ready:
-                    return {'ok': False, 'error': 'Review and save protection settings first.'}
+                # This lease controls presentation/input only. Protected-list
+                # review gates destructive removal in the page, not accepting.
                 self._token, self._deadline = token, now + _LEASE
                 self._state, self._reason, self._command = 'pending', '', 'start'
                 self._failure_reason = ''

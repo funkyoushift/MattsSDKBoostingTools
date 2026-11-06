@@ -19,6 +19,7 @@ app.whenReady().then(async () => {
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:true,state:'active'}}});
     if (!document.getElementById('afkShiftStatus').textContent.includes('Background active') || document.getElementById('afkShiftStatus').textContent.includes('not connected')) throw Error('Active companion was reported disconnected');
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:true,state:'foreground'}}});
+    if (!document.getElementById('afkBackgroundStatus').textContent.includes('Close the pause menu, then press F10')) throw Error('Supported F10 background guidance missing');
     if (!document.getElementById('afkShiftStatus').textContent.includes('companion available')) throw Error('Foreground companion was reported disconnected');
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready',shift_connected:false,shift_background:{available:false,state:'unsupported'}}});
     if (!document.getElementById('afkShiftStatus').textContent.includes('not connected')) throw Error('Missing companion status was hidden');

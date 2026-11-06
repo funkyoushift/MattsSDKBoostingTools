@@ -35,6 +35,22 @@ def test_direct_open_releases_input_only_during_startup(monkeypatch):
     assert m.control('close')['ok'];assert calls[-2:]==[('close',),('release',)]
 
 
+def test_start_registers_working_hotkeys_before_any_ui_tick(monkeypatch):
+    m, calls, _, _, _ = setup_overlay(monkeypatch)
+    registered = {}
+    def bind(name, key, callback, **kwargs):
+        return types.SimpleNamespace(enable=lambda:registered.setdefault(key, callback),
+                                     disable=lambda:registered.pop(key, None))
+    monkeypatch.setattr(m, 'keybind', bind)
+    m.start(); m.start()
+    assert set(registered) == {'F10', 'F11'}
+    assert len(m._bindings) == 2 and calls == []
+    registered['F10']()
+    assert calls == [('open', 0)]
+    m.stop()
+    assert registered == {}
+
+
 def test_quick_menu_and_travel_cancel_input_changes(monkeypatch):
     m,calls,now,q,base=setup_overlay(monkeypatch)
     q.STATE.is_open=True

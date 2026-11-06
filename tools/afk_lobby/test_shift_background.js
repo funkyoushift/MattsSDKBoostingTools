@@ -21,8 +21,8 @@ function fixture(direct) {
 }
 {
  const f=fixture(); f.run(); assert.equal(f.bar.button.textContent,'Play while accepting');
- f.reviewed=false;assert.equal(f.start(),false);assert.equal(f.requests.length,0);
- f.reviewed=true;f.running=false;assert(f.start());assert(f.window.ShiftFriendAutomation.isRunning());const start=f.requests[0];assert.deepEqual(start.body,{mode:'start',token:'05'.repeat(16)});assert.equal(start.headers['X-MSBT-Shift-Instance'],'one');
+ f.reviewed=false;
+ f.running=false;assert(f.start());assert(f.window.ShiftFriendAutomation.isRunning());const start=f.requests[0];assert.deepEqual(start.body,{mode:'start',token:'05'.repeat(16)});assert.equal(start.headers['X-MSBT-Shift-Instance'],'one');
  assert.equal(f.start(),false);start.respond('pending');f.run();const hb=f.requests[1];assert.equal(hb.body.mode,'heartbeat');hb.respond('active');assert.equal(f.props.opacity.value,'1');assert.equal(f.props.transform.value,'scale(0.04)');assert.equal(f.props['transform-origin'].value,'top left');assert.equal(f.bar.style.transform,'scale(0.04)');assert.match(f.head.children[0].textContent,/#body_container#body_container/);assert.equal(f.window.document.documentElement.style.transform,'untouched');
  f.run();f.requests[2].ontimeout();assert.equal(f.props.opacity.value,'0.65');assert.equal(f.props.opacity.priority,'important');assert.equal(f.head.children.length,0);assert.deepEqual(f.props.transform,{value:'rotate(1deg)',priority:''});assert.deepEqual(f.props['transform-origin'],{value:'center',priority:'important'});assert.equal(f.window.MsbtShiftBackground.status().state,'error');
 }
@@ -45,7 +45,7 @@ function fixture(direct) {
  const f=fixture();f.run();f.start();f.requests[0].respond('active');f.run();f.requests[1].respond('active',{instance:'other'});assert.equal(f.props.opacity.value,'0.65');assert.equal(f.window.MsbtShiftBackground.status().state,'error');
 }
 {
- const f=fixture();f.run();f.start();f.requests[0].respond('active');f.reviewed=false;f.run();assert.equal(f.props.opacity.value,'0.65');assert.equal(f.requests[1].body.mode,'stop');
+ const f=fixture();f.run();f.start();f.requests[0].respond('active');f.reviewed=false;f.run();assert.equal(f.props.opacity.value,'1');assert.equal(f.requests[1].body.mode,'heartbeat');
 }
 {
  const f=fixture();f.run();f.running=false;const cmd={id:'a'.repeat(32),mode:'start'};f.window.MsbtShiftBackground.onCompanionState({command:cmd});f.run();assert.equal(f.requests.length,1);assert.equal(f.requests[0].body.mode,'start');f.window.MsbtShiftBackground.onCompanionState({command:cmd});assert.equal(f.requests.length,1);f.requests[0].respond('active');

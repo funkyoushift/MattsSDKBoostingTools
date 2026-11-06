@@ -115,7 +115,10 @@
         : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
     const backgroundState = background?.state || "unavailable";
     const backgroundReason = background?.reason || "";
-    byId("afkBackgroundStatus").textContent = `SHiFT background: ${backgroundState}${backgroundReason ? ` · ${backgroundReason}` : ""}`;
+    const backgroundGuidance = background?.available && ["idle", "foreground"].includes(backgroundState)
+      ? " · Close the pause menu, then press F10 to open SHiFT for background play"
+      : "";
+    byId("afkBackgroundStatus").textContent = `SHiFT background: ${backgroundState}${backgroundReason ? ` · ${backgroundReason}` : ""}${backgroundGuidance}`;
     guestProgress.replaceChildren();
     const mode = document.createElement('div');
     mode.textContent = !running ? 'AFK stopped' : afk.config?.concurrent_guests

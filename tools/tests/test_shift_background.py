@@ -51,7 +51,7 @@ class BackgroundTests(unittest.TestCase):
         self.pc = SimpleNamespace(Player=self.player, Pawn=self.pawn)
         self.sdk = SDK(self.player); self.native = Native()
         self.c = m.BackgroundController(self.native, self.sdk, lambda:self.pc, lambda:self.now)
-    def request(self, mode, token=TOKEN, ready=True): return self.c.request({'mode':mode,'token':token},ready)
+    def request(self, mode, token=TOKEN): return self.c.request({'mode':mode,'token':token})
     def start(self):
         self.assertTrue(self.request('start')['ok']); self.c.tick(); self.assertEqual(self.c.status()['state'],'active')
     def test_lease_ownership_and_stop(self):
@@ -81,8 +81,7 @@ class BackgroundTests(unittest.TestCase):
         self.sdk.shift.Close=lambda: decisions.append(self.c.before_close())
         self.request('stop'); self.c.tick()
         self.assertEqual([False,False,True],decisions);self.assertTrue(self.c.quiescent)
-    def test_menu_guard_and_missing_protection(self):
-        self.assertFalse(self.request('start',ready=False)['ok'])
+    def test_menu_guard(self):
         self.sdk.contexts=[Context('/Game/Input/UI/Menu')]
         self.assertTrue(self.request('start')['ok']); self.c.tick()
         self.assertEqual(self.c.status()['state'],'error'); self.assertIn('Close other menus',self.c.status()['reason']); self.assertNotIn('enter',self.native.calls)
@@ -130,7 +129,7 @@ class BackgroundTests(unittest.TestCase):
             except RuntimeError: seen.append(True)
         t=threading.Thread(target=worker);t.start();t.join();self.assertEqual(seen,[True])
     def test_shutdown_and_invalid(self):
-        self.assertFalse(self.c.request({'mode':'start','token':TOKEN,'extra':1},True)['ok'])
+        self.assertFalse(self.c.request({'mode':'start','token':TOKEN,'extra':1})['ok'])
         self.start(); self.c.shutdown(); self.assertFalse(self.c.quiescent); self.c.tick(); self.assertTrue(self.c.quiescent)
         self.assertFalse(self.request('start')['ok'])
 

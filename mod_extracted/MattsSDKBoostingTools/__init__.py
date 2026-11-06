@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-__version__: str = "2.41.0"
-__version_info__: tuple[int, int, int] = (2, 41, 0)
+__version__: str = "2.41.1"
+__version_info__: tuple[int, int, int] = (2, 41, 1)
 
 from mods_base import CoopSupport, Game, build_mod
 
@@ -17,6 +17,7 @@ from .guaranteed_drops import clear_runtime_state as _clear_drop_rate
 from .farming_controls import clear_runtime_state as _clear_farming
 from .inventory_capacity import start_auto_inventory_worker
 from .external_bridge import start_bridge
+from .shift_overlay import start as start_shift_overlay
 from .external_app_launcher import _cmd_msbt_external_app
 from .mission_commands import mission_command
 from .backend_actions import (
@@ -46,6 +47,7 @@ start_auto_inventory_worker()
 start_bridge()
 start_quick_menu()
 start_mobile_pairing()
+start_shift_overlay()
 
 _extra_commands = [
     mission_command,

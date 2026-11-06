@@ -1,6 +1,9 @@
 'use strict';
 const {EventEmitter} = require('events');
 const fs = require('fs/promises');
+// Electron treats an ASAR root as a virtual directory. Validate the physical
+// archive with its unpatched filesystem, including in packaged applications.
+const physicalFs = process.versions.electron ? require('original-fs').promises : fs;
 const {constants} = require('fs');
 const path = require('path');
 const {createHash} = require('crypto');
@@ -99,7 +102,7 @@ class LinuxReleaseUpdater extends EventEmitter {
         this.stage=path.join(stageRoot,path.basename(this.target));
         await fs.copyFile(downloaded,this.stage);await fs.chmod(this.stage,0o755);this.launch=this.target;
       } else {
-        await fs.access(path.join(this.target,'resources','app.asar'));
+        await physicalFs.access(path.join(this.target,'resources','app.asar'));
         await fs.access(path.join(this.target,'LINUX-PYTHON-PROVENANCE.json'));
         if(path.basename(this.executable)!=='MattsSDKBoostingTools') throw Error('This is not an MSBT portable application directory.');
         const entries=(await this.execute('tar',['-tzf',downloaded],{maxBuffer:16*1024*1024})).stdout.split('\n').filter(Boolean);
@@ -175,7 +178,7 @@ class WindowsReleaseUpdater extends LinuxReleaseUpdater {
     if(!this.ready || !this.downloaded) throw Error('Download and verify the update first.');
     const executable=await fs.realpath(this.executable);
     const target=path.win32.dirname(executable);
-    await fs.access(path.join(target,'resources','app.asar'));
+    await physicalFs.access(path.join(target,'resources','app.asar'));
     const folder=await fs.mkdtemp(path.join(this.app.getPath('userData'),'update-handoff-'));
     const script=path.join(folder,'install-update.ps1');
     await fs.writeFile(script,WINDOWS_HANDOFF_SCRIPT);

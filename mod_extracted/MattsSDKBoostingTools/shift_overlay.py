@@ -121,14 +121,25 @@ def _record_visible_menu():
         _capture_status["error"] = str(exc)
 
 
+def start():
+    """Register controls without waiting for a visible UI widget to tick."""
+    if not _bindings:
+        try:
+            for name, key, mode in (("MSBT SHiFT overlay", "F10", "toggle"),
+                                    ("MSBT SHiFT release input", "F11", "release")):
+                bind = keybind(name, key, callback=lambda mode=mode: control(mode), is_hidden=True, is_rebindable=False)
+                _bindings.append(bind)
+                bind.enable()
+        except Exception:
+            for bind in _bindings:
+                bind.disable()
+            _bindings.clear()
+            raise
+
+
 def tick():
     global _release_at, _owner, _message, _capture_next, _closing, _seen_visible
-    if not _bindings:
-        for name, key, mode in (("MSBT SHiFT overlay", "F10", "toggle"),
-                                ("MSBT SHiFT release input", "F11", "release")):
-            bind = keybind(name, key, callback=lambda mode=mode: control(mode), is_hidden=True, is_rebindable=False)
-            bind.enable()
-            _bindings.append(bind)
+    start()
     if _owner is not None and get_pc() != _owner:
         _release_at = []; _owner = None
         _closing = False; _seen_visible = False

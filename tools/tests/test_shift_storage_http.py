@@ -70,7 +70,7 @@ class StorageHTTPTests(unittest.TestCase):
         self.assertEqual(200,self.call('OPTIONS')[0])
     def test_foreground_heartbeat_returns_verified_terminal_state(self):
         old=mod._background
-        mod._background=types.SimpleNamespace(request=lambda request,ready:{'ok':False},
+        mod._background=types.SimpleNamespace(request=lambda request:{'ok':False},
             status=lambda:{'available':True,'state':'foreground','reason':'','token':None})
         try:
             conn=http.client.HTTPConnection('127.0.0.1',self.server.server_port,timeout=3)

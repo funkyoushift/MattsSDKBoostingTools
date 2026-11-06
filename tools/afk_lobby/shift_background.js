@@ -61,7 +61,7 @@
         return 'Page presentation failed: ' + ((e && e.name) || 'Error') + ': ' + ((e && e.message) || String(e));
     }
     function ready() {
-        try { return !!(window.ShiftFriendAutomation && window.ShiftFriendAutomation.isRunning() && window.ShiftMiniPanel && window.ShiftMiniPanel.protectionReady()); }
+        try { return !!(window.ShiftFriendAutomation && window.ShiftFriendAutomation.isRunning() && bridge()); }
         catch (_) { return false; }
     }
     function bridge() {
@@ -128,7 +128,6 @@
         if (state === 'pending' || state === 'active' || request) return false;
         var b = bridge();
         if (!b) { end('error', 'The SDK background bridge is not connected'); return false; }
-        if (!window.ShiftMiniPanel || !window.ShiftMiniPanel.protectionReady()) { end('error', 'Review and save protection settings before starting'); return false; }
         if (!window.ShiftFriendAutomation) { end('error', 'Friend automation is unavailable'); return false; }
         if (typeof b.start_token !== 'string' || !/^[0-9a-f]{32}$/.test(b.start_token)) { end('error', 'The SDK did not supply a background token'); return false; }
         try { if (!window.ShiftFriendAutomation.isRunning()) window.ShiftFriendAutomation.startAutoAccept(); } catch (_) { end('error', 'Unable to start accepting'); return false; }
@@ -164,7 +163,7 @@
             stop();
         } else {
             try {
-                if (!bridge() || !window.ShiftMiniPanel.protectionReady() || !window.ShiftFriendAutomation) return;
+                if (!bridge() || !window.ShiftFriendAutomation) return;
                 if (!window.ShiftFriendAutomation.isRunning()) window.ShiftFriendAutomation.startAutoAccept();
                 start();
             } catch (_) { end('error', 'Unable to start accepting'); }

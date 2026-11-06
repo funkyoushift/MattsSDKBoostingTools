@@ -266,6 +266,7 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
         "runtime_cleanup": ["clear_travel_caches"],
         "inventory_capacity": ["start_auto_inventory_worker"],
         "external_bridge": ["start_bridge"],
+        "shift_overlay": ["start"],
         "external_app_launcher": ["_cmd_msbt_external_app"],
         "mission_commands": ["mission_command"],
         "backend_actions": ["_cmd_msbt_complete_challenges", "_cmd_msbt_complete_challenges_cancel",
@@ -278,7 +279,7 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
     for sibling, names in siblings.items():
         attrs = {}
         for name in names:
-            if name.startswith("start_"):
+            if name.startswith("start_") or name == "start":
                 attrs[name] = lambda name=name: started.append(name)
             elif name == "challenge_api_probe_enabled":
                 attrs[name] = lambda: False
@@ -297,7 +298,7 @@ def test_sdk_entrypoint_starts_supported_interfaces_without_legacy_panel(monkeyp
     monkeypatch.setitem(sys.modules, package, module)
     spec.loader.exec_module(module)
     assert forbidden_attempts == []
-    assert started == ["start_auto_inventory_worker", "start_bridge", "start_quick_menu", "start_mobile_pairing"]
+    assert started == ["start_auto_inventory_worker", "start_bridge", "start_quick_menu", "start_mobile_pairing", "start"]
     assert len(registrations) == 1
     registration = registrations[0]
     native = sys.modules[f"{package}.guaranteed_drops"]

@@ -11,9 +11,8 @@ from test_shift_storage_http import StorageHTTPTests, mod
 class Controller:
     def __init__(self): self.calls=[]
     def status(self): return {'available':True,'state':'idle','reason':'','token':None}
-    def request(self, payload, ready):
-        self.calls.append((payload,ready,threading.get_ident()))
-        if payload.get('mode') == 'start' and not ready: return {'ok':False}
+    def request(self, payload):
+        self.calls.append((payload,threading.get_ident()))
         return {'ok':True}
 
 class BackgroundHTTPTests(StorageHTTPTests):
@@ -32,12 +31,13 @@ class BackgroundHTTPTests(StorageHTTPTests):
         self.assertEqual(200,self.route('/shift-background')[0])
         payload=json.dumps({'mode':'start','token':'a'*32}); headers={'X-MSBT-Shift-Instance':mod._instance}
         self.assertEqual(403,self.route('/shift-background','POST',payload,{'X-MSBT-Shift-Instance':'bad'})[0])
-        self.assertEqual(400,self.route('/shift-background','POST',payload,headers)[0]); self.assertFalse(self.controller.calls[-1][1])
+        self.assertEqual(200,self.route('/shift-background','POST',payload,headers)[0])
+        self.assertFalse(mod.CONFIG_PATH.exists())  # Background start never creates/reviews a protected list.
         mod._initialize({'settings':{},'protectedPlayers':[],'reviewed':True})
         mod._page_command={'id':'f'*32,'mode':'start','deadline':time.monotonic()+10}
         code,state=self.route('/shift-background','POST',payload,headers)
-        self.assertEqual(200,code);self.assertTrue(self.controller.calls[-1][1]);self.assertNotIn('command',state['background'])
-        self.assertNotEqual(self.controller.calls[-1][2],threading.get_ident())
+        self.assertEqual(200,code);self.assertNotIn('command',state['background'])
+        self.assertNotEqual(self.controller.calls[-1][1],threading.get_ident())
     def test_command_expiry_and_peer_protection(self):
         mod._page_command={'id':'f'*32,'mode':'stop','deadline':time.monotonic()-1}
         self.assertNotIn('command',self.route('/shift-background')[1]['background'])

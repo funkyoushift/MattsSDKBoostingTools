@@ -5,7 +5,7 @@ on:
       expected_version:
         description: Stable source version
         required: true
-        default: '2.41.0'
+        default: '2.41.1'
 permissions:
   contents: read
 jobs:
@@ -43,11 +43,25 @@ jobs:
           python -m compileall -q mod_extracted/MattsSDKBoostingTools external_app/v22_parts_codes_fixed
           if ($LASTEXITCODE -ne 0) { throw 'Syntax check failed' }
           $env:PYTHONPATH = Join-Path $PWD 'tools'
-          python -m pytest tools/tests/test_quick_menu_no_blimgui.py tools/tests/test_release_sdk_imports.py tools/tests/test_pack_sdkmod_zip.py -q
-          if ($LASTEXITCODE -ne 0) { throw 'Offline import/startup checks failed' }
+          python -m pytest tools/tests/test_quick_menu_no_blimgui.py tools/tests/test_release_sdk_imports.py tools/tests/test_pack_sdkmod_zip.py tools/tests/test_shift_background.py tools/tests/test_shift_background_http.py tools/tests/test_shift_overlay.py tools/tests/test_shift_storage_http.py -q
+          if ($LASTEXITCODE -ne 0) { throw 'Offline startup and SHiFT background checks failed' }
+      - name: Verify SHiFT desktop guidance and controller lifecycle
+        shell: pwsh
+        run: |
+          node tools/afk_lobby/test_shift_background.js
+          if ($LASTEXITCODE -ne 0) { throw 'SHiFT background lifecycle checks failed' }
+          node tools/afk_lobby/test_shift_link.js
+          if ($LASTEXITCODE -ne 0) { throw 'SHiFT link checks failed' }
+          Push-Location electron_poc
+          try { npx electron test_afk_lobby.js; if ($LASTEXITCODE -ne 0) { throw 'SHiFT desktop guidance check failed' } }
+          finally { Pop-Location }
       - name: Verify Windows update handoff
         shell: pwsh
-        run: node electron_poc/test_windows_update_handoff.js
+        run: |
+          node electron_poc/test_windows_update_handoff.js
+          if ($LASTEXITCODE -ne 0) { throw 'Windows update handoff failed' }
+          node electron_poc/test_platform_updater_electron_asar.js
+          if ($LASTEXITCODE -ne 0) { throw 'Electron ASAR updater regression failed' }
       - name: Build and audit Windows packages
         shell: pwsh
         run: |
@@ -57,6 +71,12 @@ jobs:
       - name: Test actual installed payload
         shell: pwsh
         run: ./tools/verify_windows_release.ps1 -Version $env:EXPECTED_VERSION
+      - name: Verify installed updater ASAR semantics
+        shell: pwsh
+        run: |
+          $env:MSBT_UPDATER_ASAR = Join-Path $env:RUNNER_TEMP 'MSBT-installed/resources/app.asar'
+          node electron_poc/test_platform_updater_electron_asar.js
+          if ($LASTEXITCODE -ne 0) { throw 'Installed updater ASAR regression failed' }
       - uses: actions/upload-artifact@v4
         with:
           name: msbt-windows-${{ inputs.expected_version }}

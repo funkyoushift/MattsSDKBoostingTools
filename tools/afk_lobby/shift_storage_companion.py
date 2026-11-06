@@ -415,13 +415,10 @@ class _StorageHandler(BaseHTTPRequestHandler):
         try:
             incoming = json.loads(self.rfile.read(length).decode("utf-8"))
             if self.path == "/shift-background":
-                with _lock:
-                    state = _state_payload()
-                    ready = state.get("storageValid") is True and state.get("reviewed") is True
                 controller = _background
                 if controller is None:
                     raise ValueError("Background unavailable")
-                outcome = controller.request(incoming, ready)
+                outcome = controller.request(incoming)
                 if not outcome.get("ok"):
                     background = _background_status()
                     if (isinstance(incoming, dict) and incoming.get("mode") == "heartbeat"
