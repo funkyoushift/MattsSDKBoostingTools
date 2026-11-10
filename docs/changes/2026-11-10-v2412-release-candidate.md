@@ -159,3 +159,67 @@ validated only because the follow-up launch was blocked.
 Windows native process ownership and the executable adapter are platform-specific.
 Linux/Epic qualification must be stated separately; Windows mocks do not qualify
 them. No public release readiness claim is made at this checkpoint.
+
+## Resumed investigation, 2026-11-10
+
+Resumed from clean `ebc0dad5` without changing production implementation or
+rebuilding the already-audited packages. A fresh desktop access request,
+`little-shape-91732408`, timed out; the parent subsequently cancelled it and
+directed live app work to be deferred while the user is unavailable. The older
+requests above are historical expired requests, not reusable permissions. No
+game launch, installer execution or live social operation occurred in this
+resumed phase. Fresh verification at 09:06:44 UTC again confirmed no game process,
+all four original game-file hashes and original settings-file absence.
+
+The bounded native review reconfirmed the installed executable SHA256
+`ba75f7c2874b16efb5536a5c0cc28918a03efd3e55d790d2e4db57de0c3a353a`.
+The referenced shipping PDB is not installed. Available prior artifacts contain
+reflection results and visibility snapshots, not recovered native Open logic.
+In particular, an immediate Open sample and a later sample disagree on
+IsVisible, so they cannot establish an early-return condition. The Show input
+failure remains unresolved; no native setter-order change was made from that
+unconfirmed theory.
+
+Installer preparation now includes a task-local guarded snapshot/comparison/
+helper-restoration script. Independent review found missing-backup versus
+original-absence ambiguity, incomplete preflight validation and path validation
+gaps in its initial draft. That draft was never executed against the installation.
+The official rollback installer remains a required part of the planned desktop
+rollback; restoring helper files alone is not a complete desktop rollback.
+
+Independent work completed before deferring the live steps:
+
+- Task-parent `show-input-diagnostic/README.md` documents the bounded observer.
+  Its current uninstalled archive is
+  `ShiftManagement-show-input-diagnostic-rlock.sdkmod`, SHA256
+  `94e7014add6f48ac9fd1d013e9f4a254886f340fbfcb8d262151428675c70362`.
+  Exact original companion/source hashes remain pinned; documentation-only
+  descendant commits are allowed. It observes Show/pre-open/pre-close and the
+  next two ticks, stops probing after 64 records, and records only visibility
+  and input booleans. Native probes do not run under the file-log lock. Five
+  synthetic tests passed, including reentrant callbacks and unchanged original
+  return/exception behavior; syntax checks passed. The compiled native JSONL
+  log remains empty. This observer is not a release asset or native test pass.
+- Task-parent `installer-trial/installer_trial.ps1` and `PREPARED.md` now contain
+  the reviewed trial workflow. Complete backup hashes/inventory are preflighted
+  before any mutation; paths and file/folder types are checked. Comparison
+  canonicalizes maps and includes user-data fingerprints. Six isolated fixtures
+  passed: corrupt backup, missing backup, file-target obstruction, actor-folder
+  obstruction, restoring original absence, and byte-exact helper/preferences
+  recovery while preserving the PAK and unknown preference files. Both scripts
+  passed PowerShell parsing; independent review cleared offline preparation.
+  No live baseline backup, installer, registry change, or installed helper-file
+  restoration occurred in this resumed phase.
+
+Production source and Windows package bytes remain the previously audited
+candidate. No rebuild was needed for these task-local diagnostics/recovery tools
+or the updated durable notes. The installer SHA256 remains
+`16acf4fdf3e2a822d9f2811b1dd96df659c0299f67a2082306b6f8e405a34bb0`;
+portable SHA256 remains
+`f9576642014462b7b9ad9d8ad820b07d46ae79068ef102dcffec364a14fc7f2d`.
+Final fresh verification at 09:21:52 UTC again confirmed a closed game and the
+original four hashes/settings absence in `candidate-restoration-verification.json`.
+
+All live acceptance gates listed above remain open. Fresh MSBT and Borderlands
+app access is needed when the user is available; do not repeatedly create prompts
+or imply native tests are running while access is deferred.
