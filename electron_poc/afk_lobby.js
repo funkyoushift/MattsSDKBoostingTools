@@ -114,7 +114,8 @@
         ? `SHiFT companion available${background.state === "active" ? " · Background active" : ""} · AFK lobby link waiting`
         : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
     const backgroundState = background?.state || "unavailable";
-    const backgroundReason = background?.reason || "";
+    const backgroundReason = background?.command_error || (background?.command_pending
+      ? `Waiting for SHiFT to confirm ${background.command_pending}` : background?.reason || "");
     const backgroundGuidance = background?.available && ["idle", "foreground"].includes(backgroundState)
       ? " · Close the pause menu, then press F10 to open SHiFT for background play"
       : "";

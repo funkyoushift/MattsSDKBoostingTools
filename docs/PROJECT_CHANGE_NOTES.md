@@ -1,5 +1,9 @@
 # Project change notes — read first
 
+- [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT repairs and mobile-security fixes; local patch-version packages and native qualification in progress. No publication.
+
+- [2026-11-10: SHiFT storage and background repair](changes/2026-11-10-shift-storage-background-repair.md): Isolated v2.41.1 repair for first-use desktop commands, Save/read races, atomic first creation and integration identity. Offline checks pass; native qualification paused. Game closed normally and original installation restored with verified hashes. No release/version change.
+
 - [v2.41.1 updater and SHiFT repairs](releases/VERIFICATION_v2.41.1.txt): Published after Windows/Linux CI, installed updater regression, user-confirmed F10/background controls and four uploaded hash comparisons. Protection review still gates Remove all. Pause-menu entry and Linux live gameplay remain unqualified; download metadata PR #18 is pending.
 
 - [2026-11-05: Updater repair and v2.41.1 preparation](changes/2026-11-05-updater-repair-v2.41.1.md): ASAR access fix, SDK startup registration for SHiFT F10/F11, and first-use acceptance without reviewed protected-list prerequisite; 38 focused Python tests and JS checks reported passing. F10 confirmed, while Play-while-accepting movement/mouse behavior remains unresolved and publication is held. Windows/Linux CI, four asset hashes and release checks remain pending. Android unchanged. See [release notes](releases/RELEASE_NOTES_v2.41.1.md).

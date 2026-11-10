@@ -58,7 +58,7 @@ def test_enroll_then_allow_and_revoke(tmp_path, monkeypatch):
     assert result["ok"] is True
     assert lan.lan_enabled() is True
     assert lan.bind_host() == "0.0.0.0"
-    assert lan.is_allowed("192.168.1.50", "") is True
+    assert lan.is_allowed("192.168.1.50", "") is False
     assert lan.is_allowed("10.0.0.9", "tok-phone-1") is True
     assert lan.revoke_phone("tok-phone-1") is True
     assert lan.is_allowed("192.168.1.50", "tok-phone-1") is False
@@ -278,3 +278,79 @@ def test_pairing_overlay_stays_isolated_from_bridge():
     assert "blimgui" not in pairing
     assert "mobile_pairing" not in bridge
     assert "blimgui_panel" not in bridge
+
+
+@pytest.mark.parametrize("offered", ["", "attacker-token", "non-ascii-\u2603"])
+def test_known_ip_cannot_authorize_or_replace_token(http_bridge, offered):
+    bridge = http_bridge
+    lan = bridge.mobile_lan
+    nonce = lan.arm_enroll()
+    assert lan.enroll(nonce, ip="192.168.0.44", token="original-token", name="Original")["ok"]
+    lan.disarm_enroll()
+    before = lan.persist_path().read_bytes()
+    phones = lan.list_phones()
+
+    class Request:
+        path = "/status"
+        client_address = ("192.168.0.44", 9)
+        headers = _headers({"X-MSBT-Device": offered})
+
+    assert bridge._authorized_request(Request()) == (False, "192.168.0.44")
+    assert lan.list_phones() == phones
+    assert lan.persist_path().read_bytes() == before
+    assert lan.is_allowed("10.1.1.8", "original-token")
+
+
+def test_token_refresh_cannot_overwrite_another_phone_at_same_ip(http_bridge):
+    bridge = http_bridge
+    lan = bridge.mobile_lan
+    nonce = lan.arm_enroll()
+    assert lan.enroll(nonce, ip="192.168.0.44", token="phone-A", name="A")["ok"]
+    assert lan.enroll(nonce, ip="192.168.0.55", token="phone-B", name="B")["ok"]
+    lan.disarm_enroll()
+
+    class Request:
+        path = "/status"
+        client_address = ("192.168.0.44", 9)
+        headers = _headers({"X-MSBT-Device": "phone-B"})
+
+    assert bridge._authorized_request(Request()) == (True, "192.168.0.44")
+    phones = {row["token"]: row for row in lan.list_phones()}
+    assert set(phones) == {"phone-A", "phone-B"}
+    assert phones["phone-A"]["name"] == "A"
+    assert phones["phone-B"]["ip"] == "192.168.0.44"
+    assert lan.is_allowed("10.0.0.1", "phone-A")
+    assert lan.is_allowed("10.0.0.2", "phone-B")
+    assert lan.revoke_phone("phone-B")
+    assert not bridge._authorized_request(Request())[0]
+    assert lan.is_allowed("192.168.0.44", "phone-A")
+
+
+def test_legacy_ip_only_record_requires_enrollment(tmp_path, monkeypatch):
+    lan = _load_lan(tmp_path, monkeypatch)
+    lan.persist_path().write_text(json.dumps({"lan_enabled": True, "phones": [
+        {"ip": "192.168.0.44", "name": "Legacy", "enrolled_at": 1.0}
+    ]}), encoding="utf-8")
+    lan.load()
+    assert not lan.is_allowed("192.168.0.44", "")
+    assert not lan.is_allowed("192.168.0.44", "new-token")
+    assert not lan.enroll("wrong", ip="192.168.0.44", token="new-token")["ok"]
+    nonce = lan.arm_enroll()
+    assert lan.enroll(nonce, ip="192.168.0.44", token="new-token")["ok"]
+    lan.disarm_enroll()
+    assert lan.is_allowed("192.168.0.44", "new-token")
+    lan.reset_state()
+    lan.load()
+    assert lan.is_allowed("10.0.0.9", "new-token")
+    assert not lan.is_allowed("192.168.0.44", "")
+
+
+def test_explicit_same_ip_enrollment_does_not_replace_existing_credential(tmp_path, monkeypatch):
+    lan = _load_lan(tmp_path, monkeypatch)
+    nonce = lan.arm_enroll()
+    assert lan.enroll(nonce, ip="192.168.0.44", token="first-token")["ok"]
+    assert lan.enroll(nonce, ip="192.168.0.44", token="second-token")["ok"]
+    assert {row["token"] for row in lan.list_phones()} == {"first-token", "second-token"}
+    assert lan.is_allowed("192.168.0.44", "first-token")
+    assert lan.is_allowed("192.168.0.44", "second-token")
+    assert not lan.is_allowed("192.168.0.44", "")

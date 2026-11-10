@@ -46,6 +46,7 @@ _instance = ""
 _background = None
 _command_lock = threading.RLock()
 _page_command = None
+_page_command_error = ""
 _hooks_installed = False
 _disabling = False
 _TICK = '/Script/Engine.CameraModifier:BlueprintModifyCamera'
@@ -156,6 +157,8 @@ def _save() -> bool:
         temp_path = Path(name)
         with os.fdopen(fd, "wb") as stream:
             stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
         try:
             unchanged = hashlib.sha256(CONFIG_PATH.read_bytes()).digest() == _storage_digest
         except OSError:
@@ -188,14 +191,22 @@ def _initialize(value: Any) -> bool:
         temp_path = Path(name)
         with os.fdopen(fd, "wb") as stream:
             stream.write(content)
-        os.link(temp_path, CONFIG_PATH)  # Atomic creation; fails if any file appeared.
+            stream.flush()
+            os.fsync(stream.fileno())
+        # Windows rename is atomic and refuses an existing destination. Unlike
+        # link(), it also works on game drives without hard-link support. Never
+        # use replace() for first creation: a late file belongs to another writer.
+        if os.name == 'nt':
+            os.rename(temp_path, CONFIG_PATH)
+        else:
+            os.link(temp_path, CONFIG_PATH)
         _data = _normalize(value)
         _storage_digest = hashlib.sha256(content).digest()
         _storage_valid = True
         _storage_state = "valid"
         return True
     except Exception as exc:
-        _storage_state = "changed" if CONFIG_PATH.exists() else "unavailable"
+        _storage_state = "changed" if CONFIG_PATH.exists() else "missing"
         return False
     finally:
         if temp_path is not None:
@@ -238,29 +249,48 @@ def _process_save(incoming):
 
 
 def _background_status():
-    global _page_command
+    global _page_command, _page_command_error
     controller = _background
     status = controller.status() if controller is not None else {
         "available": False, "state": "unsupported", "reason": "Background view is unavailable.", "token": None}
     status["start_token"] = uuid.uuid4().hex
     with _command_lock:
         if _page_command is not None and time.monotonic() >= _page_command["deadline"]:
+            _page_command_error = 'SHiFT did not confirm the desktop command. Open SHiFT with F10 and check the installed game integration.'
             _page_command = None
         if _page_command is not None:
             status["command"] = {"id": _page_command["id"], "mode": _page_command["mode"]}
+            status['command_pending'] = _page_command['mode']
+        if _page_command_error:
+            status['command_error'] = _page_command_error
     return status
 
 
 def _clear_page_command(mode):
-    global _page_command
+    global _page_command, _page_command_error
     with _command_lock:
         if _page_command is not None and _page_command["mode"] == mode:
             _page_command = None
+            _page_command_error = ""
+
+
+def _ack_page_stop(incoming):
+    """The page can stop foreground acceptance without owning a native lease."""
+    global _page_command, _page_command_error
+    if (set(incoming) != {'mode', 'command_id'} or incoming['mode'] != 'ack_stop'
+            or not isinstance(incoming['command_id'], str) or len(incoming['command_id']) != 32):
+        raise ValueError('Invalid stop acknowledgement')
+    with _command_lock:
+        if _page_command is not None:
+            if _page_command['id'] != incoming['command_id'] or _page_command['mode'] != 'stop':
+                raise ValueError('Stale stop acknowledgement')
+            _page_command = None
+            _page_command_error = ""
 
 
 def background_control(mode):
     """Game-thread entry point for the MSBT panel; never sends social actions."""
-    global _page_command
+    global _page_command, _page_command_error
     if mode not in ("status", "show", "start", "stop"):
         return {"ok": False, "background": _background_status(), "message": "Invalid background command."}
     if mode == "status":
@@ -279,6 +309,7 @@ def background_control(mode):
                 library.Open(0)
         if mode in ("start", "stop"):
             with _command_lock:
+                _page_command_error = ""
                 _page_command = {"id": uuid.uuid4().hex, "mode": mode, "deadline": time.monotonic() + 10.0}
         return {"ok": True, "background": _background_status(), "message": "SHiFT command queued." if mode != "show" else "SHiFT opened."}
     except Exception as exc:
@@ -383,7 +414,8 @@ class _StorageHandler(BaseHTTPRequestHandler):
         return True
 
     def _identity(self):
-        return {"ok": True, "service": "msbt-shift-storage", "protocol": 1, "instance": _instance}
+        return {"ok": True, "service": "msbt-shift-storage", "protocol": 1, "instance": _instance,
+                "integration": "msbt-shift-20261110"}
 
     def do_OPTIONS(self):
         if not self._authorized(): return
@@ -415,6 +447,10 @@ class _StorageHandler(BaseHTTPRequestHandler):
         try:
             incoming = json.loads(self.rfile.read(length).decode("utf-8"))
             if self.path == "/shift-background":
+                if isinstance(incoming, dict) and incoming.get('mode') == 'ack_stop':
+                    _ack_page_stop(incoming)
+                    self._reply(200, {**self._identity(), 'background': _background_status()})
+                    return
                 controller = _background
                 if controller is None:
                     raise ValueError("Background unavailable")
@@ -469,10 +505,11 @@ def _enable():
 
 
 def _disable():
-    global _server, _server_thread, _instance, _page_command, _disabling
+    global _server, _server_thread, _instance, _page_command, _page_command_error, _disabling
     _disabling = True
     with _command_lock:
         _page_command = None
+        _page_command_error = ""
     if _background is not None:
         _background.shutdown()
     server, worker = _server, _server_thread

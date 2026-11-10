@@ -4,6 +4,7 @@
     var state = 'idle', reason = '', token = null, pinned = null;
     var generation = 0, timer = null, request = null, previousStyle = null, backgroundStyle = null, button = null, message = null;
     var seen = [], queued = null;
+    var startedHere = false;
     function paint() {
         if (button) button.textContent = state === 'pending' ? 'Starting background...' : 'Play while accepting';
         if (message) message.textContent = reason;
@@ -77,6 +78,10 @@
         if (request) { var old = request; request = null; old.abort(); }
     }
     function end(next, why) {
+        if (startedHere && next !== 'foreground') {
+            try { window.ShiftFriendAutomation.stopAutoAccept(); } catch (_) {}
+        }
+        startedHere = false;
         ++generation; clear(); try { restore(); } catch (e) { why = why || presentationError(e); } state = next; reason = why || ''; token = null; pinned = null; paint();
     }
     function send(mode, done) {
@@ -108,6 +113,7 @@
     }
     function pulse() {
         timer = null;
+        if (!matches(bridge())) { end('error', 'Background bridge disconnected; background play ended'); return; }
         if (!ready() || !matches(bridge())) { stop(); return; }
         if (request) return;
         send('heartbeat', receive);
@@ -130,7 +136,8 @@
         if (!b) { end('error', 'The SDK background bridge is not connected'); return false; }
         if (!window.ShiftFriendAutomation) { end('error', 'Friend automation is unavailable'); return false; }
         if (typeof b.start_token !== 'string' || !/^[0-9a-f]{32}$/.test(b.start_token)) { end('error', 'The SDK did not supply a background token'); return false; }
-        try { if (!window.ShiftFriendAutomation.isRunning()) window.ShiftFriendAutomation.startAutoAccept(); } catch (_) { end('error', 'Unable to start accepting'); return false; }
+        startedHere = !window.ShiftFriendAutomation.isRunning();
+        try { if (startedHere) window.ShiftFriendAutomation.startAutoAccept(); } catch (_) { end('error', 'Unable to start accepting'); return false; }
         if (!ready()) { end('error', 'Unable to start accepting'); return false; }
         token = b.start_token;
         pinned = b; state = 'pending'; reason = ''; ++generation; paint();
@@ -154,6 +161,18 @@
         if (!command || typeof command.id !== 'string' || !/^[0-9a-f]{32}$/i.test(command.id) || (command.mode !== 'start' && command.mode !== 'stop') || seen.indexOf(command.id) >= 0 || (queued && queued.id === command.id)) return;
         queued = {id:command.id, mode:command.mode};
     }
+    function acknowledgeStop(command) {
+        var b = bridge();
+        if (!b) return;
+        try {
+            var ack = new XMLHttpRequest();
+            ack.open('POST', 'http://127.0.0.1:' + b.port + '/shift-background', true);
+            ack.timeout = 1500;
+            ack.setRequestHeader('Content-Type', 'application/json');
+            ack.setRequestHeader('X-MSBT-Shift-Instance', b.instance);
+            ack.send(JSON.stringify({mode:'ack_stop',command_id:command.id}));
+        } catch (_) {} // No acknowledgement means the desktop reports the timeout.
+    }
     function drain() {
         if (request || !queued) return;
         var command = queued; queued = null; seen.push(command.id);
@@ -161,10 +180,10 @@
         if (command.mode === 'stop') {
             try { if (window.ShiftFriendAutomation) window.ShiftFriendAutomation.stopAutoAccept(); } catch (_) {}
             stop();
+            if (window.ShiftFriendAutomation && !window.ShiftFriendAutomation.isRunning()) acknowledgeStop(command);
         } else {
             try {
                 if (!bridge() || !window.ShiftFriendAutomation) return;
-                if (!window.ShiftFriendAutomation.isRunning()) window.ShiftFriendAutomation.startAutoAccept();
                 start();
             } catch (_) { end('error', 'Unable to start accepting'); }
         }

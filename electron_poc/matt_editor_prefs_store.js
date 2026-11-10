@@ -131,6 +131,38 @@ async function writePrefs(filePath, payload) {
   return { ok: true, data: normalized.data, warnings: normalized.warnings };
 }
 
+// Phone-side remembered files live on the phone. Desktop paths establish PC
+// file authority and can only be changed through the desktop/picker flows.
+async function writeMobilePrefs(filePath, payload) {
+  const current = await readPrefs(filePath);
+  if (!current.ok) throw new Error('Could not verify desktop file preferences');
+  const source = payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : {};
+  const paths = {
+    sdkModsPath: 'sdk_mods_path',
+    lastSaveFile: 'last_save_file', lastSaveFolder: 'last_save_folder',
+    lastProfileFile: 'last_profile_file', lastProfileFolder: 'last_profile_folder',
+    lastExportFolder: 'last_export_folder', lastLegitFolder: 'last_legit_folder'
+  };
+  for (const [key, alias] of Object.entries(paths)) {
+    for (const field of [key, alias]) {
+      if (Object.hasOwn(source, field) && normalizePathValue(source[field]) !== current.data[key]) {
+        throw new Error('Choose PC folders on the desktop; phone preferences cannot change them');
+      }
+    }
+  }
+  let steamId;
+  for (const field of ['steamId', 'steam_id', 'lastSteamEpicId']) {
+    if (!Object.hasOwn(source, field)) continue;
+    const value = source[field];
+    if (typeof value !== 'string' || (value.trim() && !looksLikeSteamOrEpicId(value.trim()))) {
+      throw new Error('Enter a valid Steam or Epic account ID');
+    }
+    if (steamId === undefined) steamId = value.trim();
+  }
+  // Never pass unrecognized keys, aliases or caller metadata into the PC store.
+  return steamId === undefined ? current : writePrefs(filePath, { steamId });
+}
+
 module.exports = {
   PREFS_FILENAME,
   SAVE_EXTENSIONS,
@@ -144,5 +176,6 @@ module.exports = {
   allowedSaveExtension,
   normalizePrefsPayload,
   readPrefs,
-  writePrefs
+  writePrefs,
+  writeMobilePrefs
 };

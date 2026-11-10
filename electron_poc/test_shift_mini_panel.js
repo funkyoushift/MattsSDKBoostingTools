@@ -26,7 +26,7 @@ app.whenReady().then(async () => {
   await win.webContents.executeJavaScript(`
     window.engine={on:()=>{},off:()=>{},call:()=>{},trigger:()=>{}};
     window.testShiftRequests=[];
-    window.testShiftStorage={ok:true,service:'msbt-shift-storage',protocol:1,instance:'a'.repeat(32),storageValid:false,storageState:'missing'};
+    window.testShiftStorage={ok:true,service:'msbt-shift-storage',protocol:1,integration:'msbt-shift-20261110',instance:'a'.repeat(32),storageValid:false,storageState:'missing'};
     window.XMLHttpRequest=class {
       open(method,url){this.method=method;this.url=url;this.headers={};}
       setRequestHeader(name,value){this.headers[name]=value;}

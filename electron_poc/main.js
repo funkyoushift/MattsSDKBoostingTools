@@ -72,6 +72,7 @@ const {
   prefsFilePath: mattEditorPrefsFilePath,
   readPrefs: readMattEditorPrefs,
   writePrefs: writeMattEditorPrefs,
+  writeMobilePrefs: writeMobileMattEditorPrefs,
   normalizePathValue,
   allowedSaveExtension,
   folderFromFile,
@@ -1307,6 +1308,10 @@ async function localVersionInfo(rawPath = '') {
     ? {...await installedSdkmodInfo(path.join(sdkTarget.path, 'MattsSDKBoostingTools.sdkmod'), bundledSdkmod.sha256), sdkModsPath:sdkTarget.path}
     : {available:false, matchesBundled:false, status:'unverified', path:'', message:sdkTarget.message};
   const bridge = sdkTarget.running ? await requestBridge({path:'/status', timeoutMs:1500}) : null;
+  const shiftBundle = app.isPackaged ? path.join(process.resourcesPath, 'afk_shift') : path.join(__dirname, '..', 'tools', 'third_party', 'afk_shift');
+  const shiftIntegration = sdkTarget.ok
+    ? await require('./pak_install').inspectPak(shiftBundle, path.dirname(sdkTarget.path))
+    : {ok:false, status:'unverified', message:sdkTarget.message};
   const loadedSdk = require('./sdk_target').loadedSdkState({running:sdkTarget.running,
     runtime:bridge?.ok ? bridge.data?.sdk_runtime : null, installed:installedSdkmod, target:sdkTarget});
   let oak2 = null;
@@ -1351,7 +1356,7 @@ async function localVersionInfo(rawPath = '') {
     bundledSdkmod,
     bundledActorScriptDeployer,
     installedSdkmod,
-    sdkTarget, loadedSdk,
+    sdkTarget, loadedSdk, shiftIntegration,
     updateState: latestUpdateState
   };
 }
@@ -1973,7 +1978,7 @@ function bl4ClientSaveFolderCandidates(steamId) {
 const mobileDesktopFiles=require('./mobile_desktop_files').createMobileDesktopFiles({
   roots:async()=>{
     const {data={}}=await loadMattEditorPrefsData();
-    return [...bl4ClientSaveFolderCandidates(data.steamId),data.lastSaveFolder,data.lastProfileFolder,
+    return [...bl4ClientSaveFolderCandidates(),data.lastSaveFolder,data.lastProfileFolder,
       folderFromFile(data.lastSaveFile),folderFromFile(data.lastProfileFile)].filter(Boolean);
   },
   readFile:async file=>withDetectedSteamId(await readSaveFilePayload(file),(await loadMattEditorPrefsData()).data?.steamId)
@@ -2018,8 +2023,9 @@ registerDesktopHandler("app:loadMattEditorPrefs", async () => {
   return loadMattEditorPrefsData();
 });
 
-registerDesktopHandler("app:saveMattEditorPrefs", async (_event, payload) => {
+registerDesktopHandler("app:saveMattEditorPrefs", async (event, payload) => {
   try {
+    if (event.mobile) return await writeMobileMattEditorPrefs(mattEditorPrefsPath(), payload || {});
     return await rememberMattEditorPrefs(payload || {});
   } catch (error) {
     return { ok: false, message: String(error && error.message ? error.message : error) };
@@ -2062,7 +2068,7 @@ registerDesktopHandler("app:mattEditorOpenFile", async (_event, kind) => {
   return { ...payload, prefs: saved.data };
 });
 
-registerDesktopHandler("app:mattEditorReopenFile", async (_event, kind) => {
+registerDesktopHandler("app:mattEditorReopenFile", async (event, kind) => {
   const prefs = await loadMattEditorPrefsData();
   const data = prefs.data || {};
   const isProfile = String(kind || "save") === "profile";
@@ -2070,7 +2076,8 @@ registerDesktopHandler("app:mattEditorReopenFile", async (_event, kind) => {
   if (!filePath) {
     return { ok: false, message: isProfile ? "No remembered profile file yet." : "No remembered save file yet." };
   }
-  const payload = withDetectedSteamId(await readSaveFilePayload(filePath), data.steamId);
+  const checkedPath = event.mobile ? await mobileDesktopFiles.checked(filePath) : filePath;
+  const payload = withDetectedSteamId(await readSaveFilePayload(checkedPath), data.steamId);
   if (!payload.ok) return payload;
   if (payload.steamId && payload.steamId !== data.steamId) {
     const saved = await rememberMattEditorPrefs({ steamId: payload.steamId });
@@ -2087,8 +2094,7 @@ registerDesktopHandler("app:mattEditorSaveFile", async (event, payload) => {
   const data = prefs.data || {};
   let target = "";
   if (body.overwrite && overwritePath) {
-    if(event.mobile)await mobileDesktopFiles.checked(overwritePath);
-    target = overwritePath;
+    target = event.mobile ? await mobileDesktopFiles.checked(overwritePath) : overwritePath;
   } else {
     const defaultDir = await firstExistingPath([
       data.lastExportFolder,

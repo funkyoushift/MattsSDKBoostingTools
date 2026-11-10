@@ -53,11 +53,12 @@ class XHR {
   send(body){this.body=body;}
   respond(status,data){this.status=status;this.responseText=JSON.stringify(data);this.onload();}
   fail(){this.onerror();}
+  abort(){this.aborted=true;if(this.onabort)this.onabort();}
 }
 const transfer={window:{MsbtProtectionReviewed:false},sdkRemoteReviewed:false,XMLHttpRequest:XHR,currentStorageMode:'sdk',sdkSending:false,sdkDetected:false,sdkLastSeen:0,sdkStorageState:'unavailable',saveAckReceived:false,
  compactPayload:()=>({s:{},n:['keep']}),handleSDKSettings:data=>settings.push(data),handleSDKSaved:()=>{acknowledgements++;},updateStorageStatus:()=>{}};
 vm.createContext(transfer);vm.runInContext(source.slice(sendStart,sendEnd)+source.slice(requestStart,requestEnd),transfer);
-const id='a'.repeat(32), response={ok:true,service:'msbt-shift-storage',protocol:1,instance:id,storageValid:true,storageState:'valid',settings:{},protectedPlayers:['keep'],reviewed:true};
+const id='a'.repeat(32), response={ok:true,service:'msbt-shift-storage',protocol:1,integration:'msbt-shift-20261110',instance:id,storageValid:true,storageState:'valid',settings:{},protectedPlayers:['keep'],reviewed:true};
 transfer.requestSDKSettings(); assert.equal(requests[0].method,'GET');
 requests[0].fail(); assert.match(requests[1].url,/:47992\//); requests[1].respond(200,response);
 assert.equal(settings.length,1); assert.equal(transfer.sendSettingsToSDK(true),true);
@@ -70,6 +71,29 @@ assert.equal(acknowledgements,1); assert.equal(transfer.sdkDetected,false); asse
 transfer.requestSDKSettings(); requests[4].fail(); requests[5].fail(); requests[6].fail();
 assert.equal(transfer.sdkDetected,false); assert.equal(requests.length,7);
 console.log('PASS verified GET, bounded rotation, single POST and failed-save protection');
+
+// A status poll must not discard an explicit Save click or overwrite its result
+// when the cancelled poll later completes.
+transfer.requestSDKSettings(); requests[7].respond(200,response);
+transfer.requestSDKSettings(); const poll=requests[8];
+assert.equal(transfer.sendSettingsToSDK(false),true); assert.equal(poll.aborted,true);
+const saving=requests[9]; assert.equal(saving.method,'POST');
+poll.respond(200,{...response,instance:'f'.repeat(32)});
+saving.respond(200,{...response,saved:true}); assert.equal(acknowledgements,2);
+assert.equal(transfer.sdkInstance,id);
+assert.equal(transfer.validBridgeResponse({...response,integration:'old-build'}),false);
+assert.equal(transfer.validBridgeResponse({...response,integration:undefined}),false);
+console.log('PASS Save supersedes an in-flight read; stale callbacks and mismatched companions rejected');
+
+// Desktop Start/Stop commands arrive even before the first protection Save.
+const commands=[];c.window.MsbtShiftBackground={onCompanionState:b=>commands.push(b)};
+for (const storageState of ['missing','invalid','changed']) {
+  const command={id:'b'.repeat(32),mode:'start'};
+  c.handleSDKSettings({storageValid:false,storageState,background:{command}});
+  assert.equal(commands[commands.length-1].command,command);
+  assert.equal(c.sdkDetected,false);assert.equal(c.window.MsbtProtectionReviewed,false);
+}
+console.log('PASS first-use desktop commands remain independent of destructive protection guards');
 
 // Reopening starts with no in-memory review flag; only an explicit persisted marker
 // and an identical local and SDK list restore readiness.

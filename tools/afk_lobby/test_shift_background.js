@@ -49,7 +49,7 @@ function fixture(direct) {
 }
 {
  const f=fixture();f.run();f.running=false;const cmd={id:'a'.repeat(32),mode:'start'};f.window.MsbtShiftBackground.onCompanionState({command:cmd});f.run();assert.equal(f.requests.length,1);assert.equal(f.requests[0].body.mode,'start');f.window.MsbtShiftBackground.onCompanionState({command:cmd});assert.equal(f.requests.length,1);f.requests[0].respond('active');
- const stop={id:'b'.repeat(32),mode:'stop'};f.window.MsbtShiftBackground.onCompanionState({command:stop});assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);assert.equal(f.props.opacity.value,'0.65');assert.equal(f.requests[1].body.mode,'stop');f.window.MsbtShiftBackground.onCompanionState({command:stop});assert.equal(f.requests.length,2);
+ const stop={id:'b'.repeat(32),mode:'stop'};f.window.MsbtShiftBackground.onCompanionState({command:stop});assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);assert.equal(f.props.opacity.value,'0.65');assert.equal(f.requests[1].body.mode,'stop');f.window.MsbtShiftBackground.onCompanionState({command:stop});assert.equal(f.requests.length,3);assert.equal(f.requests[2].body.mode,'ack_stop');
 }
 {
  const f=fixture();f.run();f.start();const pending=f.requests[0];f.window.MsbtShiftBackground.onCompanionState({command:{id:'c'.repeat(32),mode:'stop'}});assert.equal(f.requests.length,1);pending.respond('active');assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);assert.equal(f.requests[1].body.mode,'stop');assert.equal(f.props.opacity.value,'0.65');
@@ -89,3 +89,19 @@ console.log('PASS direct style fallback and fail-closed presentation errors');
 
 {const f=fixture();f.run();assert(f.window.MsbtShiftBackground.start());assert.equal(f.requests.length,0);f.window.MsbtShiftBackground.stop();assert.equal(f.props.transform.value,'rotate(1deg)');}
 console.log('PASS cancellable foreground paint delay');
+
+// A failed background entry stops acceptance only if this entry started it.
+for (const alreadyRunning of [false,true]) {
+ const f=fixture();f.run();f.running=alreadyRunning;assert(f.start());
+ f.requests[0].status=400;f.requests[0].respond('unsupported');
+ assert.equal(f.window.ShiftFriendAutomation.isRunning(),alreadyRunning);
+ assert.equal(f.window.MsbtShiftBackground.status().state,'error');
+}
+// A foreground Stop has no lease token, but must acknowledge the desktop command.
+{const f=fixture();f.run();f.running=true;f.window.MsbtShiftBackground.onCompanionState({command:{id:'e'.repeat(32),mode:'stop'}});
+ assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);assert.equal(f.requests.length,1);assert.equal(f.requests[0].body.mode,'ack_stop');}
+// Repeat start/show cycles, proving presentation and independent accepting state survive.
+{const f=fixture();f.run();for(let i=0;i<20;i++){assert(f.start());f.requests[f.requests.length-1].respond('active');
+ f.window.MsbtShiftBackground.onCompanionState({state:'foreground'});assert.equal(f.props.transform.value,'rotate(1deg)');
+ assert.equal(f.head.children.length,0);assert.equal(f.window.ShiftFriendAutomation.isRunning(),true);}}
+console.log('PASS owned-start rollback, foreground stop acknowledgement, and 20 repeated start/show cycles');

@@ -1,8 +1,8 @@
-[Linux — guided installer (AppImage)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.1/MSBT-Installer-v2.40.1-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.1/MSBT-Portable-v2.40.1-linux-x64.tar.gz)
+[Linux — guided installer (AppImage)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-linux-x64.tar.gz)
 
 > **Linux installer:** download the AppImage, allow executing it in Properties → Permissions, then double-click it. **MSBT Setup** checks requirements, installs the app and menu shortcuts, and offers Borderlands 4 setup. Close the game normally before game setup; you can finish that later from **MSBT Setup** in your applications menu. [Linux installation details](docs/LINUX.md).
 
-> **Windows and Linux:** v2.40.1 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.40.1).
+> **Windows and Linux:** v2.41.2 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.2).
 
 <!-- v2.39.9 support and settings repair -->
 
@@ -34,8 +34,8 @@ This project brings community mods, discoveries, editors, and game tools togethe
 
 [Download the current release](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest) · [Getting started](#getting-started) · [Report a problem or missing credit](https://github.com/funkyoushift/MattsSDKBoostingTools/issues)
 
-[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.40.1/MSBT-Installer-v2.40.1.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.1/MSBT-Installer-v2.40.1.exe)
-[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.40.1/MSBT-Portable-v2.40.1-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.40.1/MSBT-Portable-v2.40.1-win-x64.zip)
+[![Installer downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.41.2/MSBT-Installer-v2.41.2.exe?label=Download%20Windows%20installer&color=2ea44f)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2.exe)
+[![Portable downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip?label=Download%20portable%20ZIP&color=0969da)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip)
 [![Android APK downloads](https://img.shields.io/github/downloads/funkyoushift/MattsSDKBoostingTools/v2.39.9/MSBT-Mobile-Controller.apk?label=Download%20Android%20APK&color=e8a23a)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Mobile-Controller.apk)
 
 [Download the standalone Mission Selector SDK](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/BL4MissionSelector.sdkmod) · [Console menu and installation](standalone_mission_selector/README.md)

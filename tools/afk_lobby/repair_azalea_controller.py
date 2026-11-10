@@ -277,15 +277,29 @@ def repair_controller(text):
     start = text.index('    function setupSDKBridge()')
     end = text.index('    function resetAllSettings()', start)
     text = text[:start] + HTTP_SETUP + text[end:]
+    # Background commands do not depend on a saved protected list. In particular,
+    # first-run/missing storage must not discard desktop Start/Stop commands.
+    dispatch = '            if (window.MsbtShiftBackground && window.MsbtShiftBackground.onCompanionState) { try { window.MsbtShiftBackground.onCompanionState(data.background); } catch (_) {} }'
+    assert text.count(dispatch) == 1
+    text = text.replace(dispatch, '')
+    anchor = '            if (data && data.settings && typeof data.settings === "string") data.settings = JSON.parse(data.settings);'
+    assert text.count(anchor) == 1
+    text = text.replace(anchor, anchor + '\n' + dispatch.replace('if (window.', 'if (data && window.', 1))
+    text = text.replace('No SDK save confirmation received. Install/enable the included ShiftManagement SDK companion for restart persistence.',
+                        'Save was not confirmed. In MSBT Updates, check the SHiFT integration and install the bundled game files, then restart Borderlands 4.')
+    text = text.replace('el.innerHTML = sdkStorageState === "missing" ?',
+                        'el.innerHTML = sdkIncompatible ? "The loaded SHiFT page and companion differ. Install the complete bundled game integration from MSBT Updates, then restart Borderlands 4." : sdkStorageState === "missing" ?')
     return text
 
 
 HTTP_SEND = """    var sdkPort = null, sdkInstance = null, sdkRequesting = false, sdkBridgeSeen = 0, sdkStartToken = null;
     var sdkPorts = [47991, 47992, 47993], sdkNextPort = 0;
+    var sdkIncompatible = false;
+    var sdkCancelRequest = null;
 
     function validBridgeResponse(data) {
         return !!data && data.ok === true && data.service === "msbt-shift-storage" &&
-            data.protocol === 1 && typeof data.instance === "string" && /^[0-9a-f]{32}$/.test(data.instance) &&
+            data.protocol === 1 && data.integration === "msbt-shift-20261110" && typeof data.instance === "string" && /^[0-9a-f]{32}$/.test(data.instance) &&
             typeof data.storageValid === "boolean" && typeof data.storageState === "string" &&
             (data.storageValid !== true || (Array.isArray(data.protectedPlayers) &&
              data.protectedPlayers.every(function (name) { return typeof name === "string"; }) &&
@@ -297,7 +311,8 @@ HTTP_SEND = """    var sdkPort = null, sdkInstance = null, sdkRequesting = false
         sdkPort = null; sdkInstance = null; sdkBridgeSeen = 0; sdkStartToken = null; updateStorageStatus();
     }
     function sendSettingsToSDK(initialize) {
-        if (sdkSending || sdkRequesting || sdkPort === null || !sdkInstance) return false;
+        if (sdkSending || sdkPort === null || !sdkInstance) return false;
+        if (sdkRequesting && sdkCancelRequest) { sdkCancelRequest(); sdkCancelRequest = null; }
         var payload, body, xhr, port = sdkPort, instance = sdkInstance, done = false;
         try {
             payload = compactPayload(); payload.reviewed = true;
@@ -313,6 +328,7 @@ HTTP_SEND = """    var sdkPort = null, sdkInstance = null, sdkRequesting = false
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.setRequestHeader("X-MSBT-Shift-Instance", instance);
             xhr.onload = function () {
+                if (done) return;
                 var data;
                 try { data = JSON.parse(xhr.responseText); } catch (_) { finish(false); return; }
                 if (xhr.status !== 200 || !validBridgeResponse(data) || data.instance !== instance ||
@@ -330,6 +346,8 @@ HTTP_SEND = """    var sdkPort = null, sdkInstance = null, sdkRequesting = false
 HTTP_GET = """    function requestSDKSettings() {
         if (sdkSending || sdkRequesting) return;
         sdkRequesting = true;
+        sdkIncompatible = false;
+        if (sdkPort !== null) sdkNextPort = sdkPorts.indexOf(sdkPort);
         var attempts = 0;
         function probe() {
             if (sdkSending) { sdkRequesting = false; return; }
@@ -337,6 +355,7 @@ HTTP_GET = """    function requestSDKSettings() {
             var xhr, done = false;
             function failed() {
                 if (done) return; done = true;
+                sdkCancelRequest = null;
                 if (++attempts < sdkPorts.length) probe();
                 else { sdkRequesting = false; bridgeFailed(); }
             }
@@ -344,11 +363,15 @@ HTTP_GET = """    function requestSDKSettings() {
                 xhr = new XMLHttpRequest();
                 xhr.open("GET", "http://127.0.0.1:" + port + "/shift-settings", true);
                 xhr.timeout = 1000;
+                sdkCancelRequest = function () { done = true; sdkRequesting = false; xhr.abort(); };
                 xhr.onload = function () {
+                    if (done) return;
                     var data;
                     try { data = JSON.parse(xhr.responseText); } catch (_) { failed(); return; }
+                    if (data && data.service === "msbt-shift-storage" && data.integration !== "msbt-shift-20261110") sdkIncompatible = true;
                     if (xhr.status !== 200 || !validBridgeResponse(data)) { failed(); return; }
-                    done = true; sdkRequesting = false; if (sdkInstance && sdkInstance !== data.instance) { sdkRemoteReviewed = false; window.MsbtProtectionReviewed = false; if (window.MsbtResetProtectionReview) window.MsbtResetProtectionReview(); } sdkPort = port; sdkInstance = data.instance; sdkBridgeSeen = Date.now(); sdkStartToken = data.background && data.background.start_token;
+                    sdkIncompatible = false;
+                    done = true; sdkRequesting = false; sdkCancelRequest = null; if (sdkInstance && sdkInstance !== data.instance) { sdkRemoteReviewed = false; window.MsbtProtectionReviewed = false; if (window.MsbtResetProtectionReview) window.MsbtResetProtectionReview(); } sdkPort = port; sdkInstance = data.instance; sdkBridgeSeen = Date.now(); sdkStartToken = data.background && data.background.start_token;
                     if (currentStorageMode === "session") { if (window.MsbtShiftBackground && window.MsbtShiftBackground.onCompanionState) { try { window.MsbtShiftBackground.onCompanionState(data.background); } catch (_) {} } return; }
                     handleSDKSettings(data);
                 };

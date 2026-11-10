@@ -7866,8 +7866,9 @@ function renderUpdateCards(info) {
 
   setLine(
     els.installedSdkStatus,
-    [installed.message || "Installed file: not detected yet.", data.loadedSdk?.message || 'Loaded game SDK has not been checked.'].join(' '),
-    data.loadedSdk && !['current','not_running'].includes(data.loadedSdk.status) ? 'warning' : installedSdkKind(installed)
+    [installed.message || "Installed file: not detected yet.", data.loadedSdk?.message || 'Loaded game SDK has not been checked.',
+      data.shiftIntegration?.message || '', ...(data.shiftIntegration?.conflicts || [])].filter(Boolean).join(' '),
+    data.shiftIntegration?.ok === false || (data.loadedSdk && !['current','not_running'].includes(data.loadedSdk.status)) ? 'warning' : installedSdkKind(installed)
   );
   setLine(
     els.installedSdkPath,
@@ -7954,12 +7955,12 @@ function updateNoticeInfo(info) {
       showUpdates: true
     };
   }
-  if (sdkModNeedsAttention(data)) {
+  if (sdkModNeedsAttention(data) || data.shiftIntegration?.ok === false) {
     const installed = data.installedSdkmod || {};
     return {
       kind: "sdk",
-      title: "SDK Mod Needs Attention",
-      message: `${installed.message || "Installed SDK mod does not match this app build."} Open Updates, install the bundled SDK mod, then restart Borderlands 4.`,
+      title: data.shiftIntegration?.ok === false ? "SHiFT Integration Needs Attention" : "SDK Mod Needs Attention",
+      message: `${data.shiftIntegration?.ok === false ? data.shiftIntegration.message : installed.message || "Installed SDK mod does not match this app build."} Open Updates to repair the complete game integration. Restart Borderlands 4 after changing game files.`,
       showDownload: false,
       showInstall: false,
       showInstaller: false,

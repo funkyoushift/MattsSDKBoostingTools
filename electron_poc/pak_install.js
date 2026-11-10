@@ -124,4 +124,51 @@ async function installPak(bundleRoot, gameRoot, options = {}) {
     }
   }
 }
-module.exports = { installPak };
+// File identity is independent of the displayed SemVer. Do not read the private
+// protected-player JSON here: only integration files and the enable switch.
+async function inspectPak(bundleRoot, gameRoot) {
+  try {
+    const manifest = JSON.parse(await fs.readFile(path.join(bundleRoot, 'manifest.json'), 'utf8'));
+    const paks = path.join(gameRoot, 'OakGame', 'Content', 'Paks');
+    const mods = path.join(gameRoot, 'sdk_mods');
+    const expected = [
+      ['pak', path.join(paks, PAK_NAME), manifest.sha256],
+      ['companion', path.join(mods, COMPANION_NAME), manifest.companion_sha256]
+    ];
+    const files = {};
+    for (const [name, file, hash] of expected) {
+      if (!/^[a-f0-9]{64}$/i.test(hash || '')) throw new Error('SHiFT bundle manifest is incomplete.');
+      const bytes = await readOptional(file);
+      files[name] = { path: file, sha256: bytes ? digest(bytes) : '', matches: Boolean(bytes && digest(bytes) === hash) };
+    }
+    const enabledBytes = await readOptional(path.join(mods, 'settings', 'ShiftManagement.json'));
+    const enabled = Boolean(enabledBytes && JSON.parse(enabledBytes.toString('utf8')).enabled === true);
+    const conflicts = [], pending = [paks];
+    let directories = 0;
+    while (pending.length) {
+      if (++directories > 256) throw new Error('SHiFT PAK conflict scan exceeded its limit.');
+      const folder = pending.pop();
+      let entries;
+      try { entries = await fs.readdir(folder, {withFileTypes:true}); }
+      catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+      for (const entry of entries) {
+        const file = path.join(folder, entry.name);
+        if (entry.isDirectory()) pending.push(file);
+        else if (entry.isFile() && /^pakchunk90-Windows_90_P(?: ?\(\d+\))?\.pak$/i.test(entry.name)
+          && file.toLowerCase() !== expected[0][1].toLowerCase()) conflicts.push(file);
+      }
+    }
+    const ok = files.pak.matches && files.companion.matches && enabled && !conflicts.length;
+    const issues = [];
+    if (!files.pak.matches) issues.push('SHiFT PAK is missing or differs from this app');
+    if (!files.companion.matches) issues.push('SHiFT companion is missing or differs from this app');
+    if (!enabled) issues.push('SHiFT companion is disabled');
+    if (conflicts.length) issues.push('additional SHiFT PAK copies may override the bundled file');
+    return {ok, status:ok ? 'current' : 'attention', files, enabled, conflicts,
+      message:ok ? 'SHiFT PAK and companion match this app and the companion is enabled. Loaded page identity still requires a fresh game session.'
+        : issues.join('; ') + '. Check the listed files in Updates before testing settings or background play.'};
+  } catch (error) {
+    return {ok:false, status:'unverified', conflicts:[], message:`SHiFT integration could not be verified: ${error.message}`};
+  }
+}
+module.exports = { installPak, inspectPak };

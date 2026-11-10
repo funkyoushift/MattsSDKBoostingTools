@@ -1,7 +1,7 @@
 """LAN pairing state for the in-game SDK bridge.
 
 Loopback stays open for Electron. LAN clients must enroll while the pairing
-overlay is open, then present a remembered device token (and/or IP).
+overlay is open, then present a remembered device token. IP addresses are display/routing metadata only.
 Does not import BLImGui or UMG.
 """
 from __future__ import annotations
@@ -200,12 +200,12 @@ def is_allowed(ip: str, token: str = "") -> bool:
     if _is_loopback(ip):
         return True
     tok = str(token or "").strip()
-    addr = str(ip or "").strip()
+    if not tok:
+        return False
     with _LOCK:
         for row in _allowlist:
-            if tok and str(row.get("token") or "") == tok:
-                return True
-            if addr and str(row.get("ip") or "") == addr:
+            stored = str(row.get("token") or "")
+            if stored and secrets.compare_digest(stored.encode("utf-8"), tok.encode("utf-8")):
                 return True
     return False
 
@@ -218,11 +218,11 @@ def remember_phone(*, ip: str, token: str, name: str = "Phone") -> dict[str, Any
     now = time.time()
     with _LOCK:
         found = None
+        # DHCP reuse or shared IPs must never select a different phone's record.
+        # A new token is added only by the explicit enrollment flow; authenticated
+        # request refreshes arrive here with an already verified existing token.
         for row in _allowlist:
             if tok and str(row.get("token") or "") == tok:
-                found = row
-                break
-            if addr and str(row.get("ip") or "") == addr:
                 found = row
                 break
         if found is None:
