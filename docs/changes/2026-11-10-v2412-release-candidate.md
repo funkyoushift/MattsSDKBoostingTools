@@ -101,18 +101,60 @@ expiry, but this review follow-up has not been retested in game. Restart reload,
 sustained polling/gameplay, menu/travel restoration and physical-phone validation
 remain open. Hardware gamepad controls cannot be inferred from mocks.
 
-The game was closed normally after the native candidate trial. Candidate PAK,
-companion and SDK files remain temporarily installed while the parent task owner
-handles restoration from fresh backups; `../candidate-installation.json` records
-the original and candidate digests. The earlier diagnostic phase was fully rolled
-back, with its receipt in `../rollback-verification.json`. No release, version
-publication, or public metadata change has occurred.
+The game was closed normally after the native candidate trial. The final rebuilt
+game integration was briefly staged while closed, but the new launch request did
+not execute because its mandatory app-access request timed out. All candidate
+game files were then restored to their pre-test bytes. The first-created test
+settings file was archived and removed, restoring its original absence; no real
+protected-list file existed at the start of this trial. Fresh verification at
+2026-11-10 07:13:29 UTC found no Borderlands4 process and exact original hashes
+for the PAK, companion, main SDK and enable file. See the task-parent receipts
+`candidate-installation.json` and `candidate-restoration-verification.json`.
+No release, public upload, tag, merge or public metadata change occurred.
 
 The desktop app itself remains the installed 2.41.1 machine-wide copy at
 `C:\Program Files\MattsSDKBoostingTools`; its HKLM uninstall entry is
 `{3bb825ae-d21c-574d-9e4d-33e5e736018a}`. The 2.41.2 installer was not executed.
 The local upgrade/reinstall/rollback path therefore remains unqualified, separate
 from the successful build and payload audit.
+
+## Remaining release gate and exact access blockers
+
+**Not ready to publish.** The final candidate is built and byte-audited but has
+not passed its own native restart reload, corrected transparent presentation,
+normal keyboard/mouse/gamepad gameplay, desktop Start/Stop, menu/travel cleanup,
+or actual installer upgrade/rollback. Mobile authority and token checks passed
+offline; a physical phone was not tested. No live deletion was attempted. The
+three incoming requests cleared during the initial native candidate runs
+(Bruzer, GingerFuchs, YoMumma; friends 481 -> 484, pending 3 -> 0).
+
+The following required Computer Use permissions had no visible user resolution
+when checked after timeout; these are tool-access requirements, not additional
+implementation permission requests or automatic approval-review rejections:
+
+- Access the installed MSBT desktop window (`MattsSDKBoostingTools.exe`, window
+  198718): `broken-bonus-72966088`. The call timed out; no desktop control,
+  closure, installer invocation or installed desktop mutation occurred.
+- Launch the known Borderlands4.exe path for the corrected candidate retest:
+  `muddy-haze-43205456`. The call timed out; both window inventory and a fresh
+  tasklist verification established that the launch did not execute.
+
+The parent can resolve those access requests before resuming the remaining live
+qualification. Do not reuse the restored installation receipt as a fresh install
+receipt: archive it and create a new guarded trial with current-state hashes.
+The official 2.41.1 rollback installer is saved in the task parent's
+`release-rollback` folder and its SHA256 was verified against GitHub's release
+asset digest (`0cee6605cbbe132256caa034dee3e0500aa5a6645ee8d3065fc388a358f9173e`).
+
+Independent source review identified a plausible foreground handoff gap:
+background entry forces GameOnly input; Show restores native widget visibility
+in the pre-open hook before invoking the native Open body. The first live Show
+made the page visible but clicks initially did not respond, whereas F10 close /
+reopen restored interaction. An early-return inside native Open is a hypothesis,
+not recovered executable evidence. Do not change native setter ordering on that
+assumption alone. Compare the two transitions live and fix the demonstrated
+handoff before qualification. The transparency repair remains source/test
+validated only because the follow-up launch was blocked.
 
 Windows native process ownership and the executable adapter are platform-specific.
 Linux/Epic qualification must be stated separately; Windows mocks do not qualify
