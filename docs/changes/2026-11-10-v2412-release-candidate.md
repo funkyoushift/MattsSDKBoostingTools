@@ -288,3 +288,44 @@ lifecycle/native/startup/routing run passes 34 tests in 0.50s. Python syntax and
 `git diff --check` pass. A delegate's broader storage test attempt encountered
 sandbox WinError10013 on localhost binding; it is not a product regression.
 Production native retesting and refreshed packages are still pending.
+
+## Production retest and terminal-reason repair, 2026-11-10 16:36 UTC
+
+The refreshed Show repair passed live: desktop Show restored usable SHiFT
+controls, Manage opened its dialog, and acceptance remained running. The
+production companion reloaded the synthetic protected name, reviewed flag and
+Switch icon preference after a normal game restart. The private JSON remained
+`b52a86fa2c409890d663c8aaa9c91bfd04af5ece69be52c806a029c6f8ee5b7f`.
+Desktop and in-game background Start reached active; desktop Stop reached idle.
+The tiny panel remained transparent outside its bounds, and mouse fire worked
+while active (19 -> 18 ammunition). No new social effect was identified.
+
+Keyboard qualification is inconclusive. W/Space/Escape did not reliably respond
+in background; after Stop, Escape opened the pause menu once, but subsequent
+Escape/F10 taps also failed in the ordinary baseline. Clicking Back to Game
+worked. Concurrent BL3 computer control on the same 4090 caused helper-busy and
+focus interference earlier in this run. No physical gamepad test occurred.
+These observations do not support a specific new input-code repair or a full
+gameplay-controls pass. Native keyboard/gamepad, travel and sustained-session
+acceptance remain open. BL4 and the candidate desktop were closed normally;
+elevated process inspection confirmed absence. No forced termination occurred.
+
+Starting from the pause menu correctly rejected background mode, but the page
+masked the native explanation with a generic bridge error. The companion now
+returns an identity-bound terminal error only for a string heartbeat token
+matching an accepted lease. The client verifies service/protocol/instance and
+the explicit owned-error marker before displaying the reason. Missing/stale
+tokens and wrong instances remain rejected without terminal details. This
+changes error reporting, not native input or settings access. Root review found
+and removed a `None == None` ownership case. Routing tests cover that case,
+stale tokens and wrong instances. Combined lifecycle/native/startup/routing
+tests passed 35; the background JavaScript suite passed. Final package refresh
+and rollback receipts will follow; native terminal-message retest is pending.
+
+Evidence in task-parent `live-qualification`: `final-transitions.jsonl`,
+`final-sustained.jsonl`, `final-native-checkpoint.json`,
+`final-installed-payload-audit.json` and the guarded `installation.json`.
+The Show-fix build passed 21 artifact checks and all 1,497 installed payload
+files matched. Its installer hash was
+`5c0036c1d9091454664bcd20fdd518d538bdb9a57930ba28fdb49ef55dc35176`;
+the following terminal-message build supersedes it when complete.

@@ -102,9 +102,10 @@
             xhr.onload = function () {
                 var result;
                 try { result = JSON.parse(xhr.responseText); } catch (_) { finish('Invalid response'); return; }
-                var foreground = mode === 'heartbeat' && xhr.status === 409 && result && result.ok === false && result.background && result.background.state === 'foreground';
-                if ((!foreground && xhr.status !== 200) || !result || result.service !== 'msbt-shift-storage' || result.protocol !== 1 || result.instance !== b.instance || !result.background) { finish('Background bridge identity or response changed'); return; }
-                if (result.background.token !== t && result.background.state !== 'foreground') { finish('Background bridge token changed'); return; }
+                var terminalForeground = mode === 'heartbeat' && xhr.status === 409 && result && result.ok === false && result.background && result.background.state === 'foreground';
+                var terminalError = mode === 'heartbeat' && xhr.status === 409 && result && result.ok === false && result.terminal === 'owned-error' && result.background && result.background.state === 'error';
+                if ((!terminalForeground && !terminalError && xhr.status !== 200) || !result || result.service !== 'msbt-shift-storage' || result.protocol !== 1 || result.instance !== b.instance || !result.background) { finish('Background bridge identity or response changed'); return; }
+                if (result.background.token !== t && result.background.state !== 'foreground' && !terminalError) { finish('Background bridge token changed'); return; }
                 queueCommand(result.background.command);
                 finish(null, result.background);
             };

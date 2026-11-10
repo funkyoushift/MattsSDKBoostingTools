@@ -73,6 +73,25 @@ function fixture(direct) {
  assert.equal(f.window.MsbtShiftBackground.status().state,'error');
 }
 {
+ const f=fixture();f.run();f.running=false;f.start();f.requests[0].respond('pending');f.run();
+ const hb=f.requests[1],why='Close other menus and open SHiFT with F10 before starting.';
+ hb.status=409;hb.respond('error',{ok:false,terminal:'owned-error',background:{available:true,state:'error',reason:why,token:null}});
+ assert.equal(f.window.MsbtShiftBackground.status().state,'error');
+ assert.equal(f.window.MsbtShiftBackground.status().reason,why);
+ assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);
+ assert.equal(f.props.opacity.value,'0.65');assert.equal(f.head.children.length,0);
+}
+{
+ const f=fixture();f.run();f.start();f.requests[0].respond('active');f.run();
+ const hb=f.requests[1];hb.status=409;hb.respond('error',{ok:false,background:{available:true,state:'error',reason:'private reason',token:null}});
+ assert.equal(f.window.MsbtShiftBackground.status().reason,'Background bridge identity or response changed');
+}
+{
+ const f=fixture();f.run();f.start();f.requests[0].respond('active');f.run();
+ const hb=f.requests[1];hb.status=409;hb.respond('error',{ok:false,terminal:'owned-error',instance:'wrong',background:{available:true,state:'error',reason:'private reason',token:null}});
+ assert.equal(f.window.MsbtShiftBackground.status().reason,'Background bridge identity or response changed');
+}
+{
  const f=fixture();f.run();f.start();f.requests[0].status=409;f.requests[0].respond('foreground',{ok:false,background:{available:true,state:'foreground',token:null}});
  assert.equal(f.window.MsbtShiftBackground.status().state,'error');
 }

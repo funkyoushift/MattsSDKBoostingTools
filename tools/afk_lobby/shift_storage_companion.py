@@ -47,6 +47,7 @@ _background = None
 _command_lock = threading.RLock()
 _page_command = None
 _page_command_error = ""
+_background_terminal_token = None
 _hooks_installed = False
 _disabling = False
 _TICK = '/Script/Engine.CameraModifier:BlueprintModifyCamera'
@@ -433,6 +434,7 @@ class _StorageHandler(BaseHTTPRequestHandler):
         self._reply(200, result)
 
     def do_POST(self):
+        global _background_terminal_token
         if not self._authorized(): return
         if self.path not in ("/shift-settings", "/shift-background"):
             self.close_connection = True; self._reply(404, {"ok": False}); return
@@ -461,7 +463,23 @@ class _StorageHandler(BaseHTTPRequestHandler):
                             and background.get("state") == "foreground"):
                         self._reply(409, {**self._identity(), "ok": False, "background": background})
                         return
+                    with _command_lock:
+                        owns_terminal = (isinstance(incoming, dict)
+                                         and incoming.get("mode") == "heartbeat"
+                                         and isinstance(incoming.get("token"), str)
+                                         and _background_terminal_token is not None
+                                         and incoming["token"] == _background_terminal_token)
+                    if owns_terminal and background.get("state") == "error":
+                        self._reply(409, {**self._identity(), "ok": False,
+                                          "terminal": "owned-error", "background": background})
+                        return
                     raise ValueError("Background request denied")
+                if isinstance(incoming, dict) and incoming.get("mode") in ("start", "stop"):
+                    with _command_lock:
+                        if incoming["mode"] == "start":
+                            _background_terminal_token = incoming["token"]
+                        elif incoming.get("token") == _background_terminal_token:
+                            _background_terminal_token = None
                 _clear_page_command(incoming.get("mode"))
                 result = {**self._identity(), "background": _background_status()}
             else:
@@ -505,11 +523,12 @@ def _enable():
 
 
 def _disable():
-    global _server, _server_thread, _instance, _page_command, _page_command_error, _disabling
+    global _server, _server_thread, _instance, _page_command, _page_command_error, _background_terminal_token, _disabling
     _disabling = True
     with _command_lock:
         _page_command = None
         _page_command_error = ""
+        _background_terminal_token = None
     if _background is not None:
         _background.shutdown()
     server, worker = _server, _server_thread
