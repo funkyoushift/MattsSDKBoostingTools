@@ -69,8 +69,22 @@ available.
   192 payloads round-trip and the manifest records source/archive hashes.
 - The initial artifact comparison passed portable and NSIS byte identity and
   resource hashes but preceded the review follow-ups. Its SDK version tuple and
-  `mobile_lan.py` mismatches are stale-package findings, not final package status.
-  The final Windows package is still pending this rebuild.
+  `mobile_lan.py` mismatches were stale-package findings and are corrected in the
+  final package.
+- Final Windows build passed installer unit checks (31), Electron package checks,
+  48 packaged dependency checks, 3,323 resource checks, startup smoke and updater
+  packaging. Artifact audit passed all 21 checks: the 1,497-file portable ZIP and
+  1,565-entry NSIS payload exactly match `win-unpacked`; SDK syntax/version,
+  mobile LAN fixes, PAK/companion digests and latest.yml SHA512/size all match.
+  The reusable audit and full hashes are in
+  `../candidate-artifact-audit/audit-results.json`; build output is in
+  `../candidate-final-windows-build.txt`.
+- Candidate installer SHA256 is
+  `16acf4fdf3e2a822d9f2811b1dd96df659c0299f67a2082306b6f8e405a34bb0`
+  (320,583,075 bytes); portable ZIP SHA256 is
+  `f9576642014462b7b9ad9d8ad820b07d46ae79068ef102dcffec364a14fc7f2d`
+  (381,078,919 bytes). The generated latest.yml SHA512 and installer size agree.
+  No installer or game deployment was performed for this artifact audit.
 
 ## Acceptance and cleanup ledger
 
