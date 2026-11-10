@@ -212,11 +212,11 @@
     47992,
     47993
   ],
-  "companion_sha256": "bfabdc0678608b5fd7911b5c6605dc21e15d0370e25c81f6231cfc73be8bc759",
+  "companion_sha256": "652e34aaa31cc74501f4c6a84be67cc0e3590f29f4154c566164fc67095d9a78",
   "companion_archive": "ShiftManagement.sdkmod",
   "companion_source_sha256": "93ff9ccfd701e60f0c2b3d591a5cb4a85560c2b0519f85301512de18f7330fd2",
   "companion_peer_source_sha256": "9dcd547fba3d58c833d90a84402ccb2e589e2aeb4bc167762ad960ead2f188a8",
-  "companion_background_source_sha256": "02d3c6d8bd83e6f26d311d1c547f889b6b4d2e81252512dabe9399d318d7f010",
+  "companion_background_source_sha256": "a1e03ce9fa5b74e021ddcfdd4d6b2e80138ab39e12d277c18962f3b7d59b609a",
   "companion_background_native_source_sha256": "8f604beefcd0fee06a41dccb472b2ff4d9e123cb535aeab4a6b8070b8fc720d8",
   "background_client_source_sha256": "b74e24d48f180a17deb395e2f920268d29b3f898ea23f6ac0d14b8f433c01061",
   "companion_validation": "offline candidate; same-process loopback bridge and installation unverified"
