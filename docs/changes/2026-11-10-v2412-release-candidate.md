@@ -76,6 +76,9 @@ available.
   packaging. Artifact audit passed all 21 checks: the 1,497-file portable ZIP and
   1,565-entry NSIS payload exactly match `win-unpacked`; SDK syntax/version,
   mobile LAN fixes, PAK/companion digests and latest.yml SHA512/size all match.
+  The first sandboxed build attempt stopped before packaging because .NET could
+  not read Windows SDK registry information (MSB4184); the same build passed with
+  permitted registry access.
   The reusable audit and full hashes are in
   `../candidate-artifact-audit/audit-results.json`; build output is in
   `../candidate-final-windows-build.txt`.
@@ -104,6 +107,12 @@ handles restoration from fresh backups; `../candidate-installation.json` records
 the original and candidate digests. The earlier diagnostic phase was fully rolled
 back, with its receipt in `../rollback-verification.json`. No release, version
 publication, or public metadata change has occurred.
+
+The desktop app itself remains the installed 2.41.1 machine-wide copy at
+`C:\Program Files\MattsSDKBoostingTools`; its HKLM uninstall entry is
+`{3bb825ae-d21c-574d-9e4d-33e5e736018a}`. The 2.41.2 installer was not executed.
+The local upgrade/reinstall/rollback path therefore remains unqualified, separate
+from the successful build and payload audit.
 
 Windows native process ownership and the executable adapter are platform-specific.
 Linux/Epic qualification must be stated separately; Windows mocks do not qualify
