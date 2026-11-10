@@ -108,6 +108,39 @@ class BackgroundTests(unittest.TestCase):
         self.start(); self.native.values=[25,25,25]; self.native.fail=1
         self.c.tick(); self.assertEqual(self.c.status()['state'],'stopping')
         self.c.tick(); self.assertEqual(self.c.status()['state'],'foreground'); self.assertEqual(self.sdk.closes,0)
+    def test_open_handoff_restores_closes_then_allows_native_open(self):
+        self.start(); events=[]
+        def restore():
+            events.append('restore'); self.native.owned=False; self.native.values=[25,25,25]
+        self.native.restore=restore
+        def close():
+            events.append('close'); events.append(('close_hook',self.c.before_close()))
+            self.native.values=[2,2,2]
+        self.sdk.shift.Close=close
+        self.assertTrue(self.c.before_open())
+        self.assertEqual(['restore','close',('close_hook',True)],events)
+        self.assertEqual('foreground',self.c.status()['state'])
+        self.assertEqual([2,2,2],self.native.values)
+        self.assertFalse(self.native.owned)
+    def test_open_handoff_close_failure_retries_then_reopens(self):
+        self.start(); calls=[]
+        def flaky():
+            calls.append(1)
+            if len(calls)<3: raise RuntimeError('close failure')
+        self.sdk.shift.Close=flaky
+        self.assertFalse(self.c.before_open())
+        self.assertEqual('stopping',self.c.status()['state'])
+        self.assertFalse(self.native.owned)
+        self.assertFalse(self.c.before_open())
+        self.assertEqual('stopping',self.c.status()['state'])
+        self.assertEqual(2,len(calls))
+        self.c.tick()
+        self.assertEqual('foreground',self.c.status()['state'])
+        self.assertEqual(3,len(calls))
+        self.assertTrue(self.c.before_open())
+    def test_open_without_native_ownership_does_not_close(self):
+        self.assertTrue(self.c.before_open())
+        self.assertEqual(0,self.sdk.closes)
     def test_close_failure_retries_without_ownership(self):
         self.start(); calls=[]
         def flaky():

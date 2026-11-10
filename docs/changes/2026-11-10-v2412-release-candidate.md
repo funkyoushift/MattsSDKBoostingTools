@@ -223,3 +223,68 @@ original four hashes/settings absence in `candidate-restoration-verification.jso
 All live acceptance gates listed above remain open. Fresh MSBT and Borderlands
 app access is needed when the user is available; do not repeatedly create prompts
 or imply native tests are running while access is deferred.
+
+## Actual candidate upgrade and native diagnostic, 2026-11-10 15:58 UTC
+
+The user resumed live qualification while available. Fresh CUA access succeeded.
+The correctly escaped BL4 executable path launched on 9800x3d4090; earlier
+malformed path requests are not permissions and should not be reused. A separate
+Borderlands 3 process was already present on the 4090 and was left untouched.
+
+The pinned 2.41.2 installer ran `/S`, exit 0. Before/after snapshots in task-parent
+`installer-trial` confirm app/registration 2.41.1 -> 2.41.2, all nine named
+preferences and all 27,358 user-data files unchanged. All six captured shortcuts
+remain; the machine-wide link still points to the Program Files app. Three
+pre-existing legacy user shortcuts were unchanged. Helper changes are recorded
+explicitly: candidate PAK/SDK/companion, three enabled mod settings, and
+ActorScriptDeployer inventory 4 -> 3 files. The exact candidate unpacked tree
+matches all 1,497 installed payload files by path/length/SHA256; only the expected
+NSIS uninstaller is extra. The initial audit against an unrelated stale October
+`product/dist_electron` tree was corrected and superseded.
+
+A fresh guarded native receipt is task-parent `live-qualification/installation.json`.
+It supersedes the earlier restored trial receipt for current installation state.
+At this checkpoint the 2.41.2 desktop/game files are temporarily installed, with
+the reviewed diagnostic companion substituted. BL4 PID 48548 was closed normally
+via Alt+F4 and process absence checked. The desktop candidate remains open. No
+forced game termination occurred. Original backup hashes are preserved in the
+fresh receipt; cleanup and actual desktop rollback are still required.
+
+The observer run established:
+- First Save created the previously absent private JSON with the synthetic
+  protected name `MSBT_Release_Test_20261110`, reviewed=true. SHA256
+  `c4052eca900fd04c950a55cac7036b369d982f4fd80c782e30844c03e69ad0f9`.
+  The UI confirmed connected persistent JSON storage.
+- An edit to iconMode=switch persisted, SHA256
+  `b52a86fa2c409890d663c8aaa9c91bfd04af5ece69be52c806a029c6f8ee5b7f`.
+- The white background repair passed visually: only a tiny SHiFT panel remains
+  opaque, with gameplay visible everywhere else.
+- Show still fails input. After Show, a Manage SHiFT click passed through and
+  fired one round (19 -> 18). A normal F10 close/open then allowed the same
+  Manage click to open its dialog. Observer seq6-21 captures the transition:
+  Show restores container visibility while canvas remains2; a native reopen
+  goes through canvas25. This is transition evidence, not recovered Open code.
+- W/Space/Tab short synthetic taps in background gave no immediate visible
+  change; keyboard gameplay remains inconclusive, not passed.
+- Bridge samples show active/running=true and foreground/running=true after
+  Show. No new social effect was identified in this run. Historical three
+  accepted requests remain separate evidence.
+
+Receipts: `live-qualification/diagnostic-result.json`,
+`live-qualification/background-diagnostic.jsonl`,
+`live-qualification/installed-payload-audit.json`,
+`installer-trial/compare-after-candidate.json`, and
+`show-input-diagnostic/native-show-input-rlock.jsonl` in the task parent.
+Source repair and final native/package requalification remain in progress.
+
+The narrow Show handoff repair now calls the existing guarded native Close path
+from `BackgroundController.before_open()` after restoring its owned widgets,
+then permits the original Open. This applies to both desktop Show and direct
+F10 Open. A pending failed Close must complete before another Open can continue.
+No native canvas setter, raw-memory layout, access-control or settings-format
+change was made. Root reviewed the source and the immediate-retry failure case.
+Seventeen lifecycle tests pass (three new transition/failure cases); the combined
+lifecycle/native/startup/routing run passes 34 tests in 0.50s. Python syntax and
+`git diff --check` pass. A delegate's broader storage test attempt encountered
+sandbox WinError10013 on localhost binding; it is not a product regression.
+Production native retesting and refreshed packages are still pending.

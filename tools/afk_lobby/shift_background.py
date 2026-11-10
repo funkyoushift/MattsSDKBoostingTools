@@ -282,8 +282,15 @@ class BackgroundController:
                     self._finish(foreground=True, close=False)
                 return True
             self._bind()
+            if self._closing:
+                # A prior native Close failed during this handoff. Retry it
+                # here so the current Open body stays blocked until reset.
+                return self._stop_attempt(foreground=True, close=True)
             if self._ownership:
-                return self._stop_attempt(foreground=True, close=False)
+                # Restore our child widgets, then use the normal native Close
+                # before this original Open continues. A collapsed canvas is
+                # separate from those widgets and is reset by the game API.
+                return self._stop_attempt(foreground=True, close=True)
             if self._state == 'pending':
                 self._finish(foreground=True, close=False)
             return True
