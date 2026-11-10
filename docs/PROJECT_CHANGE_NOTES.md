@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT/mobile repairs; Windows packages built and audited. Native first Save/edit and three acceptances passed on the initial candidate; corrected presentation, restart and desktop/installer qualification await mandatory app access. Game closed and original installation restored with fresh hashes. Not release-ready; no publication.
+- [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT/mobile repairs; final Windows packages pass 21 artifact checks. Native Save/edit/restart, transparency, Show, Start/Stop and mouse fire passed; keyboard/gamepad remain inconclusive/unqualified. Actual earlier candidate upgrade and official rollback passed; final message-only installer launch was cancelled before execution. Original files/settings restored and hash-verified at 16:45:48 UTC; released2.41.1 desktop reopened, BL4 closed. Release hold; nothing published.
 
 - [2026-11-10: SHiFT storage and background repair](changes/2026-11-10-shift-storage-background-repair.md): Isolated v2.41.1 repair for first-use desktop commands, Save/read races, atomic first creation and integration identity. Offline checks pass; native qualification paused. Game closed normally and original installation restored with verified hashes. No release/version change.
 

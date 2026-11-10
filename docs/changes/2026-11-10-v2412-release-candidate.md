@@ -329,3 +329,65 @@ The Show-fix build passed 21 artifact checks and all 1,497 installed payload
 files matched. Its installer hash was
 `5c0036c1d9091454664bcd20fdd518d538bdb9a57930ba28fdb49ef55dc35176`;
 the following terminal-message build supersedes it when complete.
+
+## Final artifact refresh and installer outcome, 2026-11-10
+
+The terminal-message repair is committed at `c94f73af`; the build stamp is
+committed at `3b504009`. Final localhost HTTP/storage/background regressions
+passed 46/46 in 24.36s with permitted socket access. The final Windows build
+completed successfully and independently passed 21/21 artifact checks. All
+1,497 portable/NSIS payload files agree with the unpacked build; the four
+companion Python members and embedded background JavaScript match source.
+The final archive hashes supersede all earlier candidate hashes above:
+
+- Installer, 320,581,286 bytes:
+  `ed66ea8191be819719edb5d38252f3312b824dd14bfdbb9cc6c2c07c0e50d676`.
+- Portable, 381,079,356 bytes:
+  `6472c58c2baecb19fa903d10c6360bd9ebcdd9c793ec014da80f30182fb7f5df`.
+- PAK: `fdb039f13ea24c4b8b30b8cc972a83df7f6c71f20a09e7c5f916aebad6a9b93f`.
+- Companion: `6884e410dbf17803f9c1b352b408c43c0f8425cdd738413f1d9193275938b177`.
+- Main SDK: `6ad5882905879655fe0b81424b4b4e6b5e41aa3f9239e3f82280aa206e11a390`.
+
+Evidence: task-parent `candidate-terminal-fix-artifact-audit/audit-results.json`,
+`candidate-terminal-fix-windows-build.txt` and `RELEASE_READINESS.md`.
+No final Linux build or native Epic qualification was produced.
+
+The final candidate installer launch waited for Windows UAC and returned
+“The operation was canceled by the user” before executing. Read-only installed
+hashes stayed at the preceding Show-fix candidate. No retry occurred. This is
+not an automatic approval-review rejection. The separately requested official
+2.41.1 rollback installer completed exit 0; ProductVersion is 2.41.1.0 and the
+original companion hash returned. App and game remained closed. Full snapshot
+comparison and helper/private-settings recovery are being completed separately.
+
+The terminal-message flow remains native-unverified. The final rebuilt archive
+has not passed an actual installation. Earlier actual candidate upgrades and
+Show/restart tests remain valid evidence for their recorded bytes, not blanket
+final-candidate qualification. Physical keyboard/gamepad, sustained gameplay,
+travel/menu cleanup and phone tests remain open. Nothing was published.
+
+## Final cleanup verified, 2026-11-10 16:45:48 UTC
+
+The actual rollback comparison confirms original app executable and uninstall
+registration, original PAK/SDK/companion hashes, and all six shortcut targets.
+One machine shortcut's binary changed while its target remained correct.
+Three enabled-mod JSON files had only formatting differences; one generated
+ActorScriptDeployer pyc was absent. Runtime changed three named preferences and
+98 user-data files, mostly caches/storage. Initial installer preservation remains
+proven, but the full user-data tree is not claimed unchanged after native tests.
+
+Guarded RestoreHelpers restored the recorded helper tree and named preferences
+from the pre-test backup. Replaced files remain in task-parent
+`installer-trial/quarantine/20261110-164457-066`. The root deployment restore
+then verified the original four game hashes and archived the synthetic JSON,
+restoring its original absence. Fresh verification after reopening released
+MSBT again passed; the UI shows v2.41.1 and BL4 is closed. No observer, candidate
+game file or disabled real-friend-operation diagnostic remains installed.
+
+Exact final state: `live-qualification/final-restoration.json` and
+`installation.json`. Full rollback comparison:
+`installer-trial/compare-after-rollback.json`. Current concise readiness ledger:
+task-parent `RELEASE_READINESS.md`. No approval is pending for cleanup; the final
+candidate installer cancellation remains a separate unpassed test. Release hold
+remains for controlled physical keyboard/gamepad and other native gates listed
+in the ledger. Nothing published; primary dirty work preserved.
