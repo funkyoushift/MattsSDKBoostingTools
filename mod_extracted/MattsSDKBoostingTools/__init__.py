@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 __version__: str = "2.41.2"
-__version_info__: tuple[int, int, int] = (2, 41, 1)
+__version_info__: tuple[int, int, int] = (2, 41, 2)
 
 from mods_base import CoopSupport, Game, build_mod
 

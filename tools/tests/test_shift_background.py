@@ -58,7 +58,9 @@ class BackgroundTests(unittest.TestCase):
         self.start(); before=self.sdk.input_calls
         self.assertFalse(self.request('start',OTHER)['ok']); self.assertTrue(self.request('heartbeat')['ok'])
         self.now=4; self.c.tick(); self.assertEqual(self.sdk.input_calls,before)
-        self.now=6; self.c.tick(); self.assertEqual(self.c.status()['state'],'idle'); self.assertEqual(self.sdk.closes,1)
+        self.now=6; self.c.tick(); self.assertEqual(self.c.status()['state'],'error')
+        self.assertIn('lease expired', self.c.status()['reason'])
+        self.assertEqual(self.sdk.closes,1)
         self.assertFalse(self.request('heartbeat')['ok']); self.assertTrue(self.c.quiescent)
     def test_unavailable_shift_does_not_change_pause_or_input(self):
         self.native.values=[2,2,2]

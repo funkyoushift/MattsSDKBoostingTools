@@ -34,24 +34,62 @@ and edits, with injected flush failure checks proving no partial/new replacement
 or loss of the old list. This does not claim power-loss durability of directory
 metadata on all filesystems.
 
+Independent review follow-ups repaired three additional candidate gaps. Mobile
+phone removal now uses the supplied token when available and limits IP fallback
+to legacy tokenless records, so removing one enrolled phone cannot remove other
+phones that share its DHCP address. AFK status now forwards only bounded,
+well-typed pending/error details from the companion. The background lease records
+an explicit expiry reason, and its hidden presentation clears the WebView page
+background to transparent. The transparent presentation change still needs a
+live in-game confirmation because the first native run showed a white full-screen
+background.
+
+The SDK `__version_info__` tuple is checked against `__version__`, the SDK
+pyproject, Electron package and release resource metadata before SDK packaging.
+The artifact audit of the earlier package caught a stale `2.41.1` tuple and an
+older `mobile_lan.py`; the tuple and build-time check are repaired, and the PAK /
+companion are rebuilt from the pinned upstream archive. Final post-rebuild
+installer artifact hashes and audit results are recorded separately below when
+available.
+
 - 119 integrated Python tests passed in 25.11s, including startup/import,
   packaging, mobile token/re-enrollment, storage HTTP and background lifecycle.
 - Combined mobile JS tests: 10 passed, synthetic filesystem/RPC/store checks.
 - Python AST validation: 131 SDK/helper files passed before packaging.
-- SHiFT PAK: 192 payloads round-trip; manifest records source/archive hashes.
-- Remaining JS, packaged and native results will be appended as executed.
+- Follow-up Python tests: 135 focused non-network tests passed; 46 loopback HTTP
+  tests passed outside the network-restricted sandbox; 14 SDK packaging/runtime
+  identity tests passed. The shared HTTP suite first failed under sandbox policy
+  with Windows error 10013 before request handlers ran. Background JS syntax and
+  lifecycle tests passed, including 20 repeated start/show cycles.
+- Pinned SHiFT upstream archive SHA256
+  `3e31ba6dfb91f014627df7cb9c453a34c8d13d2b49e1c6855bb8955f36ded440` was
+  verified before rebuilding. The updated PAK SHA256 is
+  `e32c9f2727c2e2c5d0c28304e2207540084085e3e1705dab911c72476ac4d1c2` and the
+  companion SHA256 is `bfabdc0678608b5fd7911b5c6605dc21e15d0370e25c81f6231cfc73be8bc759`;
+  192 payloads round-trip and the manifest records source/archive hashes.
+- The initial artifact comparison passed portable and NSIS byte identity and
+  resource hashes but preceded the review follow-ups. Its SDK version tuple and
+  `mobile_lan.py` mismatches are stale-package findings, not final package status.
+  The final Windows package is still pending this rebuild.
 
 ## Acceptance and cleanup ledger
 
-No live friend action has occurred in this candidate phase yet. Native first
-save/edit/restart, Start/Stop from both surfaces, sustained polling/gameplay,
-menu/travel restoration, controlled social effects and physical-phone validation
-remain pending. Hardware gamepad controls cannot be inferred from mocks.
+Native first Save and edit passed through in-game Save; restart reload remains
+pending. The authorized friend acceptance run changed the count from 481 to 484
+and pending requests from three to zero. No friend deletions or outgoing requests
+occurred. The first native presentation had a white full-screen background;
+foreground clicks after Show initially failed, while closing/reopening with F10
+restored interaction. The source now clears the page background and reports lease
+expiry, but this review follow-up has not been retested in game. Restart reload,
+sustained polling/gameplay, menu/travel restoration and physical-phone validation
+remain open. Hardware gamepad controls cannot be inferred from mocks.
 
-The previous diagnostic session was closed normally and fully rolled back;
-`../rollback-verification.json` relative to the candidate worktree records that
-receipt. New candidate deployment must use fresh backups and restore normal
-state on completion. No game has been reopened in this candidate phase yet.
+The game was closed normally after the native candidate trial. Candidate PAK,
+companion and SDK files remain temporarily installed while the parent task owner
+handles restoration from fresh backups; `../candidate-installation.json` records
+the original and candidate digests. The earlier diagnostic phase was fully rolled
+back, with its receipt in `../rollback-verification.json`. No release, version
+publication, or public metadata change has occurred.
 
 Windows native process ownership and the executable adapter are platform-specific.
 Linux/Epic qualification must be stated separately; Windows mocks do not qualify

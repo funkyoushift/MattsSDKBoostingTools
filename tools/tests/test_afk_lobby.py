@@ -44,6 +44,37 @@ def test_custom_amount_validation_and_legacy_defaults():
         assert not lobby.start({'cash': True, 'cash_amount': value})['ok']
 
 
+def test_status_propagates_only_bounded_background_command_details(monkeypatch):
+    import sys
+    companion = SimpleNamespace(background_control=lambda mode: {
+        'background': {
+            'available': True,
+            'state': 'pending',
+            'reason': 'Waiting',
+            'command_pending': 'start',
+            'command_error': 'x' * 450,
+        }
+    })
+    monkeypatch.setitem(sys.modules, 'ShiftManagement', companion)
+    lobby = module.Lobby(FakeGame())
+
+    background = lobby.status()['shift_background']
+    assert background['command_pending'] == 'start'
+    assert background['command_error'] == 'x' * 300
+
+    companion.background_control = lambda mode: {
+        'background': {
+            'available': True,
+            'state': 'idle',
+            'command_pending': 'delete',
+            'command_error': {'untrusted': 'not text'},
+        }
+    }
+    background = lobby.status()['shift_background']
+    assert 'command_pending' not in background
+    assert 'command_error' not in background
+
+
 def test_custom_amounts_reach_targeted_actions():
     calls = []
     game = module.Game()

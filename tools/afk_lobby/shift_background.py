@@ -226,6 +226,7 @@ class BackgroundController:
             self._bind(allow_bind=True)
             now = self.clock()
             if self._state in ('pending', 'active') and now >= self._deadline:
+                self._failure_reason = 'Background lease expired before the next heartbeat.'
                 self._state, self._command = 'stopping', 'stop'
             if self._command == 'start' and self._state == 'pending':
                 self._command = None

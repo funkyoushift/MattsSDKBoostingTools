@@ -20,6 +20,11 @@ if (-not (Test-Path $SourceDir)) {
     throw "SDK mod source folder not found: $SourceDir"
 }
 
+& python (Join-Path $RepoRoot "tools\check_sdkmod_version.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "SDK and public release version metadata are inconsistent."
+}
+
 Assert-UnderRepo $BuildRoot
 Assert-UnderRepo $Output
 

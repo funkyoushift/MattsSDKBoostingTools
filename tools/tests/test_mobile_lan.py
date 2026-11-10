@@ -354,3 +354,27 @@ def test_explicit_same_ip_enrollment_does_not_replace_existing_credential(tmp_pa
     assert lan.is_allowed("192.168.0.44", "first-token")
     assert lan.is_allowed("192.168.0.44", "second-token")
     assert not lan.is_allowed("192.168.0.44", "")
+
+
+def test_legacy_ip_revoke_preserves_enrolled_phones_sharing_address(tmp_path, monkeypatch):
+    lan = _load_lan(tmp_path, monkeypatch)
+    lan.persist_path().write_text(json.dumps({"lan_enabled": True, "phones": [
+        {"ip": "192.168.0.44", "name": "Legacy", "enrolled_at": 1.0}
+    ]}), encoding="utf-8")
+    lan.load()
+    nonce = lan.arm_enroll()
+    assert lan.enroll(nonce, ip="192.168.0.44", token="phone-A", name="A")["ok"]
+    assert lan.enroll(nonce, ip="192.168.0.44", token="phone-B", name="B")["ok"]
+
+    assert lan.revoke_phone("192.168.0.44")
+    phones = lan.list_phones()
+    assert len(phones) == 2
+    assert {row["token"] for row in phones} == {"phone-A", "phone-B"}
+    assert lan.is_allowed("192.168.0.44", "phone-A")
+    assert lan.is_allowed("192.168.0.44", "phone-B")
+
+    # The UI passes the enrolled phone's token, which must still revoke only it.
+    assert lan.revoke_phone("phone-B")
+    assert [row["token"] for row in lan.list_phones()] == ["phone-A"]
+    assert lan.is_allowed("192.168.0.44", "phone-A")
+    assert not lan.is_allowed("192.168.0.44", "phone-B")

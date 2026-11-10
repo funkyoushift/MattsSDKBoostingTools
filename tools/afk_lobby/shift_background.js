@@ -50,7 +50,8 @@
         previousStyle = saved;
         if (!document.head || !document.createElement) throw new Error('SHiFT stylesheet is unavailable');
         backgroundStyle = document.createElement('style');
-        backgroundStyle.textContent = 'html #body_container#body_container,html #msbt-shift-float-bar#msbt-shift-float-bar,html #shift_mini_panel#shift_mini_panel,html #shift_settings_overlay#shift_settings_overlay{transform:scale(0.04)!important;transform-origin:top left!important;opacity:1!important;}';
+        backgroundStyle.textContent = 'html,body{background:transparent!important;}' +
+            'html #body_container#body_container,html #msbt-shift-float-bar#msbt-shift-float-bar,html #shift_mini_panel#shift_mini_panel,html #shift_settings_overlay#shift_settings_overlay{transform:scale(0.04)!important;transform-origin:top left!important;opacity:1!important;}';
         document.head.appendChild(backgroundStyle);
         saved.forEach(function (entry) {
             writeStyle(entry.element.style, 'transform', 'scale(0.04)', 'important');

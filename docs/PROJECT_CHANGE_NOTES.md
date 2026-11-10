@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT repairs and mobile-security fixes; local patch-version packages and native qualification in progress. No publication.
+- [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT repairs and mobile-security fixes; first Save/edit and three authorized acceptances passed, with native background presentation still awaiting confirmation. No publication.
 
 - [2026-11-10: SHiFT storage and background repair](changes/2026-11-10-shift-storage-background-repair.md): Isolated v2.41.1 repair for first-use desktop commands, Save/read races, atomic first creation and integration identity. Offline checks pass; native qualification paused. Game closed normally and original installation restored with verified hashes. No release/version change.
 

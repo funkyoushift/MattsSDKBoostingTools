@@ -198,6 +198,12 @@ class Lobby:
                     background = {'available': cached.get('available') is True,
                                   'state': str(cached.get('state') or 'unavailable')[:40],
                                   'reason': str(cached.get('reason') or '')[:300]}
+                    pending = cached.get('command_pending')
+                    if pending in ('start', 'stop'):
+                        background['command_pending'] = pending
+                    command_error = cached.get('command_error')
+                    if isinstance(command_error, str) and command_error:
+                        background['command_error'] = command_error[:300]
             except Exception:
                 background['reason'] = 'SHiFT background status unavailable.'
         return {"shift_background": background, "enabled": self.enabled, "auto_accept": self.enabled and self.config.get("auto_accept", False),

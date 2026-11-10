@@ -175,10 +175,18 @@ def revoke_phone(token_or_ip: str) -> bool:
         return False
     with _LOCK:
         before = len(_allowlist)
-        _allowlist[:] = [
-            row for row in _allowlist
-            if str(row.get("token") or "") != key and str(row.get("ip") or "") != key
-        ]
+        # The pairing UI sends a token for enrolled phones and falls back to IP
+        # only for legacy records that predate device tokens. An IP fallback
+        # must never revoke token-bearing rows: multiple phones can share DHCP
+        # addresses after same-IP enrollment became supported.
+        has_token = any(str(row.get("token") or "") == key for row in _allowlist)
+        if has_token:
+            _allowlist[:] = [row for row in _allowlist if str(row.get("token") or "") != key]
+        else:
+            _allowlist[:] = [
+                row for row in _allowlist
+                if str(row.get("token") or "") or str(row.get("ip") or "") != key
+            ]
         removed = len(_allowlist) != before
     if removed:
         save()
