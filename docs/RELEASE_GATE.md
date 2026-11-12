@@ -89,7 +89,8 @@ sets into one directory. Use `tools/publish_verified_release.py`, starting witho
 receipts, live evidence, release notes and the successful unified build run ID.
 See `--help` for exact arguments.
 
-The publisher checks CI provenance, tag identity, both platform receipts and
+The publisher downloads the exact CI run's aggregate receipt and compares all
+four artifact hashes/sizes before proceeding. It checks tag identity, both platform receipts and
 native evidence, then stages exactly four assets in a draft. Only after remote
 SHA256/size verification does it publish/latest. Failed uploads leave an inspectable
 draft. It never overwrites an existing release. Do not bypass this entry point with
