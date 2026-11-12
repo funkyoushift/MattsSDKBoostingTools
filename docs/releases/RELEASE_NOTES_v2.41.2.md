@@ -2,22 +2,26 @@
 
 Local release candidate; not published.
 
-- Fix SHiFT first-use settings saves, read/save races and desktop Start/Stop
-  delivery before protected-player storage has been initialized.
-- Keep first creation and edits atomic, flush temporary data before publication,
-  preserve protected players on failed writes and reject stale storage ownership.
-- Improve Play while accepting cleanup and desktop command acknowledgements.
-- Check the bundled SHiFT PAK, companion, enable state and conflicting PAK copies
-  independently of visible version numbers.
-- Require enrolled device tokens for LAN access. Remembered IP addresses no
-  longer authorize requests or select a different phone's pairing record.
-- Keep PC file-authority preferences desktop-controlled; paired phones may update
-  valid account IDs but cannot expand trusted desktop file roots.
+- Fix saving and reloading the SHiFT do-not-delete (protected players) list.
+  First creation and later edits use atomic writes. Failed or interrupted writes
+  preserve the existing list, and stale reads cannot overwrite newer edits.
+- Keep the reviewed-list and matching save-acknowledgement checks before friend
+  deletion. An unavailable or conflicting companion cannot falsely confirm a save.
+- Suspend the background SHiFT view while a normal game menu is open, then resume
+  acceptance after that menu closes. Long menu sessions no longer expire the
+  resume request. Show, Stop and disconnect still cancel automatic restart.
+- Display menu suspension and restart separately from confirmed active acceptance.
+- Keep desktop Start/Stop, SDK companion, PAK and updater identities consistent;
+  visible matching version labels alone do not establish matching loaded files.
+- Retain the mobile security repairs: enrolled tokens authorize LAN access,
+  shared IP addresses cannot select another phone's pairing, and paired phones
+  cannot expand the desktop's trusted file paths.
 
+Install the desktop and bundled game integration together, then restart BL4.
 Existing token pairings remain valid when addresses change. Legacy IP-only
-entries require pairing again. Update the desktop app and complete bundled game
-integration together, then restart Borderlands 4 before testing live actions.
+entries require pairing again. The mobile APK is unchanged.
 
-Release qualification is recorded separately in
-`docs/changes/2026-11-10-v2412-release-candidate.md`. A release must not be described
-as fully qualified until its outstanding native/platform checks are resolved.
+Qualification and exact artifact hashes are recorded in
+`docs/changes/2026-11-12-menu-storage-release-package.md`. Native checks on the
+v12 diagnostic are distinct from validation of the final packaged integration.
+No blanket gamepad, Linux/Epic, travel or final installer-upgrade claim is made.

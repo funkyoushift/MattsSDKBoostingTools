@@ -115,6 +115,12 @@ app.whenReady().then(async () => {
     if (!document.getElementById('afkTestHost').disabled) throw new Error('Host test must lock while running');
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Stopped',shift_background:{available:true,state:'error',reason:'Restore needs attention'}}});
     if (!document.getElementById('afkBackgroundStatus').textContent.includes('error · Restore needs attention')) throw Error('Background error not displayed');
+    for (const [state,label] of [['suspended_menu','paused for game menu'],['resuming','resuming']]) {
+      window.msbtAfkRender({afk_lobby:{enabled:false,shift_connected:true,shift_running:true,shift_background:{available:true,state,native_state:'idle'}}});
+      if (!document.getElementById('afkBackgroundStatus').textContent.includes(label)) throw Error('Missing menu handoff status '+state);
+      if (document.getElementById('afkShiftStatus').textContent.includes('running')) throw Error('Queued or suspended accepter reported running');
+      if (document.getElementById('afkBackgroundStatus').textContent.includes('press F10')) throw Error('Pending resume incorrectly asks for manual start');
+    }
     const backgroundStart = calls.length;
     for (const id of ['afkBackgroundStart','afkBackgroundShow','afkBackgroundStop']) {
       document.getElementById(id).click(); await new Promise(resolve => setTimeout(resolve, 30));

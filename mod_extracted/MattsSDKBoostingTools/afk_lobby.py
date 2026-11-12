@@ -198,6 +198,9 @@ class Lobby:
                     background = {'available': cached.get('available') is True,
                                   'state': str(cached.get('state') or 'unavailable')[:40],
                                   'reason': str(cached.get('reason') or '')[:300]}
+                    native_state = cached.get('native_state')
+                    if native_state in ('idle', 'pending', 'active', 'foreground', 'stopping', 'error', 'unsupported'):
+                        background['native_state'] = native_state
                     pending = cached.get('command_pending')
                     if pending in ('start', 'stop'):
                         background['command_pending'] = pending

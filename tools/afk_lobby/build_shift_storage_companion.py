@@ -15,6 +15,7 @@ def build(output, write_manifest=True):
         'shift_peer_process.py': SOURCE.with_name('shift_peer_process.py'),
         'shift_background.py': SOURCE.with_name('shift_background.py'),
         'shift_background_native.py': SOURCE.with_name('shift_background_native.py'),
+        'shift_menu_handoff.py': SOURCE.with_name('shift_menu_handoff.py'),
     }
     for source in sources.values():
         compile(source.read_bytes(), str(source), 'exec')
@@ -42,6 +43,7 @@ def build(output, write_manifest=True):
                'peer_source_sha256': hashlib.sha256(sources['shift_peer_process.py'].read_bytes()).hexdigest(),
                'background_source_sha256': hashlib.sha256(sources['shift_background.py'].read_bytes()).hexdigest(),
                'background_native_source_sha256': hashlib.sha256(sources['shift_background_native.py'].read_bytes()).hexdigest(),
+               'menu_handoff_source_sha256': hashlib.sha256(sources['shift_menu_handoff.py'].read_bytes()).hexdigest(),
                'status': 'offline candidate; same-process loopback bridge and installation unverified'}
     if write_manifest:
         (output / 'manifest.json').write_text(json.dumps(receipt, indent=2) + '\n', encoding='utf-8')

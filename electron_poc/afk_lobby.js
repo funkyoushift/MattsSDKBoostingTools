@@ -108,18 +108,24 @@
     panel.querySelectorAll("input,textarea,select,#afkAddBookmarks,#afkAddGuaranteedBookmarks,#afkLoadBookmarks,#afkAddFolder,#afkAddGuaranteedFolder").forEach((node) => { node.disabled = running || busy; });
     byId("afkStatus").textContent = commandError || (afk ? afk.message : "AFK lobby is not connected. Install the bundled game files and restart Borderlands 4.");
     const background = afk?.shift_background;
-    byId("afkShiftStatus").textContent = afk && afk.shift_connected
+    const handoffState = background?.state;
+    byId("afkShiftStatus").textContent = handoffState === "suspended_menu"
+      ? "SHiFT auto-accepter paused while a game menu is open"
+      : handoffState === "resuming"
+        ? "SHiFT auto-accepter resuming"
+        : afk && afk.shift_connected
       ? `SHiFT menu connected · Auto-accepter ${afk.shift_running ? "running" : "stopped"}`
       : background?.available
         ? `SHiFT companion available${background.state === "active" ? " · Background active" : ""} · AFK lobby link waiting`
         : "SHiFT menu not connected. Open the SHiFT menu after installing the bundled game files.";
     const backgroundState = background?.state || "unavailable";
+    const backgroundLabel = {suspended_menu: "paused for game menu", resuming: "resuming"}[backgroundState] || backgroundState;
     const backgroundReason = background?.command_error || (background?.command_pending
       ? `Waiting for SHiFT to confirm ${background.command_pending}` : background?.reason || "");
     const backgroundGuidance = background?.available && ["idle", "foreground"].includes(backgroundState)
       ? " · Close the pause menu, then press F10 to open SHiFT for background play"
       : "";
-    byId("afkBackgroundStatus").textContent = `SHiFT background: ${backgroundState}${backgroundReason ? ` · ${backgroundReason}` : ""}${backgroundGuidance}`;
+    byId("afkBackgroundStatus").textContent = `SHiFT background: ${backgroundLabel}${backgroundReason ? ` · ${backgroundReason}` : ""}${backgroundGuidance}`;
     guestProgress.replaceChildren();
     const mode = document.createElement('div');
     mode.textContent = !running ? 'AFK stopped' : afk.config?.concurrent_guests

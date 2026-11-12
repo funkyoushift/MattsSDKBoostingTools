@@ -1113,3 +1113,17 @@ def test_god_only_afk_does_not_run_guest_boosts_or_enable_social_actions():
     assert lobby.config['auto_accept'] is False and lobby.config['auto_kick'] is False
     lobby.tick(); assert game.calls==[] and game.kicked==[] and game.roster_calls==0
     assert lobby.stop()['ok'] and game.begins==1 and game.ends==1
+
+
+def test_menu_presentation_retains_only_known_native_state(monkeypatch):
+    import sys
+    companion = SimpleNamespace(background_control=lambda mode: {'background':
+        {'available': True, 'state': 'suspended_menu', 'native_state': 'idle',
+         'reason': 'Paused for menu', 'token': 'private', 'identity': object()}})
+    monkeypatch.setitem(sys.modules, 'ShiftManagement', companion)
+    lobby = module.Lobby(FakeGame())
+    assert lobby.status()['shift_background'] == {'available': True,
+        'state': 'suspended_menu', 'native_state': 'idle', 'reason': 'Paused for menu'}
+    companion.background_control = lambda mode: {'background':
+        {'available': True, 'state': 'resuming', 'native_state': {'not': 'text'}}}
+    assert 'native_state' not in lobby.status()['shift_background']

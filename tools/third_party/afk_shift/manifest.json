@@ -212,12 +212,13 @@
     47992,
     47993
   ],
-  "companion_sha256": "6884e410dbf17803f9c1b352b408c43c0f8425cdd738413f1d9193275938b177",
+  "companion_sha256": "a737e10a4d18e47887581d72be41904983664041e15862ea1665b653d80422ca",
   "companion_archive": "ShiftManagement.sdkmod",
-  "companion_source_sha256": "d9199d7e49285fede6d149c56b8c704a4afca4de137dbf29cd29237b8883fda3",
+  "companion_source_sha256": "b8d5e06a839a7fc88d3de1cf5c8977d839bac41a86cdb7fcafcf8e0579b88375",
   "companion_peer_source_sha256": "9dcd547fba3d58c833d90a84402ccb2e589e2aeb4bc167762ad960ead2f188a8",
   "companion_background_source_sha256": "a1e03ce9fa5b74e021ddcfdd4d6b2e80138ab39e12d277c18962f3b7d59b609a",
-  "companion_background_native_source_sha256": "8f604beefcd0fee06a41dccb472b2ff4d9e123cb535aeab4a6b8070b8fc720d8",
+  "companion_background_native_source_sha256": "ff6b015d39c9538d50d2554d283177158530a12645afbbfc428e7bd5837c2a91",
   "background_client_source_sha256": "90f42aa501e3c6e5eab979a6b76fcb221fd52efd86f006b4077de6409ba58264",
-  "companion_validation": "offline candidate; same-process loopback bridge and installation unverified"
+  "companion_validation": "Final production candidate: offline regression and archive checks; final packaged native qualification pending.",
+  "companion_menu_handoff_source_sha256": "9e63bcf99c28d9287e26d2cac8c35d87a0f6f0f527491ddeb19f01bc4553cbf3"
 }

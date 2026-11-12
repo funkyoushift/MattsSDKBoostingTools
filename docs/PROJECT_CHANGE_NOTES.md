@@ -1,5 +1,9 @@
 # Project change notes — read first
 
+- [2026-11-12: Combined menu and protected-list release package](changes/2026-11-12-menu-storage-release-package.md): Requested Windows candidate packaging includes do-not-delete list saving repairs; v12 short physical cycle and native restart pass, long dwell user-confirmed. Normal installation restored and verified. Final source review/build/audit in progress; nothing published.
+
+- [2026-11-10: SHiFT Escape/pause/Tab diagnosis](changes/2026-11-10-shift-menu-input-diagnosis.md): V12 physical short Escape cycle, W, mouse-look and minimized SHiFT return PASS; trace confirms actual active restart. Long-dwell/Tab/repeated cycles pending. Production lifecycle integration/review underway; SDK/UI status changes pass88 pytest and hiddenElectron regression. V12 remains installed/gameplay/accepteractive for physical test; rollback pending. Release HOLD.
+
 - [2026-11-10: v2.41.2 release candidate](changes/2026-11-10-v2412-release-candidate.md): Integrated SHiFT/mobile repairs; final Windows packages pass 21 artifact checks. Native Save/edit/restart, transparency, Show, Start/Stop and mouse fire passed; keyboard/gamepad remain inconclusive/unqualified. Actual earlier candidate upgrade and official rollback passed; final message-only installer launch was cancelled before execution. Original files/settings restored and hash-verified at 16:45:48 UTC; released2.41.1 desktop reopened, BL4 closed. Release hold; nothing published.
 
 - [2026-11-10: SHiFT storage and background repair](changes/2026-11-10-shift-storage-background-repair.md): Isolated v2.41.1 repair for first-use desktop commands, Save/read races, atomic first creation and integration identity. Offline checks pass; native qualification paused. Game closed normally and original installation restored with verified hashes. No release/version change.
