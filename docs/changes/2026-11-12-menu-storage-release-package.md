@@ -102,3 +102,37 @@ original installed files unchanged, real private-settings state preserved.
 Readiness: requested Windows package complete; public release remains on hold
 for final production native qualification and the remaining platform/installer
 checks listed above. No app-access request is pending.
+
+## Authorized release preparation and final checks
+
+Martin explicitly authorized publication: "finish the release prep then release it."
+Windows/Linux CI43189250665 passed at0b3d8c39, including Windows actual
+installation and installed-updater ASAR tests. Linux output hashes match CI logs,
+and its portable payload passes11 source/identity checks.
+
+The final local Windows installer exited0 and upgraded2.41.1 to2.41.2. All1497
+application files match the audited output; only the normal uninstaller is extra.
+The entire recorded user-data tree and named preferences were unchanged. Shortcut
+targets/arguments/work directories are unchanged; shortcut binary timestamps and
+expected version/size registration fields changed. SDK, companion and PAK match
+the packaged hashes; protected JSON remains absent as before. Receipt paths:
+`../release-final-install/compare-after-candidate.json`,
+`../release-final-install/final-installed-payload-audit.json`, and
+`../release-final-native/receipt.json`, relative to candidate root.
+
+Final native execution: supported Start queued and reached confirmedactive on
+2026-11-12 at09:20:14UTC. Polling observed active until Show at09:23:18UTC,
+then foreground/connected/running. A physical Escape press interrupted Computer
+Use; it does not establish a successful final menu cycle. Automated Escape also
+failed to open the menu with acceptance stopped, so synthetic keyboard evidence
+is inconclusive. A fresh read at09:24:42UTC confirms the game remains open and
+foreground acceptance running; this active session is being preserved as directed.
+No diagnostic payload or test protected-name was installed for this final trial.
+No newly identified friend acceptance/deletion is claimed from this run.
+
+Release judgment: installer preservation, exact payload identity, CI,183 offline
+regressions, prior native storage proof and user-confirmed v12 menu tests support
+shipping this repair. The interrupted final physical Escape test and unqualified
+gamepad/Tab/travel/Linux/Epic coverage are disclosed in public notes rather than
+claimed as passes. These verification limits do not block the authorized release.
+No further game control is required to publish the already verified artifacts.
