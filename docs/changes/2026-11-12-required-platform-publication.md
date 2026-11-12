@@ -24,3 +24,13 @@ them on Windows and Linux. No runtime changes, game input, package publication,
 version bumps or existing asset changes. Native Linux BL4/Proton gameplay remains
 unqualified; package/fixture results cannot substitute for it. Rollback is revert
 of the scoped policy commit, though doing so would remove the requested gate.
+
+## Follow-up verification
+
+PR #20 merged at cd9ed8f92ce8a3e3e7f497ac7520e19f68edc456; default-branch policy
+CI 43303009983 passed on both OSes. The publisher now compares local artifact
+digests with the actual CI aggregate receipt, preventing a same-commit rebuild
+from being mistaken for CI-tested bytes. Nine publisher tests and seven common
+gate tests pass. README/Linux docs now expose native Ubuntu 22 desktop PASS,
+Ubuntu 26 sandbox startup FAIL and actual Linux game coverage NOT TESTED; see
+docs/RELEASE_GATE.md for evidence links. No release assets or runtime changed.

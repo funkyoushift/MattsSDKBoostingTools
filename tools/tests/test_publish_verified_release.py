@@ -1,5 +1,6 @@
 """No remote mutations are executed by these tests."""
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -38,6 +39,7 @@ class PublishingTests(unittest.TestCase):
 
     def test_check_only_does_not_mutate(self):
         with patch.object(publish, 'validate_gate', return_value=self.record) as gate, \
+             patch.object(publish, 'verify_ci_artifacts') as ci, \
              patch.object(publish, 'api', side_effect=self.api), \
              patch.object(publish, 'command', side_effect=self.command) as command:
             self.assertFalse(publish.execute(self.args)['published'])
@@ -64,6 +66,43 @@ class PublishingTests(unittest.TestCase):
              patch.object(publish, 'api', side_effect=bad_api):
             with self.assertRaises(ValueError):
                 publish.execute(self.args)
+
+    def test_ci_receipt_binds_exact_four_artifact_hashes(self):
+        artifacts = [dict(platform=platform, name=str(index), size=4, sha256='a' * 64)
+                     for index, platform in enumerate(('win32', 'win32', 'linux', 'linux'))]
+        record = dict(artifacts=artifacts)
+        evidence = dict(schema_version=1, status='PASS', version=self.args.version,
+                        source_commit=self.args.source_commit, artifacts=artifacts)
+        def download(*args):
+            self.assertEqual(args[:4], ('gh', 'run', 'download', '123'))
+            destination = Path(args[args.index('--dir') + 1])
+            (destination / 'release-verification.json').write_text(json.dumps(evidence))
+            return ''
+        with patch.object(publish, 'command', side_effect=download):
+            publish.verify_ci_artifacts(self.args, record)
+            original = json.dumps(evidence)
+            mutations = [lambda e: e.update(status='FAIL'),
+                         lambda e: e.update(source_commit='b' * 40),
+                         lambda e: e.update(version='2.41.1'),
+                         lambda e: e['artifacts'][0].update(sha256='b' * 64),
+                         lambda e: e['artifacts'][0].update(size=5),
+                         lambda e: e['artifacts'].pop(),
+                         lambda e: e['artifacts'].append(e['artifacts'][0])]
+            for index, mutate in enumerate(mutations):
+                with self.subTest(case=index):
+                    evidence = json.loads(original)
+                    mutate(evidence)
+                    with self.assertRaises(ValueError):
+                        publish.verify_ci_artifacts(self.args, record)
+
+    def test_ci_receipt_failure_blocks_release_checks_and_mutation(self):
+        with patch.object(publish, 'validate_gate', return_value=self.record), \
+             patch.object(publish, 'api', side_effect=self.api), \
+             patch.object(publish, 'command', side_effect=self.command) as calls, \
+             patch.object(publish, 'verify_ci_artifacts', side_effect=ValueError('CI hashes differ')):
+            with self.assertRaisesRegex(ValueError, 'CI hashes differ'):
+                publish.execute(self.args)
+            self.assertEqual(len(calls.call_args_list), 1)  # local tag read only
 
     def test_failed_upload_keeps_draft_unpublished(self):
         self.args.publish = True

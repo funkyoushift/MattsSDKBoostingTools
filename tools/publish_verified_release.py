@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 from release_gate import validate_gate, sha256_file
 
@@ -21,6 +22,27 @@ def list_releases(repository):
     pages = json.loads(command('gh', 'api', '--paginate', '--slurp',
                                f'repos/{repository}/releases?per_page=100'))
     return [release for page in pages for release in page]
+
+
+def verify_ci_artifacts(args, record):
+    # Bind the uploaded bytes to the successful run, not merely locally supplied receipts.
+    with tempfile.TemporaryDirectory(prefix='msbt-ci-receipt-') as destination:
+        command('gh', 'run', 'download', str(args.build_run), '--repo', args.repository,
+                '--name', 'release-verification-' + args.version, '--dir', destination)
+        evidence = json.loads((Path(destination) / 'release-verification.json').read_text(encoding='utf-8-sig'))
+    if (evidence.get('schema_version') != 1 or evidence.get('status') != 'PASS'
+            or evidence.get('version') != args.version or evidence.get('source_commit') != args.source_commit):
+        raise ValueError('CI aggregate receipt does not qualify this candidate')
+    fields = ('platform', 'name', 'size', 'sha256')
+    def normalized(artifacts):
+        if not isinstance(artifacts, list) or len(artifacts) != 4:
+            raise ValueError('CI aggregate receipt must contain exactly four artifacts')
+        result = [{key: item[key] for key in fields} for item in artifacts]
+        if len({item['name'] for item in result}) != 4:
+            raise ValueError('CI aggregate receipt contains duplicate artifacts')
+        return sorted(result, key=lambda item: item['name'])
+    if normalized(evidence.get('artifacts')) != normalized(record['artifacts']):
+        raise ValueError('local artifacts differ from verified CI artifact hashes or sizes')
 
 
 def prepare(args):
@@ -51,6 +73,7 @@ def prepare(args):
              if job.get('status') == 'completed' and job.get('conclusion') == 'success'}
     if not required.issubset(found):
         raise ValueError('both platform jobs and release gate must pass')
+    verify_ci_artifacts(args, record)
     # A successful listing is required: authentication/network errors must not mean absent.
     if any(release.get('tag_name') == tag for release in list_releases(args.repository)):
         raise ValueError('release already exists; refusing to overwrite it')
