@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-11-12: Combined menu and protected-list release package](changes/2026-11-12-menu-storage-release-package.md): Requested Windows candidate packaging includes do-not-delete list saving repairs; v12 short physical cycle and native restart pass, long dwell user-confirmed. Normal installation restored and verified. Final source review complete; 183 Python tests and 25 artifact checks pass. Windows installer/portable built with protected-list saving fixes. Final production native qualification remains open; nothing published.
+- [2026-11-12: Combined menu and protected-list release package](changes/2026-11-12-menu-storage-release-package.md): Published stable/latest v2.41.2 with protected-list saving and menu repairs. Windows/Linux CI and tag checks pass; actual Windows upgrade preserved all recorded user data,1497 installed files match; allfour public downloads hash-verified. Final physical Escape cycle interrupted and disclosed. Released2.41.2 installed; active game session preserved, no diagnostic payload.
 
 - [2026-11-10: SHiFT Escape/pause/Tab diagnosis](changes/2026-11-10-shift-menu-input-diagnosis.md): V12 physical short Escape cycle, W, mouse-look and minimized SHiFT return PASS; trace confirms actual active restart. Long dwell user-confirmed; full duration not independently trace-proven. Production integration and Windows packaging complete (see November 12 entry); v12 removed and originals hash-verified. Final production native/Tab/gamepad coverage remains open. Release HOLD.
 

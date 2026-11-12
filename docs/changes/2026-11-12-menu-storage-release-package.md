@@ -136,3 +136,32 @@ shipping this repair. The interrupted final physical Escape test and unqualified
 gamepad/Tab/travel/Linux/Epic coverage are disclosed in public notes rather than
 claimed as passes. These verification limits do not block the authorized release.
 No further game control is required to publish the already verified artifacts.
+
+## Published and verified
+
+Stable/latest2.41.2 published2026-11-12T09:28:36Z at
+https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.2.
+Tag d21713364770b2082272f49a4a02dc8a59dabe72 contains only documentation
+changes after CI-tested0b3d8c39; implementation remainscdfd8996. Tag CI
+43191444533 passed. Allfour public assets were fully downloaded and SHA256/size
+verified against the tested local packages; GitHub expanded assets contains
+exactlyfour binaries plus the two automatic source archives. Receipt:
+`../release-final-ci/public-download-verification.json`. Linux AppImageSHA256
+4aff76ac8697b9612fdf8d2423a3a8887bfd6daf7873f6f1891e54d18359791e;
+Linux portableSHA2564881ec5bc42a6ba2bf52c4583e0c7340547c6af53c727b0cfcb3207955fd6f6a.
+
+The normal installed desktop and game integration are the final released2.41.2,
+not temporary diagnostics. Fresh SDK/PAK/companion hashes match the public
+package; private protected-settings state is unchanged. The game session was
+preserved after physicalEscape interrupted Computer Use, per the subsequent
+instruction not to disturb an active session; latest read showed foreground
+SHiFT acceptance running. No force-close, input workaround or rollback occurred.
+Backups remain in release-final-native/backup and release-final-install/backups.
+The interrupted final physical test and platform limits remain public disclosures.
+
+Default-branch metadata promotion completed through normal PR19 merge at
+f29e818d68a4db15573b9c48cdf79f619ff27e73. Public raw README/latest.json verify
+allfour2.41.2 desktop URLs and retained Android1.6.6/v2.39.9 and selector links.
+Receipt: `../release-final-ci/public-main-metadata-verification.json`. Historical
+PR18 was not merged or modified. No release blocker remains; disclosed native
+and platform validation limits remain follow-up coverage.
