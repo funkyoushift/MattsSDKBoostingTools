@@ -7,6 +7,10 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+if (-not $CheckOnly) {
+    throw "Legacy publishing is disabled. Use tools/publish_verified_release.py with verified Windows and Linux receipts and live qualification; see docs/RELEASE_GATE.md."
+}
+Write-Warning "Legacy CheckOnly is an artifact audit, not release qualification. The Windows/Linux release gate is mandatory."
 
 $RepoRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $ManifestPath = Join-Path $RepoRoot "docs\releases\latest.json"
