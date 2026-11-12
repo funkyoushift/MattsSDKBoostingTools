@@ -6,6 +6,11 @@ on:
         description: Stable source version
         required: true
         default: '2.41.2'
+      linux_runner:
+        description: Linux test environment (22.04 is a compatibility diagnostic, not a waiver of newer-host failures)
+        type: choice
+        options: [ubuntu-latest, ubuntu-22.04]
+        default: ubuntu-latest
 permissions:
   contents: read
 jobs:
@@ -82,7 +87,7 @@ jobs:
           compression-level: 0
           retention-days: 14
   linux:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.linux_runner }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
@@ -100,7 +105,15 @@ jobs:
         run: |
           npm --prefix electron_poc ci
           sudo apt-get update
-          sudo apt-get install -y xvfb libgtk-3-0t64 libnss3 libasound2t64
+          if apt-cache show libgtk-3-0t64 >/dev/null 2>&1; then
+            sudo apt-get install -y xvfb libgtk-3-0t64 libnss3 libasound2t64
+          else
+            sudo apt-get install -y xvfb libgtk-3-0 libnss3 libasound2
+          fi
+      - name: Record Linux sandbox environment without modifying policy
+        run: |
+          mkdir -p dist_linux
+          { cat /etc/os-release; uname -a; id; sysctl kernel.apparmor_restrict_unprivileged_userns kernel.unprivileged_userns_clone user.max_user_namespaces || true; } > dist_linux/linux-host.txt
       - name: Release gate and verifier regression checks
         run: |
           python -m unittest discover -s tools/tests -p test_release_gate.py
@@ -116,7 +129,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: linux-verification-evidence
-          path: dist_linux/linux-platform-verification.json
+          path: |
+            dist_linux/linux-platform-verification.json
+            dist_linux/linux-host.txt
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:

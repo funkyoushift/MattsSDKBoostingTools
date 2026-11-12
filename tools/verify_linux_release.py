@@ -140,6 +140,7 @@ def main():
         record['status'] = 'PASS'
         record['ok'] = True
     try:
+        receipt['distribution'] = platform.freedesktop_os_release()
         receipt['source_commit'] = command(['git', 'rev-parse', 'HEAD']).strip()
         receipt['tree'] = command(['git', 'rev-parse', 'HEAD^{tree}']).strip()
         receipt['working_tree_status'] = command(['git', 'status', '--porcelain', '--untracked-files=normal'])
