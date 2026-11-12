@@ -89,7 +89,8 @@ sets into one directory. Use `tools/publish_verified_release.py`, starting witho
 receipts, live evidence, release notes and the successful unified build run ID.
 See `--help` for exact arguments.
 
-The publisher checks CI provenance, tag identity, both platform receipts and
+The publisher downloads the exact CI run's aggregate receipt and compares all
+four artifact hashes/sizes before proceeding. It checks tag identity, both platform receipts and
 native evidence, then stages exactly four assets in a draft. Only after remote
 SHA256/size verification does it publish/latest. Failed uploads leave an inspectable
 draft. It never overwrites an existing release. Do not bypass this entry point with
@@ -114,3 +115,21 @@ candidate commit. Its results and receipts qualify that commit only. The default
 branch's older build workflow cannot satisfy the new publisher's mandatory gate.
 Runtime reconciliation is separate work; this guard does not merge old dirty
 source or change existing public packages.
+
+## Current Linux verification result
+
+Native Ubuntu 22.04.5 verification at source 24a9f0b2 passed thirteen checks,
+including real AppImage/portable smoke, bundled Python and actual temporary-HOME
+installation. Proton discovery/setup and updater/rollback fixtures also passed.
+This verifies rebuilt packages of the released implementation, not an actual
+Linux game session or a fresh qualification of the previously published bytes.
+
+Ubuntu 26.04.1 native launch failed 133 at Chromium sandbox initialization despite
+passing payload/source/Python/library checks. AppArmor user-namespace policy is
+a likely explanation, not confirmed by an audit trace. The older-host pass
+does not waive this failure. A supported installation path for affected hosts
+and actual BL4/Proton settings/control/acceptance tests remain unresolved before
+future publication. Current 2.41.2 release files are unchanged.
+
+Evidence: [Ubuntu 22 compatibility run](https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/43303801032),
+[Ubuntu 26 failure and Windows pass](https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/43302963095).

@@ -1,5 +1,7 @@
 [Linux — guided installer (AppImage)](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2-linux-x64.AppImage) · [Linux portable folder](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-linux-x64.tar.gz)
 
+> **Linux verification:** Ubuntu 22.04 desktop packages and installer passed native checks. Ubuntu 26.04 currently fails at sandbox startup; live BL4/Proton qualification remains pending. [Verified scope and release requirements](docs/RELEASE_GATE.md#current-linux-verification-result).
+
 > **Linux installer:** download the AppImage, allow executing it in Properties → Permissions, then double-click it. **MSBT Setup** checks requirements, installs the app and menu shortcuts, and offers Borderlands 4 setup. Close the game normally before game setup; you can finish that later from **MSBT Setup** in your applications menu. [Linux installation details](docs/LINUX.md).
 
 > **Windows and Linux:** v2.41.2 includes a Windows installer/ZIP and Linux AppImage/portable TAR. GitHub source ZIP/TAR are developer archives of the shared source. [Release downloads](https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.2).

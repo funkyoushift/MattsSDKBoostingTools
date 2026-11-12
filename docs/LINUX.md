@@ -94,3 +94,20 @@ Debian-family repairs use `apt-get`, as recommended for scripts by
 probe and emits JSON. `python3 -m unittest tools.tests.test_linux_bootstrap` tests
 missing-library and consent scenarios with fake commands; it never installs host
 packages. Package installation and a live game are separate validation steps.
+
+## Current native qualification limitation (November 12, 2026)
+
+The new native verifier confirmed packaged payloads and bundled Python, but an
+Ubuntu-latest runner aborted at Chromium sandbox initialization (exit 133,
+chrome-sandbox ownership/mode error). This is not a passing desktop test. Current
+preflight checks desktop libraries; it does not diagnose sandbox availability.
+Newer Ubuntu restricts unprivileged user namespaces using AppArmor, a likely
+cause that requires host-policy evidence to confirm for this run. See Ubuntu's
+[release notes](https://documentation.ubuntu.com/release-notes/24.04/) and
+[Chromium's explanation](https://chromium.googlesource.com/chromium/src/+/main/docs/security/apparmor-userns-restrictions.md).
+
+An Ubuntu 22.04 compatibility run is separate evidence; success there must not
+waive a newer-host failure. Do not disable the Chromium sandbox or globally
+change user-namespace policy to obtain a passing test. Actual Linux/Proton game
+qualification and an appropriate supported-host installation path remain required
+for a future release. Existing 2.41.2 public files have not been replaced.
