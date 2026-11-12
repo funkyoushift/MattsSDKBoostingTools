@@ -72,6 +72,22 @@ def asar_read(archive, name):
         return data
 
 
+def verify_sdk_sources(archive, source, project_root):
+    """Mirror build_linux.py's copytree followed by its two legal-file copies."""
+    expected = {file.relative_to(source).as_posix(): file
+                for file in source.rglob('*')
+                if file.is_file() and '__pycache__' not in file.parts
+                and file.suffix not in ('.pyc', '.pyo')}
+    expected.update({'LICENSE': project_root / 'LICENSE',
+                     'THIRD_PARTY_NOTICES.txt': project_root / 'docs/THIRD_PARTY_NOTICES.txt'})
+    prefix = 'MattsSDKBoostingTools/'
+    entries = [entry.filename for entry in archive.infolist() if not entry.is_dir()]
+    require(len(entries) == len(set(entries)), 'Duplicate SDK ZIP entries')
+    require(set(entries) == {prefix + name for name in expected}, 'SDK staged inventory mismatch')
+    for name, file in expected.items():
+        require(archive.read(prefix + name) == file.read_bytes(), 'SDK/staged-source mismatch: ' + name)
+
+
 def verify_source(payload, version):
     resources = payload / 'resources'
     archive = resources / 'app.asar'
@@ -91,9 +107,7 @@ def verify_source(payload, version):
         sdk_metadata = tomllib.loads(zf.read('MattsSDKBoostingTools/pyproject.toml').decode())
         require(sdk_metadata['project']['version'] == sdk_metadata['tool']['sdkmod']['version'] == version, 'SDK version mismatch')
         source = ROOT / 'mod_extracted/MattsSDKBoostingTools'
-        for file in source.rglob('*'):
-            if file.is_file() and '__pycache__' not in file.parts and file.suffix not in ('.pyc', '.pyo'):
-                require(zf.read('MattsSDKBoostingTools/' + file.relative_to(source).as_posix()) == file.read_bytes(), 'SDK/source mismatch: ' + str(file))
+        verify_sdk_sources(zf, source, ROOT)
     for relative, source in [('sdkmods/ActorScriptDeployer', ROOT / 'tools/third_party/sdk_mods/ActorScriptDeployer'),
                              ('afk_shift', ROOT / 'tools/third_party/afk_shift')]:
         for file in source.rglob('*'):

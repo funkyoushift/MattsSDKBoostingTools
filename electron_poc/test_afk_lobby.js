@@ -85,7 +85,8 @@ app.whenReady().then(async () => {
     window.msbtAfkRender({afk_lobby:{enabled:false,message:'Ready for testing â€” select boosts, then Start AFK Lobby.',history:[],shift_connected:true,shift_running:false}});
     const panel = document.getElementById('afkLobbyPanel');
     document.querySelector('.workspace-sidebar [data-workspace-section="afk"]').click();
-    document.getElementById('msbtBootSplash').style.display = 'none';
+    // nosplash removes this optional overlay after 280ms; it may already be gone.
+    document.getElementById('msbtBootSplash')?.remove();
     if (getComputedStyle(panel).display === 'none') throw new Error('AFK navigation did not reveal panel');
     panel.scrollIntoView();
     document.getElementById('afkCloseShift').click();
