@@ -24,7 +24,9 @@ async function fixture(root,name){
   await fs.mkdir(path.join(resources,'oak2'),{recursive:true});
   await fs.copyFile(path.join(__dirname,'vendor/oak2/oak2-sdk.zip'),path.join(resources,'oak2/oak2-sdk.zip'));
   const pak=Buffer.from('fixture PAK');await put(path.join(resources,'afk_shift/pakchunk90-Windows_90_P.pak'),pak);
-  await put(path.join(resources,'afk_shift/manifest.json'),JSON.stringify({sha256:hash(pak)}));
+  const companion=Buffer.from('fixture companion');
+  await put(path.join(resources,'afk_shift/ShiftManagement.sdkmod'),companion);
+  await put(path.join(resources,'afk_shift/manifest.json'),JSON.stringify({sha256:hash(pak),companion_sha256:hash(companion)}));
   await put(path.join(game,'OakGame/Binaries/Win64/Borderlands4.exe'),'fake game marker; never executed');
   await put(path.join(prefix,'user.reg'),'WINE REGISTRY Version 2\n\n[Other]\n"keep"="unchanged"\n');
   for(const name of ['vcruntime140.dll','msvcp140.dll'])await put(path.join(prefix,'drive_c/windows/system32',name),'MZ native runtime fixture');
@@ -71,10 +73,29 @@ async function fixture(root,name){
     const integrated=await full.install({resources:g.resources,imagePath:g.image,home:g.home,gameRoot:g.game,setupGame:true});
     assert.equal(integrated.ok,true);assert.equal(integrated.game.state,'installed',integrated.game.message);
     assert.equal(await fs.readFile(path.join(g.game,'sdk_mods/MattsSDKBoostingTools.sdkmod'),'utf8'),'new sdk');
+    assert.equal(await fs.readFile(path.join(g.game,'sdk_mods/ShiftManagement.sdkmod'),'utf8'),'fixture companion');
+    assert.equal(JSON.parse(await fs.readFile(path.join(g.game,'sdk_mods/settings/ShiftManagement.json'))).enabled,true);
     assert.match(await fs.readFile(path.join(g.prefix,'user.reg'),'utf8'),/"dsound"="native,builtin"/);
     assert.match(await fs.readFile(path.join(g.prefix,'user.reg'),'utf8'),/unchanged/);
     assert.equal(JSON.parse(await fs.readFile(path.join(g.game,'sdk_mods/settings/MattsSDKBoostingTools.json'))).enabled,true);
     assert.equal(g.calls.filter(x=>x.file==='/usr/bin/protontricks').length,0);
+
+    // A broken companion bundle must not replace the existing SHiFT integration.
+    for(const failure of ['missing','invalid']) {
+      const broken=await fixture(root,'companion-'+failure);
+      const preserved=[['OakGame/Content/Paks/pakchunk90-Windows_90_P.pak','old PAK'],
+        ['sdk_mods/ShiftManagement.sdkmod','old companion'],
+        ['sdk_mods/settings/ShiftManagement.json','{"enabled":false,"keep":"yes"}']];
+      for(const [relative,bytes] of preserved)await put(path.join(broken.game,relative),bytes);
+      const companion=path.join(broken.resources,'afk_shift/ShiftManagement.sdkmod');
+      if(failure==='missing')await fs.unlink(companion);else await fs.writeFile(companion,'tampered');
+      const brokenService=createService({run:broken.run,gameState:async()=>({queryFailed:false,processes:[]}),isPrefixBusy:async()=>false});
+      const result=await brokenService.install({resources:broken.resources,imagePath:broken.image,home:broken.home,gameRoot:broken.game,setupGame:true});
+      assert.equal(result.ok,true);assert.equal(result.game.state,'pending');
+      assert.match(result.game.message,failure==='missing'?/ENOENT/:/companion failed verification/);
+      for(const [relative,bytes] of preserved)assert.equal(await fs.readFile(path.join(broken.game,relative),'utf8'),bytes);
+      assert.match(await fs.readFile(path.join(broken.prefix,'user.reg'),'utf8'),/unchanged/);
+    }
 
     // Missing runtime/declined setup remains pending, never a ready game claim.
     await fs.rm(path.join(g.prefix,'drive_c/windows/system32/vcruntime140.dll'));

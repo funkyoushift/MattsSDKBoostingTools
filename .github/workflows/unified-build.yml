@@ -1,4 +1,4 @@
-name: Unified desktop artifacts
+name: Unified desktop verification
 on:
   workflow_dispatch:
     inputs:
@@ -71,19 +71,13 @@ jobs:
       - name: Test actual installed payload
         shell: pwsh
         run: ./tools/verify_windows_release.ps1 -Version $env:EXPECTED_VERSION
-      - name: Verify installed updater ASAR semantics
-        shell: pwsh
-        run: |
-          $env:MSBT_UPDATER_ASAR = Join-Path $env:RUNNER_TEMP 'MSBT-installed/resources/app.asar'
-          node electron_poc/test_platform_updater_electron_asar.js
-          if ($LASTEXITCODE -ne 0) { throw 'Installed updater ASAR regression failed' }
       - uses: actions/upload-artifact@v4
         with:
           name: msbt-windows-${{ inputs.expected_version }}
           path: |
             dist_electron/MSBT-Installer-v${{ inputs.expected_version }}.exe
             dist_electron/MSBT-Portable-v${{ inputs.expected_version }}-win-x64.zip
-            MattsSDKBoostingTools.sdkmod
+            dist_electron/windows-verification.json
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
@@ -102,16 +96,74 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Install locked dependencies
-        run: npm --prefix electron_poc ci
+      - name: Install locked dependencies and headless desktop prerequisites
+        run: |
+          npm --prefix electron_poc ci
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgtk-3-0t64 libnss3 libasound2t64
+      - name: Release gate and verifier regression checks
+        run: |
+          python -m unittest discover -s tools/tests -p test_release_gate.py
+          python -m unittest discover -s tools/tests -p test_publish_verified_release.py
+          python -m unittest discover -s tools/tests -p test_verify_linux_release.py
+          python -m unittest tools.tests.test_linux_bootstrap
       - name: Build Linux installer and portable archive
         run: python tools/build_linux.py
+      - name: Verify native Linux packages, install, updater and Proton fixtures
+        run: python tools/verify_linux_release.py --version '${{ inputs.expected_version }}' --output dist_linux/linux-platform-verification.json
+      - name: Preserve Linux verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-verification-evidence
+          path: dist_linux/linux-platform-verification.json
+          if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:
           name: msbt-linux-${{ inputs.expected_version }}
           path: |
             dist_linux/MSBT-Installer-v${{ inputs.expected_version }}-linux-x64.AppImage
             dist_linux/MSBT-Portable-v${{ inputs.expected_version }}-linux-x64.tar.gz
+            dist_linux/linux-platform-verification.json
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
+
+  release_gate:
+    name: Required Windows and Linux release gate
+    needs: [windows, linux]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Require successful verification on both operating systems
+        env:
+          WINDOWS_RESULT: ${{ needs.windows.result }}
+          LINUX_RESULT: ${{ needs.linux.result }}
+        run: |
+          test "$WINDOWS_RESULT" = success
+          test "$LINUX_RESULT" = success
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: msbt-*-${{ inputs.expected_version }}
+          path: release-artifacts
+          merge-multiple: true
+      - name: Validate exact four artifacts and platform receipts
+        run: >-
+          python tools/release_gate.py
+          --version '${{ inputs.expected_version }}'
+          --source-commit '${{ github.sha }}'
+          --artifacts-dir release-artifacts
+          --windows-receipt release-artifacts/windows-verification.json
+          --linux-receipt release-artifacts/linux-platform-verification.json
+          --output release-artifacts/release-verification.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-verification-${{ inputs.expected_version }}
+          path: release-artifacts/release-verification.json
+          if-no-files-found: error
