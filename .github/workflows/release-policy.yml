@@ -1,0 +1,23 @@
+name: Release policy regression
+on:
+  push:
+    branches: [main, codex/release-policy-20261112]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  policy:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m unittest discover -s tools/tests -p test_release_gate.py
+      - run: python -m unittest discover -s tools/tests -p test_publish_verified_release.py
