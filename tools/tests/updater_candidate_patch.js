@@ -40,7 +40,7 @@ if(require.main===module){
   if(process.env.GITHUB_ACTIONS!=='true'||process.env.RUNNER_OS!=='Windows'||!process.env.RUNNER_TEMP)throw Error('Disposable GitHub Windows runner required');
   const [archive,source,output]=process.argv.slice(2);
   const allowed=[process.env.RUNNER_TEMP,require('node:os').tmpdir()].some(root=>{
-    const relative=path.relative(path.resolve(root),path.resolve(archive));
+    const relative=path.relative(fs.realpathSync.native(root),fs.realpathSync.native(archive));
     return relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^MSBT real upgrade [a-f0-9]{32}$/.test(relative.split(path.sep)[0]);
   });
   if(!allowed)throw Error('Archive must be inside a unique MSBT real upgrade root under RUNNER_TEMP or system temp');
