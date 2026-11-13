@@ -5,7 +5,7 @@ const fs=require('fs');
 const path=require('path');
 const os=require('os');
 const assert=require('assert/strict');
-const {migrateLegacyShortcut,SHORTCUT_NAME}=require('./legacy_shortcut_migration');
+const {migrateLegacyShortcut,sameExistingPath,SHORTCUT_NAME}=require('./legacy_shortcut_migration');
 app.whenReady().then(()=>{
  if(process.platform!=='win32'){console.log('SKIP native Windows shortcut fixture');app.exit(0);return;}
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-shortcut-test-'));
@@ -20,9 +20,11 @@ app.whenReady().then(()=>{
   const shortcut=path.join(env.APPDATA,'Microsoft','Windows','Start Menu','Programs',SHORTCUT_NAME);fs.mkdirSync(path.dirname(shortcut),{recursive:true});
   assert(shell.writeShortcutLink(shortcut,'create',{target:legacy,cwd:path.dirname(legacy),args:'--fixture',description:'preserve fixture description',icon:process.execPath,iconIndex:0}));
   const before=fs.readFileSync(shortcut);
+  const initialLink=shell.readShortcutLink(shortcut);
+  assert(sameExistingPath(initialLink.target,legacy),JSON.stringify({actualTarget:initialLink.target,expectedTarget:legacy}));
   const result=migrateLegacyShortcut({app:{isPackaged:true,getVersion:()=> '2.41.2',getPath:()=>path.join(temp,'userdata')},shell,env,executable});
-  assert.equal(result.status,'migrated',JSON.stringify(result));assert.deepEqual(fs.readFileSync(result.backup),before);
-  const after=shell.readShortcutLink(shortcut);assert.equal(after.target,executable);assert.equal(after.args,'--fixture');assert.equal(after.icon,process.execPath);assert.equal(after.description,'preserve fixture description');
+  assert.equal(result.status,'migrated',JSON.stringify({...result,initialTarget:initialLink.target,expectedTarget:legacy}));assert.deepEqual(fs.readFileSync(result.backup),before);
+  const after=shell.readShortcutLink(shortcut);assert(sameExistingPath(after.target,executable),JSON.stringify({actualTarget:after.target,expectedTarget:executable}));assert.equal(after.args,'--fixture');assert(sameExistingPath(after.icon,process.execPath));assert.equal(after.description,'preserve fixture description');
   console.log('PASS native Electron shortcut update, preserved fields and exact original backup');
  } finally {if(path.dirname(path.resolve(temp))!==path.resolve(os.tmpdir())||!path.basename(temp).startsWith('msbt-shortcut-test-'))throw Error('Unexpected fixture cleanup path');fs.rmSync(temp,{recursive:true,force:true});}
  app.exit(0);

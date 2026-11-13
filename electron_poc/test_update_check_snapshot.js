@@ -29,8 +29,31 @@ const check=renderer.slice(renderer.indexOf('async function checkUpdates('),rend
   context.autoUpdater.checkForUpdates=async()=>{calls++;throw Error('GitHub temporarily unavailable');};
   const failure=await registered(null,'');
   assert.equal(failure.ok,false);assert.equal(failure.updater.status,'error');assert.match(failure.updater.error,/temporarily unavailable/);
-  context.latestUpdateState.status='downloaded';
+  context.latestUpdateState.status='downloaded';context.autoUpdater.ready=true;context.autoUpdater.info=info;
   await registered(null,'');assert.equal(context.latestUpdateState.status,'downloaded');
+  // Exercise the actual updater's checking event before a rejected API fetch.
+  const {WindowsReleaseUpdater}=require('./platform_release_updater');
+  const real=new WindowsReleaseUpdater({app:context.app,isNewer:context.isNewerPublicVersion,fetcher:async()=>{throw Error('Actual fetch unavailable');}});
+  real.info={...info};real.ready=true;context.autoUpdater=real;
+  real.on('checking-for-update',()=>context.updateState({status:'checking'}));
+  const retained=await registered(null,'');
+  assert.equal(retained.updater.status,'downloaded');assert.equal(retained.updater.updateInfo,real.info);assert.equal(real.ready,true);
+  real.ready=false;context.latestUpdateState.status='downloaded';
+  assert.equal((await registered(null,'')).updater.status,'error','Invalidated receipt must not regain Install');
+  // A failed older check cannot restore old metadata over a newer download.
+  let rejectCheck;real.fetcher=()=>new Promise((_resolve,reject)=>{rejectCheck=reject;});
+  real.ready=true;const pending=registered(null,'');
+  while(!rejectCheck) await new Promise(resolve=>setImmediate(resolve));
+  real.revision=(real.revision||0)+1;real.info={...info,version:'2.41.4'};real.ready=true;
+  context.updateState({status:'downloaded',updateInfo:real.info});
+  rejectCheck(Error('Old check failed'));await pending;
+  assert.equal(context.latestUpdateState.status,'downloaded');assert.equal(context.latestUpdateState.updateInfo.version,'2.41.4');
+  // A newer attempt that invalidates ready must likewise remain invalidated.
+  rejectCheck=null;const invalidated=registered(null,'');
+  while(!rejectCheck) await new Promise(resolve=>setImmediate(resolve));
+  real.revision++;real.ready=false;context.updateState({status:'error',error:'New download failed'});
+  rejectCheck(Error('Older check failed'));await invalidated;
+  assert.equal(context.latestUpdateState.status,'error');assert.equal(context.latestUpdateState.error,'New download failed');
   context.app.isPackaged=false;
   context.fetchLatestManifest=async()=>{calls++;return {response:{ok:true},manifest:{package_version:'2.41.3'},url:'fixture'};};
   const before=calls;assert.equal((await registered(null,'')).ok,true);assert.equal(calls,before+1);

@@ -72,3 +72,18 @@ restart detection also failed. These are not enough to label the production
 handoff broken or repaired. Test now detaches debugging immediately after the
 request and separately observes OS processes, payload replacement, helper
 scripts/logs, rollback directories and second restart. Failure snapshots retained.
+
+## Follow-up verification
+
+Independent review found that checking-for-update overwrote the downloaded UI
+state before a failed fetch. The catch path now consults the current updater's
+verified receipt and generation, retaining Install only for a valid download
+and leaving newer transfers alone. Real event-emitting updater regression passes.
+Native Windows shortcut fixture exposed Shell expansion of 8.3 paths; migration
+now accepts aliases only when both resolve to the same existing physical path.
+Unit regressions and syntax checks pass; native CI rerun is required.
+
+Run43343615501 detached CDP before handoff. Windows check and verified download
+passed but the same-directory ASAR was not replaced within180seconds. No helper
+error file was found. The cause remains unresolved; further bounded process and
+IPC-result diagnostics are required. This is not a successful installed upgrade.

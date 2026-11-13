@@ -23,5 +23,26 @@ f=fixture();f.files.delete(f.shortcut);assert.equal(migrateLegacyShortcut(f.opti
 f=fixture();const original=f.options.io.readFileSync;let count=0;f.options.io.readFileSync=p=>p===f.shortcut&&++count===2?Buffer.from('concurrent edit'):original(p);r=migrateLegacyShortcut(f.options);assert.equal(r.status,'skipped');assert.match(r.reason,/changed/);assert.equal(f.writes(),0);
 f=fixture();f.options.shell.writeShortcutLink=()=>false;r=migrateLegacyShortcut(f.options);assert.equal(r.status,'failed');assert.match(r.reason,/rejected/);assert.equal(f.files.get(r.receipt).toString().includes('failed'),true);assert.equal(f.link.target,f.old);
 f=fixture();f.options.io.writeFileSync=()=>{throw Error('Backup disk full');};r=migrateLegacyShortcut(f.options);assert.equal(r.status,'failed');assert.equal(f.writes(),0);
+// Shell expands short user-directory names, including target/cwd/icon and the
+// destination returned after writing. Resolve only registered existing paths.
+function aliases(f) {
+ const canonical=p=>path.win32.normalize(p).toLowerCase();
+ const known=new Map();
+ const add=(alias,physical)=>{known.set(canonical(alias),physical);known.set(canonical(physical),physical);};
+ const oldAlias=f.old.replace('User','USER~1'),newAlias=f.exe.replace('Program Files','PROGRA~1');
+ for(const [alias,physical] of [[oldAlias,f.old],[path.win32.dirname(oldAlias),path.win32.dirname(f.old)],[newAlias,f.exe]])add(alias,physical);
+ const resolve=p=>{const result=known.get(canonical(p));if(!result)throw Error('ENOENT unverified alias');return result;};
+ // Production prefers realpathSync.native; ensure that branch is covered.
+ f.options.io.realpathSync=()=>{throw Error('native resolver should be preferred');};
+ f.options.io.realpathSync.native=resolve;
+ return {oldAlias,newAlias};
+}
+f=fixture();let alias=aliases(f);f.link.target=alias.oldAlias;f.link.cwd=path.win32.dirname(alias.oldAlias);f.link.icon=alias.oldAlias;
+const writeAlias=f.options.shell.writeShortcutLink;f.options.shell.writeShortcutLink=(...args)=>{const written=writeAlias(...args);f.link.target=alias.newAlias;return written;};
+r=migrateLegacyShortcut(f.options);assert.equal(r.status,'migrated',JSON.stringify(r));assert.equal(f.link.cwd,path.win32.dirname(f.exe));assert.equal(f.link.icon,f.exe);assert.equal(f.files.get(r.backup).toString(),'original shortcut');
+f=fixture();alias=aliases(f);f.options.executable=alias.oldAlias;assert.equal(migrateLegacyShortcut(f.options).status,'skipped');assert.equal(f.writes(),0);
+for(const target of ['C:\\User\\Local\\Programs\\Other\\app\\MattsSDKBoostingTools.exe','C:\\UNKNOWN~1\\Local\\Programs\\MSBT\\app\\MattsSDKBoostingTools.exe']) {
+ f=fixture();aliases(f);f.link.target=target;r=migrateLegacyShortcut(f.options);assert.equal(r.status,'skipped');assert.equal(f.writes(),0);assert.equal(r.actualTarget,target);
+}
 assert.equal(newer('2.41.2','2.41.2'),false);assert.equal(newer('2.41.2','unknown'),false);
 console.log('PASS bounded shortcut identity, newer-only migration, original backup, preserved custom fields, concurrent changes and write failures');

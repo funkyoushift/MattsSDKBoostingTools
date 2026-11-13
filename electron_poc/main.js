@@ -2925,12 +2925,15 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
   const versionInfo = await localVersionInfo(rawPath);
   const local = versionInfo.localManifest || {};
 
+  let checkedUpdater, checkedRevision;
   try {
     let releaseSnapshot;
     let updater = latestUpdateState;
     if (app.isPackaged && configureAutoUpdater()) {
       // The manifest and updater controls must describe the same validated release.
-      const updaterResult = await autoUpdater.checkForUpdates();
+      checkedUpdater = autoUpdater;
+      checkedRevision = checkedUpdater.revision || 0;
+      const updaterResult = await checkedUpdater.checkForUpdates();
       const info = updaterResult && updaterResult.updateInfo;
       if (!info) throw Error('The update check has no release metadata yet. Retry after the current download finishes.');
       const release = require('./platform_release_updater');
@@ -2974,9 +2977,16 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
       manualZipUrl: remote.manual_zip_download_url || remote.download_url || ""
     };
   } catch (error) {
-    // Keep a verified download or an active transfer usable after a check failure.
-    if (!['progress', 'downloaded'].includes(latestUpdateState.status) && !autoUpdater?.busy) {
-      updateState({status:'error',message:'Electron updater check failed.',error:String(error.message || error)});
+    // A real check emits checking-for-update before fetching. Restore controls
+    // from the current verified receipt, never from the pre-check UI snapshot.
+    // A newer download generation owns its own progress/result state.
+    const superseded = checkedUpdater && (checkedUpdater !== autoUpdater || checkedRevision !== (checkedUpdater.revision || 0));
+    if (!superseded && !autoUpdater?.busy) {
+      if (autoUpdater?.ready && autoUpdater.info) {
+        updateState({status:'downloaded',message:'Verified update remains ready. The latest release check failed.',updateInfo:autoUpdater.info,error:String(error.message || error)});
+      } else {
+        updateState({status:'error',message:'Electron updater check failed.',error:String(error.message || error)});
+      }
     }
     return {
       ok: false,
