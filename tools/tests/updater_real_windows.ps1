@@ -1,10 +1,13 @@
-param([string]$ReceiptDirectory = (Join-Path $env:RUNNER_TEMP 'msbt real upgrade receipts'),[switch]$CandidateHandoff)
+param([string]$ReceiptDirectory = (Join-Path $env:RUNNER_TEMP 'msbt real upgrade receipts'),[switch]$CandidateHandoff,[switch]$SystemTemp)
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or !$env:RUNNER_TEMP -or $env:RUNNER_OS -ne 'Windows') { throw 'This installer test runs only on a disposable GitHub Windows runner.' }
-$root = Join-Path $env:RUNNER_TEMP ('MSBT real upgrade ' + [Guid]::NewGuid().ToString('N'))
+$installTemp=if($SystemTemp){[IO.Path]::GetTempPath()}else{$env:RUNNER_TEMP}
+$root = Join-Path $installTemp ('MSBT real upgrade ' + [Guid]::NewGuid().ToString('N'))
 $install = Join-Path $root 'Installation with spaces'
 New-Item -ItemType Directory -Path $root,$ReceiptDirectory -Force | Out-Null
 $receipt = [ordered]@{ source='2.41.1'; target='2.41.2'; started=(Get-Date).ToUniversalTime().ToString('o'); install=$install; ok=$false; limitation='Disposable desktop fixture. No live BL4, Proton, guest saves, or production data proof.' }
+$receipt.installVolume=if($SystemTemp){'system'}else{'runner'}
+$receipt.systemTemp=[IO.Path]::GetTempPath()
 $helper = Join-Path $PSScriptRoot 'updater_cdp.js'
 $exe = Join-Path $install 'MattsSDKBoostingTools.exe'
 $script:ownedAncestorPids=[Collections.Generic.HashSet[uint32]]::new()
@@ -58,6 +61,44 @@ function Close-Owned {
   for($i=0;$i -lt 30;$i++) { if (!(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe })) { return }; Start-Sleep -Seconds 1 }
   throw 'Owned app did not close normally; no unrelated processes were terminated.'
 }
+function Read-UninstallLocks {
+  if(!('MsbtRestartManagerReader' -as [type])){
+    Add-Type -TypeDefinition @'
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+public class MsbtRestartManagerReader {
+  [StructLayout(LayoutKind.Sequential)] public struct UniqueProcess {public uint pid;public System.Runtime.InteropServices.ComTypes.FILETIME started;}
+  [StructLayout(LayoutKind.Sequential,CharSet=CharSet.Unicode)] public struct ProcessInfo {
+    public UniqueProcess process;
+    [MarshalAs(UnmanagedType.ByValTStr,SizeConst=256)] public string application;
+    [MarshalAs(UnmanagedType.ByValTStr,SizeConst=64)] public string service;
+    public uint type;public uint status;public uint session;
+    [MarshalAs(UnmanagedType.Bool)] public bool restartable;
+  }
+  public class Result {public string error;public int startCode;public int registerCode;public int queryCode;public uint needed;public ProcessInfo[] holders;}
+  [DllImport("rstrtmgr.dll",CharSet=CharSet.Unicode)] static extern int RmStartSession(out uint session,int flags,StringBuilder key);
+  [DllImport("rstrtmgr.dll",CharSet=CharSet.Unicode)] static extern int RmRegisterResources(uint session,uint files,string[] names,uint apps,IntPtr processes,uint services,IntPtr serviceNames);
+  [DllImport("rstrtmgr.dll")] static extern int RmGetList(uint session,out uint needed,ref uint count,[In,Out] ProcessInfo[] holders,ref uint reasons);
+  [DllImport("rstrtmgr.dll")] static extern int RmEndSession(uint session);
+  static Result Query(string[] files){
+    var result=new Result();uint session;result.startCode=RmStartSession(out session,0,new StringBuilder(33));if(result.startCode!=0)return result;
+    try{result.registerCode=RmRegisterResources(session,(uint)files.Length,files,0,IntPtr.Zero,0,IntPtr.Zero);if(result.registerCode!=0)return result;
+      uint count=0,needed,reasons=0;result.queryCode=RmGetList(session,out needed,ref count,null,ref reasons);result.needed=needed;
+      if(needed>256){result.error="More than256 holders; bounded query stopped";return result;}
+      if(needed>0){count=needed;var holders=new ProcessInfo[count];result.queryCode=RmGetList(session,out needed,ref count,holders,ref reasons);result.needed=needed;if(result.queryCode==0){Array.Resize(ref holders,(int)count);result.holders=holders;}}
+      return result;
+    }catch(Exception e){result.error=e.ToString();return result;}finally{RmEndSession(session);}
+  }
+  public static Result Read(string[] files){if(files.Length>4096)return new Result{error="More than4096 installed files; no registration"};var task=Task.Run(()=>Query(files));return task.Wait(5000)?task.Result:new Result{error="Read-only Restart Manager query exceeded5seconds; no shutdown or process actions issued"};}
+}
+'@
+  }
+  $files=@(Get-ChildItem -LiteralPath $install -Recurse -File -ErrorAction SilentlyContinue | Select-Object -First 4097 -ExpandProperty FullName)
+  [ordered]@{scope='Read-only RmRegisterResources/RmGetList; no RmShutdown. Installed files only; max4096 resources/max256 holders/two list calls/5second wait';registeredPaths=$files;result=[MsbtRestartManagerReader]::Read([string[]]$files)}
+}
 function Capture-HandoffDiagnostics([string]$label) {
   $diagnostic=[ordered]@{at=(Get-Date).ToUniversalTime().ToString('o');label=$label}
   try {
@@ -78,6 +119,19 @@ function Capture-HandoffDiagnostics([string]$label) {
     $diagnostic.windowReadScope='Read-only owned app/helper/installer and observed descendants only; max128 controls, WM_GETTEXT timeout50ms. No clicks or input.'
   } catch {$diagnostic.processError=$_.Exception.Message}
   if($asar -and (Test-Path -LiteralPath $asar)){$diagnostic.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash;$diagnostic.asarPackage=Read-AsarVersion}
+  if($label -in @('unchanged-asar','after-diagnostic-replay')){
+    try{$diagnostic.restartManager=Read-UninstallLocks}catch{$diagnostic.restartManagerError=$_.Exception.Message}
+    try{
+      $diagnostic.nsisTemporaryMetadata=@()
+      Get-ChildItem -LiteralPath ([IO.Path]::GetTempPath()) -Directory -Filter 'ns*.tmp' -ErrorAction SilentlyContinue | Select-Object -First 128 | ForEach-Object {
+        $old=Join-Path $_.FullName 'old-install'
+        if(Test-Path -LiteralPath $old){
+          $diagnostic.nsisTemporaryMetadata+=Get-Item -LiteralPath $old | Select-Object FullName,Length,Attributes,CreationTimeUtc,LastWriteTimeUtc
+          $diagnostic.nsisTemporaryMetadata+=Get-ChildItem -LiteralPath $old -Recurse -Force -ErrorAction SilentlyContinue | Select-Object -First 2048 FullName,Length,Attributes,CreationTimeUtc,LastWriteTimeUtc
+        }
+      }
+    }catch{$diagnostic.nsisTemporaryError=$_.Exception.Message}
+  }
   try {
     # Same native query used by the unmodified production game-running guard.
     $diagnostic.gameGuardOutput=(& tasklist.exe /FI 'IMAGENAME eq Borderlands4.exe' /FO CSV /NH 2>&1 | Out-String)

@@ -39,8 +39,11 @@ module.exports={patchArchive};
 if(require.main===module){
   if(process.env.GITHUB_ACTIONS!=='true'||process.env.RUNNER_OS!=='Windows'||!process.env.RUNNER_TEMP)throw Error('Disposable GitHub Windows runner required');
   const [archive,source,output]=process.argv.slice(2);
-  const relative=path.relative(path.resolve(process.env.RUNNER_TEMP),path.resolve(archive));
-  if(!relative||relative.startsWith('..')||path.isAbsolute(relative))throw Error('Archive must be inside RUNNER_TEMP');
+  const allowed=[process.env.RUNNER_TEMP,require('node:os').tmpdir()].some(root=>{
+    const relative=path.relative(path.resolve(root),path.resolve(archive));
+    return relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^MSBT real upgrade [a-f0-9]{32}$/.test(relative.split(path.sep)[0]);
+  });
+  if(!allowed)throw Error('Archive must be inside a unique MSBT real upgrade root under RUNNER_TEMP or system temp');
   const result=patchArchive(archive,source);
   result.sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
   fs.writeFileSync(output,JSON.stringify(result,null,2));
