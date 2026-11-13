@@ -2926,7 +2926,21 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
   const local = versionInfo.localManifest || {};
 
   try {
-    const { response, manifest: remote, url: manifestUrl } = await fetchLatestManifest();
+    let releaseSnapshot;
+    let updater = latestUpdateState;
+    if (app.isPackaged && configureAutoUpdater()) {
+      // The manifest and updater controls must describe the same validated release.
+      const updaterResult = await autoUpdater.checkForUpdates();
+      const info = updaterResult && updaterResult.updateInfo;
+      if (!info) throw Error('The update check has no release metadata yet. Retry after the current download finishes.');
+      const release = require('./platform_release_updater');
+      releaseSnapshot = {response:{ok:true},manifest:release.asManifest(info),url:release.API_URL};
+      updater = { ...latestUpdateState, updateInfo: info };
+    } else {
+      releaseSnapshot = await fetchLatestManifest();
+      updater = latestUpdateState;
+    }
+    const { response, manifest: remote, url: manifestUrl } = releaseSnapshot;
     const localVersion = normalizeManifestVersion(local.package_version || versionInfo.packageVersion, versionInfo.appVersion);
     const remoteVersion = normalizeManifestVersion(remote.package_version);
     const localAppVersion = normalizeManifestVersion(versionInfo.appVersion);
@@ -2935,26 +2949,6 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
     const packageBuildChanged = Boolean(remoteVersion && localVersion && remoteVersion === localVersion && manifestMetadataChanged(local, remote));
     const packageUpdateAvailable = packageVersionChanged || packageBuildChanged;
     const electronUpdateAvailable = Boolean(remoteElectronVersion && localAppVersion && isNewerPublicVersion(remoteElectronVersion, localAppVersion));
-    let updater = latestUpdateState;
-    if (app.isPackaged) {
-      try {
-        if (configureAutoUpdater()) {
-          updateState({ status: "checking", message: "Checking Electron installer updates...", error: "" });
-          const updaterResult = await autoUpdater.checkForUpdates();
-          updater = { ...latestUpdateState, updateInfo: updaterResult && updaterResult.updateInfo ? updaterResult.updateInfo : latestUpdateState.updateInfo };
-        } else {
-          updater = latestUpdateState;
-        }
-      } catch (error) {
-        updater = {
-          ...latestUpdateState,
-          status: "error",
-          message: "Electron updater check failed.",
-          error: String(error && error.message ? error.message : error)
-        };
-        updateState(updater);
-      }
-    }
     return {
       ok: response.ok,
       local,
@@ -2980,6 +2974,10 @@ registerDesktopHandler("app:checkUpdates", async (_event, rawPath) => {
       manualZipUrl: remote.manual_zip_download_url || remote.download_url || ""
     };
   } catch (error) {
+    // Keep a verified download or an active transfer usable after a check failure.
+    if (!['progress', 'downloaded'].includes(latestUpdateState.status) && !autoUpdater?.busy) {
+      updateState({status:'error',message:'Electron updater check failed.',error:String(error.message || error)});
+    }
     return {
       ok: false,
       local,

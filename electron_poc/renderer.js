@@ -8148,7 +8148,7 @@ async function checkUpdates(options = {}) {
     ? (result.remote.electron_version || result.remote.app_version || result.remote.package_version)
     : "unknown";
   const updaterStatus = String(result.updater && result.updater.status ? result.updater.status : "");
-  if (["available", "downloaded", "progress"].includes(updaterStatus)) return;
+  if (["available", "downloaded", "progress", "error"].includes(updaterStatus)) return;
   if (result.electronUpdateAvailable) {
     setLine(els.updateSummary, `Electron update available: ${localAppVersion} -> ${remoteAppVersion}`, "warning");
   } else if (result.packageUpdateAvailable) {

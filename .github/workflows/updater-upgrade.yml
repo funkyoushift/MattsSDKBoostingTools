@@ -1,0 +1,50 @@
+name: Real published updater upgrade
+on:
+  push:
+    branches: [codex/updater-repair-20261113]
+    paths:
+      - '.github/workflows/updater-upgrade.yml'
+      - 'tools/tests/updater_*'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Actual released Windows updater 2.41.1 to 2.41.2
+        shell: pwsh
+        run: ./tools/tests/updater_real_windows.ps1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: windows-real-updater-evidence
+          path: ${{ runner.temp }}/msbt real upgrade receipts
+          if-no-files-found: warn
+  linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: 24}
+      - name: Disposable native desktop prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xdotool libgtk-3-0 libnss3 libasound2 libx11-6
+      - name: Actual released Linux updater 2.41.1 to 2.41.2
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: xvfb-run -a node tools/tests/updater_real_linux.js "$RUNNER_TEMP/linux-updater-receipt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-real-updater-evidence
+          path: ${{ runner.temp }}/linux-updater-receipt
+          if-no-files-found: warn

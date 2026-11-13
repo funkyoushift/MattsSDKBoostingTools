@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-11-13: In-app updater end-to-end repair](changes/2026-11-13-updater-end-to-end-repair.md): Historical target/ASAR failures distinguished; current duplicate-check/error masking repaired. Actual published Windows/Linux upgrade trials pending; no release.
+
 - [2026-11-12: Required Windows/Linux release gate](changes/2026-11-12-windows-linux-release-gate.md): Both native platform verifiers and exact four-artifact receipts required; publication also requires Windows and Linux/Proton live evidence. Stale Linux companion fixture repaired. Both policy PRs merged; Windows/Ubuntu22 native CI and aggregate pass. Ubuntu26 sandbox startup fails; live BL4/Proton untested; publication_ready=false. No new release.
 
 - [2026-11-12: Combined menu and protected-list release package](changes/2026-11-12-menu-storage-release-package.md): Published stable/latest v2.41.2 with protected-list saving and menu repairs. Windows/Linux CI and tag checks pass; actual Windows upgrade preserved all recorded user data,1497 installed files match; allfour public downloads hash-verified. Final physical Escape cycle interrupted and disclosed. Released2.41.2 installed; active game session preserved, no diagnostic payload.
