@@ -118,7 +118,9 @@ function Capture-HandoffDiagnostics([string]$label) {
     $diagnostic.windows=@(Read-OwnedWindows ([uint32[]]@($diagnostic.processes.ProcessId)))
     $diagnostic.windowReadScope='Read-only owned app/helper/installer and observed descendants only; max128 controls, WM_GETTEXT timeout50ms. No clicks or input.'
   } catch {$diagnostic.processError=$_.Exception.Message}
-  if($asar -and (Test-Path -LiteralPath $asar)){$diagnostic.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash;$diagnostic.asarPackage=Read-AsarVersion}
+  if($asar){
+    try{$diagnostic.asarPackage=Read-AsarVersion;if($label -in @('unchanged-asar','after-diagnostic-replay')){$diagnostic.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash}}catch{$diagnostic.asarReadError=$_.Exception.Message}
+  }
   if($label -in @('unchanged-asar','after-diagnostic-replay')){
     try{$diagnostic.restartManager=Read-UninstallLocks}catch{$diagnostic.restartManagerError=$_.Exception.Message}
     try{
@@ -252,8 +254,17 @@ try {
   Capture-HandoffDiagnostics 'requested'
   # The production helper waits for app exit and performs actual RunAs elevation.
   # Do not alter its payload or replace it with a probe installer.
-  for($i=0;$i -lt 180;$i++){Start-Sleep -Seconds 1;if($i -eq 9){Capture-HandoffDiagnostics 'after-10-seconds'};if((Get-FileHash -LiteralPath $asar -ErrorAction SilentlyContinue).Hash -ne $oldHash){break}}
-  if((Get-FileHash -LiteralPath $asar).Hash -eq $oldHash){Capture-HandoffDiagnostics 'unchanged-asar';Replay-FailedHandoff;throw 'Initial actual handoff did not replace same-directory ASAR within 180s. Separate diagnostic replay is not an initial upgrade pass; inspect captured helper stderr/script/errors.'}
+  $installedTarget=$false
+  for($i=0;$i -lt 180;$i++){
+    Start-Sleep -Seconds 1
+    if($i -eq 9){Capture-HandoffDiagnostics 'after-10-seconds'}
+    try{$observedPackage=Read-AsarVersion;if($observedPackage.version -eq '2.41.2'){$installedTarget=$true;break}}catch{}
+  }
+  if(!$installedTarget){
+    Capture-HandoffDiagnostics 'unchanged-asar'
+    if($CandidateHandoff){$receipt.diagnosticReplaySkipped='Candidate handoff has authenticated additional fields; do not reconstruct its payload.'}else{Replay-FailedHandoff}
+    throw 'Initial actual handoff did not produce readable same-directory ASAR version2.41.2 within180s. Missing/partial ASAR during installation was tolerated; diagnostic replay cannot qualify the initial upgrade.'
+  }
   $restarted=$false
   for($i=0;$i -lt 90;$i++) {
     $owned=@(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe -and $_.MainWindowHandle -ne 0 })
@@ -271,6 +282,26 @@ try {
     foreach($file in $tracked){if((Get-FileHash -LiteralPath $file).Hash -ne $before[$file]){throw "Preservation mismatch: $file"}}
   }
   $receipt.afterAsarSha256=(Get-FileHash -LiteralPath $asar).Hash
+  # Compare the completed install against the actual public portable payload,
+  # independently of the installer and of any candidate diagnostic module.
+  $targetRelease=Invoke-RestMethod 'https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/tags/v2.41.2'
+  $referenceAsset=@($targetRelease.assets | Where-Object name -eq 'MSBT-Portable-v2.41.2-win-x64.zip')
+  $referenceUrl='https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip'
+  if($referenceAsset.Count -ne 1 -or $referenceAsset[0].browser_download_url -ne $referenceUrl -or $referenceAsset[0].digest -notmatch '^sha256:[a-f0-9]{64}$'){throw 'Public reference ZIP metadata invalid.'}
+  $referenceZip=Join-Path $root 'public target reference.zip'
+  Invoke-WebRequest $referenceUrl -OutFile $referenceZip -TimeoutSec 300
+  $referenceHash=(Get-FileHash -LiteralPath $referenceZip -Algorithm SHA256).Hash.ToLowerInvariant()
+  if(('sha256:'+$referenceHash) -ne $referenceAsset[0].digest -or (Get-Item -LiteralPath $referenceZip).Length -ne $referenceAsset[0].size){throw 'Public reference ZIP hash/size mismatch.'}
+  $archive=[IO.Compression.ZipFile]::OpenRead($referenceZip)
+  try{
+    $entries=@($archive.Entries | Where-Object FullName -eq 'MSBT-Portable-v2.41.2-win-x64/resources/app.asar')
+    if($entries.Count -ne 1){throw 'Public reference ZIP has no unique exact ASAR entry.'}
+    $referenceAsar=Join-Path $root 'public target app.asar'
+    $inputStream=$entries[0].Open();$outputStream=[IO.File]::Create($referenceAsar)
+    try{$inputStream.CopyTo($outputStream)}finally{$inputStream.Dispose();$outputStream.Dispose()}
+  }finally{$archive.Dispose()}
+  $receipt.publicTargetReference=[ordered]@{url=$referenceUrl;zipSha256=$referenceHash;zipSize=$referenceAsset[0].size;asarSha256=(Get-FileHash -LiteralPath $referenceAsar -Algorithm SHA256).Hash}
+  if($receipt.afterAsarSha256 -ne $receipt.publicTargetReference.asarSha256){throw 'Completed installed ASAR does not exactly match the hash-verified public target ZIP ASAR.'}
   $receipt.ok=$true
 } catch { $receipt.error=$_.Exception.ToString(); throw }
 finally {
