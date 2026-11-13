@@ -18,6 +18,38 @@ function Close-Owned {
   for($i=0;$i -lt 30;$i++) { if (!(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe })) { return }; Start-Sleep -Seconds 1 }
   throw 'Owned app did not close normally; no unrelated processes were terminated.'
 }
+function Capture-HandoffDiagnostics([string]$label) {
+  $diagnostic=[ordered]@{at=(Get-Date).ToUniversalTime().ToString('o');label=$label}
+  try {
+    $diagnostic.processes=@(Get-CimInstance Win32_Process | Where-Object {
+      $_.ExecutablePath -eq $exe -or
+      ($_.CommandLine -and ($_.CommandLine.Contains($root) -or
+      ($receipt.userData -and $_.CommandLine.Contains($receipt.userData))))
+    } | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine,CreationDate)
+  } catch {$diagnostic.processError=$_.Exception.Message}
+  try {
+    # Same native query used by the unmodified production game-running guard.
+    $diagnostic.gameGuardOutput=(& tasklist.exe /FI 'IMAGENAME eq Borderlands4.exe' /FO CSV /NH 2>&1 | Out-String)
+    $diagnostic.gameGuardExit=$LASTEXITCODE
+  } catch {$diagnostic.gameGuardError=$_.Exception.Message}
+  if($receipt.userData){
+    $diagnostic.files=@()
+    foreach($sub in @('update-handoff-*','updates')) {
+      Get-ChildItem -Path (Join-Path $receipt.userData $sub) -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+        $item=[ordered]@{path=$_.FullName;size=$_.Length;written=$_.LastWriteTimeUtc.ToString('o')}
+        if($_.Extension -in @('.ps1','.txt','.log')){$item.text=Get-Content -LiteralPath $_.FullName -Raw -ErrorAction SilentlyContinue}
+        if($_.Extension -eq '.exe'){$item.sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
+        $diagnostic.files+= $item
+      }
+    }
+  }
+  $diagnostic | ConvertTo-Json -Depth 12 | Set-Content (Join-Path $ReceiptDirectory "handoff-diagnostics-$label.json")
+  try { & node $helper 19412 diagnose (Join-Path $ReceiptDirectory "handoff-renderer-$label.json") }
+  catch { Write-Warning "Bounded renderer diagnostic unavailable: $_" }
+  # A vanished renderer is expected during successful quit. Preserve the receipt
+  # without converting diagnostic unavailability into an upgrade verdict.
+  $global:LASTEXITCODE=0
+}
 try {
   $release = Invoke-RestMethod 'https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/tags/v2.41.1'
   $asset = @($release.assets | Where-Object name -eq 'MSBT-Installer-v2.41.1.exe')
@@ -51,10 +83,11 @@ try {
   $asar=Join-Path $install 'resources/app.asar'
   $oldHash=(Get-FileHash -LiteralPath $asar).Hash
   [void](Launch-Probe 'update' 19412)
+  Capture-HandoffDiagnostics 'requested'
   # The production helper waits for app exit and performs actual RunAs elevation.
   # Do not alter its payload or replace it with a probe installer.
-  for($i=0;$i -lt 180;$i++){Start-Sleep -Seconds 1;if((Get-FileHash -LiteralPath $asar -ErrorAction SilentlyContinue).Hash -ne $oldHash){break}}
-  if((Get-FileHash -LiteralPath $asar).Hash -eq $oldHash){throw 'Actual handoff did not replace same-directory ASAR within 180s (inspect UAC/handoff logs).'}
+  for($i=0;$i -lt 180;$i++){Start-Sleep -Seconds 1;if($i -eq 9){Capture-HandoffDiagnostics 'after-10-seconds'};if((Get-FileHash -LiteralPath $asar -ErrorAction SilentlyContinue).Hash -ne $oldHash){break}}
+  if((Get-FileHash -LiteralPath $asar).Hash -eq $oldHash){Capture-HandoffDiagnostics 'unchanged-asar';throw 'Actual handoff did not replace same-directory ASAR within 180s (inspect handoff diagnostics and renderer IPC result).'}
   $restarted=$false
   for($i=0;$i -lt 90;$i++) {
     $owned=@(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe -and $_.MainWindowHandle -ne 0 })

@@ -20,6 +20,17 @@ const receipt = {mode, started: new Date().toISOString(), stages: []};
 let socket;
 const pause = ms => new Promise(r => setTimeout(r, ms));
 (async () => {
+  if(mode==='diagnose') {
+    // Read only existing renderer state, then detach immediately. Do not invoke
+    // the updater again, close the app, or keep its quitting renderer attached.
+    let client;
+    try {
+      client=await connect(port,{pageFilter:t=>t.type==='page'&&t.url.includes('renderer.html'),timeout:5000});
+      const result=await client.evaluate(`({url:location.href,ready:document.readyState,hasResult:Object.prototype.hasOwnProperty.call(window,'__upgradeResult'),upgradeResult:window.__upgradeResult ?? null,requestedAt:window.__upgradeRequestedAt ?? null})`,3000);
+      receipt.stages.push({name:'existing-handoff-state',result,at:new Date().toISOString()});
+    } finally {if(client)client.close();}
+    receipt.ok=true;return;
+  }
   let page;
   for (let n=0;n<90;n++) {
     try { page=(await (await fetch(`http://127.0.0.1:${Number(port)}/json/list`)).json()).find(t=>t.type==='page' && t.url.includes('renderer.html')); if(page) break; } catch {}
@@ -54,7 +65,7 @@ const pause = ms => new Promise(r => setTimeout(r, ms));
     const download=await stage('download','window.msbt.downloadUpdate()',12*60*1000);
     if(!download.ok)throw Error('Released download IPC failed: '+JSON.stringify(download));
     // Start the real install call; app exit may disconnect CDP before its reply.
-    await stage('handoff-request',`window.__upgradeResult=null;window.msbt.installDownloadedUpdate().then(r=>window.__upgradeResult=r).catch(e=>window.__upgradeResult={error:String(e)});'requested'`);
+    await stage('handoff-request',`window.__upgradeResult=null;window.__upgradeRequestedAt=new Date().toISOString();window.msbt.installDownloadedUpdate().then(r=>window.__upgradeResult=r).catch(e=>window.__upgradeResult={error:String(e)});'requested'`);
     // A closing renderer cannot reliably answer CDP evaluation. Detach so the
     // unmodified application can exit; the parent observes installation and relaunch.
     socket.close();socket=null;
