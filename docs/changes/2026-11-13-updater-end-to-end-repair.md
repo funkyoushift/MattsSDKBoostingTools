@@ -139,3 +139,19 @@ Linux BL4 host available. No release tag, draft or public asset was created.
 Independent release-metadata review caught the SDK __version_info__ tuple still
 at 2.41.2. Corrected to (2, 41, 3); the dedicated lockstep checker now passes.
 Superseded CI 43357060149 was cancelled; no pass is claimed for that run.
+
+Final 2.41.3 packaging/native desktop verification PASS: CI43357300583 at
+`dbedd839a2fd64e1a978fe311cfd96a55be87d2c`. Both platform jobs and aggregate
+package gate passed. All four downloaded artifacts independently match their
+size/SHA256 receipts. See [2.41.3 verification](../releases/VERIFICATION_v2.41.3.txt).
+Candidate directory: `C:/src/MSBT-Workspace/product/local/updater-repair/candidate-v2.41.3`.
+Evidence: `../evidence/release-v2.41.3` relative to the isolated checkout.
+The required publisher dry run returned exit1, `Publication stopped: win32:
+native live evidence required`. The honest live-qualification file records both
+platforms NOT_TESTED. Linux BL4/Proton remains unavailable; fresh WSL inventory
+confirms WSL is not installed. No publication, draft, tag, real application/game
+restart or user-data change occurred during this release-preparation turn.
+Latest public release remains v2.41.2; exact public2.41.3 links cannot be verified
+because that release does not exist. User release authorization is recorded;
+remaining work requires actual platform/game qualification, not another generic
+release-permission question.

@@ -1,0 +1,31 @@
+# MSBT 2.41.3 release qualification
+
+Candidate source: dbedd839a2fd64e1a978fe311cfd96a55be87d2c
+Build: https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/43357300583
+Status: both native desktop package jobs and aggregate artifact gate PASS; publication BLOCKED.
+
+Four packages saved in C:/src/MSBT-Workspace/product/local/updater-repair/candidate-v2.41.3.
+All four local sizes and SHA256 values independently match the CI receipt.
+
+51a458d41cb6863ab45085947a03ce544e9f55ce0468bdf0f0b89b85a954496a  MSBT-Installer-v2.41.3.exe (320588615 bytes)
+c28225de17832add03c070278caf089bf0929c3e39dd12afbec4b311a5bf72f9  MSBT-Portable-v2.41.3-win-x64.zip (381087442 bytes)
+1b3afedb73f80b40b2c95ac424693fb16f6c3cfdd0251e95302b07e6d65e8f24  MSBT-Installer-v2.41.3-linux-x64.AppImage (281640419 bytes)
+7bc4ac02e1309ac2a400415c8fcecbbfb32fcd028e7cc04193398ea6895f4647  MSBT-Portable-v2.41.3-linux-x64.tar.gz (301775280 bytes)
+
+Windows: syntax/startup/SHiFT lifecycle, updater handoff, actual NSIS installation, full installed payload parity, portable parity, bundled Python and installed desktop smoke passed.
+Linux Ubuntu22: actual native non-root AppImage/TAR parity, bundled runtime, desktop smoke, per-user installation, setup/Proton fixtures and updater/rollback checks passed.
+Earlier realistic update trials: Windows patched-updater 2.41.1 to public2.41.2 passed on C and D; Linux unmodified public2.41.1 to2.41.2 passed. These are distinct from the new2.41.3 package checks.
+
+Independent metadata review found one stale SDK version tuple, corrected before final build. Dedicated lockstep check passed. Cancelled run43357060149 is superseded; not a PASS.
+
+Publication authorization received from Martin: release it.
+Required publisher dry run returned exit1: Publication stopped: win32: native live evidence required
+Truthful live-qualification.json records NOT_TESTED for both Windows and Linux/Proton at the exact candidate/artifacts. No Linux BL4 test host available; local WSL is not installed. CI fixtures cannot satisfy actual game qualification.
+Remaining: complete the required exact-candidate Windows and Linux/Proton BL4 test reports and human-authored attestations, then tag the tested source, dry-run/publish via required publisher, verify all public downloads and six links, and promote default-branch metadata.
+No public release, draft, tag, or public asset was created. Latest public release freshly checked as v2.41.2. Existing broken updater clients will need one manual installation of the eventual repair.
+The real user installation, running game, protected list and other settings were untouched during2.41.3 preparation.
+
+Evidence: C:/src/MSBT-Workspace/product/local/updater-repair/evidence/release-v2.41.3
+Publisher result: publisher-dry-run.json
+Artifact hashes: local-artifact-hashes.json
+CI provenance: ci-result.json and release-verification.json

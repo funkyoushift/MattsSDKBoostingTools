@@ -24,6 +24,17 @@ GitHub source ZIP/TAR downloads are source archives, not ready-to-run applicatio
 
 On the preceding repair candidate, actual Windows 2.41.1-to-2.41.2 installer trials passed on C: and D: after replacing only the old client's updater module with the repaired module. Automatic restart, two subsequent launches, seeded preferences/bookmarks and exact target payload checks passed. This is not an unmodified published Windows client pass. Unmodified published Linux AppImage and portable 2.41.1-to-2.41.2 updates passed on Ubuntu 22.04 with seeded data preservation.
 
-Both desktop platforms passed native package checks at the preceding candidate source commit. The newly versioned 2.41.3 packages require their own exact-source receipts; those results will be recorded separately. Fixtures do not establish real protected-list or guest-save preservation.
+Both newly versioned 2.41.3 desktop platforms and the aggregate package gate passed [CI43357300583](https://github.com/funkyoushift/MattsSDKBoostingTools/actions/runs/43357300583) at source `dbedd839a2fd64e1a978fe311cfd96a55be87d2c`. All four locally downloaded packages match the exact CI sizes and SHA256 receipts. Windows actual installation and Linux per-user installation passed. Fixtures do not establish real protected-list or guest-save preservation.
 
 Live BL4/Proton qualification tied to this candidate is incomplete on both platforms. No Linux BL4 host is currently available. Ubuntu 26 sandbox startup failed in earlier qualification. Arbitrarily long Windows installation paths and human standard-user UAC/cancellation remain unqualified. The required publication gate must pass before this candidate is released; disclosure alone does not waive it.
+
+## Candidate SHA256 receipts
+
+These are unpublished candidate artifacts.
+
+```text
+51a458d41cb6863ab45085947a03ce544e9f55ce0468bdf0f0b89b85a954496a  MSBT-Installer-v2.41.3.exe
+c28225de17832add03c070278caf089bf0929c3e39dd12afbec4b311a5bf72f9  MSBT-Portable-v2.41.3-win-x64.zip
+1b3afedb73f80b40b2c95ac424693fb16f6c3cfdd0251e95302b07e6d65e8f24  MSBT-Installer-v2.41.3-linux-x64.AppImage
+7bc4ac02e1309ac2a400415c8fcecbbfb32fcd028e7cc04193398ea6895f4647  MSBT-Portable-v2.41.3-linux-x64.tar.gz
+```
