@@ -1,6 +1,6 @@
 # Project change notes — read first
 
-- [2026-11-13: In-app updater end-to-end repair](changes/2026-11-13-updater-end-to-end-repair.md): Historical target/ASAR failures distinguished; current duplicate-check/error masking repaired. Actual published Windows/Linux upgrade trials pending; no release.
+- [2026-11-13: In-app updater end-to-end repair](changes/2026-11-13-updater-end-to-end-repair.md): Windows helper/launcher/check repairs complete; candidate Windows upgrades and unmodified Linux upgrades pass with fixture preservation. Both native package gates pass; exact artifacts saved. Unpublished; live BL4/Proton gate remains.
 
 - [2026-11-12: Required Windows/Linux release gate](changes/2026-11-12-windows-linux-release-gate.md): Both native platform verifiers and exact four-artifact receipts required; publication also requires Windows and Linux/Proton live evidence. Stale Linux companion fixture repaired. Both policy PRs merged; Windows/Ubuntu22 native CI and aggregate pass. Ubuntu26 sandbox startup fails; live BL4/Proton untested; publication_ready=false. No new release.
 
