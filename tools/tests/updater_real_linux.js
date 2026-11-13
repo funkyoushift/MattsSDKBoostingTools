@@ -78,7 +78,7 @@ async function trial(kind, oldFile, newFile, port) {
   const record={kind,launches:0,ok:false,stages:[]};report.cases.push(record);
   const home=path.join(root,kind,'home');await fs.mkdir(path.join(home,'runtime'),{recursive:true,mode:0o700});
   const env=environment(home);let cdp;
-  const stage=async(name,expression)=>{const value=await cdp.evaluate(expression,35*60*1000);record.stages.push({name,value});await persist();return value;};
+  const stage=async(name,expression,timeoutMs=90000)=>{console.log('START',kind,name);const value=await cdp.evaluate(expression,timeoutMs);console.log('DONE',kind,name);record.stages.push({name,value});await persist();return value;};
   try {
     let launcher,launchArgs=[];
     if(kind==='appimage') {
@@ -103,7 +103,7 @@ async function trial(kind, oldFile, newFile, port) {
     record.before=Object.fromEntries(await Promise.all(sentinels.map(async file=>[file,await hash(file)])));
     const checkResult=await stage('real-check','window.msbt.checkUpdates()');check(checkResult.ok && checkResult.remote?.package_version==='2.41.2','Public latest check must resolve exactly 2.41.2');
     const selected=checkResult.updater?.updateInfo?.selected; if(selected)check(selected.name.includes(kind==='appimage'?'.AppImage':'.tar.gz'),'Wrong update asset route');
-    const downloaded=await stage('real-download','window.msbt.downloadUpdate()');check(downloaded.ok,`Published updater download failed: ${JSON.stringify(downloaded)}`);
+    const downloaded=await stage('real-download','window.msbt.downloadUpdate()',12*60*1000);check(downloaded.ok,`Published updater download failed: ${JSON.stringify(downloaded)}`);
     await stage('real-install-request',`window.__trialInstall=null;window.msbt.installDownloadedUpdate().then(r=>window.__trialInstall=r).catch(e=>window.__trialInstall={ok:false,error:String(e)});'requested'`);
     let restarted=[],disconnected=false;
     for(let n=0;n<120;n++) {await pause(1000);if(!disconnected)try{const result=await cdp.evaluate('window.__trialInstall',3000);if(result?.ok===false)throw Error(JSON.stringify(result));}catch(error){if(String(error).includes('"ok":false'))throw error;disconnected=true;}

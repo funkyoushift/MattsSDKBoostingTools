@@ -30,12 +30,12 @@ const pause = ms => new Promise(r => setTimeout(r, ms));
   let id=0; const pending=new Map();
   socket.onclose=()=>{for(const item of pending.values()){clearTimeout(item.timer);item.reject(Error('CDP disconnected after app exit'));}pending.clear();};
   socket.onmessage=event=>{const v=JSON.parse(event.data); if(pending.has(v.id)){const {resolve,reject,timer}=pending.get(v.id);clearTimeout(timer);pending.delete(v.id);v.error?reject(Error(JSON.stringify(v.error))):resolve(v.result);}};
-  const send=(method,params={})=>new Promise((resolve,reject)=>{const n=++id;const timer=setTimeout(()=>{pending.delete(n);reject(Error('CDP timeout: '+method));},35*60*1000);pending.set(n,{resolve,reject,timer});socket.send(JSON.stringify({id:n,method,params}));});
-  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
+  const send=(method,params={},timeoutMs=90000)=>new Promise((resolve,reject)=>{const n=++id;const timer=setTimeout(()=>{pending.delete(n);reject(Error('CDP timeout: '+method));},timeoutMs);pending.set(n,{resolve,reject,timer});socket.send(JSON.stringify({id:n,method,params}));});
+  const evaluate=async (expression,timeoutMs=90000)=>{const r=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true},timeoutMs);if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
   let preloadReady=false;
   for(let n=0;n<60;n++){if(await evaluate("Boolean(window.msbt && window.msbt.getVersionInfo && window.msbt.getUserDataInfo)")){preloadReady=true;break;}await pause(500);}
   if(!preloadReady)throw Error('Released preload API unavailable');
-  const stage=async(name,expression)=>{const result=await evaluate(expression);receipt.stages.push({name,result,at:new Date().toISOString()});fs.writeFileSync(output,JSON.stringify(receipt,null,2));return result;};
+  const stage=async(name,expression,timeoutMs=90000)=>{console.log('START',mode,name);const result=await evaluate(expression,timeoutMs);console.log('DONE',mode,name);receipt.stages.push({name,result,at:new Date().toISOString()});fs.writeFileSync(output,JSON.stringify(receipt,null,2));return result;};
   await stage('version','window.msbt.getVersionInfo()');
   await stage('userData','window.msbt.getUserDataInfo()');
   if(mode==='seed') {
@@ -51,7 +51,7 @@ const pause = ms => new Promise(r => setTimeout(r, ms));
   if(mode==='update') {
     const check=await stage('check','window.msbt.checkUpdates()');
     if(!check.ok || check.remote?.package_version!=='2.41.2')throw Error('Public latest must be exactly 2.41.2: '+JSON.stringify(check));
-    const download=await stage('download','window.msbt.downloadUpdate()');
+    const download=await stage('download','window.msbt.downloadUpdate()',12*60*1000);
     if(!download.ok)throw Error('Released download IPC failed: '+JSON.stringify(download));
     // Start the real install call; app exit may disconnect CDP before its reply.
     await stage('handoff-request',`window.__upgradeResult=null;window.msbt.installDownloadedUpdate().then(r=>window.__upgradeResult=r).catch(e=>window.__upgradeResult={error:String(e)});'requested'`);

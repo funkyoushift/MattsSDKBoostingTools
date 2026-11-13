@@ -8,7 +8,7 @@ $receipt = [ordered]@{ source='2.41.1'; target='2.41.2'; started=(Get-Date).ToUn
 $helper = Join-Path $PSScriptRoot 'updater_cdp.js'
 $exe = Join-Path $install 'MattsSDKBoostingTools.exe'
 function Launch-Probe([string]$mode,[int]$port) {
-  $process = Start-Process -FilePath $exe -ArgumentList @('--remote-debugging-address=127.0.0.1',"--remote-debugging-port=$port") -WindowStyle Hidden -PassThru
+  $process = Start-Process -FilePath $exe -ArgumentList @('--remote-debugging-address=127.0.0.1',"--remote-debugging-port=$port") -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory "$mode-$port-stdout.log") -RedirectStandardError (Join-Path $ReceiptDirectory "$mode-$port-stderr.log")
   & node $helper $port $mode (Join-Path $ReceiptDirectory "$mode-$port.json")
   if ($LASTEXITCODE -ne 0) { throw "Released renderer $mode probe failed; see receipt." }
   return $process
@@ -25,6 +25,7 @@ try {
   $url='https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.1/MSBT-Installer-v2.41.1.exe'
   if($asset[0].browser_download_url -ne $url) { throw 'Unexpected installer URL.' }
   $installer=Join-Path $root 'released installer.exe'
+  Write-Host 'Downloading published old Windows installer'
   Invoke-WebRequest $url -OutFile $installer
   $hash=(Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()
   if(('sha256:'+$hash) -ne $asset[0].digest -or (Get-Item $installer).Length -ne $asset[0].size) { throw 'Published installer hash/size mismatch.' }
