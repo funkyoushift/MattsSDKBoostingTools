@@ -6,7 +6,7 @@ const path=require('path');
 const {createHash}=require('crypto');
 const {execFile}=require('child_process');
 const exec=require('util').promisify(execFile);
-const {releaseInfo,asManifest,downloadVerified,HANDOFF_SCRIPT,LinuxReleaseUpdater,WindowsReleaseUpdater,windowsHandoffPayload,WINDOWS_BOOTSTRAP_SCRIPT,waitForWindowsHelperReady}=require('./platform_release_updater');
+const {releaseInfo,asManifest,downloadVerified,HANDOFF_SCRIPT,LinuxReleaseUpdater,WindowsReleaseUpdater,windowsHandoffPayload,WINDOWS_BOOTSTRAP_SCRIPT,runWindowsBootstrap,waitForWindowsHelperReady}=require('./platform_release_updater');
 const payload=Buffer.from('verified release');
 const digest='sha256:'+createHash('sha256').update(payload).digest('hex');
 const version='2.40.0',tag='v'+version;
@@ -24,6 +24,16 @@ const release={tag_name:tag,assets};
   assert.throws(()=>releaseInfo({...release,assets:assets.map(a=>({...a,browser_download_url:'https://evil.invalid/file'}))},'linux'),/Invalid GitHub/);
   const temp=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-updater-'));
   try{
+    // Completion follows exit, not spawn or inherited-pipe close.
+    const {EventEmitter}=require('events');let bootstrapChild;
+    const logs=await fs.mkdtemp(path.join(temp,'bootstrap-'));
+    let completed=false;
+    const completing=runWindowsBootstrap((_exe,_args,options)=>{assert.equal(options.windowsHide,true);assert.equal(options.detached,undefined);bootstrapChild=new EventEmitter();bootstrapChild.kill=()=>{};return bootstrapChild;},[],logs).then(()=>{completed=true;});
+    while(!bootstrapChild)await new Promise(resolve=>setImmediate(resolve));
+    bootstrapChild.emit('spawn');await new Promise(resolve=>setImmediate(resolve));assert.equal(completed,false);
+    bootstrapChild.emit('exit',0,null);await completing;assert.equal(completed,true);
+    const timeoutLogs=await fs.mkdtemp(path.join(temp,'bootstrap-timeout-'));let killed=false;
+    await assert.rejects(runWindowsBootstrap(()=>{const child=new EventEmitter();child.kill=()=>{killed=true;};return child;},[],timeoutLogs,5),/timed out/);assert.equal(killed,true);
     const readyFile=path.join(temp,'ready.txt');
     await fs.writeFile(readyFile,'wrong-token');
     await assert.rejects(waitForWindowsHelperReady(readyFile,'expected-token',1),/did not acknowledge startup/);

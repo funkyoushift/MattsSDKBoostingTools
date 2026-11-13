@@ -162,3 +162,13 @@ an otherwise installed public2.41.1 archive, preserving version and other payloa
 then requests the real public2.41.2 update. Its receipt explicitly distinguishes
 this modified diagnostic from an unmodified published-client pass. Old failing
 clients still require a one-time manual installer to acquire the repair.
+
+The first production bootstrap integration used execFile completion, which waits
+for output streams to close. A benign exact-bootstrap probe showed its callback
+arrived after the inner helper completed (3556ms), while bootstrap exit arrived
+in279ms. The helper can retain inherited handles while waiting for authorization.
+Use a hidden non-detached spawn with file logs and bounded exit-event completion;
+then check readiness and authorize atomically. Unit coverage distinguishes spawn,
+exit and close and covers timeout. Installer dialog capture separately identified
+old uninstaller exit2 ('Failed to uninstall old application files'); file/volume
+cause is not yet established and must not be inferred from the numeric exit code.

@@ -4,7 +4,7 @@ const fs=require('fs/promises');
 const os=require('os');
 const path=require('path');
 const exec=require('util').promisify(require('child_process').execFile);
-const {WINDOWS_HANDOFF_SCRIPT,WINDOWS_BOOTSTRAP_SCRIPT,windowsHandoffPayload}=require('./platform_release_updater');
+const {WINDOWS_HANDOFF_SCRIPT,WINDOWS_BOOTSTRAP_SCRIPT,runWindowsBootstrap,windowsHandoffPayload}=require('./platform_release_updater');
 (async()=>{
   if(process.platform!=='win32') {console.log('SKIP Windows native handoff fixture (requires Windows PowerShell/.NET)');return;}
   const temp=await fs.mkdtemp(path.join(os.tmpdir(),'msbt-win-handoff-'));
@@ -56,7 +56,7 @@ public class Probe {
     await fs.writeFile(benign,'$data=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0])) | ConvertFrom-Json\n$data.token | Set-Content -LiteralPath $data.marker\n');
     await fs.writeFile(bootstrap,WINDOWS_BOOTSTRAP_SCRIPT);
     const bootstrapPayload={script:benign,payload:Buffer.from(JSON.stringify({marker,token:'native-bootstrap-ready'})).toString('base64'),stdout:path.join(temp,'helper.stdout.txt'),stderr:path.join(temp,'helper.stderr.txt'),pidFile:path.join(temp,'helper-pid.txt')};
-    await exec('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',bootstrap,Buffer.from(JSON.stringify(bootstrapPayload)).toString('base64')],{windowsHide:true,timeout:10000});
+    await runWindowsBootstrap(require('child_process').spawn,['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',bootstrap,Buffer.from(JSON.stringify(bootstrapPayload)).toString('base64')],temp,10000);
     for(let i=0;i<100;i++){try{await fs.access(marker);break;}catch{await new Promise(r=>setTimeout(r,50));}}
     assert.equal((await fs.readFile(marker,'utf8')).trim(),'native-bootstrap-ready');
     assert.match(await fs.readFile(bootstrapPayload.pidFile,'utf8'),/\d+/);

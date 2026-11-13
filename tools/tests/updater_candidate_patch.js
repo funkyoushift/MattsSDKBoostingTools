@@ -39,12 +39,16 @@ module.exports={patchArchive};
 if(require.main===module){
   if(process.env.GITHUB_ACTIONS!=='true'||process.env.RUNNER_OS!=='Windows'||!process.env.RUNNER_TEMP)throw Error('Disposable GitHub Windows runner required');
   const [archive,source,output]=process.argv.slice(2);
-  const allowed=[process.env.RUNNER_TEMP,require('node:os').tmpdir()].some(root=>{
-    const relative=path.relative(fs.realpathSync.native(root),fs.realpathSync.native(archive));
-    return relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^MSBT real upgrade [a-f0-9]{32}$/.test(relative.split(path.sep)[0]);
+  const archiveCanonical=fs.realpathSync.native(archive);
+  const scopeChecks=[process.env.RUNNER_TEMP,process.env.TEMP,process.env.TMP,require('node:os').tmpdir()].filter(Boolean).map(root=>{
+    try {
+      const canonical=fs.realpathSync.native(root),relative=path.relative(canonical,archiveCanonical);
+      return {root,canonical,relative,allowed:Boolean(relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^MSBT real upgrade [a-f0-9]{32}$/.test(relative.split(path.sep)[0]))};
+    } catch(error) {return {root,allowed:false,error:String(error)};}
   });
-  if(!allowed)throw Error('Archive must be inside a unique MSBT real upgrade root under RUNNER_TEMP or system temp');
+  if(!scopeChecks.some(check=>check.allowed))throw Error('Archive scope rejected: '+JSON.stringify({archive,archiveCanonical,scopeChecks}));
   const result=patchArchive(archive,source);
   result.sourceCommit=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+  result.archiveScope={archiveCanonical,scopeChecks};
   fs.writeFileSync(output,JSON.stringify(result,null,2));
 }

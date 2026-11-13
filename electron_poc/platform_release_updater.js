@@ -177,6 +177,21 @@ $arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $dat
 $child = Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput $data.stdout -RedirectStandardError $data.stderr
 $child.Id | Set-Content -LiteralPath $data.pidFile -Encoding ASCII
 `;
+async function runWindowsBootstrap(start,args,folder,timeoutMs=15000) {
+  const stdout=await fs.open(path.join(folder,'bootstrap.stdout.txt'),'wx');
+  let stderr;
+  try {
+    stderr=await fs.open(path.join(folder,'bootstrap.stderr.txt'),'wx');
+    await new Promise((resolve,reject)=>{
+      let child,timer;
+      const finish=error=>{clearTimeout(timer);error?reject(error):resolve();};
+      child=start('powershell.exe',args,{cwd:folder,windowsHide:true,stdio:['ignore',stdout.fd,stderr.fd]});
+      child.once('error',finish);
+      child.once('exit',(code,signal)=>finish(code===0?null:Error('Windows update bootstrap exited '+code+' ('+signal+'). Diagnostics: '+folder)));
+      timer=setTimeout(()=>{child.kill();finish(Error('Windows update bootstrap startup timed out. Diagnostics: '+folder));},timeoutMs);
+    });
+  } finally {await stdout.close();if(stderr)await stderr.close();}
+}
 async function waitForWindowsHelperReady(readyFile,readyToken,timeoutMs=10000) {
   const deadline=Date.now()+timeoutMs;
   while(Date.now()<deadline) {
@@ -229,7 +244,7 @@ class WindowsReleaseUpdater extends LinuxReleaseUpdater {
     const bootstrap=path.join(folder,'bootstrap-update.ps1');
     await fs.writeFile(bootstrap,WINDOWS_BOOTSTRAP_SCRIPT);
     const bootstrapData=Buffer.from(JSON.stringify({script,payload:encoded,stdout:path.join(folder,'helper.stdout.txt'),stderr:path.join(folder,'helper.stderr.txt'),pidFile:path.join(folder,'helper-pid.txt')})).toString('base64');
-    await this.execute('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',bootstrap,bootstrapData],{cwd:folder,windowsHide:true,timeout:15000,maxBuffer:65536});
+    await runWindowsBootstrap(this.start,['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',bootstrap,bootstrapData],folder);
     await waitForWindowsHelperReady(readyFile,readyToken);
     const pendingAuthorization=path.join(folder,'activate-authorized.pending');
     await fs.writeFile(pendingAuthorization,readyToken,{flag:'wx'});
@@ -246,4 +261,4 @@ mv -- "$2" "$4" || exit 1
 if ! mv -- "$3" "$2"; then mv -- "$4" "$2"; exit 1; fi
 "$5" || { mv -- "$2" "$2.failed-$$"; mv -- "$4" "$2"; exec "$5"; }
 `;
-module.exports={WindowsReleaseUpdater,WINDOWS_HANDOFF_SCRIPT,WINDOWS_BOOTSTRAP_SCRIPT,waitForWindowsHelperReady,windowsHandoffPayload,HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};
+module.exports={WindowsReleaseUpdater,WINDOWS_HANDOFF_SCRIPT,WINDOWS_BOOTSTRAP_SCRIPT,runWindowsBootstrap,waitForWindowsHelperReady,windowsHandoffPayload,HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};
