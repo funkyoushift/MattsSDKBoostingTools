@@ -34,10 +34,17 @@ function Capture-HandoffDiagnostics([string]$label) {
   } catch {$diagnostic.gameGuardError=$_.Exception.Message}
   if($receipt.userData){
     $diagnostic.files=@()
-    foreach($sub in @('update-handoff-*','updates')) {
-      Get-ChildItem -Path (Join-Path $receipt.userData $sub) -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
+    $directories=@(Get-ChildItem -LiteralPath $receipt.userData -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'update-handoff-*' -or $_.Name -eq 'updates' })
+    foreach($directory in $directories) {
+      Get-ChildItem -LiteralPath $directory.FullName -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object {
         $item=[ordered]@{path=$_.FullName;size=$_.Length;written=$_.LastWriteTimeUtc.ToString('o')}
         if($_.Extension -in @('.ps1','.txt','.log')){$item.text=Get-Content -LiteralPath $_.FullName -Raw -ErrorAction SilentlyContinue}
+        if($_.Extension -eq '.ps1'){
+          $bytes=[IO.File]::ReadAllBytes($_.FullName)
+          $item.firstBytesHex=[BitConverter]::ToString($bytes[0..([Math]::Min(15,$bytes.Length-1))])
+          $item.bytesBase64=[Convert]::ToBase64String($bytes)
+          try {$item.strictUtf8Text=([Text.UTF8Encoding]::new($false,$true)).GetString($bytes)}catch{$item.encodingError=$_.Exception.Message}
+        }
         if($_.Extension -eq '.exe'){$item.sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash}
         $diagnostic.files+= $item
       }
@@ -49,6 +56,34 @@ function Capture-HandoffDiagnostics([string]$label) {
   # A vanished renderer is expected during successful quit. Preserve the receipt
   # without converting diagnostic unavailability into an upgrade verdict.
   $global:LASTEXITCODE=0
+}
+function Replay-FailedHandoff {
+  # Diagnostic retry is separate from the original updater verdict. Keep both
+  # the generated script and its base64 payload byte-for-byte unchanged.
+  $recovery=[ordered]@{attempted=$false;at=(Get-Date).ToUniversalTime().ToString('o');initialUpgradePassed=$false}
+  try {
+    $requested=Get-Content (Join-Path $ReceiptDirectory 'handoff-diagnostics-requested.json') -Raw | ConvertFrom-Json
+    $original=@($requested.processes | Where-Object { $_.Name -eq 'powershell.exe' -and $_.CommandLine -match 'install-update\.ps1' })
+    if($original.Count -ne 1){throw 'Exactly one original helper command line was not captured; no retry.'}
+    if($original[0].CommandLine -notmatch '-File\s+(?:"([^"]+)"|(\S+))\s+([A-Za-z0-9+/=]+)\s*$'){throw 'Original helper arguments could not be recovered exactly.'}
+    $script=if($Matches[1]){$Matches[1]}else{$Matches[2]};$encoded=$Matches[3]
+    $payload=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($encoded)) | ConvertFrom-Json
+    if($payload.target -ne $install -or $payload.executable -ne $exe -or $payload.elevate -ne $true){throw 'Captured helper does not target this exact disposable installation.'}
+    $active=@(Get-CimInstance Win32_Process | Where-Object {
+      $_.ExecutablePath -eq $exe -or ($_.CommandLine -and ($_.CommandLine.Contains($script) -or $_.CommandLine.Contains($payload.installer)))
+    })
+    if($active.Count){$recovery.active=$active | Select-Object ProcessId,ParentProcessId,Name,CommandLine;throw 'Owned app, helper or installer is still running; no retry.'}
+    $recovery.script=$script;$recovery.payloadBase64=$encoded
+    $recovery.scriptSha256=(Get-FileHash -LiteralPath $script -Algorithm SHA256).Hash
+    $recovery.attempted=$true
+    $retry=Start-Process -FilePath $original[0].ExecutablePath -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$script+'"'),$encoded) -WorkingDirectory (Split-Path -Parent $script) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory 'recovery-helper-stdout.log') -RedirectStandardError (Join-Path $ReceiptDirectory 'recovery-helper-stderr.log')
+    $recovery.pid=$retry.Id
+    $recovery.exited=$retry.WaitForExit(180000)
+    if($recovery.exited){$recovery.exitCode=$retry.ExitCode}else{$recovery.timeout='180 seconds; no process force terminated'}
+    $recovery.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash
+    Capture-HandoffDiagnostics 'after-diagnostic-replay'
+  } catch {$recovery.error=$_.Exception.ToString()}
+  finally {$recovery | ConvertTo-Json -Depth 12 | Set-Content (Join-Path $ReceiptDirectory 'diagnostic-recovery-attempt.json')}
 }
 try {
   $release = Invoke-RestMethod 'https://api.github.com/repos/funkyoushift/MattsSDKBoostingTools/releases/tags/v2.41.1'
@@ -87,7 +122,7 @@ try {
   # The production helper waits for app exit and performs actual RunAs elevation.
   # Do not alter its payload or replace it with a probe installer.
   for($i=0;$i -lt 180;$i++){Start-Sleep -Seconds 1;if($i -eq 9){Capture-HandoffDiagnostics 'after-10-seconds'};if((Get-FileHash -LiteralPath $asar -ErrorAction SilentlyContinue).Hash -ne $oldHash){break}}
-  if((Get-FileHash -LiteralPath $asar).Hash -eq $oldHash){Capture-HandoffDiagnostics 'unchanged-asar';throw 'Actual handoff did not replace same-directory ASAR within 180s (inspect handoff diagnostics and renderer IPC result).'}
+  if((Get-FileHash -LiteralPath $asar).Hash -eq $oldHash){Capture-HandoffDiagnostics 'unchanged-asar';Replay-FailedHandoff;throw 'Initial actual handoff did not replace same-directory ASAR within 180s. Separate diagnostic replay is not an initial upgrade pass; inspect captured helper stderr/script/errors.'}
   $restarted=$false
   for($i=0;$i -lt 90;$i++) {
     $owned=@(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object { $_.Path -eq $exe -and $_.MainWindowHandle -ne 0 })

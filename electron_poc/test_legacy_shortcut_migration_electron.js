@@ -1,15 +1,21 @@
 'use strict';
 // Native Electron shell fixture: creates links only inside a disposable temp tree.
-const {app,shell}=require('electron');
 const fs=require('fs');
 const path=require('path');
 const os=require('os');
 const assert=require('assert/strict');
 const {migrateLegacyShortcut,sameExistingPath,SHORTCUT_NAME}=require('./legacy_shortcut_migration');
-app.whenReady().then(async()=>{
- if(process.platform!=='win32'){console.log('SKIP native Windows shortcut fixture');app.exit(0);return;}
- const temp=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-shortcut-test-'));
- try {
+function guardedRoot(temp) {
+ if(!temp||path.dirname(path.resolve(temp))!==path.resolve(os.tmpdir())||!path.basename(temp).startsWith('msbt-shortcut-test-'))throw Error('Unexpected fixture cleanup path');
+ return temp;
+}
+if(process.versions.electron) {
+ const {app,shell}=require('electron');
+ const temp=guardedRoot(process.argv[2]);
+ for(const [name,folder] of [['userData','electron-userdata'],['crashDumps','electron-crashes']]) {
+  const directory=path.join(temp,folder);fs.mkdirSync(directory,{recursive:true});app.setPath(name,directory);
+ }
+ app.whenReady().then(async()=>{
   const env={APPDATA:path.join(temp,'Roaming'),LOCALAPPDATA:path.join(temp,'Local')};
   const legacy=path.join(env.LOCALAPPDATA,'Programs','MSBT','app','MattsSDKBoostingTools.exe');
   const executable=path.join(temp,'new-install','MattsSDKBoostingTools.exe');
@@ -34,6 +40,25 @@ app.whenReady().then(async()=>{
   assert.equal(result.status,'migrated',JSON.stringify({...result,initialTarget:initialLink.target,expectedTarget:legacy}));assert.deepEqual(fs.readFileSync(result.backup),before);
   const after=shell.readShortcutLink(shortcut);assert(sameExistingPath(after.target,executable),JSON.stringify({actualTarget:after.target,expectedTarget:executable}));assert.equal(after.args,'--fixture');assert(sameExistingPath(after.icon,process.execPath));assert.equal(after.description,'preserve fixture description');
   console.log('PASS native Electron shortcut update, preserved fields and exact original backup');
- } finally {if(path.dirname(path.resolve(temp))!==path.resolve(os.tmpdir())||!path.basename(temp).startsWith('msbt-shortcut-test-'))throw Error('Unexpected fixture cleanup path');fs.rmSync(temp,{recursive:true,force:true});}
  app.exit(0);
-}).catch(error=>{console.error(error);app.exit(1);});
+ }).catch(error=>{console.error(error);app.exit(1);});
+} else {
+ (async()=>{
+  if(process.platform!=='win32'){console.log('SKIP native Windows shortcut fixture');return;}
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-shortcut-test-'));
+  try {
+   const binary=process.env.ELECTRON_BINARY || require('electron');
+   const env={...process.env};delete env.ELECTRON_RUN_AS_NODE;
+   await new Promise((resolve,reject)=>{
+    const child=require('child_process').spawn(binary,[__filename,temp],{env,stdio:'inherit',windowsHide:true});
+    let launchError;child.once('error',error=>{launchError=error;});
+    child.once('close',(code,signal)=>launchError?reject(launchError):code===0?resolve():reject(Error('Native shortcut fixture exited '+code+' signal '+signal)));
+   });
+  } finally {
+   // The Electron process has exited, releasing its cached ASAR file handles.
+   guardedRoot(temp);fs.rmSync(temp,{recursive:true,force:true});
+   assert(!fs.existsSync(temp),'Fixture cleanup did not remove its disposable root');
+  }
+  console.log('PASS native shortcut fixture exited and disposable root removed');
+ })().catch(error=>{console.error(error);process.exitCode=1;});
+}

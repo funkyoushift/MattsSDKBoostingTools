@@ -35,6 +35,27 @@ function environment(home) {
   for(const key of ['APPIMAGE','APPDIR','MSBT_PYTHON','MSBT_SAVE_ROOT','STEAM_COMPAT_DATA_PATH','WINEPREFIX','LD_LIBRARY_PATH','LD_PRELOAD','ELECTRON_RUN_AS_NODE','NODE_OPTIONS']) delete env[key];
   return env;
 }
+// Electron can rewrite argv/environ: after automatic relaunch /proc/environ may be
+// empty and cmdline may contain all arguments in one string. Establish ownership
+// through only the isolated HOME/path and related MSBT process ancestry.
+function classifyOwned(home,candidates) {
+  const isApp=p=>path.basename(p.exe||'').startsWith('MattsSDKBoostingTools');
+  const parent=p=>Number((p.status||[]).find(line=>line.startsWith('PPid:'))?.split(':')[1].trim());
+  const byPid=new Map(candidates.map(p=>[p.pid,p]));
+  const owned=new Set(candidates.filter(p=>p.homeMatches || p.exe?.startsWith(home+path.sep) || p.args.some(a=>a.includes(home+path.sep))).map(p=>p.pid));
+  let changed=true;
+  while(changed){changed=false;for(const p of candidates){
+    if(!owned.has(p.pid) && owned.has(parent(p))){owned.add(p.pid);changed=true;}
+    // A renderer's --user-data-dir under this HOME identifies its MSBT main
+    // ancestor even after the main process rewrites away its environment.
+    const ancestor=byPid.get(parent(p));
+    if(owned.has(p.pid) && ancestor && isApp(ancestor) && !owned.has(ancestor.pid)){owned.add(ancestor.pid);changed=true;}
+  }}
+  for(const p of candidates)p.owned=owned.has(p.pid);
+  const found=candidates.filter(p=>p.owned && isApp(p) && !p.args.some(a=>/(?:^|\s)--type=/.test(a)));
+  for(const p of found){p.ownershipEvidence=[];let current=p;const seen=new Set();while(current && !seen.has(current.pid)){seen.add(current.pid);p.ownershipEvidence.push({pid:current.pid,exe:current.exe,homeMatches:current.homeMatches});current=byPid.get(parent(current));}}
+  return found;
+}
 async function processSnapshot(home) {
   const found=[],candidates=[],readFailures=[];
   for(const pid of await fs.readdir('/proc')) if(/^\d+$/.test(pid)) {
@@ -50,9 +71,9 @@ async function processSnapshot(home) {
     try{item.status=(await fs.readFile(`/proc/${pid}/status`,'utf8')).split('\n').filter(v=>/^(Name|State|PPid|Uid):/.test(v));}catch(e){item.statusReadError=e.code;}
     try{item.cwd=await fs.readlink(`/proc/${pid}/cwd`);}catch(e){item.cwdReadError=e.code;}
     candidates.push(item);
-    if(owned && path.basename(item.exe||'').startsWith('MattsSDKBoostingTools') && !args.some(a=>a.startsWith('--type=')))found.push(item);
+
   }
-  return {at:new Date().toISOString(),found,candidates,readFailures};
+  return {at:new Date().toISOString(),found:classifyOwned(home,candidates),candidates,readFailures};
 }
 async function processes(home){return (await processSnapshot(home)).found;}
 async function filesystemSnapshot(record,home,reason) {
@@ -143,13 +164,14 @@ async function trial(kind, oldFile, newFile, port) {
     cdp.close();cdp=null;
     let restarted=[];
     for(let n=0;n<120;n++) {await pause(1000);
-      restarted=await processes(home);if(restarted.length && restarted.every(p=>!p.args.includes(`--remote-debugging-port=${port}`)))break;
+      restarted=await processes(home);if(restarted.length && restarted.every(p=>!p.args.some(a=>a.includes(`--remote-debugging-port=${port}`))))break;
     }
-    record.automaticHandoffProcesses=restarted;record.automaticHandoffObserved=Boolean(restarted.length && restarted.every(p=>!p.args.includes(`--remote-debugging-port=${port}`)));
+    record.automaticHandoffProcesses=restarted;record.automaticHandoffObserved=Boolean(restarted.length && restarted.every(p=>!p.args.some(a=>a.includes(`--remote-debugging-port=${port}`))));
     record.automaticHandoffError=record.automaticHandoffObserved?null:'No automatic restarted desktop observed; independent payload and second-launch checks continue';
     await filesystemSnapshot(record,home,'after-handoff');
+    record.postHandoffHashes=Object.fromEntries(await Promise.all(sentinels.map(async file=>[file,await hash(file)])));record.postHandoffFilesPreserved=JSON.stringify(record.before)===JSON.stringify(record.postHandoffHashes);await persist();
     record.automaticHandoffRuntimeVersion=record.automaticHandoffObserved?'UNVERIFIED: released handoff does not retain CDP arguments':'UNVERIFIED: no automatic restarted desktop observed';
-    if(kind==='appimage' && record.automaticHandoffObserved)check(restarted.some(p=>p.environment.includes(`APPIMAGE=${launcher}`)),'Automatic AppImage process APPIMAGE does not match stable launcher');
+    if(kind==='appimage' && record.automaticHandoffObserved)check(restarted.some(p=>p.environment.includes(`APPIMAGE=${launcher}`) || p.ownershipEvidence.some(a=>a.exe===launcher)),'Automatic AppImage process ancestry does not match stable launcher');
     try {
     if(kind==='appimage')check(await hash(launcher)===await hash(newFile),'Stable AppImage launcher does not match published 2.41.2 bytes');
     else {

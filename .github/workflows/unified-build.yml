@@ -62,7 +62,7 @@ jobs:
           node tools/afk_lobby/test_shift_link.js
           if ($LASTEXITCODE -ne 0) { throw 'SHiFT link checks failed' }
           Push-Location electron_poc
-          try { npx electron test_legacy_shortcut_migration_electron.js; if ($LASTEXITCODE -ne 0) { throw 'Native shortcut migration failed' }; npx electron test_afk_lobby.js; if ($LASTEXITCODE -ne 0) { throw 'SHiFT desktop guidance check failed' } }
+          try { node test_legacy_shortcut_migration_electron.js; if ($LASTEXITCODE -ne 0) { throw 'Native shortcut migration failed' }; npx electron test_afk_lobby.js; if ($LASTEXITCODE -ne 0) { throw 'SHiFT desktop guidance check failed' } }
           finally { Pop-Location }
       - name: Verify Windows update handoff
         shell: pwsh
