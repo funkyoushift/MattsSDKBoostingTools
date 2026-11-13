@@ -124,3 +124,48 @@ for (const alreadyRunning of [false,true]) {
  f.window.MsbtShiftBackground.onCompanionState({state:'foreground'});assert.equal(f.props.transform.value,'rotate(1deg)');
  assert.equal(f.head.children.length,0);assert.equal(f.window.ShiftFriendAutomation.isRunning(),true);}}
 console.log('PASS owned-start rollback, foreground stop acknowledgement, and 20 repeated start/show cycles');
+
+// New command IDs must confirm an already-owned lease rather than disappear
+// into the UI start button's duplicate-start guard.
+for (const nativeState of ['pending', 'active']) {
+ const f=fixture();f.run();assert(f.start());f.requests[0].respond(nativeState);
+ const ownedToken=f.requests[0].body.token;
+ f.endpoint={port:7777,instance:'one',start_token:'06'.repeat(16)};
+ const command={id:'f'.repeat(32),mode:'start'};
+ f.window.MsbtShiftBackground.onCompanionState({command});
+ assert.equal(f.requests.length,2);assert.deepEqual(f.requests[1].body,{mode:'start',token:ownedToken});
+ f.requests[1].respond(nativeState);
+ f.window.MsbtShiftBackground.onCompanionState({command});assert.equal(f.requests.length,2);
+ f.run();assert.equal(f.requests.length,3);assert.equal(f.requests[2].body.mode,'heartbeat');
+}
+// While an existing heartbeat is in flight, rapid desktop commands supersede
+// one another. The last Start must be confirmed even if no Stop was observed.
+{
+ const f=fixture();f.run();assert(f.start());f.requests[0].respond('active');f.run();
+ const heartbeat=f.requests[1],ownedToken=heartbeat.body.token;
+ for (const [i,mode] of ['stop','start','stop','start'].entries()) {
+  f.window.MsbtShiftBackground.onCompanionState({command:{id:String(i+1).repeat(32),mode}});
+ }
+ assert.equal(f.requests.length,2);heartbeat.respond('active');
+ assert.equal(f.requests.length,3);assert.deepEqual(f.requests[2].body,{mode:'start',token:ownedToken});
+ assert.equal(f.window.ShiftFriendAutomation.isRunning(),true);f.requests[2].respond('active');
+ const stop={id:'9'.repeat(32),mode:'stop'};
+ f.window.MsbtShiftBackground.onCompanionState({command:stop});
+ assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);
+ assert.equal(f.requests[3].body.mode,'stop');assert.equal(f.requests[4].body.mode,'ack_stop');
+}
+console.log('PASS new-ID Start confirmation with existing lease and rapid command supersession');
+
+// A new command during the initial paint delay is confirmed by the original
+// scheduled request, without bringing native entry forward or duplicating it.
+{
+ const f=fixture();f.run();assert(f.window.MsbtShiftBackground.start());
+ const command={id:'7'.repeat(32),mode:'start'};
+ f.window.MsbtShiftBackground.onCompanionState({command});
+ assert.equal(f.requests.length,0);f.run();
+ assert.equal(f.requests.length,1);assert.equal(f.requests[0].body.mode,'start');
+ f.requests[0].respond('active');
+ f.window.MsbtShiftBackground.onCompanionState({command});assert.equal(f.requests.length,1);
+ f.run();assert.equal(f.requests.length,2);assert.equal(f.requests[1].body.mode,'heartbeat');
+}
+console.log('PASS new-ID Start preserves the initial foreground paint delay');

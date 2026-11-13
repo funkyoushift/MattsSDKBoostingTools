@@ -1,5 +1,8 @@
 # Project change notes — read first
 
+- [2026-11-13: Native rapid-Start follow-up](changes/2026-11-13-shift-start-acknowledgement.md): Concurrent GPU evidence, native protected-list failed-write recovery/empty-save passes, and newly reproduced duplicate-Start acknowledgement repair; rebuilt native qualification remains pending.
+
+
 - [2026-11-13: In-app updater end-to-end repair](changes/2026-11-13-updater-end-to-end-repair.md): Windows helper/launcher/check repairs complete; candidate Windows upgrades and unmodified Linux upgrades pass with fixture preservation. Both native package gates pass; exact artifacts saved. 2.41.3 release authorized; all four candidate packages/native desktop checks and hashes pass. Owner exception preflight passed and tested-source tag created; actual publication denied before execution by automatic approval review over missing live evidence. No release/assets published.
 
 - [2026-11-12: Required Windows/Linux release gate](changes/2026-11-12-windows-linux-release-gate.md): Both native platform verifiers and exact four-artifact receipts required; publication also requires Windows and Linux/Proton live evidence. Stale Linux companion fixture repaired. Both policy PRs merged; Windows/Ubuntu22 native CI and aggregate pass. Ubuntu26 sandbox startup fails; live BL4/Proton untested; publication_ready=false. No new release.

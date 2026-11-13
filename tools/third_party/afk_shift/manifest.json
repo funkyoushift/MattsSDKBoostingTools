@@ -1,5 +1,5 @@
 {
-  "sha256": "fdb039f13ea24c4b8b30b8cc972a83df7f6c71f20a09e7c5f916aebad6a9b93f",
+  "sha256": "6253f461653fc597927e5512f66394b3408b37f8c6728870a2b7647228aa9516",
   "source": "Azalea SHiFT v4.4 UX source with MSBT AFK policy and floating controls",
   "source_archive_sha256": "3e31ba6dfb91f014627df7cb9c453a34c8d13d2b49e1c6855bb8955f36ded440",
   "entries_verified": 192,
@@ -218,7 +218,7 @@
   "companion_peer_source_sha256": "9dcd547fba3d58c833d90a84402ccb2e589e2aeb4bc167762ad960ead2f188a8",
   "companion_background_source_sha256": "a1e03ce9fa5b74e021ddcfdd4d6b2e80138ab39e12d277c18962f3b7d59b609a",
   "companion_background_native_source_sha256": "ff6b015d39c9538d50d2554d283177158530a12645afbbfc428e7bd5837c2a91",
-  "background_client_source_sha256": "90f42aa501e3c6e5eab979a6b76fcb221fd52efd86f006b4077de6409ba58264",
+  "background_client_source_sha256": "3b9dbb36fdd697c02d601c7cc378bd54538c1c0b8a2b0b3d1e6996d12ed53dd1",
   "companion_validation": "Final production candidate: offline regression and archive checks; final packaged native qualification pending.",
   "companion_menu_handoff_source_sha256": "9e63bcf99c28d9287e26d2cac8c35d87a0f6f0f527491ddeb19f01bc4553cbf3"
 }

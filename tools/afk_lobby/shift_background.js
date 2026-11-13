@@ -4,7 +4,7 @@
     var state = 'idle', reason = '', token = null, pinned = null;
     var generation = 0, timer = null, request = null, previousStyle = null, backgroundStyle = null, button = null, message = null;
     var seen = [], queued = null;
-    var startedHere = false;
+    var startedHere = false, startDelayPending = false;
     function paint() {
         if (button) button.textContent = state === 'pending' ? 'Starting background...' : 'Play while accepting';
         if (message) message.textContent = reason;
@@ -75,6 +75,7 @@
     }
     function matches(b) { return b && pinned && b.port === pinned.port && b.instance === pinned.instance; }
     function clear() {
+        startDelayPending = false;
         if (timer !== null) { window.clearTimeout(timer); timer = null; }
         if (request) { var old = request; request = null; old.abort(); }
     }
@@ -145,8 +146,9 @@
         pinned = b; state = 'pending'; reason = ''; ++generation; paint();
         try { hide(); } catch (e) { try { restore(); } catch (_) {} end('error', presentationError(e)); return false; }
         var startGeneration = generation;
+        startDelayPending = true;
         timer = window.setTimeout(function () {
-            timer = null;
+            timer = null; startDelayPending = false;
             if (startGeneration !== generation) return;
             if (!ready() || !matches(bridge())) { end('error', 'Background prerequisites changed'); return; }
             send('start', receive);
@@ -186,7 +188,19 @@
         } else {
             try {
                 if (!bridge() || !window.ShiftFriendAutomation) return;
-                start();
+                if (state === 'active' || state === 'pending') {
+                    // A fresh desktop command still needs confirmation when this
+                    // page already owns the lease. Reuse that lease, never the
+                    // newly advertised token, so the native owner check applies.
+                    if (!ready() || !matches(bridge()) || !token || !pinned) return;
+                    // The original delayed request confirms the latest Start
+                    // too; retain the foreground paint before native entry.
+                    if (startDelayPending) return;
+                    if (timer !== null) { window.clearTimeout(timer); timer = null; }
+                    send('start', receive);
+                } else {
+                    start();
+                }
             } catch (_) { end('error', 'Unable to start accepting'); }
         }
     }
