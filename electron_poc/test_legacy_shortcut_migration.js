@@ -46,3 +46,5 @@ for(const target of ['C:\\User\\Local\\Programs\\Other\\app\\MattsSDKBoostingToo
 }
 assert.equal(newer('2.41.2','2.41.2'),false);assert.equal(newer('2.41.2','unknown'),false);
 console.log('PASS bounded shortcut identity, newer-only migration, original backup, preserved custom fields, concurrent changes and write failures');
+
+assert.equal(SHORTCUT_NAME, require('./package.json').build.nsis.shortcutName + '.lnk', 'Migration must match the real installer shortcut name');

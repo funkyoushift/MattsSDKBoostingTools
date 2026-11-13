@@ -87,3 +87,54 @@ Run43343615501 detached CDP before handoff. Windows check and verified download
 passed but the same-directory ASAR was not replaced within180seconds. No helper
 error file was found. The cause remains unresolved; further bounded process and
 IPC-result diagnostics are required. This is not a successful installed upgrade.
+
+## Native evidence and fixture corrections
+
+Independent production review of39127450..a173e2b9 found no additional blocking
+issues. Local Windows helper fixture and platform metadata/concurrency tests pass;
+its installer is a probe with elevation disabled, so it is not actual NSIS/UAC proof.
+
+Run43343615501 Linux receipts show exact published2.41.2 payload replacement for
+both portable and AppImage. Process snapshots also contain the automatically
+restarted applications (portable PID2699; AppImage PID3205). The test incorrectly
+required HOME in the main process environment, which Electron rewrote to empty.
+It then skipped normal closure and its second launch hit the single-instance /
+debugger-port conflict. Ownership now follows isolated paths and process ancestry;
+Chromium child flags are recognized even in rewritten argv. Second restart and
+preference/bookmark persistence remain pending a corrected fresh run.
+
+Windows run43345481638 proves the original app spawned its PowerShell helper and
+exited; game-process query succeeded. The helper disappeared without replacing
+the ASAR. Wildcard recursion omitted its script from the diagnostic, so literal
+folder enumeration and a separately labelled exact-payload helper replay were
+added. A diagnostic replay cannot turn the original attempt into a passing test.
+
+Native shortcut behavior passed in run43345870171, including exact backup and
+preserved custom fields. Cleanup failed because Electron still held archive
+handles. The fixture now uses a Node parent to remove its bounded temporary tree
+after Electron exits. This test creates no UI or real user shortcuts. A local
+windowless attempt exited before test output; no native PASS is inferred from it.
+Ubuntu22 package verification passed that run; Windows packaging was blocked by
+the cleanup fixture. Final combined rerun is43346634235 at96eee104.
+
+Corrected actual Linux upgrade run43346634219 PASS on native Ubuntu22.04:
+both public2.41.1 portable/AppImage packages downloaded and installed public2.41.2
+through the unchanged preload IPC and production updater. Automatic restart,
+exact new payload hashes, second manual restart reporting2.41.2, LocalStorage,
+serial bookmarks, Matt Editor preferences and sentinel-file preservation passed.
+Both owned desktops closed normally. These are disposable desktop data fixtures,
+not live BL4/Proton or real protected-list/save-file proof. Evidence:
+local/updater-repair/evidence/run-43346634219/linux/linux-real-updater.json.
+
+At96eee104, unified run43346634235 passed Windows, Ubuntu22 and the aggregate
+four-artifact gate. Exact hashes are in ../evidence/candidate-96eee104/
+release-verification.json (relative to the review root). publication_ready=false:
+CI has no live BL4/Proton evidence. These are unpublished repair candidates with
+unchanged2.41.2 version labels, distinct from public2.41.2 bytes.
+
+Fresh real launcher verification found the installer uses U+2014, whereas the
+initial migration constant used ASCII hyphen. Corrected the constant to escaped
+Unicode and added an assertion against package.json build.nsis.shortcutName.
+Independent review and unit/syntax checks pass. The real repaired link still has
+SHA25688ab7c40509583e0e865fac5cedab3a3b06ff40dab3d99dabeccce0e501df570
+and targets ProgramFiles2.41.2. Rebuild required after this source correction.

@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const {createHash} = require('crypto');
-const SHORTCUT_NAME = 'Borderlands 4 Modding Tools - Powered by Funk.lnk';
+const SHORTCUT_NAME = 'Borderlands 4 Modding Tools \u2014 Powered by Funk.lnk';
 const PACKAGE_NAME = 'matts-sdk-boosting-tools';
 function samePath(a,b) {return typeof a==='string' && typeof b==='string' && path.win32.resolve(a).toLowerCase()===path.win32.resolve(b).toLowerCase();}
 // Windows Shell can expand an existing 8.3 path to its long spelling. Only
