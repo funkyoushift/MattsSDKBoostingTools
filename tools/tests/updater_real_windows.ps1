@@ -2,8 +2,8 @@ param([string]$ReceiptDirectory = (Join-Path $env:RUNNER_TEMP 'msbt real upgrade
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or !$env:RUNNER_TEMP -or $env:RUNNER_OS -ne 'Windows') { throw 'This installer test runs only on a disposable GitHub Windows runner.' }
 $installTemp=if($SystemTemp){[IO.Path]::GetTempPath()}else{$env:RUNNER_TEMP}
-$root = Join-Path $installTemp ('MSBT real upgrade ' + [Guid]::NewGuid().ToString('N'))
-$install = Join-Path $root 'Installation with spaces'
+$root = Join-Path $installTemp ('MSBT u-' + [Guid]::NewGuid().ToString('N').Substring(0,12))
+$install = Join-Path $root 'app'
 New-Item -ItemType Directory -Path $root,$ReceiptDirectory -Force | Out-Null
 $receipt = [ordered]@{ source='2.41.1'; target='2.41.2'; started=(Get-Date).ToUniversalTime().ToString('o'); install=$install; ok=$false; limitation='Disposable desktop fixture. No live BL4, Proton, guest saves, or production data proof.' }
 $receipt.installVolume=if($SystemTemp){'system'}else{'runner'}
@@ -219,6 +219,9 @@ try {
   if(!$initial.WaitForExit(180000)){throw 'Initial released installer exceeded 180 seconds; no process was force-terminated.'}
   $receipt.initialInstallerExit=$initial.ExitCode
   if($initial.ExitCode -ne 0) { throw 'Initial released installer failed.' }
+  $installedPaths=@(Get-ChildItem -LiteralPath $install -Recurse -File | ForEach-Object {[ordered]@{path=$_.FullName;length=$_.FullName.Length;relative=$_.FullName.Substring($install.Length+1)}})
+  $receipt.installedPathLengths=[ordered]@{installRootLength=$install.Length;fileCount=$installedPaths.Count;maximum=($installedPaths | Measure-Object -Property length -Maximum).Maximum;longest=@($installedPaths | Sort-Object length -Descending | Select-Object -First 10);atLeast260=@($installedPaths | Where-Object {$_.length -ge 260})}
+  $receipt.installedPathLengths | ConvertTo-Json -Depth 8 | Set-Content (Join-Path $ReceiptDirectory 'installed-path-lengths.json')
   if($CandidateHandoff){
     if(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object {$_.Path -eq $exe}){throw 'Candidate patch requires the disposable old application to be closed.'}
     $receipt.classification='modified-candidate-handoff'

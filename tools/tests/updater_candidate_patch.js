@@ -43,7 +43,7 @@ if(require.main===module){
   const scopeChecks=[process.env.RUNNER_TEMP,process.env.TEMP,process.env.TMP,require('node:os').tmpdir()].filter(Boolean).map(root=>{
     try {
       const canonical=fs.realpathSync.native(root),relative=path.relative(canonical,archiveCanonical);
-      return {root,canonical,relative,allowed:Boolean(relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^MSBT real upgrade [a-f0-9]{32}$/.test(relative.split(path.sep)[0]))};
+      return {root,canonical,relative,allowed:Boolean(relative && !relative.startsWith('..') && !path.isAbsolute(relative) && /^(?:MSBT real upgrade [a-f0-9]{32}|MSBT u-[a-f0-9]{12})$/.test(relative.split(path.sep)[0]))};
     } catch(error) {return {root,allowed:false,error:String(error)};}
   });
   if(!scopeChecks.some(check=>check.allowed))throw Error('Archive scope rejected: '+JSON.stringify({archive,archiveCanonical,scopeChecks}));
