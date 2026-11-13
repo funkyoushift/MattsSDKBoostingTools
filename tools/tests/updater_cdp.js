@@ -3,9 +3,9 @@
 const fs = require('node:fs');
 async function connect(port, {pageFilter = t=>t.type==='page', timeout=90000}={}) {
   const deadline=Date.now()+timeout;let page;
-  while(Date.now()<deadline){try{page=(await(await fetch(`http://127.0.0.1:${Number(port)}/json/list`)).json()).find(pageFilter);if(page)break;}catch{}await new Promise(r=>setTimeout(r,500));}
+  while(Date.now()<deadline){try{page=(await(await fetch(`http://127.0.0.1:${Number(port)}/json/list`,{signal:AbortSignal.timeout(1500)})).json()).find(pageFilter);if(page)break;}catch{}await new Promise(r=>setTimeout(r,500));}
   if(!page)throw Error('CDP page unavailable');
-  const socket=new WebSocket(page.webSocketDebuggerUrl);await new Promise((r,j)=>{socket.onopen=r;socket.onerror=j;});
+  const socket=new WebSocket(page.webSocketDebuggerUrl);await new Promise((r,j)=>{const timer=setTimeout(()=>{socket.close();j(Error('CDP socket open timeout'));},5000);socket.onopen=()=>{clearTimeout(timer);r();};socket.onerror=()=>{clearTimeout(timer);j(Error('CDP socket open failed'));};});
   let id=0;const pending=new Map();
   socket.onmessage=e=>{const v=JSON.parse(e.data),p=pending.get(v.id);if(p){clearTimeout(p.timer);pending.delete(v.id);v.error?p.reject(Error(JSON.stringify(v.error))):p.resolve(v.result);}};
   socket.onclose=()=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(Error('CDP disconnected'));}pending.clear();};
@@ -33,11 +33,11 @@ const pause = ms => new Promise(r => setTimeout(r, ms));
   }
   let page;
   for (let n=0;n<90;n++) {
-    try { page=(await (await fetch(`http://127.0.0.1:${Number(port)}/json/list`)).json()).find(t=>t.type==='page' && t.url.includes('renderer.html')); if(page) break; } catch {}
+    try { page=(await (await fetch(`http://127.0.0.1:${Number(port)}/json/list`,{signal:AbortSignal.timeout(1500)})).json()).find(t=>t.type==='page' && t.url.includes('renderer.html')); if(page) break; } catch {}
     await pause(1000);
   }
   if (!page) throw Error('Released renderer CDP target unavailable');
-  socket=new WebSocket(page.webSocketDebuggerUrl); await new Promise((r,j)=>{socket.onopen=r;socket.onerror=j;});
+  socket=new WebSocket(page.webSocketDebuggerUrl); await new Promise((r,j)=>{const timer=setTimeout(()=>{socket.close();j(Error('CDP socket open timeout'));},5000);socket.onopen=()=>{clearTimeout(timer);r();};socket.onerror=()=>{clearTimeout(timer);j(Error('CDP socket open failed'));};});
   let id=0; const pending=new Map();
   socket.onclose=()=>{for(const item of pending.values()){clearTimeout(item.timer);item.reject(Error('CDP disconnected after app exit'));}pending.clear();};
   socket.onmessage=event=>{const v=JSON.parse(event.data); if(pending.has(v.id)){const {resolve,reject,timer}=pending.get(v.id);clearTimeout(timer);pending.delete(v.id);v.error?reject(Error(JSON.stringify(v.error))):resolve(v.result);}};
