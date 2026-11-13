@@ -1,4 +1,4 @@
-param([string]$ReceiptDirectory = (Join-Path $env:RUNNER_TEMP 'msbt real upgrade receipts'))
+param([string]$ReceiptDirectory = (Join-Path $env:RUNNER_TEMP 'msbt real upgrade receipts'),[switch]$CandidateHandoff)
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or !$env:RUNNER_TEMP -or $env:RUNNER_OS -ne 'Windows') { throw 'This installer test runs only on a disposable GitHub Windows runner.' }
 $root = Join-Path $env:RUNNER_TEMP ('MSBT real upgrade ' + [Guid]::NewGuid().ToString('N'))
@@ -165,6 +165,14 @@ try {
   if(!$initial.WaitForExit(180000)){throw 'Initial released installer exceeded 180 seconds; no process was force-terminated.'}
   $receipt.initialInstallerExit=$initial.ExitCode
   if($initial.ExitCode -ne 0) { throw 'Initial released installer failed.' }
+  if($CandidateHandoff){
+    if(Get-Process MattsSDKBoostingTools -ErrorAction SilentlyContinue | Where-Object {$_.Path -eq $exe}){throw 'Candidate patch requires the disposable old application to be closed.'}
+    $receipt.classification='modified-candidate-handoff'
+    $receipt.qualification='Diagnostic candidate updater module in published 2.41.1 baseline; NOT an unmodified published-client pass.'
+    & node (Join-Path $PSScriptRoot 'updater_candidate_patch.js') (Join-Path $install 'resources/app.asar') (Join-Path $PSScriptRoot '../../electron_poc/platform_release_updater.js') (Join-Path $ReceiptDirectory 'candidate-patch.json')
+    if($LASTEXITCODE -ne 0){throw 'Scoped candidate ASAR patch failed.'}
+    $receipt.candidatePatch=Get-Content (Join-Path $ReceiptDirectory 'candidate-patch.json') -Raw | ConvertFrom-Json
+  }else{$receipt.classification='unmodified-published-client'}
   [void](Launch-Probe 'seed' 19411)
   Close-Owned
   $seed=Get-Content (Join-Path $ReceiptDirectory 'seed-19411.json') -Raw | ConvertFrom-Json

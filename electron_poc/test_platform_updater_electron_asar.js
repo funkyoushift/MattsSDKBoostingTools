@@ -18,25 +18,38 @@ if (process.versions.electron) {
     await require('original-fs').promises.access(archive);
     let starts = 0, quits = 0;
     const fakeApp = {getPath: () => root, quit: () => { quits++; }};
-    const start = () => {
+    let payload;
+    const execute = async (_exe,args,options) => {
       starts++;
-      const child = new EventEmitter();
-      child.unref = () => {};
-      setImmediate(() => child.emit('spawn'));
-      return child;
+      assert.equal(options.windowsHide,true);
+      assert.equal(options.detached,undefined);
+      const bootstrapData=JSON.parse(Buffer.from(args.at(-1),'base64').toString());
+      payload=JSON.parse(Buffer.from(bootstrapData.payload,'base64').toString());
+      await fs.writeFile(payload.readyFile,payload.readyToken);
+      return {stdout:'',stderr:''};
     };
     const makeUpdater = executable => {
-      const updater = new WindowsReleaseUpdater({app: fakeApp, isNewer: () => true, executable, start});
+      const updater = new WindowsReleaseUpdater({app: fakeApp, isNewer: () => true, executable, execute});
       updater.ready = true;
       updater.downloaded = path.join(root, 'verified-installer.exe');
       return updater;
     };
-    await makeUpdater(path.join(root, 'install', 'MSBT.exe')).quitAndInstall();
+    const concurrent=makeUpdater(path.join(root,'install','MSBT.exe'));
+    const first=concurrent.quitAndInstall(),second=concurrent.quitAndInstall();
+    assert.equal(first,second);
+    await Promise.all([first,second]);
     assert.equal(starts, 1);
     assert.equal(quits, 1);
+    assert.equal((await fs.readFile(payload.authorizeFile,'utf8')).trim(),payload.readyToken);
+    const failed=makeUpdater(path.join(root,'install','MSBT.exe'));
+    failed.execute=async()=>{throw Error('Bootstrap startup failed');};
+    await assert.rejects(failed.quitAndInstall(),/Bootstrap startup failed/);
+    assert.equal(failed.ready,true);assert.equal(quits,1);
     await assert.rejects(makeUpdater(path.join(root, 'missing', 'MSBT.exe')).quitAndInstall(), {code: 'ENOENT'});
     assert.equal(starts, 1);
     assert.equal(quits, 1);
+    failed.execute=execute;await failed.quitAndInstall();
+    assert.equal(starts,2);assert.equal(quits,2);
     console.log(`PASS Electron ASAR physical access and guarded Windows handoff (${process.env.MSBT_UPDATER_ASAR ? 'packaged' : 'source'} updater)`);
     app.exit(0);
   })().catch(error => { console.error(error); app.exit(1); });

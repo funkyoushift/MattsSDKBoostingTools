@@ -6,7 +6,7 @@ const fs = require('fs/promises');
 const physicalFs = process.versions.electron ? require('original-fs').promises : fs;
 const {constants} = require('fs');
 const path = require('path');
-const {createHash} = require('crypto');
+const {createHash,randomBytes} = require('crypto');
 const {spawn, execFile} = require('child_process');
 const {promisify} = require('util');
 const exec = promisify(execFile);
@@ -139,6 +139,17 @@ class LinuxReleaseUpdater extends EventEmitter {
 const WINDOWS_HANDOFF_SCRIPT = `
 $ErrorActionPreference = 'Stop'
 $data = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0])) | ConvertFrom-Json
+if ($data.readyFile) {
+  try {
+    $data.readyToken | Set-Content -LiteralPath $data.readyFile -Encoding ASCII
+    $deadline = [DateTime]::UtcNow.AddSeconds(15)
+    while (!(Test-Path -LiteralPath $data.authorizeFile) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 50 }
+    if (!(Test-Path -LiteralPath $data.authorizeFile) -or (Get-Content -LiteralPath $data.authorizeFile -Raw).Trim() -ne $data.readyToken) { throw 'Updater activation was not authorized after helper startup' }
+  } catch {
+    $_.Exception.Message | Set-Content -LiteralPath $data.errorLog -Encoding UTF8
+    exit 1
+  }
+}
 Wait-Process -Id $data.waitPid -ErrorAction SilentlyContinue
 $failure = $null
 try {
@@ -157,6 +168,23 @@ if (Test-Path -LiteralPath $data.executable -PathType Leaf) {
 }
 if ($failure) { exit 1 }
 `;
+// Start-Process provides the independent hidden console that direct detached
+// Node spawning does not provide to Windows PowerShell. All values remain data.
+const WINDOWS_BOOTSTRAP_SCRIPT = `
+$ErrorActionPreference = 'Stop'
+$data = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0])) | ConvertFrom-Json
+$arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $data.script + '" ' + $data.payload
+$child = Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -WindowStyle Hidden -PassThru -RedirectStandardOutput $data.stdout -RedirectStandardError $data.stderr
+$child.Id | Set-Content -LiteralPath $data.pidFile -Encoding ASCII
+`;
+async function waitForWindowsHelperReady(readyFile,readyToken,timeoutMs=10000) {
+  const deadline=Date.now()+timeoutMs;
+  while(Date.now()<deadline) {
+    try {if((await fs.readFile(readyFile,'utf8')).trim()===readyToken)return;} catch(error) {if(error.code!=='ENOENT')throw error;}
+    await new Promise(resolve=>setTimeout(resolve,50));
+  }
+  throw Error('Windows update helper did not acknowledge startup. The app remains open; diagnostics: '+path.dirname(readyFile));
+}
 function windowsHandoffPayload({installer,executable,target,waitPid,errorLog}) {
   if(!path.win32.isAbsolute(target) || /["\r\n]/.test(target)) throw Error('Invalid Windows installation directory.');
   return {installer,executable,target,waitPid,errorLog,elevate:true,arguments:'/S /D='+target};
@@ -164,6 +192,7 @@ function windowsHandoffPayload({installer,executable,target,waitPid,errorLog}) {
 class WindowsReleaseUpdater extends LinuxReleaseUpdater {
   constructor(options) {super(options);this.platform='win32';}
   async downloadUpdate() {
+    if(this.handoffPromise) throw Error('Windows update installation is already starting.');
     if(this.busy) throw Error('An update is already downloading.');
     this.busy=true;this.ready=false;this.revision=(this.revision || 0)+1;
     try {
@@ -174,7 +203,18 @@ class WindowsReleaseUpdater extends LinuxReleaseUpdater {
       this.info=info;this.ready=true;this.emit('update-downloaded',info);return [this.downloaded];
     } finally {this.busy=false;}
   }
-  async quitAndInstall() {
+  quitAndInstall() {
+    if(this.handoffPromise)return this.handoffPromise;
+    this.handoffPromise=this.prepareWindowsHandoff().catch(error=>{
+      // Once authorized, the independent helper may still install after exit.
+      // Keep the latch even if quitting throws; a second helper is unsafe.
+      if(!this.handoffAuthorized)this.handoffPromise=null;
+      throw error;
+    });
+    return this.handoffPromise;
+  }
+  async prepareWindowsHandoff() {
+    if(this.busy)throw Error('Wait for the Windows update download to finish.');
     if(!this.ready || !this.downloaded) throw Error('Download and verify the update first.');
     const executable=await fs.realpath(this.executable);
     const target=path.win32.dirname(executable);
@@ -182,13 +222,19 @@ class WindowsReleaseUpdater extends LinuxReleaseUpdater {
     const folder=await fs.mkdtemp(path.join(this.app.getPath('userData'),'update-handoff-'));
     const script=path.join(folder,'install-update.ps1');
     await fs.writeFile(script,WINDOWS_HANDOFF_SCRIPT);
-    const payload=windowsHandoffPayload({installer:this.downloaded,executable,target,waitPid:process.pid,errorLog:path.join(folder,'install-error.txt')});
+    const readyToken=randomBytes(24).toString('hex');
+    const readyFile=path.join(folder,'helper-ready.txt'),authorizeFile=path.join(folder,'activate-authorized.txt');
+    const payload={...windowsHandoffPayload({installer:this.downloaded,executable,target,waitPid:process.pid,errorLog:path.join(folder,'install-error.txt')}),readyToken,readyFile,authorizeFile};
     const encoded=Buffer.from(JSON.stringify(payload)).toString('base64');
-    await new Promise((resolve,reject)=>{
-      const child=this.start('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',script,encoded],
-        {cwd:folder,detached:true,windowsHide:true,stdio:'ignore'});
-      child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});
-    });
+    const bootstrap=path.join(folder,'bootstrap-update.ps1');
+    await fs.writeFile(bootstrap,WINDOWS_BOOTSTRAP_SCRIPT);
+    const bootstrapData=Buffer.from(JSON.stringify({script,payload:encoded,stdout:path.join(folder,'helper.stdout.txt'),stderr:path.join(folder,'helper.stderr.txt'),pidFile:path.join(folder,'helper-pid.txt')})).toString('base64');
+    await this.execute('powershell.exe',['-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',bootstrap,bootstrapData],{cwd:folder,windowsHide:true,timeout:15000,maxBuffer:65536});
+    await waitForWindowsHelperReady(readyFile,readyToken);
+    const pendingAuthorization=path.join(folder,'activate-authorized.pending');
+    await fs.writeFile(pendingAuthorization,readyToken,{flag:'wx'});
+    await fs.rename(pendingAuthorization,authorizeFile);
+    this.handoffAuthorized=true;
     this.app.quit();
   }
 }
@@ -200,4 +246,4 @@ mv -- "$2" "$4" || exit 1
 if ! mv -- "$3" "$2"; then mv -- "$4" "$2"; exit 1; fi
 "$5" || { mv -- "$2" "$2.failed-$$"; mv -- "$4" "$2"; exec "$5"; }
 `;
-module.exports={WindowsReleaseUpdater,WINDOWS_HANDOFF_SCRIPT,windowsHandoffPayload,HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};
+module.exports={WindowsReleaseUpdater,WINDOWS_HANDOFF_SCRIPT,WINDOWS_BOOTSTRAP_SCRIPT,waitForWindowsHelperReady,windowsHandoffPayload,HANDOFF_SCRIPT,API_URL,releaseInfo,fetchRelease,asManifest,downloadVerified,LinuxReleaseUpdater};

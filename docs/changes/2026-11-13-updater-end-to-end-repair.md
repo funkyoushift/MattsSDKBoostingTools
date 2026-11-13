@@ -138,3 +138,27 @@ Unicode and added an assertion against package.json build.nsis.shortcutName.
 Independent review and unit/syntax checks pass. The real repaired link still has
 SHA25688ab7c40509583e0e865fac5cedab3a3b06ff40dab3d99dabeccce0e501df570
 and targets ProgramFiles2.41.2. Rebuild required after this source correction.
+
+## Windows helper root cause and repair
+
+Native marker-only run43349572707 reproduced the current Node detached launch:
+PowerShell reported process creation/exit0 without executing the helper's first
+line. Non-detached direct spawning with startup acknowledgment also failed to
+survive parent exit. Run43350005042 proved a hidden PowerShell Start-Process
+bootstrap executes the helper and lets it finish after the application parent
+exits. These experiments contain no installer or game actions.
+
+The Windows updater now uses that independent hidden bootstrap, retains helper
+stdout/stderr/PID files, and requires a per-handoff nonce acknowledgment before
+quitting. Atomic authorization follows acknowledgment; a late helper times out
+without installing. Concurrent Install requests share one operation, failed
+startup permits retry, and authorized handoff cannot spawn a second installer.
+Installer RunAs, target directory, checksum verification and Linux behavior stay
+unchanged. Independent review and platform regressions pass. Actual candidate
+upgrade and rebuilt packages remain pending.
+
+The optional native Windows candidate trial changes only the updater module in
+an otherwise installed public2.41.1 archive, preserving version and other payloads,
+then requests the real public2.41.2 update. Its receipt explicitly distinguishes
+this modified diagnostic from an unmodified published-client pass. Old failing
+clients still require a one-time manual installer to acquire the repair.

@@ -2,6 +2,11 @@ name: Real published updater upgrade
 on:
   workflow_dispatch:
     inputs:
+      candidate_handoff:
+        description: Test candidate updater module inside old Windows baseline (modified diagnostic client)
+        type: boolean
+        required: false
+        default: false
       mode:
         description: Upgrade qualification or benign process lifetime experiment
         type: choice
@@ -41,7 +46,9 @@ jobs:
         if: inputs.mode != 'lifetime'
         timeout-minutes: 18
         shell: pwsh
-        run: ./tools/tests/updater_real_windows.ps1
+        env:
+          CANDIDATE_HANDOFF: ${{ inputs.candidate_handoff }}
+        run: ./tools/tests/updater_real_windows.ps1 -CandidateHandoff:($env:CANDIDATE_HANDOFF -eq 'true')
       - uses: actions/upload-artifact@v4
         if: always() && inputs.mode != 'lifetime'
         with:
