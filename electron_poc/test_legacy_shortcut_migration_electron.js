@@ -6,7 +6,7 @@ const path=require('path');
 const os=require('os');
 const assert=require('assert/strict');
 const {migrateLegacyShortcut,sameExistingPath,SHORTCUT_NAME}=require('./legacy_shortcut_migration');
-app.whenReady().then(()=>{
+app.whenReady().then(async()=>{
  if(process.platform!=='win32'){console.log('SKIP native Windows shortcut fixture');app.exit(0);return;}
  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'msbt-shortcut-test-'));
  try {
@@ -14,8 +14,16 @@ app.whenReady().then(()=>{
   const legacy=path.join(env.LOCALAPPDATA,'Programs','MSBT','app','MattsSDKBoostingTools.exe');
   const executable=path.join(temp,'new-install','MattsSDKBoostingTools.exe');
   for(const [exe,version] of [[legacy,'2.40.1'],[executable,'2.41.2']]){
-   const pkg=path.join(path.dirname(exe),'resources','app.asar','package.json');fs.mkdirSync(path.dirname(pkg),{recursive:true});
-   fs.writeFileSync(exe,'fixture only; never executable');fs.writeFileSync(pkg,JSON.stringify({name:'matts-sdk-boosting-tools',version}));
+   const resources=path.join(path.dirname(exe),'resources');fs.mkdirSync(resources,{recursive:true});
+   const source=path.join(temp,'package-source-'+version);fs.mkdirSync(source);
+   const identity={name:'matts-sdk-boosting-tools',version};
+   fs.writeFileSync(path.join(source,'package.json'),JSON.stringify(identity));
+   fs.writeFileSync(exe,'fixture only; never executable');
+   const archive=path.join(resources,'app.asar');
+   await require('@electron/asar').createPackage(source,archive);
+   assert(require('original-fs').statSync(archive).isFile(),'Fixture must contain a physical ASAR archive');
+   // Exercise Electron's real archive-aware reads used by production migration.
+   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(archive,'package.json'),'utf8')),identity);
   }
   const shortcut=path.join(env.APPDATA,'Microsoft','Windows','Start Menu','Programs',SHORTCUT_NAME);fs.mkdirSync(path.dirname(shortcut),{recursive:true});
   assert(shell.writeShortcutLink(shortcut,'create',{target:legacy,cwd:path.dirname(legacy),args:'--fixture',description:'preserve fixture description',icon:process.execPath,iconIndex:0}));
