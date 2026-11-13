@@ -3,7 +3,8 @@
 Status: updater repairs implemented and independently reviewed. Windows candidate
 handoff and Linux published-client upgrades pass with fixture data preservation.
 Both candidate desktop platforms pass packaging/native verification. **Unpublished;
-not release-ready under the required live-game gate.** No SemVer was changed.
+not release-ready under the required live-game gate.** The initial repair kept
+SemVer unchanged; subsequent authorized 2.41.3 preparation is recorded below.
 
 ## Scope and source
 
@@ -123,3 +124,14 @@ also requires actual Windows and Linux/Proton BL4 evidence tied to that candidat
 there is no available Linux BL4 host here. `publication_ready` is false. Do not
 bypass the verified publisher or claim headless fixtures establish live gameplay.
 No tag, release, public asset replacement or merge was performed for this task.
+
+## Authorized 2.41.3 preparation
+
+Martin subsequently requested "release it." This authorizes the patch release;
+the required dual-platform live-game gate still applies. Public latest was freshly
+verified as v2.41.2. Prepared lockstep 2.41.3 metadata and explicit release notes,
+preserving Android pins and all protected-list repairs. No game implementation
+changed. Both platforms are being rebuilt at the release-candidate commit; prior
+2.41.2-labelled candidate hashes are not 2.41.3 qualification. Publication remains
+blocked by absent exact-candidate Windows/Linux-Proton live evidence, with no
+Linux BL4 host available. No release tag, draft or public asset was created.

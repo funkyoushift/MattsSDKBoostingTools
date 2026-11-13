@@ -1,10 +1,10 @@
 {
-  "package_version": "2.41.2",
-  "app_version": "2.41.2",
-  "sdkmod_version": "2.41.2",
-  "resources_version": "2.41.2",
-  "git_commit": "45edae618c2d70de23da088585e23b5457e9ee59",
-  "built_at_utc": "2026-11-10T06:04:42.349000+00:00",
+  "package_version": "2.41.3",
+  "app_version": "2.41.3",
+  "sdkmod_version": "2.41.3",
+  "resources_version": "2.41.3",
+  "git_commit": "d2da8989811c0cfba76a506a217b23fda972961d",
+  "built_at_utc": "2026-11-13T03:09:11.516879+00:00",
   "sdk_required": "oak2-mod-manager v0.3",
   "sdk_required_url": "https://github.com/bl-sdk/oak2-mod-manager/releases/tag/v0.3",
   "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/latest",
@@ -13,5 +13,6 @@
   "external_exe_sha256": "",
   "sdkmod_sha256": "",
   "ui_layout_sha256": "",
-  "electron_version": "2.41.2"
+  "electron_version": "2.41.3",
+  "source_base_commit": "d2da8989811c0cfba76a506a217b23fda972961d"
 }

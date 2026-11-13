@@ -1,37 +1,37 @@
 {
-  "package_version": "2.41.2",
-  "app_version": "2.41.2",
-  "sdkmod_version": "2.41.2",
-  "resources_version": "2.41.2",
-  "electron_version": "2.41.2",
-  "git_commit": "cdfd8996a7b02cd5631d98174de283c4ec575556",
-  "built_at_utc": "2026-11-12T08:53:30.054574+00:00",
+  "package_version": "2.41.3",
+  "app_version": "2.41.3",
+  "sdkmod_version": "2.41.3",
+  "resources_version": "2.41.3",
+  "electron_version": "2.41.3",
+  "git_commit": "d2da8989811c0cfba76a506a217b23fda972961d",
+  "built_at_utc": "2026-11-13T03:09:11.516476+00:00",
   "sdk_required": "oak2-mod-manager v0.3",
   "sdk_required_url": "https://bl-sdk.github.io/oak2-mod-db/",
-  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip",
-  "manual_zip_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip",
-  "electron_installer_name": "MSBT-Installer-v2.41.2.exe",
-  "electron_installer_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2.exe",
+  "download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Portable-v2.41.3-win-x64.zip",
+  "manual_zip_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Portable-v2.41.3-win-x64.zip",
+  "electron_installer_name": "MSBT-Installer-v2.41.3.exe",
+  "electron_installer_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Installer-v2.41.3.exe",
   "electron_updater_manifest_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.yml",
-  "release_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.2",
+  "release_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/tag/v2.41.3",
   "latest_manifest_url": "https://raw.githubusercontent.com/funkyoushift/MattsSDKBoostingTools/main/docs/releases/latest.json",
   "mobile_apk_name": "MSBT-Mobile-Controller.apk",
   "mobile_apk_version": "1.6.6",
   "mobile_apk_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.39.9/MSBT-Mobile-Controller.apk",
   "mobile_install_url": "https://www.funkyoushift.com/MattsSDKBoostingTools/mobile-install.html",
-  "linux_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-linux-x64.tar.gz",
+  "linux_download_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Portable-v2.41.3-linux-x64.tar.gz",
   "release_channel": "stable",
-  "source_base_commit": "b83d65b6",
+  "source_base_commit": "d2da8989811c0cfba76a506a217b23fda972961d",
   "platforms": {
     "win32": {
-      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2.exe",
-      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-win-x64.zip"
+      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Installer-v2.41.3.exe",
+      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Portable-v2.41.3-win-x64.zip"
     },
     "linux": {
-      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Installer-v2.41.2-linux-x64.AppImage",
-      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.2/MSBT-Portable-v2.41.2-linux-x64.tar.gz"
+      "installer_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Installer-v2.41.3-linux-x64.AppImage",
+      "portable_url": "https://github.com/funkyoushift/MattsSDKBoostingTools/releases/download/v2.41.3/MSBT-Portable-v2.41.3-linux-x64.tar.gz"
     }
   },
   "linux_installer_mode": "guided per-user setup; consented requirements repair; optional game integration",
-  "linux_gameplay_qualification": "Prior Linux preview passed user-confirmed live controls; this installer does not add exhaustive gameplay or guest-save qualification."
+  "linux_gameplay_qualification": "Native desktop packaging and Ubuntu 22.04 updater checks passed on the prior repair candidate; live BL4/Proton qualification for this release candidate remains incomplete. Publication is gated."
 }
