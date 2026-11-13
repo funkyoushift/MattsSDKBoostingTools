@@ -155,3 +155,22 @@ Latest public release remains v2.41.2; exact public2.41.3 links cannot be verifi
 because that release does not exist. User release authorization is recorded;
 remaining work requires actual platform/game qualification, not another generic
 release-permission question.
+
+## Explicit exception and approval-system denial
+
+Parent relayed Martin's explicit one-release exception to the live-game gate.
+Prepared a task-local adapter restricted to 2.41.3, dbedd839, CI43357300583 and
+the four verified hashes, retaining all normal package/CI/tag/upload checks.
+Independent review found no concrete blocker. Preflight passed in Python UTF-8
+mode (Windows cp1252 could not decode historical GitHub release descriptions).
+All missing live evidence remained NOT_TESTED and permanent gate files unchanged.
+
+Annotated v2.41.3 tag was pushed at the tested source. The publication command
+was then **DENIED BEFORE EXECUTION** by automatic approval review, which stated
+that missing exact-candidate Windows/Linux-Proton live evidence could not be
+waived by user approval. Checked trusted user history after denial: it confirms
+the same existing release instruction; no materially new evidence supports a
+retry. No alternate route was attempted. Fresh GitHub readback confirms no
+2.41.3 draft/release/assets and latest v2.41.2. Default-branch metadata was not
+promoted to unavailable downloads. Current exact receipt:
+`../evidence/release-v2.41.3/publication-approval-denial.json`.
