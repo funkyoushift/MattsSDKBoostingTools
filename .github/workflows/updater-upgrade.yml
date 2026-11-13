@@ -1,15 +1,18 @@
 name: Real published updater upgrade
 on:
-  push:
-    branches: [codex/updater-repair-20261113]
-    paths:
-      - '.github/workflows/updater-upgrade.yml'
-      - 'tools/tests/updater_*'
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Native platform to verify
+        type: choice
+        required: true
+        default: all
+        options: [windows, linux, all]
 permissions:
   contents: read
 jobs:
   windows:
+    if: inputs.platform == 'windows' || inputs.platform == 'all'
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
@@ -28,6 +31,7 @@ jobs:
           path: ${{ runner.temp }}/msbt real upgrade receipts
           if-no-files-found: warn
   linux:
+    if: inputs.platform == 'linux' || inputs.platform == 'all'
     runs-on: ubuntu-22.04
     timeout-minutes: 25
     steps:

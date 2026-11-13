@@ -9,6 +9,7 @@ $helper = Join-Path $PSScriptRoot 'updater_cdp.js'
 $exe = Join-Path $install 'MattsSDKBoostingTools.exe'
 function Launch-Probe([string]$mode,[int]$port) {
   $process = Start-Process -FilePath $exe -ArgumentList @('--remote-debugging-address=127.0.0.1',"--remote-debugging-port=$port") -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory "$mode-$port-stdout.log") -RedirectStandardError (Join-Path $ReceiptDirectory "$mode-$port-stderr.log")
+  if($mode -eq 'update'){$receipt.updateMainPid=$process.Id}
   & node $helper $port $mode (Join-Path $ReceiptDirectory "$mode-$port.json")
   if ($LASTEXITCODE -ne 0) { throw "Released renderer $mode probe failed; see receipt." }
   return $process
@@ -58,16 +59,28 @@ function Capture-HandoffDiagnostics([string]$label) {
   $global:LASTEXITCODE=0
 }
 function Replay-FailedHandoff {
-  # Diagnostic retry is separate from the original updater verdict. Keep both
-  # the generated script and its base64 payload byte-for-byte unchanged.
+  # Diagnostic retry is separate from the original updater verdict. The script
+  # remains unchanged. Label reconstructed payloads separately from observed bytes.
   $recovery=[ordered]@{attempted=$false;at=(Get-Date).ToUniversalTime().ToString('o');initialUpgradePassed=$false}
   try {
     $requested=Get-Content (Join-Path $ReceiptDirectory 'handoff-diagnostics-requested.json') -Raw | ConvertFrom-Json
     $original=@($requested.processes | Where-Object { $_.Name -eq 'powershell.exe' -and $_.CommandLine -match 'install-update\.ps1' })
-    if($original.Count -ne 1){throw 'Exactly one original helper command line was not captured; no retry.'}
-    if($original[0].CommandLine -notmatch '-File\s+(?:"([^"]+)"|(\S+))\s+([A-Za-z0-9+/=]+)\s*$'){throw 'Original helper arguments could not be recovered exactly.'}
-    $script=if($Matches[1]){$Matches[1]}else{$Matches[2]};$encoded=$Matches[3]
-    $payload=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($encoded)) | ConvertFrom-Json
+    if($original.Count -eq 1){
+      if($original[0].CommandLine -notmatch '-File\s+(?:"([^"]+)"|(\S+))\s+([A-Za-z0-9+/=]+)\s*$'){throw 'Original helper arguments could not be recovered exactly.'}
+      $script=if($Matches[1]){$Matches[1]}else{$Matches[2]};$encoded=$Matches[3]
+      $payload=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($encoded)) | ConvertFrom-Json
+      $powershell=$original[0].ExecutablePath;$recovery.payloadEvidence='observed-byte-identical'
+    } elseif($original.Count -eq 0) {
+      $scripts=@($requested.files | Where-Object { [IO.Path]::GetFileName($_.path) -eq 'install-update.ps1' })
+      $downloads=@($requested.files | Where-Object { [IO.Path]::GetFileName($_.path) -eq 'MSBT-Installer-v2.41.2.exe' -and $_.sha256 })
+      if($scripts.Count -ne 1 -or $downloads.Count -ne 1 -or !$receipt.updateMainPid){throw 'Unique script, verified download and recorded old main PID required for reconstruction.'}
+      $script=$scripts[0].path;$download=$downloads[0]
+      if((Get-FileHash -LiteralPath $download.path -Algorithm SHA256).Hash -ne $download.sha256){throw 'Recorded verified download changed before reconstruction.'}
+      $payload=[ordered]@{installer=$download.path;executable=$exe;target=$install;waitPid=$receipt.updateMainPid;errorLog=(Join-Path (Split-Path -Parent $script) 'install-error.txt');elevate=$true;arguments=('/S /D='+$install)}
+      $encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($payload | ConvertTo-Json -Compress)))
+      $powershell=(Get-Command powershell.exe -ErrorAction Stop).Source
+      $recovery.payloadEvidence='reconstructed-payload';$recovery.reconstruction='Production fields from unique generated script, recorded actual old main PID, hash-rechecked downloaded installer and exact disposable target. Original process arguments were not observed.'
+    } else {throw 'Multiple original helper command lines; no retry.'}
     if($payload.target -ne $install -or $payload.executable -ne $exe -or $payload.elevate -ne $true){throw 'Captured helper does not target this exact disposable installation.'}
     $active=@(Get-CimInstance Win32_Process | Where-Object {
       $_.ExecutablePath -eq $exe -or ($_.CommandLine -and ($_.CommandLine.Contains($script) -or $_.CommandLine.Contains($payload.installer)))
@@ -76,7 +89,7 @@ function Replay-FailedHandoff {
     $recovery.script=$script;$recovery.payloadBase64=$encoded
     $recovery.scriptSha256=(Get-FileHash -LiteralPath $script -Algorithm SHA256).Hash
     $recovery.attempted=$true
-    $retry=Start-Process -FilePath $original[0].ExecutablePath -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$script+'"'),$encoded) -WorkingDirectory (Split-Path -Parent $script) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory 'recovery-helper-stdout.log') -RedirectStandardError (Join-Path $ReceiptDirectory 'recovery-helper-stderr.log')
+    $retry=Start-Process -FilePath $powershell -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$script+'"'),$encoded) -WorkingDirectory (Split-Path -Parent $script) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory 'recovery-helper-stdout.log') -RedirectStandardError (Join-Path $ReceiptDirectory 'recovery-helper-stderr.log')
     $recovery.pid=$retry.Id
     $recovery.exited=$retry.WaitForExit(180000)
     if($recovery.exited){$recovery.exitCode=$retry.ExitCode}else{$recovery.timeout='180 seconds; no process force terminated'}
