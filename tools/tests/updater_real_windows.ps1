@@ -7,9 +7,48 @@ New-Item -ItemType Directory -Path $root,$ReceiptDirectory -Force | Out-Null
 $receipt = [ordered]@{ source='2.41.1'; target='2.41.2'; started=(Get-Date).ToUniversalTime().ToString('o'); install=$install; ok=$false; limitation='Disposable desktop fixture. No live BL4, Proton, guest saves, or production data proof.' }
 $helper = Join-Path $PSScriptRoot 'updater_cdp.js'
 $exe = Join-Path $install 'MattsSDKBoostingTools.exe'
+$script:ownedAncestorPids=[Collections.Generic.HashSet[uint32]]::new()
+function Read-AsarVersion {
+  $reader=@'
+const fs=require('fs');const file=process.argv[1];let fd;
+try{fd=fs.openSync(file,'r');const lead=Buffer.alloc(16);fs.readSync(fd,lead,0,16,0);const size=lead.readUInt32LE(4),length=lead.readUInt32LE(12);if(length>16*1024*1024||length<2)throw Error('Unexpected ASAR header');const json=Buffer.alloc(length);fs.readSync(fd,json,0,length,16);const entry=JSON.parse(json.toString()).files['package.json'];if(!entry||entry.unpacked||entry.size>2*1024*1024)throw Error('Unexpected package entry');const body=Buffer.alloc(entry.size);fs.readSync(fd,body,0,entry.size,8+size+Number(entry.offset));const p=JSON.parse(body.toString());console.log(JSON.stringify({name:p.name,version:p.version,method:'Read ASAR package.json bytes; no application execution'}));}catch(e){console.log(JSON.stringify({error:String(e)}));}finally{if(fd!==undefined)fs.closeSync(fd);}
+'@
+  & node -e $reader $asar | ConvertFrom-Json
+}
+function Read-OwnedWindows([uint32[]]$processIds) {
+  if(!('MsbtUpgradeWindowReader' -as [type])) {
+    Add-Type -TypeDefinition @'
+using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+public class MsbtUpgradeWindowReader {
+  public delegate bool Callback(IntPtr h, IntPtr p);
+  [DllImport("user32.dll")] static extern bool EnumWindows(Callback c, IntPtr p);
+  [DllImport("user32.dll")] static extern bool EnumChildWindows(IntPtr h, Callback c, IntPtr p);
+  [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern int GetClassName(IntPtr h, StringBuilder s, int n);
+  [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+  [DllImport("user32.dll", CharSet=CharSet.Unicode)] static extern IntPtr SendMessageTimeout(IntPtr h,uint m,UIntPtr w,StringBuilder s,uint flags,uint timeout,out UIntPtr result);
+  public class Row {public long handle;public uint pid;public bool visible;public string text;public string windowClass;}
+  public static List<Row> Read(uint[] ids) {
+    var owned=new HashSet<uint>(ids);var rows=new List<Row>();var seen=new HashSet<IntPtr>();
+    Callback read=(h,p)=>{if(rows.Count>=128)return false;uint pid;GetWindowThreadProcessId(h,out pid);if(!owned.Contains(pid)||!seen.Add(h))return true;
+      var text=new StringBuilder(4096);GetWindowText(h,text,text.Capacity);
+      if(text.Length==0){UIntPtr result;SendMessageTimeout(h,0x000D,(UIntPtr)4096,text,2,50,out result);}
+      var cls=new StringBuilder(256);GetClassName(h,cls,cls.Capacity);
+      rows.Add(new Row{handle=h.ToInt64(),pid=pid,visible=IsWindowVisible(h),text=text.ToString(),windowClass=cls.ToString()});return true;};
+    EnumWindows((h,p)=>{uint pid;GetWindowThreadProcessId(h,out pid);if(owned.Contains(pid)){read(h,p);EnumChildWindows(h,read,p);}return rows.Count<128;},IntPtr.Zero);return rows;
+  }
+}
+'@
+  }
+  [MsbtUpgradeWindowReader]::Read($processIds)
+}
 function Launch-Probe([string]$mode,[int]$port) {
   $process = Start-Process -FilePath $exe -ArgumentList @('--remote-debugging-address=127.0.0.1',"--remote-debugging-port=$port") -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory "$mode-$port-stdout.log") -RedirectStandardError (Join-Path $ReceiptDirectory "$mode-$port-stderr.log")
-  if($mode -eq 'update'){$receipt.updateMainPid=$process.Id}
+  if($mode -eq 'update'){$receipt.updateMainPid=$process.Id;[void]$script:ownedAncestorPids.Add([uint32]$process.Id)}
   & node $helper $port $mode (Join-Path $ReceiptDirectory "$mode-$port.json")
   if ($LASTEXITCODE -ne 0) { throw "Released renderer $mode probe failed; see receipt." }
   return $process
@@ -22,12 +61,23 @@ function Close-Owned {
 function Capture-HandoffDiagnostics([string]$label) {
   $diagnostic=[ordered]@{at=(Get-Date).ToUniversalTime().ToString('o');label=$label}
   try {
-    $diagnostic.processes=@(Get-CimInstance Win32_Process | Where-Object {
+    $allProcesses=@(Get-CimInstance Win32_Process -OperationTimeoutSec 10)
+    $seeds=@($allProcesses | Where-Object {
       $_.ExecutablePath -eq $exe -or
       ($_.CommandLine -and ($_.CommandLine.Contains($root) -or
       ($receipt.userData -and $_.CommandLine.Contains($receipt.userData))))
-    } | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine,CreationDate)
+    })
+    foreach($p in $seeds){[void]$script:ownedAncestorPids.Add([uint32]$p.ProcessId)}
+    for($depth=0;$depth -lt 12;$depth++){
+      $added=$false
+      foreach($p in $allProcesses){if($script:ownedAncestorPids.Contains([uint32]$p.ParentProcessId)){if($script:ownedAncestorPids.Add([uint32]$p.ProcessId)){$added=$true}}}
+      if(!$added){break}
+    }
+    $diagnostic.processes=@($allProcesses | Where-Object {$script:ownedAncestorPids.Contains([uint32]$_.ProcessId)} | Select-Object ProcessId,ParentProcessId,Name,ExecutablePath,CommandLine,CreationDate)
+    $diagnostic.windows=@(Read-OwnedWindows ([uint32[]]@($diagnostic.processes.ProcessId)))
+    $diagnostic.windowReadScope='Read-only owned app/helper/installer and observed descendants only; max128 controls, WM_GETTEXT timeout50ms. No clicks or input.'
   } catch {$diagnostic.processError=$_.Exception.Message}
+  if($asar -and (Test-Path -LiteralPath $asar)){$diagnostic.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash;$diagnostic.asarPackage=Read-AsarVersion}
   try {
     # Same native query used by the unmodified production game-running guard.
     $diagnostic.gameGuardOutput=(& tasklist.exe /FI 'IMAGENAME eq Borderlands4.exe' /FO CSV /NH 2>&1 | Out-String)
@@ -82,7 +132,7 @@ function Replay-FailedHandoff {
       $recovery.payloadEvidence='reconstructed-payload';$recovery.reconstruction='Production fields from unique generated script, recorded actual old main PID, hash-rechecked downloaded installer and exact disposable target. Original process arguments were not observed.'
     } else {throw 'Multiple original helper command lines; no retry.'}
     if($payload.target -ne $install -or $payload.executable -ne $exe -or $payload.elevate -ne $true){throw 'Captured helper does not target this exact disposable installation.'}
-    $active=@(Get-CimInstance Win32_Process | Where-Object {
+    $active=@(Get-CimInstance Win32_Process -OperationTimeoutSec 10 | Where-Object {
       $_.ExecutablePath -eq $exe -or ($_.CommandLine -and ($_.CommandLine.Contains($script) -or $_.CommandLine.Contains($payload.installer)))
     })
     if($active.Count){$recovery.active=$active | Select-Object ProcessId,ParentProcessId,Name,CommandLine;throw 'Owned app, helper or installer is still running; no retry.'}
@@ -91,6 +141,7 @@ function Replay-FailedHandoff {
     $recovery.attempted=$true
     $retry=Start-Process -FilePath $powershell -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',('"'+$script+'"'),$encoded) -WorkingDirectory (Split-Path -Parent $script) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $ReceiptDirectory 'recovery-helper-stdout.log') -RedirectStandardError (Join-Path $ReceiptDirectory 'recovery-helper-stderr.log')
     $recovery.pid=$retry.Id
+    [void]$script:ownedAncestorPids.Add([uint32]$retry.Id)
     $recovery.exited=$retry.WaitForExit(180000)
     if($recovery.exited){$recovery.exitCode=$retry.ExitCode}else{$recovery.timeout='180 seconds; no process force terminated'}
     $recovery.asarSha256=(Get-FileHash -LiteralPath $asar -Algorithm SHA256).Hash
@@ -130,6 +181,8 @@ try {
   $receipt.before=$before
   $asar=Join-Path $install 'resources/app.asar'
   $oldHash=(Get-FileHash -LiteralPath $asar).Hash
+  $receipt.initialAsarSha256=$oldHash
+  $receipt.initialAsarPackage=Read-AsarVersion
   [void](Launch-Probe 'update' 19412)
   Capture-HandoffDiagnostics 'requested'
   # The production helper waits for app exit and performs actual RunAs elevation.
