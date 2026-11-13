@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-11-13: Linux sandbox CI diagnosis](changes/2026-11-13-linux-sandbox-diagnostic.md): Isolated failure-only host/helper/audit diagnostics at candidate a2cbdb7b; runtime, gate and security policy unchanged. Native diagnostic result pending; no release or game control.
+
 - [2026-11-13: Native rapid-Start follow-up](changes/2026-11-13-shift-start-acknowledgement.md): Concurrent GPU evidence, native protected-list failed-write recovery/empty-save passes, and newly reproduced duplicate-Start acknowledgement repair; rebuilt native qualification remains pending.
 
 

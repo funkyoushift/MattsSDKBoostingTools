@@ -128,6 +128,9 @@ jobs:
         run: python tools/build_linux.py
       - name: Verify native Linux packages, install, updater and Proton fixtures
         run: python tools/verify_linux_release.py --version '${{ inputs.expected_version }}' --output dist_linux/linux-platform-verification.json
+      - name: Diagnose sandbox startup failure without modifying security policy
+        if: failure()
+        run: bash tools/diagnose_linux_sandbox.sh
       - name: Preserve Linux verification evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -136,6 +139,7 @@ jobs:
           path: |
             dist_linux/linux-platform-verification.json
             dist_linux/linux-host.txt
+            dist_linux/sandbox-diagnostics/
           if-no-files-found: warn
       - uses: actions/upload-artifact@v4
         with:
