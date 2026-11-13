@@ -174,3 +174,26 @@ retry. No alternate route was attempted. Fresh GitHub readback confirms no
 2.41.3 draft/release/assets and latest v2.41.2. Default-branch metadata was not
 promoted to unavailable downloads. Current exact receipt:
 `../evidence/release-v2.41.3/publication-approval-denial.json`.
+
+## Live qualification resumption and Linux handoff preparation
+
+Martin authorized pursuing actual missing live checks and offered to reboot into
+Linux when ready. No reboot was requested or performed. Exact Linux AppImage/TAR
+hashes rechecked; prerequisites are in the task-local Linux readiness receipt.
+Windows candidate ZIP safely extracted and all1497 files fingerprinted; official
+2.41.2 rollback installer matches9136b381...436bc1. Fresh backup/compare/payload
+audit tooling prepared under `../windows-live-2413/READY.md`, with no restore or
+delete action. Its process guard uses host CIM and refuses errors/running apps;
+default sandbox Get-Process misleadingly returned no host app processes, so it
+is not accepted as proof that apps are closed.
+
+Fresh elevated host inventory: BL4 absent, MSBT2.41.2 running, BL3 active; both
+RTX4090 and5070Ti present. CUA returned MSBT accessibility text but a BL3 Gearbox
+screenshot, plus coordinate-geometry and active-request errors. UI control was
+paused to avoid interfering with the concurrent BL3 task. No candidate install,
+new live-game test, user-data mutation or normal/forced app closure occurred.
+Need an exclusive desktop input window coordinated with BL3 before Windows
+qualification; keyboard/mouse/gamepad availability question is pending. Do not
+ask the user to reboot until Windows testing/cleanup is finished. Exact state:
+`../evidence/release-v2.41.3/live-environment/windows-control-readiness.json`.
+Publication denial remains in effect; it was not retried.
