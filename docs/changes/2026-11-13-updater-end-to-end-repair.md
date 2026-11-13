@@ -36,3 +36,39 @@ CIM process inspection was unavailable inside the local sandbox; no process
 action depended on it. User-data updater handoff folders were absent in the
 primary app-data location. Current Windows registration reports2.41.2; this does
 not prove every shortcut or running copy has that version.
+
+## Verified stale local launcher and repair
+
+Read-only archive inspection found ProgramFiles2.41.2 and retained per-user
+LOCALAPPDATA/Programs/MSBT/app2.40.1. Both desktop shortcuts and common Start
+Menu target the current copy, but the user Start Menu targets the older broken
+updater. This is a concrete remaining cause of repeated updater failures despite
+a manual new installation; the running process was not inferred.
+
+The one verified stale user Start Menu link was backed up then repointed to the
+existing verified2.41.2 executable. No executable/settings/game files were
+changed and no app was launched. Receipt/rollback original link:
+../evidence/shortcut-backup/receipt.json and user-start-menu.before.lnk under
+local/updater-repair. BackupSHA256
+5c0f0cf36c8cf23d9e6bce6366fbdef55c4ac521a1402534c6ba3fb484a7acd0;
+updatedSHA25688ab7c40509583e0e865fac5cedab3a3b06ff40dab3d99dabeccce0e501df570.
+Rollback copies the preserved original link back to the exact receipt path.
+
+Production startup now migrates only that known per-user legacy shortcut when
+both ASAR package identities are MSBT, the running copy is strictly newer and
+the shortcut still targets the canonical legacy executable. Original bytes and
+a receipt are retained; custom fields/unknown targets are preserved; older
+installations and user data are never deleted. Unit tests pass; native Electron
+shortcut fixture added to Windows candidate verification.
+
+## Actual published upgrade diagnostics
+
+Run43341139220 was cancelled after overly long CDP waits; its always-upload
+receipts were recovered. Actual2.41.1 Windows, Linux portable and AppImage
+checks and SHA256-verified2.41.2 downloads passed. The app exited during
+handoff, but the test continued evaluating a closing renderer; Windows later
+run43342551097 exposes the same post-request CDP timeout. Linux automatic
+restart detection also failed. These are not enough to label the production
+handoff broken or repaired. Test now detaches debugging immediately after the
+request and separately observes OS processes, payload replacement, helper
+scripts/logs, rollback directories and second restart. Failure snapshots retained.

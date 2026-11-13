@@ -3107,6 +3107,14 @@ app.whenReady().then(() => {
     return;
   }
 
+  if (app.isPackaged && process.platform === 'win32') {
+    try {
+      const migration = require('./legacy_shortcut_migration').migrateLegacyShortcut({app,shell});
+      if (migration.status !== 'skipped') console.log('[MSBT Shortcut Migration]', JSON.stringify(migration));
+    } catch (error) {
+      console.warn('[MSBT Shortcut Migration]', String(error.message || error));
+    }
+  }
   configureAutoUpdater();
   void failureReporter.scanGameCrashes().catch(() => {});
   void failureReporter.flush().catch(() => {});

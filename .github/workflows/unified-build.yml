@@ -53,12 +53,16 @@ jobs:
       - name: Verify SHiFT desktop guidance and controller lifecycle
         shell: pwsh
         run: |
+          node electron_poc/test_update_check_snapshot.js
+          if ($LASTEXITCODE -ne 0) { throw 'Update-check snapshot regression failed' }
+          node electron_poc/test_legacy_shortcut_migration.js
+          if ($LASTEXITCODE -ne 0) { throw 'Legacy shortcut regression failed' }
           node tools/afk_lobby/test_shift_background.js
           if ($LASTEXITCODE -ne 0) { throw 'SHiFT background lifecycle checks failed' }
           node tools/afk_lobby/test_shift_link.js
           if ($LASTEXITCODE -ne 0) { throw 'SHiFT link checks failed' }
           Push-Location electron_poc
-          try { npx electron test_afk_lobby.js; if ($LASTEXITCODE -ne 0) { throw 'SHiFT desktop guidance check failed' } }
+          try { npx electron test_legacy_shortcut_migration_electron.js; if ($LASTEXITCODE -ne 0) { throw 'Native shortcut migration failed' }; npx electron test_afk_lobby.js; if ($LASTEXITCODE -ne 0) { throw 'SHiFT desktop guidance check failed' } }
           finally { Pop-Location }
       - name: Verify Windows update handoff
         shell: pwsh

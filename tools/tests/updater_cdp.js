@@ -55,7 +55,10 @@ const pause = ms => new Promise(r => setTimeout(r, ms));
     if(!download.ok)throw Error('Released download IPC failed: '+JSON.stringify(download));
     // Start the real install call; app exit may disconnect CDP before its reply.
     await stage('handoff-request',`window.__upgradeResult=null;window.msbt.installDownloadedUpdate().then(r=>window.__upgradeResult=r).catch(e=>window.__upgradeResult={error:String(e)});'requested'`);
-    for(let n=0;n<15;n++){await pause(1000);try{const r=await evaluate('window.__upgradeResult');if(r){receipt.stages.push({name:'handoff-result',result:r});if(r.ok===false||r.error)throw Error(JSON.stringify(r));break;}}catch(e){if(String(e).includes('CDP timeout'))throw e;if(socket.readyState!==WebSocket.OPEN)break;throw e;}}
+    // A closing renderer cannot reliably answer CDP evaluation. Detach so the
+    // unmodified application can exit; the parent observes installation and relaunch.
+    socket.close();socket=null;
+
   } else await send('Browser.close').catch(()=>{});
   receipt.ok=true;
 })().catch(error=>{receipt.ok=false;receipt.error=String(error.stack||error);process.exitCode=1;}).finally(()=>{receipt.finished=new Date().toISOString();fs.writeFileSync(output,JSON.stringify(receipt,null,2));if(socket)socket.close();});

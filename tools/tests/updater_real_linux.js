@@ -35,15 +35,47 @@ function environment(home) {
   for(const key of ['APPIMAGE','APPDIR','MSBT_PYTHON','MSBT_SAVE_ROOT','STEAM_COMPAT_DATA_PATH','WINEPREFIX','LD_LIBRARY_PATH','LD_PRELOAD','ELECTRON_RUN_AS_NODE','NODE_OPTIONS']) delete env[key];
   return env;
 }
-async function processes(home) {
-  const found=[];
-  for(const pid of await fs.readdir('/proc')) if(/^\d+$/.test(pid)) try {
-    const env=(await fs.readFile(`/proc/${pid}/environ`,'utf8')).split('\0');
-    if(!env.includes(`HOME=${home}`))continue;
-    const exe=await fs.readlink(`/proc/${pid}/exe`),args=(await fs.readFile(`/proc/${pid}/cmdline`,'utf8')).split('\0').filter(Boolean);
-    if(path.basename(exe).startsWith('MattsSDKBoostingTools') && !args.some(a=>a.startsWith('--type='))) found.push({pid:Number(pid),exe,args,environment:env.filter(v=>/^(APPIMAGE|APPDIR|LD_LIBRARY_PATH|XDG_DATA_DIRS|MSBT_PYTHON)=/.test(v))});
-  }catch{}
-  return found;
+async function processSnapshot(home) {
+  const found=[],candidates=[],readFailures=[];
+  for(const pid of await fs.readdir('/proc')) if(/^\d+$/.test(pid)) {
+    const item={pid:Number(pid)},errors={};let env=[],args=[];
+    try{item.exe=await fs.readlink(`/proc/${pid}/exe`);}catch(e){errors.exe=e.code;}
+    try{args=(await fs.readFile(`/proc/${pid}/cmdline`,'utf8')).split('\0').filter(Boolean);}catch(e){errors.cmdline=e.code;}
+    try{env=(await fs.readFile(`/proc/${pid}/environ`,'utf8')).split('\0');}catch(e){errors.environ=e.code;}
+    const owned=env.includes(`HOME=${home}`),related=owned || item.exe?.includes(home) || args.some(a=>a.includes(home)) || path.basename(item.exe||'').startsWith('MattsSDKBoostingTools');
+    if(Object.keys(errors).length)readFailures.push({pid:Number(pid),errors});
+    if(!related)continue;
+    item.args=args;item.homeMatches=owned;item.errors=errors;
+    item.environment=env.filter(v=>/^(APPIMAGE|APPDIR|LD_LIBRARY_PATH|XDG_DATA_DIRS|MSBT_PYTHON)=/.test(v));
+    try{item.status=(await fs.readFile(`/proc/${pid}/status`,'utf8')).split('\n').filter(v=>/^(Name|State|PPid|Uid):/.test(v));}catch(e){item.statusReadError=e.code;}
+    try{item.cwd=await fs.readlink(`/proc/${pid}/cwd`);}catch(e){item.cwdReadError=e.code;}
+    candidates.push(item);
+    if(owned && path.basename(item.exe||'').startsWith('MattsSDKBoostingTools') && !args.some(a=>a.startsWith('--type=')))found.push(item);
+  }
+  return {at:new Date().toISOString(),found,candidates,readFailures};
+}
+async function processes(home){return (await processSnapshot(home)).found;}
+async function filesystemSnapshot(record,home,reason) {
+  const snapshot={reason,at:new Date().toISOString(),processes:await processSnapshot(home),entries:[],copied:[]};
+  const launcher=record.launcher, userData=record.userData;
+  const candidates=new Set();
+  if(launcher){const target=record.kind==='appimage'?launcher:path.dirname(launcher),parent=path.dirname(target);candidates.add(target);
+    try{for(const name of await fs.readdir(parent))if(name.startsWith('.msbt-update-') || name.startsWith(path.basename(target)+'.previous-') || name.startsWith(path.basename(target)+'.failed-'))candidates.add(path.join(parent,name));}catch(e){snapshot.parentReadError=e.code;}
+  }
+  if(userData)candidates.add(path.join(userData,'updates'));
+  if(record.kind==='appimage'){candidates.add(path.join(home,'.local/share/msbt/install.json'));candidates.add(path.join(home,'.local/bin/msbt'));}
+  async function inspect(file,depth=0){
+    try{const stat=await fs.lstat(file),entry={path:file,size:stat.size,mode:stat.mode,type:stat.isDirectory()?'directory':stat.isSymbolicLink()?'symlink':'file'};snapshot.entries.push(entry);
+      if(stat.isSymbolicLink()){entry.link=await fs.readlink(file);return;}
+      if(stat.isDirectory()){if(depth<4)for(const name of await fs.readdir(file))await inspect(path.join(file,name),depth+1);return;}
+      if(/(?:app\.asar|MattsSDKBoostingTools|msbt|\.AppImage|\.tar\.gz|\.sh|\.log|\.txt|install\.json)$/.test(file))entry.sha256=await hash(file);
+      if(userData && file.startsWith(path.join(userData,'updates')+path.sep) && stat.size<1024*1024 && /\.(sh|log|txt)$/.test(file)){
+        const name=`${record.kind}-${reason}-${snapshot.copied.length}-${path.basename(file)}`;await fs.copyFile(file,path.join(output,name));snapshot.copied.push({source:file,artifact:name});
+      }
+    }catch(e){snapshot.entries.push({path:file,error:e.code||String(e)});}
+  }
+  for(const file of candidates)await inspect(file);
+  record.diagnostics??=[];record.diagnostics.push(snapshot);await persist();return snapshot;
 }
 // Send the ordinary WM_DELETE_WINDOW protocol directly; Xvfb needs no window manager.
 const X11_CLOSE = `import ctypes,sys
@@ -69,9 +101,10 @@ async function closeOwned(home) {
   check(!(await processes(home)).length,'Owned desktop did not exit after normal WM_DELETE_WINDOW close; no force-kill issued');
 }
 async function launch(file, args, env, port, record) {
-  const log=await fs.open(path.join(output,`${record.kind}-${record.launches++}.log`),'w');
+  const logName=`${record.kind}-${record.launches++}.log`;const log=await fs.open(path.join(output,logName),'w');
   const child=spawn(file,[...args,`--remote-debugging-address=127.0.0.1`,`--remote-debugging-port=${port}`],{env,cwd:env.HOME,stdio:['ignore',log.fd,log.fd]});
-  child.on('error',error=>{record.launchError=String(error);});child.on('exit',(code,signal)=>{record.lastExit={code,signal};});
+  const receipt={pid:child.pid,file,args,log:logName,at:new Date().toISOString()};record.launchedProcesses??=[];record.launchedProcesses.push(receipt);
+  child.on('error',error=>{record.launchError=String(error);receipt.error=String(error);});child.on('exit',(code,signal)=>{record.lastExit={code,signal};receipt.exit={code,signal,at:new Date().toISOString()};});
   await log.close();return child;
 }
 async function trial(kind, oldFile, newFile, port) {
@@ -94,7 +127,7 @@ async function trial(kind, oldFile, newFile, port) {
     }
     record.launcher=launcher;await launch(launcher,launchArgs,env,port,record);cdp=await connect(port);
     const version=await stage('old-runtime-version','window.msbt.getVersionInfo()');check(version.appVersion==='2.41.1',`Old runtime is not 2.41.1: ${JSON.stringify(version)}`);
-    const data=await stage('user-data','window.msbt.getUserDataInfo()');check(path.resolve(data.path).startsWith(home+path.sep),'UserData escaped isolated HOME');
+    const data=await stage('user-data','window.msbt.getUserDataInfo()');record.userData=data.path;check(path.resolve(data.path).startsWith(home+path.sep),'UserData escaped isolated HOME');
     await stage('seed-preference',`localStorage.setItem('msbt-upgrade-test-preference','preserve-2411-to-2412');localStorage.getItem('msbt-upgrade-test-preference')`);
     check((await stage('seed-bookmark',`window.msbt.saveSerialBookmarks({version:1,bookmarks:[{id:'updater-fixture',name:'Upgrade preservation fixture',group:'Updater test',serial:'TEST_ONLY_NOT_A_GAME_SERIAL',created_at:'2026-01-01T00:00:00.000Z',updated_at:'2026-01-01T00:00:00.000Z'}],folders:[]})`)).ok,'Bookmark seed failed');
     check((await stage('seed-editor-prefs',`window.msbt.saveMattEditorPrefs({version:1,steamId:'updater-fixture'})`)).ok,'Prefs seed failed');
@@ -104,30 +137,38 @@ async function trial(kind, oldFile, newFile, port) {
     const checkResult=await stage('real-check','window.msbt.checkUpdates()');check(checkResult.ok && checkResult.remote?.package_version==='2.41.2','Public latest check must resolve exactly 2.41.2');
     const selected=checkResult.updater?.updateInfo?.selected; if(selected)check(selected.name.includes(kind==='appimage'?'.AppImage':'.tar.gz'),'Wrong update asset route');
     const downloaded=await stage('real-download','window.msbt.downloadUpdate()',12*60*1000);check(downloaded.ok,`Published updater download failed: ${JSON.stringify(downloaded)}`);
+    await filesystemSnapshot(record,home,'before-handoff');
     await stage('real-install-request',`window.__trialInstall=null;window.msbt.installDownloadedUpdate().then(r=>window.__trialInstall=r).catch(e=>window.__trialInstall={ok:false,error:String(e)});'requested'`);
-    let restarted=[],disconnected=false;
-    for(let n=0;n<120;n++) {await pause(1000);if(!disconnected)try{const result=await cdp.evaluate('window.__trialInstall',3000);if(result?.ok===false)throw Error(JSON.stringify(result));}catch(error){if(String(error).includes('"ok":false'))throw error;disconnected=true;}
+    // Stop debugging the renderer during its teardown; observe the handoff externally.
+    cdp.close();cdp=null;
+    let restarted=[];
+    for(let n=0;n<120;n++) {await pause(1000);
       restarted=await processes(home);if(restarted.length && restarted.every(p=>!p.args.includes(`--remote-debugging-port=${port}`)))break;
     }
-    record.automaticHandoffProcesses=restarted;check(restarted.length && restarted.every(p=>!p.args.includes(`--remote-debugging-port=${port}`)),'No automatic restarted desktop observed');
-    record.automaticHandoffRuntimeVersion='UNVERIFIED: released handoff does not retain CDP arguments';
-    if(kind==='appimage')check(restarted.some(p=>p.environment.includes(`APPIMAGE=${launcher}`)),'Automatic AppImage process APPIMAGE does not match stable launcher');
+    record.automaticHandoffProcesses=restarted;record.automaticHandoffObserved=Boolean(restarted.length && restarted.every(p=>!p.args.includes(`--remote-debugging-port=${port}`)));
+    record.automaticHandoffError=record.automaticHandoffObserved?null:'No automatic restarted desktop observed; independent payload and second-launch checks continue';
+    await filesystemSnapshot(record,home,'after-handoff');
+    record.automaticHandoffRuntimeVersion=record.automaticHandoffObserved?'UNVERIFIED: released handoff does not retain CDP arguments':'UNVERIFIED: no automatic restarted desktop observed';
+    if(kind==='appimage' && record.automaticHandoffObserved)check(restarted.some(p=>p.environment.includes(`APPIMAGE=${launcher}`)),'Automatic AppImage process APPIMAGE does not match stable launcher');
+    try {
     if(kind==='appimage')check(await hash(launcher)===await hash(newFile),'Stable AppImage launcher does not match published 2.41.2 bytes');
     else {
-      check(restarted.some(p=>p.exe===path.join(path.dirname(launcher),'MattsSDKBoostingTools')),'Portable handoff changed installation path');
+      if(record.automaticHandoffObserved)check(restarted.some(p=>p.exe===path.join(path.dirname(launcher),'MattsSDKBoostingTools')),'Portable handoff changed installation path');
       const reference=path.join(root,kind,'published-reference');await fs.mkdir(reference,{recursive:true});await run('tar',['-xzf',newFile,'-C',reference]);
       const roots=await fs.readdir(reference);check(roots.length===1,'Unexpected new portable root');
       for(const relative of ['MattsSDKBoostingTools','resources/app.asar'])check(await hash(path.join(path.dirname(launcher),relative))===await hash(path.join(reference,roots[0],relative)),`Updated portable payload differs from published asset: ${relative}`);
     }
-    cdp.close();cdp=null;await closeOwned(home);
+    record.payloadMatchesPublished=true;
+    }catch(error){record.payloadMatchesPublished=false;record.payloadError=String(error);}
+    if(cdp)cdp.close();cdp=null;await closeOwned(home);
     await launch(launcher,launchArgs,env,port,record);cdp=await connect(port);
-    const current=await stage('second-restart-runtime','window.msbt.getVersionInfo()');check(current.appVersion==='2.41.2','Second restart runtime is not 2.41.2');
+    const current=await stage('second-restart-runtime','window.msbt.getVersionInfo()');record.secondRestartVersion=current.appVersion;record.secondRestartUpdated=current.appVersion==='2.41.2';
     const currentData=await stage('second-restart-user-data','window.msbt.getUserDataInfo()');check(currentData.path===data.path,'UserData path changed');
     check(await stage('preserved-preference',`localStorage.getItem('msbt-upgrade-test-preference')`)==='preserve-2411-to-2412','LocalStorage preference changed');
     check(JSON.stringify(await stage('preserved-bookmarks','window.msbt.loadSerialBookmarks()')).includes('updater-fixture'),'Bookmark missing');
     record.after=Object.fromEntries(await Promise.all(sentinels.map(async file=>[file,await hash(file)])));check(JSON.stringify(record.before)===JSON.stringify(record.after),'Seeded file bytes changed');
-    await cdp.closeBrowser();cdp.close();cdp=null;await closeOwned(home);record.ok=true;
-  } catch(error) {record.error=String(error.stack||error);}
+    await cdp.closeBrowser();cdp.close();cdp=null;await closeOwned(home);record.preservationPassed=true;record.ok=record.automaticHandoffObserved && record.payloadMatchesPublished && record.secondRestartUpdated && record.preservationPassed;
+  } catch(error) {record.error=String(error.stack||error);await filesystemSnapshot(record,home,'failure').catch(e=>{record.diagnosticError=String(e);});}
   finally {if(cdp){await cdp.closeBrowser();cdp.close();}await closeOwned(home).catch(error=>{record.cleanupError=String(error);record.ok=false;});await persist();}
 }
 async function persist(){await fs.writeFile(path.join(output,'linux-real-updater.json'),JSON.stringify(report,null,2)+'\n');}
