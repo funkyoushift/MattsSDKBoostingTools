@@ -135,3 +135,7 @@ changed. Both platforms are being rebuilt at the release-candidate commit; prior
 2.41.2-labelled candidate hashes are not 2.41.3 qualification. Publication remains
 blocked by absent exact-candidate Windows/Linux-Proton live evidence, with no
 Linux BL4 host available. No release tag, draft or public asset was created.
+
+Independent release-metadata review caught the SDK __version_info__ tuple still
+at 2.41.2. Corrected to (2, 41, 3); the dedicated lockstep checker now passes.
+Superseded CI 43357060149 was cancelled; no pass is claimed for that run.
