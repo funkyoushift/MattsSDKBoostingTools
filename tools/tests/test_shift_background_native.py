@@ -72,11 +72,11 @@ class NativeTests(unittest.TestCase):
             ReadProcessMemory=Function(lambda *args:0))
         digest=types.SimpleNamespace(update=lambda _:None,hexdigest=lambda:m.EXPECTED_HASH)
         sdk=types.SimpleNamespace(find_object=lambda *args: (_ for _ in ()).throw(AssertionError('unexpected UObject access')))
-        with mock.patch.object(ctypes,'WinDLL',return_value=fake), mock.patch.object(m.hashlib,'sha256',return_value=digest), mock.patch('builtins.open',mock.mock_open(read_data=b'game')):
+        with mock.patch.object(ctypes,'WinDLL',return_value=fake,create=True), mock.patch.object(m.hashlib,'sha256',return_value=digest), mock.patch('builtins.open',mock.mock_open(read_data=b'game')):
             instance=m.NativeShiftView(sdk)
         self.assertEqual(0x10000000,instance.base);self.assertFalse(instance.owned)
         digest.hexdigest=lambda:'0'*64
-        with mock.patch.object(ctypes,'WinDLL',return_value=fake), mock.patch.object(m.hashlib,'sha256',return_value=digest), mock.patch('builtins.open',mock.mock_open(read_data=b'game')):
+        with mock.patch.object(ctypes,'WinDLL',return_value=fake,create=True), mock.patch.object(m.hashlib,'sha256',return_value=digest), mock.patch('builtins.open',mock.mock_open(read_data=b'game')):
             with self.assertRaises(RuntimeError):m.NativeShiftView(sdk)
     def test_bind_thread_rejects_different_thread(self):
         self.view.bind_thread();self.view._thread=-1
@@ -91,7 +91,7 @@ class NativeTests(unittest.TestCase):
                     self.assertEqual(0,ptr.value%8);seen.append(ctypes.string_at(ptr,24))
                 return invoke
             return bind
-        with mock.patch.object(ctypes,'WINFUNCTYPE',factory):self.view._set(100,1);self.view._set(100,25)
+        with mock.patch.object(ctypes,'WINFUNCTYPE',factory,create=True):self.view._set(100,1);self.view._set(100,25)
         self.assertEqual(bytes([1,1])+bytes(22),seen[0]);self.assertEqual(bytes([25,1])+bytes(22),seen[1])
     def test_fingerprint_layout_and_snapshot_checks(self):
         self.assertEqual(32,len(m.SETTER_BYTES));self.assertEqual(0xfe254e,m.SETTER)

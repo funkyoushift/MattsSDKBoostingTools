@@ -28,18 +28,28 @@ def _read_rows():
     get_table.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong), ctypes.c_int,
                           ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
     get_table.restype = ctypes.c_ulong
-    size = ctypes.c_ulong(0)
-    # ERROR_INSUFFICIENT_BUFFER is expected for the first call.
-    if get_table(None, ctypes.byref(size), False, socket.AF_INET, 5, 0) != 122:
-        raise OSError("TCP table size query failed")
-    if size.value < 4 or size.value > _MAX_TABLE_BYTES:
-        raise ValueError("invalid TCP table size")
-    buffer = ctypes.create_string_buffer(size.value)
-    if get_table(buffer, ctypes.byref(size), False, socket.AF_INET, 5, 0) != 0:
-        raise OSError("TCP table query failed")
-    if size.value < 4 or size.value > len(buffer):
-        raise ValueError("invalid TCP table size")
-    return _parse_table(buffer.raw[:size.value])
+    # The TCP table can grow between the size query and the fill call. Retry
+    # that documented race only; every successful snapshot still passes the
+    # unchanged exact endpoint/PID checks below. Other errors fail closed.
+    for _attempt in range(3):
+        size = ctypes.c_ulong(0)
+        if get_table(None, ctypes.byref(size), False, socket.AF_INET, 5, 0) != 122:
+            raise OSError("TCP table size query failed")
+        if size.value < 4 or size.value > _MAX_TABLE_BYTES:
+            raise ValueError("invalid TCP table size")
+        buffer = ctypes.create_string_buffer(size.value)
+        result = get_table(buffer, ctypes.byref(size), False, socket.AF_INET, 5, 0)
+        if result == 122:  # ERROR_INSUFFICIENT_BUFFER: query a new bounded size.
+            if size.value < 4 or size.value > _MAX_TABLE_BYTES:
+                raise ValueError("invalid TCP table size")
+            continue
+        if result != 0:
+            raise OSError("TCP table query failed")
+        if size.value < 4 or size.value > len(buffer):
+            raise ValueError("invalid TCP table size")
+        return _parse_table(buffer.raw[:size.value])
+    raise OSError("TCP table changed during all read attempts")
+
 
 
 def peer_is_game(client_address, server_port, game_pid=None):

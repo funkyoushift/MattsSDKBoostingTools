@@ -74,7 +74,12 @@
         } catch (_) { return null; }
     }
     function matches(b) { return b && pinned && b.port === pinned.port && b.instance === pinned.instance; }
+    function remember(command) {
+        seen.push(command.id);
+        if (seen.length > 64) seen.shift();
+    }
     function clear() {
+        if (queued && queued.mode === 'start') { remember(queued); queued = null; }
         startDelayPending = false;
         if (timer !== null) { window.clearTimeout(timer); timer = null; }
         if (request) { var old = request; request = null; old.abort(); }
@@ -163,6 +168,7 @@
     }
     function queueCommand(command) {
         if (!command || typeof command.id !== 'string' || !/^[0-9a-f]{32}$/i.test(command.id) || (command.mode !== 'start' && command.mode !== 'stop') || seen.indexOf(command.id) >= 0 || (queued && queued.id === command.id)) return;
+        if (queued) remember(queued); // A newer intent supersedes the unsent one.
         queued = {id:command.id, mode:command.mode};
     }
     function acknowledgeStop(command) {
@@ -179,8 +185,13 @@
     }
     function drain() {
         if (request || !queued) return;
-        var command = queued; queued = null; seen.push(command.id);
-        if (seen.length > 64) seen.shift();
+        // A command that has not been dispatched is still pending, not seen.
+        if (queued.mode === 'start') {
+            if (!bridge() || !window.ShiftFriendAutomation) return;
+            if ((state === 'active' || state === 'pending') &&
+                    (!ready() || !matches(bridge()) || !token || !pinned)) return;
+        }
+        var command = queued; queued = null; remember(command);
         if (command.mode === 'stop') {
             try { if (window.ShiftFriendAutomation) window.ShiftFriendAutomation.stopAutoAccept(); } catch (_) {}
             stop();

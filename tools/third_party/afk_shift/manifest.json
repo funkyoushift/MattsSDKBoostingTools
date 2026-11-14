@@ -1,5 +1,5 @@
 {
-  "sha256": "b430238443a2d62476a5df0d65a3593016cc1873d4c942052ab712ca6ab03592",
+  "sha256": "0f902702f735cfa7289ed8d81080a5cf40cdf2f22d421362e1e9a98f91517931",
   "source": "Azalea SHiFT v4.4 UX source with MSBT AFK policy and floating controls",
   "source_archive_sha256": "3e31ba6dfb91f014627df7cb9c453a34c8d13d2b49e1c6855bb8955f36ded440",
   "entries_verified": 192,
@@ -206,20 +206,20 @@
     "libs/jquery-3.4": "libs/jquery-3.4.1.min.js"
   },
   "optional_sdk_installed": false,
-  "validation": "192 payloads round-trip verified; native Friends/profile and heartbeat delta checks pending",
+  "validation": "All PAK payloads round-trip verified; native evidence is recorded separately",
   "controller_repairs": "2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons; 2026-11-13: labeled protected-name entry, native Friends/profile protection access, repeated-Start heartbeat renewal",
   "bridge_ports": [
     47991,
     47992,
     47993
   ],
-  "companion_sha256": "a737e10a4d18e47887581d72be41904983664041e15862ea1665b653d80422ca",
+  "companion_sha256": "65f89fa7827b3865376e4b46b6e44f933b49f658dabdcb132effd2c7579dc0c0",
   "companion_archive": "ShiftManagement.sdkmod",
-  "companion_source_sha256": "b8d5e06a839a7fc88d3de1cf5c8977d839bac41a86cdb7fcafcf8e0579b88375",
-  "companion_peer_source_sha256": "9dcd547fba3d58c833d90a84402ccb2e589e2aeb4bc167762ad960ead2f188a8",
-  "companion_background_source_sha256": "a1e03ce9fa5b74e021ddcfdd4d6b2e80138ab39e12d277c18962f3b7d59b609a",
+  "companion_source_sha256": "590b6225291a1de7a97abff8ab47c517c99df29b5c2a8b26b03486a06942ef09",
+  "companion_peer_source_sha256": "e6f398daa57dbfacfc583d0d488f2e2ebd4707bc13caab5868446ab7c999e5bb",
+  "companion_background_source_sha256": "f5c068bea09f2bb04daa6144923dc83c810b4034bbbad42d7ae4908aa061071e",
   "companion_background_native_source_sha256": "ff6b015d39c9538d50d2554d283177158530a12645afbbfc428e7bd5837c2a91",
-  "background_client_source_sha256": "e3e40e9455c8510edfebaffce3901d738f15057ec972d1c1e72d25c9b22f360f",
+  "background_client_source_sha256": "ff23a7aecd39792eaa3de7ac28de64a88fa12b0a50aa65f298de3aa807bee5fd",
   "companion_validation": "Final production candidate: offline regression and archive checks; final packaged native qualification pending.",
-  "companion_menu_handoff_source_sha256": "9e63bcf99c28d9287e26d2cac8c35d87a0f6f0f527491ddeb19f01bc4553cbf3"
+  "companion_menu_handoff_source_sha256": "3c8b9543f4aa0c6104af39c45f5f980ade63c3186d86ad1d8e1c4f191b6869b9"
 }

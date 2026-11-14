@@ -233,3 +233,74 @@ console.log('PASS repeated Start renewal respects Stop, generation, identity and
  f.run();assert.equal(f.requests.length,2);assert.equal(f.requests[1].body.mode,'heartbeat');
 }
 console.log('PASS new-ID Start preserves the initial foreground paint delay');
+
+
+// Retain never-dispatched Start intent across temporary readiness loss;
+// later Stop, newer commands and terminal generations revoke that intent.
+{
+const f = fixture();
+f.run();
+assert(f.start());
+f.requests[0].respond('active');
+const command = {id: 'a1'.repeat(16), mode: 'start'};
+f.running = false;
+f.window.MsbtShiftBackground.onCompanionState({command});
+assert.equal(f.requests.length, 1, 'Do not send a Start while prerequisites are unavailable');
+f.running = true;
+f.window.MsbtShiftBackground.onCompanionState({command});
+assert.equal(f.requests.length, 2, 'A never-dispatched pending Start must not be permanently marked seen');
+assert.equal(f.requests[1].body.mode, 'start');
+f.requests[1].respond('active');
+const count = f.requests.length;
+f.window.MsbtShiftBackground.onCompanionState({command});
+assert.equal(f.requests.length, count, 'A dispatched command must remain deduplicated');
+console.log('PASS temporary readiness loss retains an undispatched Start for later delivery');
+}
+
+// A Stop that occurs after retaining an undispatched Start must supersede it.
+// stop() is also called by the page Stop-accepting control after stopping automation.
+{
+  const g = fixture();
+  g.run(); assert(g.start()); g.requests[0].respond('active');
+  const pending = {id: 'b2'.repeat(16), mode: 'start'};
+  g.running = false;
+  g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  g.window.MsbtShiftBackground.stop();
+  assert.equal(g.requests[1].body.mode, 'stop');
+  g.requests[1].respond('foreground');
+  assert.equal(g.window.MsbtShiftBackground.status().state, 'foreground', 'Stop must revoke an older retained Start');
+  assert.equal(g.window.ShiftFriendAutomation.isRunning(), false, 'Stop must not revive acceptance');
+  g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  assert.equal(g.window.MsbtShiftBackground.status().state, 'foreground', 'A revoked Start cannot revive through a stale poll');
+  const count = g.requests.length; g.advance(6000); assert.equal(g.requests.length, count);
+}
+console.log('PASS Stop supersedes a retained Start and prevents late replay');
+
+// A newer desktop Stop also revokes the retained command, even if a stale poll
+// advertises the old Start after the Stop has completed.
+{
+  const g = fixture(); g.run(); assert(g.start()); g.requests[0].respond('active');
+  const pending = {id: 'c3'.repeat(16), mode: 'start'};
+  g.running = false; g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  g.window.MsbtShiftBackground.onCompanionState({command: {id: 'd4'.repeat(16), mode: 'stop'}});
+  assert.equal(g.requests[1].body.mode, 'stop');
+  g.requests[1].respond('foreground');
+  g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  assert.equal(g.window.MsbtShiftBackground.status().state, 'foreground');
+  assert.equal(g.window.ShiftFriendAutomation.isRunning(), false);
+}
+
+// Existing endpoint-change fail-closed behavior is not loosened. Ending an
+// owned generation revokes its retained Start, rather than resending it later.
+{
+  const g = fixture(); g.run(); assert(g.start()); g.requests[0].respond('active');
+  const pending = {id: 'e5'.repeat(16), mode: 'start'};
+  g.running = false; g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  g.endpoint = {port: 7777, instance: 'other', start_token: '06'.repeat(16)};
+  g.run(); assert.equal(g.window.MsbtShiftBackground.status().state, 'error');
+  g.endpoint = {port: 7777, instance: 'one', start_token: '05'.repeat(16)};
+  g.running = true; g.window.MsbtShiftBackground.onCompanionState({command: pending});
+  assert.equal(g.window.MsbtShiftBackground.status().state, 'error');
+  assert.equal(g.requests.length, 1);
+}
+console.log('PASS newer desktop Stop and terminal generation changes revoke retained Start');

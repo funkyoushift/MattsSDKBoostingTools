@@ -1,5 +1,7 @@
 """Experimental direct SHiFT overlay; no pause-menu navigation."""
 import time
+import itertools
+import sys
 from mods_base import get_pc, keybind
 from unrealsdk import find_object
 
@@ -32,6 +34,59 @@ def status():
     return {"visible": visible, "initialized": initialized, "message": _message,
             "capture": dict(_capture_status), "block_input": getattr(pc, "bBlockInput", None),
             "ignore_move": read_call("IsMoveInputIgnored"), "ignore_look": read_call("IsLookInputIgnored")}
+
+
+
+def _background_owns_view():
+    """Do not duplicate cleanup while the companion owns native visibility."""
+    companion = sys.modules.get("ShiftManagement")
+    controller = getattr(companion, "_background", None)
+    native = getattr(controller, "native", None)
+    return bool(getattr(controller, "_ownership", False) or getattr(native, "owned", False))
+
+
+def _other_ui_context_active(pc):
+    """Read only this player's input contexts; unknown must not steal UI focus.
+
+    Pause alone cannot distinguish SHiFT's own asynchronous transition from a
+    different menu. The installed game's menu contexts do, while the cursor-only
+    context used by SHiFT is deliberately excluded.
+    """
+    try:
+        import unrealsdk as sdk
+        if pc is None or getattr(pc, "Player", None) is None or getattr(pc, "Pawn", None) is None:
+            return None
+        subs = list(itertools.islice(sdk.find_all("EnhancedInputLocalPlayerSubsystem", False), 129))
+        if len(subs) > 128:
+            return None
+        local = [item for item in subs if not str(item.Name).startswith("Default__") and item.Outer == pc.Player]
+        if len(local) != 1:
+            return None
+        interface = sdk.find_class("/Script/EnhancedInput.EnhancedInputSubsystemInterface")
+        fn = sdk.find_object("Function", "/Script/EnhancedInput.EnhancedInputSubsystemInterface:HasMappingContext")
+        if interface is None or fn is None or not local[0].Class._implements(interface):
+            return None
+        contexts = list(itertools.islice((item for item in sdk.find_all("InputMappingContext", False)
+                                         if not str(item.Name).startswith("Default__")), 129))
+        if len(contexts) > 128:
+            return None
+        bound = sdk.unreal.BoundFunction(fn, local[0])
+        for context in contexts:
+            result = bound(context, 0)
+            if (not isinstance(result, tuple) or len(result) != 2
+                    or type(result[0]) is not bool or type(result[1]) is not int):
+                return None
+            if not result[0]:
+                continue
+            path = context._path_name()
+            if not isinstance(path, str):
+                return None
+            normalized = path.casefold()
+            if "/ui/" in normalized and "context_ui_cursor." not in normalized:
+                return True
+        return False if get_pc() == pc and local[0].Outer == pc.Player else None
+    except Exception:
+        return None
 
 
 def release():
@@ -144,6 +199,11 @@ def tick():
         _release_at = []; _owner = None
         _closing = False; _seen_visible = False
         _restore_capture()
+    if _owner is not None and _background_owns_view():
+        # Hidden native widgets are expected in background mode. That controller
+        # now owns restoration; this foreground helper must not infer Back/Close.
+        _release_at = []; _owner = None
+        _closing = False; _seen_visible = False
     if _owner is not None:
         try:
             visible = bool(library().IsVisible())
@@ -165,6 +225,13 @@ def tick():
         return
     now = time.monotonic()
     if now >= _release_at[0]:
+        if _other_ui_context_active(_owner) is not False:
+            # A newer menu (or an unreadable context) wins. Do not leave an old
+            # timer capable of taking focus later; explicit F11 remains available.
+            _release_at = []; _owner = None
+            _closing = False; _seen_visible = False
+            _message = "Deferred input restoration cancelled to preserve current menu focus."
+            return
         _release_at.pop(0)
         try:
             release()

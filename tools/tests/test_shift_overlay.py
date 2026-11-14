@@ -6,12 +6,16 @@ from pathlib import Path
 
 
 def setup_overlay(monkeypatch):
-    calls=[]; now=[100.0]; pc=types.SimpleNamespace(bBlockInput=False)
+    calls=[]; now=[100.0]; pc=types.SimpleNamespace(bBlockInput=False, Player=object(), Pawn=object())
     lib=types.SimpleNamespace(IsVisible=lambda:False,IsInitialized=lambda:True,
         Open=lambda n:calls.append(('open',n)),Close=lambda:calls.append(('close',)))
     base=types.ModuleType('mods_base');base.get_pc=lambda:pc
     base.keybind=lambda *a,**k:types.SimpleNamespace(enable=lambda:None,disable=lambda:None)
     sdk=types.ModuleType('unrealsdk');sdk.find_object=lambda *a:types.SimpleNamespace(ClassDefaultObject=lib)
+    sub=types.SimpleNamespace(Name='Local',Outer=pc.Player,Class=types.SimpleNamespace(_implements=lambda _:True))
+    sdk.find_all=lambda name,exact:[sub] if name=='EnhancedInputLocalPlayerSubsystem' else []
+    sdk.find_class=lambda *a:object()
+    sdk.unreal=types.SimpleNamespace(BoundFunction=lambda *a:lambda *args:(False,0))
     capture=types.ModuleType('overlay_test.shift_capture');capture.enable=lambda:{'capture_affinity':0};capture.restore=lambda:None
     monkeypatch.setitem(sys.modules,'overlay_test.shift_capture',capture)
     pkg=types.ModuleType('overlay_test');pkg.__path__=[]
