@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-11-14: 2.41.3 desktop download metadata](changes/2026-11-14-v2413-download-metadata.md): Stable/latest release published through the prescribed publisher with the authorized readback repair. All four complete public assets, six links, latest/tag identity and actual updater selection passed verification. CI hashes/provenance and native Windows/Linux scope recorded; Android/selector pins preserved.
+
 - [2026-11-12: Required Windows/Linux release publication](changes/2026-11-12-required-platform-publication.md): Windows-only publishing disabled; exact two-platform packages, CI and native game qualification mandatory. Full verification on released-source branch; older main runtime preserved.
 
 - [2026-10-26: Buy Me a Coffee support links and saved choices](changes/2026-10-26-buymeacoffee-preferences.md): FunkYouSHiFT donation links moved to one destination, with Mattmab/charity links preserved. Desktop tour and mobile announcement opt-out persistence repaired; Windows/SDK 2.39.9 and Android 1.6.6 release validation is tracked in the linked note.
