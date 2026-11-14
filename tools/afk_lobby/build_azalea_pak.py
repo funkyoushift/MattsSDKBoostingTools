@@ -11,6 +11,7 @@ import zlib
 from pak_v3 import parse_pak, extract_payload
 from repair_azalea_controller import repair_controller
 from repair_shift_protected_inputs import repair_html, repair_controller as repair_protected_inputs
+from repair_shift_native_protection import repair_html as repair_native_html, repair_controller as repair_native_controller
 from build_shift_storage_companion import build as build_storage_companion
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -64,8 +65,8 @@ def build(archive, output, payload_transform=None):
     files['libs/jquery-3.4.1.min.js'] = files.pop('libs/jquery-3.4')
     for ref in re.findall(r'<(?:script|link)\b[^>]*(?:src|href)="([^"]+)"', files['dashboard.html'].decode('utf-8-sig')):
         assert ref in files, f'Missing dashboard dependency: {ref}'
-    files[CONTROLLER] = repair_protected_inputs(controller_patch(files[CONTROLLER]).decode('utf-8')).encode('utf-8')
-    files['dashboard.html'] = repair_html(files['dashboard.html'].decode('utf-8-sig')).encode('utf-8')
+    files[CONTROLLER] = repair_native_controller(repair_protected_inputs(controller_patch(files[CONTROLLER]).decode('utf-8'))).encode('utf-8')
+    files['dashboard.html'] = repair_native_html(repair_html(files['dashboard.html'].decode('utf-8-sig'))).encode('utf-8')
     notification = 'NotificationWidget/js/notification_widget_controller.js'
     assert files[notification].count(b'            ShiftAutoAcceptBackground.init()') == 1
     files[notification] = files[notification].replace(
@@ -109,7 +110,7 @@ def build(archive, output, payload_transform=None):
                'source_payload_sha256': source_hashes, 'modified_entries': [CONTROLLER, notification, 'dashboard.html'],
                'renamed_entries': {'libs/jquery-3.4': 'libs/jquery-3.4.1.min.js'},
                'optional_sdk_installed': False, 'validation': 'Offline payload round-trip; live game pending',
-               'controller_repairs': '2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons',
+               'controller_repairs': '2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons; 2026-11-13: labeled protected-name entry, native Friends/profile protection access, repeated-Start heartbeat renewal',
                'bridge_ports': [47991, 47992, 47993]}
     receipt.update(companion_sha256=companion['companion_sha256'],
                    companion_archive=companion['archive'],

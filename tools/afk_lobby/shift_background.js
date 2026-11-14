@@ -197,7 +197,17 @@
                     // too; retain the foreground paint before native entry.
                     if (startDelayPending) return;
                     if (timer !== null) { window.clearTimeout(timer); timer = null; }
-                    send('start', receive);
+                    send('start', function (err, bg) {
+                        receive(err, bg);
+                        if (state !== 'active' && state !== 'pending') return;
+                        // Start confirms the desktop command but does not renew
+                        // the native lease. Renew now so repeated fresh Starts
+                        // cannot continually postpone the scheduled heartbeat.
+                        // A queued Stop takes priority over this renewal.
+                        if (queued && queued.mode === 'stop') return;
+                        if (timer !== null) window.clearTimeout(timer);
+                        pulse();
+                    });
                 } else {
                     start();
                 }

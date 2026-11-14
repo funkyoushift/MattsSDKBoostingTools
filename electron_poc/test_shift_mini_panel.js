@@ -38,7 +38,24 @@ app.whenReady().then(async () => {
     };
     window.friends_model={receivedRequestsList:[],allInvites:[]};
     window.friends_controller={showSuccessMessage:()=>{},hideSuccessMessage:()=>{}};
+    window.side_menu_controller={showSideMenu:()=>{},onFriendsClick:()=>{
+      document.getElementById('body_container').style.opacity='1'; // Native dashboard show acknowledgement.
+      document.getElementById('friends_container').classList.remove('hide');
+      for(let el=document.getElementById('friends_container').parentElement;el;el=el.parentElement)el.classList.remove('hide');
+    }};
     for(const key of ['FRIENDS_LOAD_REQUEST_LIST_RESPONSE','FRIENDS_LOAD_REQUEST_LIST_CALL']) window[key]=key;
+    window.testShiftVisible=id=>{
+      const el=typeof id==='string'?document.getElementById(id):id;
+      if(!el)return false;
+      const r=el.getBoundingClientRect();
+      if(r.width<=0 || r.height<=0 || r.bottom<=0 || r.right<=0 || r.top>=innerHeight || r.left>=innerWidth)return false;
+      for(let ancestor=el;ancestor;ancestor=ancestor.parentElement){
+        const style=getComputedStyle(ancestor);
+        if(style.display==='none' || style.visibility==='hidden' || style.visibility==='collapse' || Number(style.opacity)===0)return false;
+      }
+      return true;
+    };
+    void 0;
   `);
   const start = controller.indexOf('var ShiftFriendAutomation = (function ()');
   const end = controller.indexOf('window.ShiftMiniPanel = ShiftMiniPanel;', start) + 'window.ShiftMiniPanel = ShiftMiniPanel;'.length;
@@ -48,7 +65,7 @@ app.whenReady().then(async () => {
   await win.webContents.executeJavaScript(fs.readFileSync('../tools/afk_lobby/shift_float.js','utf8'));
   await new Promise(resolve=>setTimeout(resolve,900));
   const result = await win.webContents.executeJavaScript(`(() => {
-    const visible=id=>{const el=document.getElementById(id);const r=el.getBoundingClientRect();return getComputedStyle(el).display!=='none' && r.width>0 && r.height>0;};
+    const visible=window.testShiftVisible;
     const checks=[]; const check=(name,ok)=>{checks.push({name,ok});if(!ok)throw Error(name);};
     $('#friends_mini_panel_toggle_btn').on('click',ShiftMiniPanel.toggle);
     check('floating active',document.documentElement.classList.contains('msbt-shift-floating'));
@@ -70,6 +87,8 @@ app.whenReady().then(async () => {
     check('Manage SHiFT opens panel',visible('shift_mini_panel'));
     check('Manage preserves floating layout',document.documentElement.classList.contains('msbt-shift-floating'));
     ShiftMiniPanel.openSettings();
+    ShiftMiniPanel.openProtectedList();
+    check('native protected editor opens',visible('msbt_native_protection_panel'));
     const addInput=document.getElementById('shift_settings_protected_add_input');
     const search=document.getElementById('shift_settings_protected_search');
     const addButton=document.getElementById('shift_settings_protected_add_btn');
@@ -99,14 +118,35 @@ app.whenReady().then(async () => {
     return checks;
   })()`);
   await win.webContents.executeJavaScript(`
+    ShiftMiniPanel.hide();
+    document.getElementById('msbt-shift-size-regular').click();
+    void 0;
+  `);
+  await win.webContents.executeJavaScript(`new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))`);
+  const captureVisibility=await win.webContents.executeJavaScript(`(() => {
+    const ids=['msbt_native_protection_panel','shift_settings_protected_add_input','shift_protection_review','msbt_native_protection_save'];
+    for(const id of ids)if(!testShiftVisible(id))throw Error('Capture target is not visible: '+id);
+    const root=document.getElementById('body_container');
+    if(document.documentElement.classList.contains('msbt-shift-floating'))throw Error('Capture retained compact layout');
+    const metrics=['shift_settings_protected_add_input','shift_settings_protected_add_btn','msbt_native_protection_save'].map(id=>{
+      const el=document.getElementById(id),r=el.getBoundingClientRect(),font=parseFloat(getComputedStyle(el).fontSize);
+      const effectiveFont=font*r.height/el.offsetHeight;
+      if(effectiveFont<14 || r.height<24)throw Error('Control is too small at Regular size: '+id+' font='+effectiveFont+' height='+r.height);
+      return {id,font:effectiveFont,width:r.width,height:r.height};
+    });
+    return {ids,transform:getComputedStyle(root).transform,metrics};
+  })()`);
+  fs.writeFileSync(path.join(path.dirname(fixture),'protected-friends.png'), (await win.webContents.capturePage()).toPNG());
+  await win.webContents.executeJavaScript(`
     ShiftMiniPanel.setStorageMode('sdk');
     ShiftMiniPanel.openSettings();
+    ShiftMiniPanel.openProtectedList();
     ShiftMiniPanel.requestSDKSettings();
     testShiftRequests.length=0;
     ShiftMiniPanel.saveSettingsNow();
     if(testShiftRequests.some(r=>r.request.method==='POST'))throw Error('Unreviewed first-run save transmitted a write');
     var review=document.getElementById('shift_protection_review');
-    if(!review || !review.getBoundingClientRect().height)throw Error('Review control is not visible');
+    if(!testShiftVisible(review))throw Error('Review control is not visible');
     review.click();
     ShiftMiniPanel.saveSettingsNow();
   `);
@@ -125,7 +165,7 @@ app.whenReady().then(async () => {
     if(document.getElementById('shift_protection_review').getAttribute('aria-pressed')!=='false')throw Error('Edit did not reset review');
     return {uncheckedSaveBlocked:true,reviewControlVisible:true,explicitInitialization:true,readbackRequired:true,editsResetReview:true};
   })()`);
-  fs.writeFileSync(path.join(path.dirname(fixture),'mini-panel-test.json'),JSON.stringify({checks:result,storage},null,2));
+  fs.writeFileSync(path.join(path.dirname(fixture),'mini-panel-test.json'),JSON.stringify({checks:result,storage,captureVisibility},null,2));
   console.log('PASS '+result.length+' Mini Panel DOM checks and 5 protected-list setup/save checks. Native Cohtml remains a live test.');
   win.destroy(); app.quit();
 }).catch(e=>{console.error(e);app.exit(1);});

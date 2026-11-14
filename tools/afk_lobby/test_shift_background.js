@@ -1,7 +1,8 @@
 const fs = require('fs'), vm = require('vm'), assert = require('assert');
 const source = fs.readFileSync(__dirname + '/shift_background.js', 'utf8');
 function fixture(direct) {
- let tasks = [], requests = [], running = true, reviewed = true, endpoint = {port:7777,instance:'one',start_token:'05'.repeat(16)};
+ let now = 0, tasks = [], requests = [], running = true, reviewed = true, endpoint = {port:7777,instance:'one',start_token:'05'.repeat(16)};
+ function run() { assert(tasks.length);tasks.sort((a,b)=>a.at-b.at);const task=tasks.shift();now=task.at;task.f(); }
  const props = {opacity:{value:'0.65',priority:'important'},transform:{value:'rotate(1deg)',priority:''},'transform-origin':{value:'center',priority:'important'}};
  let style = {getPropertyValue:k=>props[k] ? props[k].value : '',getPropertyPriority:k=>props[k] ? props[k].priority : '',setProperty:(k,v,p)=>props[k]={value:v,priority:p||''},removeProperty:k=>delete props[k]};
  if (direct) style = {transform:'rotate(1deg)',transformOrigin:'center',opacity:'0.65'};
@@ -15,9 +16,9 @@ function fixture(direct) {
   respond(state, overrides={}) { const payload={service:'msbt-shift-storage',protocol:1,instance:'one',background:{available:true,state,reason:'',token:this.body.token}}; Object.assign(payload,overrides); this.responseText=JSON.stringify(payload);this.onload(); }
  }
  const head={children:[],appendChild(n){this.children.push(n);n.parentNode=this;},removeChild(n){this.children=this.children.filter(x=>x!==n);n.parentNode=null;}};
- const window={document:{head,documentElement:{style:{transform:'untouched'}},getElementById:id=>id==='body_container'?{style}:id==='msbt-shift-float-bar'?bar:null,createElement:()=>({})},ShiftFriendAutomation:{isRunning:()=>running,startAutoAccept:()=>{running=true},stopAutoAccept:()=>{running=false}},ShiftMiniPanel:{protectionReady:()=>reviewed,backgroundBridge:()=>endpoint},setTimeout:f=>{tasks.push(f);return f;},clearTimeout:f=>{tasks=tasks.filter(x=>x!==f);}};
+ const window={document:{head,documentElement:{style:{transform:'untouched'}},getElementById:id=>id==='body_container'?{style}:id==='msbt-shift-float-bar'?bar:null,createElement:()=>({})},ShiftFriendAutomation:{isRunning:()=>running,startAutoAccept:()=>{running=true},stopAutoAccept:()=>{running=false}},ShiftMiniPanel:{protectionReady:()=>reviewed,backgroundBridge:()=>endpoint},setTimeout:(f,delay)=>{const task={f,at:now+delay};tasks.push(task);return task;},clearTimeout:task=>{tasks=tasks.filter(x=>x!==task);}};
  const ctx={window,document:window.document,XMLHttpRequest:XHR,Uint8Array,Number,JSON};vm.runInNewContext(source,ctx);
- return {window,head,bar,requests,props,style,start(){const ok=window.MsbtShiftBackground.start();if(ok){assert(tasks.length);tasks.shift()();}return ok;},run(){assert(tasks.length);tasks.shift()();},set running(v){running=v},set reviewed(v){reviewed=v},set endpoint(v){endpoint=v}};
+ return {window,head,bar,requests,props,style,start(){const ok=window.MsbtShiftBackground.start();if(ok)run();return ok;},run,advance(ms){const target=now+ms;while(tasks.some(task=>task.at<=target))run();now=target;},get now(){return now;},set running(v){running=v},set reviewed(v){reviewed=v},set endpoint(v){endpoint=v}};
 }
 {
  const f=fixture(); f.run(); assert.equal(f.bar.button.textContent,'Play while accepting');
@@ -125,6 +126,46 @@ for (const alreadyRunning of [false,true]) {
  assert.equal(f.head.children.length,0);assert.equal(f.window.ShiftFriendAutomation.isRunning(),true);}}
 console.log('PASS owned-start rollback, foreground stop acknowledgement, and 20 repeated start/show cycles');
 
+// Model the native five-second lease: only heartbeats renew an owned lease;
+// repeated Start acknowledgements leave its deadline untouched. Advance real
+// fake-clock time across several leases while fresh Starts beat the 1s timer.
+{
+ const f=fixture();f.run();const page=f.window.MsbtShiftBackground;
+ assert(page.start());f.advance(149);assert.equal(f.requests.length,0);
+ f.advance(1);assert.equal(f.requests.length,1);
+ const ownedToken=f.requests[0].body.token;
+ let deadline=null,handled=0,heartbeats=0,starts=0,stopped=false;
+ function settle() {
+  while(handled<f.requests.length) {
+   const request=f.requests[handled++],mode=request.body.mode;
+   if(mode==='ack_stop')continue;
+   assert.equal(request.body.token,ownedToken);
+   f.advance(20); // Responses are asynchronous, not inline with send().
+   if(mode==='stop'){stopped=true;request.respond('foreground');continue;}
+   assert(!stopped,'No lease traffic after Stop');
+   if(deadline===null)deadline=f.now+5000;
+   assert(f.now<deadline,'Native lease expired despite successful repeated Starts');
+   if(mode==='heartbeat'){deadline=f.now+5000;heartbeats++;}
+   else {assert.equal(mode,'start');starts++;}
+   request.respond('active');
+  }
+ }
+ settle();
+ f.endpoint={port:7777,instance:'one',start_token:'06'.repeat(16)};
+ for(let i=1;i<=18;i++) {
+  f.advance(900);
+  page.onCompanionState({command:{id:i.toString(16).padStart(32,'0'),mode:'start'}});
+  settle();assert.equal(page.status().state,'active');
+ }
+ assert.equal(starts,19);assert.equal(heartbeats,18);
+ assert(f.now>16000);assert(f.now<deadline);
+ page.onCompanionState({command:{id:'e'.repeat(32),mode:'stop'}});settle();
+ assert(stopped);assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);
+ assert.equal(page.status().state,'foreground');
+ const count=f.requests.length;f.advance(6000);assert.equal(f.requests.length,count);
+}
+console.log('PASS elapsed-time repeated Start lease renewal and later Stop');
+
 // New command IDs must confirm an already-owned lease rather than disappear
 // into the UI start button's duplicate-start guard.
 for (const nativeState of ['pending', 'active']) {
@@ -135,8 +176,10 @@ for (const nativeState of ['pending', 'active']) {
  f.window.MsbtShiftBackground.onCompanionState({command});
  assert.equal(f.requests.length,2);assert.deepEqual(f.requests[1].body,{mode:'start',token:ownedToken});
  f.requests[1].respond(nativeState);
- f.window.MsbtShiftBackground.onCompanionState({command});assert.equal(f.requests.length,2);
- f.run();assert.equal(f.requests.length,3);assert.equal(f.requests[2].body.mode,'heartbeat');
+ f.window.MsbtShiftBackground.onCompanionState({command});assert.equal(f.requests.length,3);
+ assert.deepEqual(f.requests[2].body,{mode:'heartbeat',token:ownedToken});
+ f.requests[2].respond(nativeState);
+ f.run();assert.equal(f.requests.length,4);assert.equal(f.requests[3].body.mode,'heartbeat');
 }
 // While an existing heartbeat is in flight, rapid desktop commands supersede
 // one another. The last Start must be confirmed even if no Stop was observed.
@@ -149,12 +192,33 @@ for (const nativeState of ['pending', 'active']) {
  assert.equal(f.requests.length,2);heartbeat.respond('active');
  assert.equal(f.requests.length,3);assert.deepEqual(f.requests[2].body,{mode:'start',token:ownedToken});
  assert.equal(f.window.ShiftFriendAutomation.isRunning(),true);f.requests[2].respond('active');
+ assert.deepEqual(f.requests[3].body,{mode:'heartbeat',token:ownedToken});f.requests[3].respond('active');
  const stop={id:'9'.repeat(32),mode:'stop'};
  f.window.MsbtShiftBackground.onCompanionState({command:stop});
  assert.equal(f.window.ShiftFriendAutomation.isRunning(),false);
- assert.equal(f.requests[3].body.mode,'stop');assert.equal(f.requests[4].body.mode,'ack_stop');
+ assert.equal(f.requests[4].body.mode,'stop');assert.equal(f.requests[5].body.mode,'ack_stop');
 }
 console.log('PASS new-ID Start confirmation with existing lease and rapid command supersession');
+
+// Stop supersedes renewal; a canceled or invalid confirmation cannot revive it.
+for(const outcome of ['queued-stop','canceled','wrong-token','wrong-instance','not-ready']) {
+ const f=fixture();f.run();assert(f.start());f.requests[0].respond('active');
+ const page=f.window.MsbtShiftBackground;
+ page.onCompanionState({command:{id:'8'.repeat(32),mode:'start'}});
+ const confirmation=f.requests[1];
+ if(outcome==='queued-stop')page.onCompanionState({command:{id:'9'.repeat(32),mode:'stop'}});
+ if(outcome==='canceled'){page.stop();assert(confirmation.aborted);}
+ if(outcome==='not-ready')f.running=false;
+ const overrides=outcome==='wrong-token'?{background:{available:true,state:'active',token:'ff'.repeat(16)}}:outcome==='wrong-instance'?{instance:'other'}:{};
+ confirmation.respond('active',overrides);
+ assert(!f.requests.slice(2).some(request=>request.body.mode==='heartbeat'));
+ if(outcome==='queued-stop'||outcome==='canceled') {
+  assert.equal(page.status().state,'foreground');assert.equal(f.requests[2].body.mode,'stop');
+  f.requests[2].respond('foreground');
+ }else assert.equal(page.status().state,'error');
+ const count=f.requests.length;f.advance(6000);assert.equal(f.requests.length,count);
+}
+console.log('PASS repeated Start renewal respects Stop, generation, identity and readiness');
 
 // A new command during the initial paint delay is confirmed by the original
 // scheduled request, without bringing native entry forward or duplicating it.
