@@ -16,6 +16,8 @@ The earlier Ubuntu 26 CI-runner sandbox startup failure remains a separate histo
 
 ## Publication and rollback
 
-This metadata PR must merge only after publication through the unchanged `publish_verified_release.py` and successful public-asset verification. It does not authorize a direct release command or bypass the gate. The public release contains four application assets; GitHub supplies the two source archives. No SDK-only, APK or updater manifest asset is added here.
+This metadata PR must merge only after publication through the prescribed `publish_verified_release.py` and successful public-asset verification. Martin explicitly authorized a narrow publisher readback repair after an immediate GitHub draft-list read did not yet show the successfully created draft. That authorization preserves the required qualification gate and asset verification; it does not authorize a direct release command or gate bypass. Only verified empty drafts may be removed under the scoped cleanup authorization. The release source, four candidate artifact hashes and package contents remain unchanged by this publishing-tool repair.
+
+The public release contains four application assets; GitHub supplies the two source archives. No SDK-only, APK or updater manifest asset is added here.
 
 Offline metadata validation checks all six exact URLs, the four audited SHA256s, unchanged Android fields and unchanged README Android/selector links. Public download checks and the merge outcome are recorded by the release coordinator after publication. Reverting this metadata change restores the previous download pointers without modifying release assets, installations or user data.
