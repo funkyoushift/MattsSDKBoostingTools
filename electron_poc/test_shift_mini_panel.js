@@ -69,6 +69,33 @@ app.whenReady().then(async () => {
     Array.from(document.querySelectorAll('#msbt-shift-float-bar button')).find(b=>b.textContent==='Manage SHiFT').click();
     check('Manage SHiFT opens panel',visible('shift_mini_panel'));
     check('Manage preserves floating layout',document.documentElement.classList.contains('msbt-shift-floating'));
+    ShiftMiniPanel.openSettings();
+    const addInput=document.getElementById('shift_settings_protected_add_input');
+    const search=document.getElementById('shift_settings_protected_search');
+    const addButton=document.getElementById('shift_settings_protected_add_btn');
+    const feedback=()=>document.getElementById('shift_settings_protected_feedback').textContent;
+    const names=()=>ShiftFriendAutomation.getProtectedNames();
+    check('add input precedes search',!!(addInput.compareDocumentPosition(search)&Node.DOCUMENT_POSITION_FOLLOWING));
+    for(const id of [addInput.id,search.id]) {
+      const label=document.querySelector('label[for="'+id+'"]');
+      check('persistent label '+id,!!label && label.getBoundingClientRect().height>0);
+    }
+    const initialCount=names().length;
+    search.value='search-is-not-a-new-name';search.dispatchEvent(new Event('input'));
+    addButton.click();
+    check('blank add gives feedback',feedback().includes('Enter a SHiFT'));
+    check('search never adds a name',names().length===initialCount);
+    addInput.value='  revcashmoney  ';addButton.click();
+    check('Add inserts trimmed name',names().includes('revcashmoney'));
+    check('new name visible despite previous filter',search.value==='' && document.getElementById('shift_settings_protected_list').textContent.includes('revcashmoney'));
+    check('successful add has save guidance',feedback().includes('Review the list, then choose Save'));
+    addInput.value='REVCASHMONEY';addButton.click();
+    check('duplicate gives feedback without duplicate',feedback().includes('Already protected') && names().length===initialCount+1);
+    addInput.value='keyboard-example';addInput.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true}));
+    check('Enter adds name',names().includes('keyboard-example'));
+    addInput.value='<b>literal-name</b>';addButton.click();
+    check('feedback treats name as text',feedback().includes('<b>literal-name</b>') && !document.querySelector('#shift_settings_protected_feedback b'));
+    check('no write before review and Save',!testShiftRequests.some(r=>r.request.method==='POST'));
     return checks;
   })()`);
   await win.webContents.executeJavaScript(`

@@ -1,5 +1,7 @@
 # Project change notes — read first
 
+- [2026-11-13: Protected-name input clarity repair](changes/2026-11-13-shift-protected-name-input.md): Fixed unlabeled Search/Add confusion, silent input failures and hidden added names. Exact installed-version PAK backed up, repaired and hash-verified after Martin closed BL4. Offline renderer/storage/lifecycle checks pass; native retest pending. Game left closed; no release.
+
 - [2026-11-13: Native rapid-Start follow-up](changes/2026-11-13-shift-start-acknowledgement.md): Concurrent GPU evidence, native protected-list failed-write recovery/empty-save passes, and newly reproduced duplicate-Start acknowledgement repair; rebuilt native qualification remains pending.
 
 

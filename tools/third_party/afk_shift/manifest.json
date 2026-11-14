@@ -1,5 +1,5 @@
 {
-  "sha256": "6253f461653fc597927e5512f66394b3408b37f8c6728870a2b7647228aa9516",
+  "sha256": "e25a426d56f4cc29766b0d36a98624e703dd9d7dfca5aa71c14360a8934a349b",
   "source": "Azalea SHiFT v4.4 UX source with MSBT AFK policy and floating controls",
   "source_archive_sha256": "3e31ba6dfb91f014627df7cb9c453a34c8d13d2b49e1c6855bb8955f36ded440",
   "entries_verified": 192,
@@ -199,14 +199,15 @@
   },
   "modified_entries": [
     "js/dashboard/dashboard_controller.js",
-    "NotificationWidget/js/notification_widget_controller.js"
+    "NotificationWidget/js/notification_widget_controller.js",
+    "dashboard.html"
   ],
   "renamed_entries": {
     "libs/jquery-3.4": "libs/jquery-3.4.1.min.js"
   },
   "optional_sdk_installed": false,
   "validation": "Offline payload round-trip; live game pending",
-  "controller_repairs": "2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons",
+  "controller_repairs": "2026-11-05: fail-closed protected settings, protection persistence, authoritative responses, cancellable automation, guarded resume, configured polling, bridge-loss stop, size buttons; 2026-11-13: persistent protected-name labels, separate Search, Enter and explicit Add feedback",
   "bridge_ports": [
     47991,
     47992,
